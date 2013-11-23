@@ -24,6 +24,7 @@
 
 #include <orion/logging/IFormatter.h>
 #include <orion/logging/LogExceptionRecord.h>
+#include <orion/logging/LogFunction.h>
 #include <orion/logging/LogRecord.h>
 #include <orion/logging/Logger.h>
 #include <orion/logging/MultilineFormatter.h>

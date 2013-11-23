@@ -46,7 +46,7 @@ HttpServer::~HttpServer()
 
 Response::SharedPtr HttpServer::process_request(Request::SharedPtr request)
 {
-// LOG_FUNCTION(Debug2, "HttpServer::process_request()")
+   LOG_FUNCTION(Debug2, "HttpServer::process_request()")
 
    InetAddress::SharedPtr host = request->host_address();
 
