@@ -88,6 +88,18 @@ TEST(TestLogErrorMessage)
    EXPECT(output_record.message() == "Error message");
 }
 
+TEST(TestLogFailMessage)
+{
+   Logger& logger = Logger::get_logger();
+
+   logger.level(Logger::All);
+
+   LOG_IF_FAIL(Error, 1 == 0)
+
+   EXPECT(output_record.level() == Logger::Error);
+   EXPECT(output_record.message() == "Condition failed ( 1 == 0 )");
+}
+
 TEST(TestLogRecordOutput)
 {
    Logger& logger = Logger::get_logger();

@@ -24,18 +24,30 @@
 #ifndef LOG
 #define LOG(lvl) \
 if (orion::logging::Logger::get_logger().level() <= orion::logging::Logger::lvl) \
-   orion::logging::Logger::get_logger() += LogRecord(orion::logging::Logger::lvl, __FILE__, __LINE__, __PRETTY_FUNCTION__)
+   orion::logging::Logger::get_logger() += LogRecord(orion::logging::Logger::lvl, __FILE__, __LINE__, __FUNCTION__)
 #endif
 
 #ifndef LOG_EXCEPTION
 #define LOG_EXCEPTION(except) \
-orion::logging::Logger::get_logger() += LogExceptionRecord(except, __FILE__, __LINE__, __PRETTY_FUNCTION__)
+orion::logging::Logger::get_logger() += LogExceptionRecord(except, __FILE__, __LINE__, __FUNCTION__)
 #endif
 
 #ifndef LOG_FUNCTION
 #define LOG_FUNCTION(lvl, func) \
 if (orion::logging::Logger::get_logger().level() <= orion::logging::Logger::lvl) \
    orion::logging::LogFunction(orion::logging::Logger::lvl, func, __FILE__, __LINE__);
+#endif
+
+#ifndef LOG_IF_FAIL
+#define LOG_IF_FAIL(lvl, expr) \
+{                                       \
+   if (expr) { } else                   \
+   {	                                \
+      LOG(lvl) << "Condition failed ( " \
+               << #expr                 \
+               << " )";                 \
+   }				        \
+}
 #endif
 
 #ifndef LOG_WRITE

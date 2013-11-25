@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 #include <orion/TestUtils.h>
+#include <orion/ErrorMacros.h>
 #include <orion/Exception.h>
 
 using namespace orion::unittest;
