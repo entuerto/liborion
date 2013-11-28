@@ -140,12 +140,12 @@ std::string Response::to_string() const
 
 Response::SharedPtr Response::create() 
 {
-   return Response::SharedPtr(new Response(202));
+   return Response::SharedPtr(new Response(200));
 }
 
 Response::SharedPtr Response::create(const std::string& content, const std::string& content_type) 
 {
-   return Response::SharedPtr(new Response(202, content, content_type));
+   return Response::SharedPtr(new Response(200, content, content_type));
 }
 
 

@@ -37,8 +37,14 @@ json_sources = ['lib/ws/json/json_reader.cpp',
 ws_sources =  ['lib/ws/mongoose/MongooseRequest.cpp',
                'lib/ws/mongoose/MongooseHttpServer.cpp',
                'lib/ws/InetAddress.cpp',
+               'lib/ws/RpcError.cpp',
+               'lib/ws/RpcMethod.cpp',
+               'lib/ws/JsonRpcError.cpp',
+#               'lib/ws/JsonRpcMethod.cpp',
                'lib/ws/Request.cpp',
                'lib/ws/RequestListener.cpp',
+               'lib/ws/RpcRequestListener.cpp',
+               'lib/ws/JsonRpcRequestListener.cpp',
                'lib/ws/Response.cpp',
                'lib/ws/HttpServer.cpp']
 
@@ -307,6 +313,16 @@ def build(bld):
           install_path = None,
           unit_test    = 1)
 
+      bld.program(
+          target       = 'test-jsonrpc',
+          features     = 'cxx cprogram',
+          source       = ['tests/test-jsonrpc.cpp'],
+          includes     = ['.', 'tests/', 'include/', 'lib/'],
+          use          = ['orion-ws', 'orion'],
+          lib          = 'c++' if is_darwin else '',
+          install_path = None,
+          unit_test    = 1)
+
    # Examples
    if Options.options.compile_examples:
       bld.program(
@@ -317,6 +333,16 @@ def build(bld):
           use          = ['orion-ws', 'orion'],
           lib          = 'c++' if is_darwin else '',
           install_path = None)
+
+      bld.program(
+          target       = 'add-json-rpc-server',
+          features     = 'cxx cprogram',
+          source       = ['examples/add-json-rpc-server.cpp'],
+          includes     = ['.', 'examples/', 'include/'],
+          use          = ['orion-ws', 'orion'],
+          lib          = 'c++' if is_darwin else '',
+          install_path = None)
+
 
    bld.add_post_fun(summary)
 
