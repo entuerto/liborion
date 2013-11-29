@@ -29,3 +29,11 @@ if __name__ == '__main__':
    add = {"jsonrpc": "2.0", "method": 1, "params": "bar"}
 
    print send_jsonrpc('http://127.0.0.1:9090', json.dumps(add))
+
+   substract = {"jsonrpc": "2.0", "method": "substract", "params": [3,2], "id": 40}
+
+   print send_jsonrpc('http://127.0.0.1:9090', json.dumps(substract))
+
+   answer = {"jsonrpc": "2.0", "method": "answer", "id": 50}
+
+   print send_jsonrpc('http://127.0.0.1:9090', json.dumps(answer))

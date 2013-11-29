@@ -26,6 +26,7 @@
 #include <orion/ws/HttpServer.h>
 #include <orion/ws/JsonRpcRequestListener.h>
 #include <orion/ws/JsonRpcMethod.h>
+#include <orion/ws/JsonRpcMethodWrapper.h>
 
 #include <ws/json/value.h>
 
@@ -33,6 +34,9 @@ using namespace orion;
 using namespace orion::logging;
 using namespace orion::ws;
 
+//-----------------------------------------------------------------------------------
+// Creating a json-rpc method
+//-----------------------------------------------------------------------------------
 class AddMethod : public JsonRpcMethod
 {
 public:
@@ -87,7 +91,51 @@ public:
    }
 };
 
+//-----------------------------------------------------------------------------------
+// Free function example
+//-----------------------------------------------------------------------------------
+JsonRpcError::SharedPtr substract(Json::Value& json_request, Json::Value& json_result)
+{
+    int param1 = 0;
+    int param2 = 0;
 
+    if (not json_request.isMember("params"))
+       return JsonRpcError::create_invalid_params("Must specify two parameters.");
+
+    Json::Value params = json_request["params"];
+
+    if (params.isArray())
+    {
+       param1 = params[0u].asInt();
+       param2 = params[1u].asInt();
+    }
+    else
+    {
+       param1 = params["a1"].asInt();
+       param2 = params["a2"].asInt();
+    }
+
+    json_result = param1 - param2;
+    return nullptr;
+}
+
+//-----------------------------------------------------------------------------------
+// Object function example
+//-----------------------------------------------------------------------------------
+class Echo
+{
+public:
+
+   static JsonRpcError::SharedPtr answer(Json::Value& json_request, Json::Value& json_result)
+   {
+      json_result = "Hello World!";
+      return nullptr;
+   }
+};
+
+//-----------------------------------------------------------------------------------
+// Setup the logger options
+//-----------------------------------------------------------------------------------
 void setup_logger(std::fstream& file_stream)
 {
    StreamOutputHandler::SharedPtr cout_handler = StreamOutputHandler::create(std::cout);
@@ -100,6 +148,9 @@ void setup_logger(std::fstream& file_stream)
    logger.output_handlers().push_back(file_handler);
 }
 
+//-----------------------------------------------------------------------------------
+// Main function
+//-----------------------------------------------------------------------------------
 int main (int argc, char** argv)
 {
    std::fstream fout("add-json-rpc-server.log", std::fstream::out | std::fstream::trunc);
@@ -111,7 +162,9 @@ int main (int argc, char** argv)
 
    JsonRpcRequestListener::SharedPtr rl = JsonRpcRequestListener::create();
 
-   rl->register_method("add", AddMethod::create());
+   rl->register_method("add", AddMethod::create()); 
+   rl->register_method("substract", JsonRpcMethodWrapper::create(substract, "substract", "Substract two numbers")); 
+   rl->register_method("answer", JsonRpcMethodWrapper::create(Echo::answer, "answer")); 
 
    server->add_request_listener(9090, rl);
 
