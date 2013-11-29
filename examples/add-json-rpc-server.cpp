@@ -27,6 +27,8 @@
 #include <orion/ws/JsonRpcRequestListener.h>
 #include <orion/ws/JsonRpcMethod.h>
 
+#include <ws/json/value.h>
+
 using namespace orion;
 using namespace orion::logging;
 using namespace orion::ws;
@@ -54,7 +56,27 @@ public:
 
    virtual JsonRpcError::SharedPtr call(Json::Value& json_request, Json::Value& json_result)
    {
-      return JsonRpcError::create_internal_error();
+      int param1 = 0;
+      int param2 = 0;
+
+      if (not json_request.isMember("params"))
+         return JsonRpcError::create_invalid_params("Must specify two parameters.");
+
+      Json::Value params = json_request["params"];
+
+      if (params.isArray())
+      {
+         param1 = params[0u].asInt();
+         param2 = params[1u].asInt();
+      }
+      else
+      {
+         param1 = params["a1"].asInt();
+         param2 = params["a2"].asInt();
+      }
+
+      json_result = param1 + param2;
+      return nullptr;
    }
 
    static RpcMethod::SharedPtr create()

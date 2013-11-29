@@ -338,7 +338,7 @@ def build(bld):
           target       = 'add-json-rpc-server',
           features     = 'cxx cprogram',
           source       = ['examples/add-json-rpc-server.cpp'],
-          includes     = ['.', 'examples/', 'include/'],
+          includes     = ['.', 'examples/', 'include/', 'lib/'],
           use          = ['orion-ws', 'orion'],
           lib          = 'c++' if is_darwin else '',
           install_path = None)
@@ -351,6 +351,7 @@ def summary(ctx):
    if Options.options.run_tests:
       ctx.exec_command(os.path.join(ctx.out_dir, 'test-logger.exe'))
       ctx.exec_command(os.path.join(ctx.out_dir, 'test-unittest.exe'))
+      ctx.exec_command(os.path.join(ctx.out_dir, 'test-jsonrpc.exe'))
 
 
 def apidoc(ctx):
