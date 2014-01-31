@@ -28,10 +28,40 @@ namespace orion
 {
 namespace systeminfo
 {
+struct CpuTimes
+{
+   uint32_t user;
+   uint32_t nice;
+   uint32_t sys;
+   uint32_t idle;
+   uint32_t irq;
+};
+
+class CpuInfo
+{
+public:
+   CpuInfo(const std::string& model, uint32_t speed, CpuTimes& times);
+   ~CpuInfo();
+
+   std::string model() const;
+   uint32_t    speed() const;
+   CpuTimes    times() const;
+
+   std::string to_string() const;
+
+private:
+   std::string _model;
+   uint32_t _speed;
+   CpuTimes _times; 
+};
 
 typedef std::vector<std::string> ModuleList;
 
-std::string get_cpu_info();
+std::string human_readable(uint64_t value, uint64_t base = 1024);
+
+std::string get_cpu_model();
+
+std::vector<CpuInfo> get_cpu_info();
 
 std::string get_os_version();
 
@@ -44,6 +74,12 @@ int get_process_id();
 std::string get_program_name();
 
 void get_loaded_modules(unsigned long process_id, ModuleList& modules);
+
+void get_loadavg(double avg[3]);
+
+uint64_t get_free_memory();
+
+uint64_t get_total_memory();
 
 }
 } // namespace orion

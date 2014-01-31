@@ -17,86 +17,74 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include "SystemInfo.h"
+#include <orion/SystemInfo.h>
 
-#include <unistd.h>
-#include <sys/utsname.h>
-
-#include <fstream>
 #include <sstream>
-
-#include <orion/StringUtils.h>
+#include <iomanip>
 
 namespace orion
 {
 namespace systeminfo
 {
+// class CpuInfo
 
-void get_loaded_modules(unsigned long /* process_id */, ModuleList& /* modules */)
+CpuInfo::CpuInfo(const std::string& model, uint32_t speed, CpuTimes& times) :
+   _model(model),
+   _speed(speed),
+   _times(times)
 {
-
 }
 
-std::vector<std::string> get_cpu_info()
+CpuInfo::~CpuInfo()
 {
-   std::ifstream f("/proc/cpuinfo");
+}
 
-   std::string line;
-   std::vector<std::string> tokens;
-   std::vector<std::string> cpus;
+std::string CpuInfo::model() const
+{
+   return _model;
+}
 
-   while (not f.eof() and not f.fail())
+uint32_t CpuInfo::speed() const
+{
+   return _speed;
+}
+
+CpuTimes CpuInfo::times() const
+{
+   return _times;
+}
+
+std::string CpuInfo::to_string() const
+{
+   return _model;
+}
+
+std::string human_readable(uint64_t value, uint64_t base /* = 1024 */)
+{
+   uint32_t i = -1;
+   
+   // base 1000
+   const char* units_si[]  = {" kB", " MB", " GB", " TB", "PB", "EB", "ZB", "YB"}; 
+   // base 1024
+   const char* units_iec[] = {" kiB", " MiB", " GiB", " TiB", "PiB", "EiB", "ZiB", "YiB"}; 
+
+   double bytes = value;
+   do 
    {
-      std::getline(f, line);
+      bytes = bytes / base;
+      i++;
+   } 
+   while (bytes > base);
 
-      tokens = split(line, ':');
+   std::ostringstream oss;
 
-      if (tokens.size() == 2 and trim(tokens.front()) == "model name")
-         cpus.push_back(trim(tokens.back()));
-   }
+   oss << std::setprecision(2) 
+       << bytes
+       << (base == 1000 ? units_si[i] : units_iec[i]);
 
-   return cpus;
-}
-
-std::string get_os_version()
-{
-   struct utsname name;
-
-   if (uname (&name) == -1)
-      return "";
-
-   std::ostringstream os_version;
-
-   os_version << name.sysname
-              << " "
-              << name.release
-              << " "
-              << name.version;
-   return os_version.str();
-}
-
-std::string get_host_name()
-{
-   char hostname[100];
-   bool hostname_fail = gethostname(hostname, sizeof (hostname)) == -1;
-
-   return hostname_fail ? "localhost" : hostname;
-}
-
-std::string get_user_name()
-{
-   return "";
-}
-
-int get_process_id()
-{
-   return getpid();
-}
-
-std::string get_program_name() 
-{
-   return "";
+   return oss.str();
 }
 
 } // namespace systeminfo
 } // namespace orion
+

@@ -7,7 +7,7 @@ This is a WAF build script (http://code.google.com/p/waf/).
 Requires WAF 1.7.13 and Python 2.7 (or later).
 """
 
-from waflib import Context, Options, Configure, Utils, Logs
+from waflib import Context, Options, Scripting, Configure, Utils, Logs
 from waflib.Configure import ConfigurationContext
 from waflib.Errors import WafError
 from waflib.Tools import waf_unit_test
@@ -53,6 +53,7 @@ core_sources = ['lib/ArgumentExceptions.cpp',
                 'lib/Exception.cpp',
                 'lib/NotImplementedException.cpp',
                 'lib/StringUtils.cpp',
+                'lib/SystemInfo.cpp',
                 'lib/Timer.cpp',
                 'lib/logging/LogEndRecord.cpp',
                 'lib/logging/LogExceptionRecord.cpp',
@@ -250,7 +251,7 @@ def build(bld):
       core_sources.append('lib/SystemInfo-osx.cpp')
       core_sources.append('lib/Uuid.cpp')
    else:
-      core_sources.append('lib/SystemInfo.cpp')
+      core_sources.append('lib/SystemInfo-linux.cpp')
       core_sources.append('lib/Uuid.cpp')
    
    obj = bld.stlib(target   = 'mongoose',
@@ -275,7 +276,7 @@ def build(bld):
                    uselib    = '')
 
    if is_win32:
-      obj.lib = ['psapi', 'rpcrt4']
+      obj.lib = ['psapi', 'rpcrt4', 'ntdll']
 
    obj = bld.shlib(target    = 'orion-ws',
                    features  = 'cxx cxxshlib',
@@ -343,6 +344,15 @@ def build(bld):
           lib          = 'c++' if is_darwin else '',
           install_path = None)
 
+      bld.program(
+          target       = 'system-info',
+          features     = 'cxx cprogram',
+          source       = ['examples/system-info.cpp'],
+          includes     = ['.', 'examples/', 'include/', 'lib/'],
+          use          = ['orion'],
+          lib          = 'c++' if is_darwin else '',
+          install_path = None)
+
 
    bld.add_post_fun(summary)
 
@@ -352,6 +362,20 @@ def summary(ctx):
       ctx.exec_command(os.path.join(ctx.out_dir, 'test-logger.exe'))
       ctx.exec_command(os.path.join(ctx.out_dir, 'test-unittest.exe'))
       ctx.exec_command(os.path.join(ctx.out_dir, 'test-jsonrpc.exe'))
+
+
+def distclean(ctx):
+   Scripting.distclean(ctx)
+
+   try:
+      os.unlink("docs/html")
+   except OSError:
+      pass
+    
+   try:
+      os.mkdir(out) 
+   except OSError:
+      pass
 
 
 def apidoc(ctx):
