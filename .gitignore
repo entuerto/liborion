@@ -1,0 +1,5 @@
+.waf-*
+waf-*
+.lock*
+
+docs/html

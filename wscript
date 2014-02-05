@@ -24,6 +24,9 @@ micro = 0
 
 APPNAME = 'liborion'
 VERSION = str (major) + '.' + str (minor) + '.' + str (micro)
+LIBORION_API_VERSION = str (major) + '.' + str (minor)
+
+DEPENDENCIES = ''
 
 top = '.'
 out = 'build'
@@ -288,6 +291,41 @@ def build(bld):
 
    if is_win32:
       obj.lib = ['psapi', 'rpcrt4', 'ws2_32']
+
+   obj = bld(features     = 'subst',
+             source       = 'liborion.pc.in',
+             target       = 'liborion-' + LIBORION_API_VERSION + '.pc',
+             dct          = {'VERSION' : VERSION,
+                             'DEPENDENCIES' : DEPENDENCIES,
+                             'prefix': bld.env['PREFIX'],
+                             'exec_prefix': '${prefix}',
+                             'libdir': '${exec_prefix}/lib',
+                             'includedir': '${prefix}/include',
+                             'datarootdir': '${prefix}/share',
+                             'datadir': '${datarootdir}',
+                             'localedir': '${datarootdir}/locale',
+                             'LIBORION_API_VERSION': LIBORION_API_VERSION},
+             install_path = '${LIBDIR}/pkgconfig')
+
+   obj = bld(features     = 'subst',
+             source       = 'liborion-ws.pc.in',
+             target       = 'liborion-ws-' + LIBORION_API_VERSION + '.pc',
+             dct          = {'VERSION' : VERSION,
+                             'DEPENDENCIES' : DEPENDENCIES + 'orion',
+                             'prefix': bld.env['PREFIX'],
+                             'exec_prefix': '${prefix}',
+                             'libdir': '${exec_prefix}/lib',
+                             'includedir': '${prefix}/include',
+                             'datarootdir': '${prefix}/share',
+                             'datadir': '${datarootdir}',
+                             'localedir': '${datarootdir}/locale',
+                             'LIBORION_API_VERSION': LIBORION_API_VERSION},
+             install_path = '${LIBDIR}/pkgconfig')
+
+   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion', bld.path.ant_glob('include/orion/*'))
+   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/logging', bld.path.ant_glob('include/orion/logging/*'))
+   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/unittest', bld.path.ant_glob('include/orion/unittest/*'))
+   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/ws', bld.path.ant_glob('include/orion/ws/*'))
 
    # Tests
    if Options.options.compile_tests or Options.options.run_tests:

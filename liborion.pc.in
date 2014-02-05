@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+datarootdir=@datarootdir@
+datadir=@datadir@
+includedir=@includedir@
+
+Name: liborion
+Description: C++ classes to create applications.
+Requires: @DEPENDENCIES@
+Version: @VERSION@
+Libs: -L${libdir} -lorion
+Cflags: -I${includedir}/orion-@LIBORION_API_VERSION@

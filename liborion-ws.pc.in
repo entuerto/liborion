@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+datarootdir=@datarootdir@
+datadir=@datadir@
+includedir=@includedir@
+
+Name: liborion-ws
+Description: C++ classes to create web service applications.
+Requires: @DEPENDENCIES@
+Version: @VERSION@
+Libs: -L${libdir} -lorion -lorion-ws
+Cflags: -I${includedir}/orion-@LIBORION_API_VERSION@
