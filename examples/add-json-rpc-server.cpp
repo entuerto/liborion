@@ -18,6 +18,8 @@
 // MA 02110-1301, USA.
 
 #include <cstdio>
+#include <condition_variable>
+#include <mutex>
 #include <fstream>
 #include <iostream>
 
@@ -134,6 +136,29 @@ public:
 };
 
 //-----------------------------------------------------------------------------------
+// Quit example
+//-----------------------------------------------------------------------------------
+struct StopServer
+{
+   static bool _quit;
+   static std::condition_variable* _data_cond;
+
+   static JsonRpcError::SharedPtr quit(Json::Value& json_request, Json::Value& json_result)
+   {
+      StopServer::_quit = true;
+      StopServer::_data_cond->notify_all();
+
+      json_result = "Stopping server";
+      
+      return nullptr;
+   }
+
+};
+
+bool StopServer::_quit = false;
+std::condition_variable* StopServer::_data_cond;
+
+//-----------------------------------------------------------------------------------
 // Setup the logger options
 //-----------------------------------------------------------------------------------
 void setup_logger(std::fstream& file_stream)
@@ -165,6 +190,13 @@ int main (int argc, char** argv)
    rl->register_method("add", AddMethod::create()); 
    rl->register_method("substract", JsonRpcMethodWrapper::create(substract, "substract", "Substract two numbers")); 
    rl->register_method("answer", JsonRpcMethodWrapper::create(Echo::answer, "answer")); 
+   rl->register_method("quit", JsonRpcMethodWrapper::create(StopServer::quit, "quit")); 
+
+   std::mutex m;
+   std::condition_variable data_cond;
+   
+   StopServer::_quit = false;
+   StopServer::_data_cond = &data_cond;
 
    server->add_request_listener(9090, rl);
 
@@ -172,7 +204,20 @@ int main (int argc, char** argv)
 
    LOG(Info) << "Server started successfully";
 
-   getchar();
+   while (true)
+   {
+      std::unique_lock<std::mutex> lk(m);
+
+      data_cond.wait(lk, [&] { return StopServer::_quit; });
+
+      lk.unlock();
+
+      if (StopServer::_quit)
+         {
+         server->stop();
+         break;
+         }
+   }
 
    LOG_END();
    return EXIT_SUCCESS;

@@ -45,11 +45,7 @@ class HttpServer : public Server
 public:
    virtual ~HttpServer();
 
-   virtual void start() =0;
-   virtual void stop() =0;
-
    virtual void add_request_listener(int port, RequestListener::SharedPtr listener);
-   virtual void send_response(Response::SharedPtr response) =0;
 
    virtual Response::SharedPtr process_request(Request::SharedPtr request);
    

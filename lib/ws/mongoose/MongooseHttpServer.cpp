@@ -92,6 +92,11 @@ void MongooseHttpServer::stop()
    _is_running = false;
 }
 
+bool MongooseHttpServer::is_running() const
+{
+   return _is_running;
+}
+
 void MongooseHttpServer::send_response(Response::SharedPtr response)
 {
    
