@@ -362,6 +362,16 @@ def build(bld):
           install_path = None,
           unit_test    = 1)
 
+      bld.program(
+          target       = 'test-string',
+          features     = 'cxx cprogram',
+          source       = ['tests/test-string.cpp'],
+          includes     = ['.', 'tests/', 'include/', 'lib/'],
+          use          = ['orion'],
+          lib          = 'c++' if is_darwin else '',
+          install_path = None,
+          unit_test    = 1)
+
    # Examples
    if Options.options.compile_examples:
       bld.program(
@@ -400,6 +410,7 @@ def summary(ctx):
       ctx.exec_command(os.path.join(ctx.out_dir, 'test-logger.exe'))
       ctx.exec_command(os.path.join(ctx.out_dir, 'test-unittest.exe'))
       ctx.exec_command(os.path.join(ctx.out_dir, 'test-jsonrpc.exe'))
+      ctx.exec_command(os.path.join(ctx.out_dir, 'test-string.exe'))
 
 
 def distclean(ctx):

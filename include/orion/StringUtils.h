@@ -28,6 +28,9 @@ public:
    { }
 };
 
+//! 
+bool equals_no_case(const std::string& str1, const std::string& str2);
+
 //! Splits a string into various substrings.
 StringVector split(const std::string& text,  char separator);
 
@@ -40,8 +43,17 @@ std::string& trim_right(std::string& text);
 //! Remove whitespace on both sides of the string
 std::string& trim(std::string& text);
 
+//! lower case a string
+std::string& to_lower(std::string& text);
+
+//! Upper case a string
+std::string& to_upper(std::string& text);
+
 //! Hash a string
 uint32_t compute_hash(const std::string& text);
+
+// Speperate a string into different tokens
+void tokenize(const std::string& input, std::vector<std::string>& tokens, const std::string& delimiters);
 
 //! Converts an ostream-able type to a std::string
 template<typename T>
