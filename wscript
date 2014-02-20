@@ -401,6 +401,14 @@ def build(bld):
           lib          = 'c++' if is_darwin else '',
           install_path = None)
 
+      bld.program(
+          target       = 'signal-example',
+          features     = 'cxx cprogram',
+          source       = ['examples/signal-example.cpp'],
+          includes     = ['.', 'examples/', 'include/', 'lib/'],
+          use          = ['orion'],
+          lib          = 'c++' if is_darwin else '',
+          install_path = None)
 
    bld.add_post_fun(summary)
 
