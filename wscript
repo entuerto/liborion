@@ -37,6 +37,11 @@ json_sources = ['lib/ws/json/json_reader.cpp',
                 'lib/ws/json/json_value.cpp',
                 'lib/ws/json/json_writer.cpp']
 
+plugin_sources = ['lib/plugin/Extension.cpp',
+                  'lib/plugin/PlugIn.cpp',
+                  'lib/plugin/PlugInException.cpp',
+                  'lib/plugin/PlugInManager.cpp']
+
 ws_sources =  ['lib/ws/mongoose/MongooseRequest.cpp',
                'lib/ws/mongoose/MongooseHttpServer.cpp',
                'lib/ws/InetAddress.cpp',
@@ -54,6 +59,8 @@ ws_sources =  ['lib/ws/mongoose/MongooseRequest.cpp',
 core_sources = ['lib/ArgumentExceptions.cpp',
                 'lib/DateUtils.cpp',
                 'lib/Exception.cpp',
+                'lib/Module.cpp',
+                'lib/ModuleException.cpp',
                 'lib/NotImplementedException.cpp',
                 'lib/StringUtils.cpp',
                 'lib/SystemInfo.cpp',
@@ -248,12 +255,14 @@ def build(bld):
    is_darwin = _target_is_darwin(bld)
 
    if is_win32:
+      core_sources.append('lib/Module-Win32.cpp')
       core_sources.append('lib/SystemInfo-Win32.cpp')
       core_sources.append('lib/Uuid-win32.cpp')
    elif is_darwin:
       core_sources.append('lib/SystemInfo-osx.cpp')
       core_sources.append('lib/Uuid.cpp')
    else:
+      core_sources.append('lib/Module-linux.cpp')
       core_sources.append('lib/SystemInfo-linux.cpp')
       core_sources.append('lib/Uuid.cpp')
    
@@ -291,6 +300,14 @@ def build(bld):
 
    if is_win32:
       obj.lib = ['psapi', 'rpcrt4', 'ws2_32']
+
+   obj = bld.shlib(target    = 'orion-plugin',
+                   features  = 'cxx cxxshlib',
+                   source    = plugin_sources,
+                   includes  = ['.', 'include/', 'lib/'],
+                   lib       = 'c++' if is_darwin else '',
+                   uselib    = '',
+                   use       = ['orion'])
 
    obj = bld(features     = 'subst',
              source       = 'liborion.pc.in',
