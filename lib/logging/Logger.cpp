@@ -47,7 +47,7 @@ const std::string consolePath = "/dev/tty";
 struct Logger::Private
 {
    Private() :
-      output_handlers(), level(Logger::Warning), is_started(false)
+      output_handlers(), level(Logger::Warning), is_started(false), scope_count(0)
       {}
 
    void write(const LogRecord& log_record);
@@ -55,6 +55,7 @@ struct Logger::Private
    OutputHandlers output_handlers;
    Logger::Level level;
    bool is_started;
+   uint32_t scope_count;
 };
 
 void Logger::Private::write(const LogRecord& log_record)
@@ -232,6 +233,30 @@ void Logger::shutdown()
 {
    _impl->write(LogEndRecord());
    _impl->is_started = false;
+}
+
+/*!
+ */
+void Logger::push_scope()
+{
+   _impl->scope_count++;
+}
+
+/*!
+ */
+void Logger::pop_scope()
+{
+   if (_impl->scope_count == 0)
+      return;
+
+   _impl->scope_count--;
+}
+
+/*!
+ */
+uint32_t Logger::scope_count()
+{
+   return _impl->scope_count;
 }
 
 /*!

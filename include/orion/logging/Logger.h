@@ -110,6 +110,10 @@ public:
    //! Shuts down the logger
    void shutdown();
 
+   void push_scope();
+   void pop_scope();
+   uint32_t scope_count();
+
    //! Retreive the logger instance
    static Logger& get_logger();
 
@@ -121,7 +125,7 @@ protected:
 
 private:
    struct Private;
-   const std::auto_ptr<Private> _impl;
+   const std::unique_ptr<Private> _impl;
 
 };
 

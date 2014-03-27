@@ -444,6 +444,15 @@ def build(bld):
           lib          = 'c++' if is_darwin else '',
           install_path = None)
 
+      bld.program(
+          target       = 'log-example',
+          features     = 'cxx cprogram',
+          source       = ['examples/log-example.cpp'],
+          includes     = ['.', 'examples/', 'include/', 'lib/'],
+          use          = ['orion'],
+          lib          = 'c++' if is_darwin else '',
+          install_path = None)
+
       obj = bld.shlib(target    = 'module-example',
                       features  = 'cxx cxxshlib',
                       source    = ['examples/module-example-lib.cpp'],

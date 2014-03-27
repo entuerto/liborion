@@ -50,7 +50,16 @@ std::string MultilineFormatter::format(const LogRecord& log_record)
    if (log_record.level() == Logger::NotSet)
       return log_record.message();
 
-   std::string source_info_prefix("\t- ");
+   std::string scope;
+
+   for (uint32_t i = 0; i < Logger::get_logger().scope_count(); i++)
+   {
+      scope += "++";
+   }
+   if (not scope.empty())
+      scope = scope + " ";
+
+   std::string source_info_prefix("\t- " + scope);
    std::string except_info;
 
    if (log_record.level() == Logger::Exception)
@@ -87,6 +96,7 @@ std::string MultilineFormatter::format(const LogRecord& log_record)
           << "|"
           << log_record.time_stamp()
           << "\n\t- "
+          << scope
           << log_record.message()
           << "\n"
           << except_info

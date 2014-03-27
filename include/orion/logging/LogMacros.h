@@ -33,9 +33,8 @@ orion::logging::Logger::get_logger() += LogExceptionRecord(except, __FILE__, __L
 #endif
 
 #ifndef LOG_FUNCTION
-#define LOG_FUNCTION(lvl, func) \
-if (orion::logging::Logger::get_logger().level() <= orion::logging::Logger::lvl) \
-   orion::logging::LogFunction(orion::logging::Logger::lvl, func, __FILE__, __LINE__);
+#define LOG_FUNCTION(lvl, func_name) \
+orion::logging::LogFunction log_func(orion::logging::Logger::lvl, func_name, __FILE__, __LINE__);
 #endif
 
 #ifndef LOG_IF_FAIL

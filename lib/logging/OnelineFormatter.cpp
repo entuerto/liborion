@@ -49,6 +49,13 @@ std::string OnelineFormatter::format(const LogRecord& log_record)
    if (log_record.level() == Logger::NotSet)
       return log_record.message();
 
+   std::string scope;
+
+   for (uint32_t i = 0; i < Logger::get_logger().scope_count(); i++)
+   {
+      scope += " |";
+   }
+
    stream.clear();
    stream.str("");
 
@@ -57,6 +64,7 @@ std::string OnelineFormatter::format(const LogRecord& log_record)
           << "|"
           << log_record.time_stamp()
           << "|"
+          << scope
           << log_record.message();
 
    return stream.str();
