@@ -65,6 +65,7 @@ core_sources = ['lib/ArgumentExceptions.cpp',
                 'lib/StringUtils.cpp',
                 'lib/SystemInfo.cpp',
                 'lib/Timer.cpp',
+                'lib/fs/FileUtils.cpp',
                 'lib/logging/LogEndRecord.cpp',
                 'lib/logging/LogExceptionRecord.cpp',
                 'lib/logging/LogFunction.cpp',
@@ -328,7 +329,22 @@ def build(bld):
              source       = 'liborion-ws.pc.in',
              target       = 'liborion-ws-' + LIBORION_API_VERSION + '.pc',
              dct          = {'VERSION' : VERSION,
-                             'DEPENDENCIES' : DEPENDENCIES + 'orion',
+                             'DEPENDENCIES' : DEPENDENCIES + 'liborion-' + LIBORION_API_VERSION,
+                             'prefix': bld.env['PREFIX'],
+                             'exec_prefix': '${prefix}',
+                             'libdir': '${exec_prefix}/lib',
+                             'includedir': '${prefix}/include',
+                             'datarootdir': '${prefix}/share',
+                             'datadir': '${datarootdir}',
+                             'localedir': '${datarootdir}/locale',
+                             'LIBORION_API_VERSION': LIBORION_API_VERSION},
+             install_path = '${LIBDIR}/pkgconfig')
+
+   obj = bld(features     = 'subst',
+             source       = 'liborion-plugin.pc.in',
+             target       = 'liborion-plugin-' + LIBORION_API_VERSION + '.pc',
+             dct          = {'VERSION' : VERSION,
+                             'DEPENDENCIES' : DEPENDENCIES + 'liborion-' + LIBORION_API_VERSION,
                              'prefix': bld.env['PREFIX'],
                              'exec_prefix': '${prefix}',
                              'libdir': '${exec_prefix}/lib',
@@ -343,6 +359,7 @@ def build(bld):
    bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/logging', bld.path.ant_glob('include/orion/logging/*'))
    bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/unittest', bld.path.ant_glob('include/orion/unittest/*'))
    bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/ws', bld.path.ant_glob('include/orion/ws/*'))
+   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/plugin', bld.path.ant_glob('include/orion/plugin/*'))
 
    # Tests
    if Options.options.compile_tests or Options.options.run_tests:
@@ -422,6 +439,23 @@ def build(bld):
           target       = 'signal-example',
           features     = 'cxx cprogram',
           source       = ['examples/signal-example.cpp'],
+          includes     = ['.', 'examples/', 'include/', 'lib/'],
+          use          = ['orion'],
+          lib          = 'c++' if is_darwin else '',
+          install_path = None)
+
+      obj = bld.shlib(target    = 'module-example',
+                      features  = 'cxx cxxshlib',
+                      source    = ['examples/module-example-lib.cpp'],
+                      includes  = ['.', 'examples/', 'include/', 'lib/'],
+                      use       = ['orion'],
+                      lib       = 'c++' if is_darwin else '',
+                      uselib    = '')
+
+      bld.program(
+          target       = 'module-example',
+          features     = 'cxx cprogram',
+          source       = ['examples/module-example.cpp'],
           includes     = ['.', 'examples/', 'include/', 'lib/'],
           use          = ['orion'],
           lib          = 'c++' if is_darwin else '',

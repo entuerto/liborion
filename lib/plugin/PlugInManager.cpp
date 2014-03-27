@@ -239,9 +239,11 @@ void PlugInManager::load_module(const std::string& name)
    PlugIn* plugin = NULL;
    (*func)(plugin);
 
-   _plugins.push_back(PlugIn::SharedPtr(plugin));
+   PlugIn::SharedPtr sp(plugin);
 
-   _signal_on_loaded_plugin.emit(_plugins.back());
+   _plugins.push_back(sp);
+
+   _signal_on_loaded_plugin.emit(sp);
 
 }
 
