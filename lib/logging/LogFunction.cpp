@@ -35,9 +35,14 @@ LogFunction::LogFunction(Logger::Level level, const std::string& function_name,
    _level(level),
    _function_name(function_name)
 {
-   Logger::get_logger() += LogRecord(level, file, line, "") << "Entering function: "
-                                                            << function_name;
-   Logger::get_logger().push_scope();                                                            
+   Logger& logger = Logger::get_logger();
+
+   if (not logger.is_enabled(level))
+      return;
+
+   logger += LogRecord(level, file, line, "") << "Entering function: "
+                                              << function_name;
+   logger.push_scope();                                                            
 }
 
 /*
@@ -51,9 +56,14 @@ LogFunction::LogFunction(const LogFunction& rhs) :
 
 LogFunction::~LogFunction()
 {
-   Logger::get_logger().pop_scope();                                                            
-   Logger::get_logger() += LogRecord(_level, "") << "Exiting function: "
-                                                 << _function_name; 
+   Logger& logger = Logger::get_logger();
+
+   if (not logger.is_enabled(_level))
+      return;
+
+   logger.pop_scope();                                                            
+   logger += LogRecord(_level, "") << "Exiting function: "
+                                   << _function_name; 
 }
 
 /*!

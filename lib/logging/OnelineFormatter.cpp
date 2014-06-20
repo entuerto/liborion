@@ -51,7 +51,7 @@ std::string OnelineFormatter::format(const LogRecord& log_record)
 
    std::string scope;
 
-   for (uint32_t i = 0; i < Logger::get_logger().scope_count(); i++)
+   for (uint32_t i = 0; i < Logger::get_logger().scope_depth(); i++)
    {
       scope += " |";
    }

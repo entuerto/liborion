@@ -52,17 +52,15 @@ public:
 
    enum Level
    {
-      All,
-      Debug3,
-      Debug2,
-      Debug,
-      Info,
-      Message,
-      Warning,
-      Error,
-      Exception,
-      Off,
-      NotSet
+      NotSet    = 0,
+      Debug3    = 10,
+      Debug2    = 20,
+      Debug     = 30,
+      Info      = 40,
+      Message   = 50,
+      Warning   = 60,
+      Error     = 70,
+      Exception = 80
    };
 
 public:
@@ -73,6 +71,9 @@ public:
 
    //! Set the logging level
    void level(Level level);
+
+   //! Indicates if the level is enabled for logging
+   bool is_enabled(Level level) const;
 
    //! Sets an output handler for the logger
    OutputHandlers& output_handlers();
@@ -110,9 +111,15 @@ public:
    //! Shuts down the logger
    void shutdown();
 
+   //! Stop logging
+   void stop();
+
+   //! Resume logging
+   void resume();
+
    void push_scope();
    void pop_scope();
-   uint32_t scope_count();
+   uint32_t scope_depth() const;
 
    //! Retreive the logger instance
    static Logger& get_logger();

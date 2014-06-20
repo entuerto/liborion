@@ -47,20 +47,20 @@ const std::string consolePath = "/dev/tty";
 struct Logger::Private
 {
    Private() :
-      output_handlers(), level(Logger::Warning), is_started(false), scope_count(0)
+      output_handlers(), level(Logger::Warning), is_running(false), scope_depth(0)
       {}
 
    void write(const LogRecord& log_record);
 
    OutputHandlers output_handlers;
    Logger::Level level;
-   bool is_started;
-   uint32_t scope_count;
+   bool is_running;
+   uint32_t scope_depth;
 };
 
 void Logger::Private::write(const LogRecord& log_record)
 {
-   if (not is_started)
+   if (not is_running)
       return;
 
    OutputHandlers::iterator iter = output_handlers.begin();
@@ -99,6 +99,17 @@ void Logger::level(Logger::Level level)
    _impl->level = level;
 }
 
+/*! 
+   Indicates if the level is enabled for logging
+*/
+bool Logger::is_enabled(Level level) const
+{
+   if (not _impl->is_running)
+      return false;
+
+   return level >= _impl->level;
+}
+
 /*!
    \param handler the output handler to set
  */
@@ -112,7 +123,7 @@ Logger::OutputHandlers& Logger::output_handlers()
  */
 void Logger::info(const std::string& msg)
 {
-   if (Info < _impl->level)
+   if (Info <= _impl->level)
       return;
    _impl->write(LogRecord(Info, msg));
 }
@@ -122,7 +133,7 @@ void Logger::info(const std::string& msg)
  */
 void Logger::warning(const std::string& msg)
 {
-   if (Warning < _impl->level)
+   if (Warning <= _impl->level)
       return;
    _impl->write(LogRecord(Warning, msg));
 }
@@ -132,7 +143,7 @@ void Logger::warning(const std::string& msg)
  */
 void Logger::error(const std::string& msg)
 {
-   if (Error < _impl->level)
+   if (Error <= _impl->level)
       return;
    _impl->write(LogRecord(Error, msg));
 }
@@ -142,7 +153,7 @@ void Logger::error(const std::string& msg)
  */
 void Logger::debug(const std::string& msg)
 {
-   if (Debug < _impl->level)
+   if (Debug <= _impl->level)
       return;
    _impl->write(LogRecord(Debug, msg));
 }
@@ -152,7 +163,7 @@ void Logger::debug(const std::string& msg)
  */
 void Logger::exception(const std::exception& except)
 {
-   if (Exception < _impl->level)
+   if (Exception <= _impl->level)
       return;
    _impl->write(LogExceptionRecord(except));
 }
@@ -171,7 +182,7 @@ void Logger::write(const std::string& msg)
  */
 void Logger::write(Logger::Level level, const std::string& msg)
 {
-   if (level < _impl->level)
+   if (level <= _impl->level)
       return;
    _impl->write(LogRecord(level, msg));
 }
@@ -185,7 +196,7 @@ void Logger::write(Logger::Level level, const std::string& msg)
  */
 void Logger::write(Logger::Level level, const std::string& msg, const std::string& file, int line, const std::string& function)
 {
-   if (level < _impl->level)
+   if (level <= _impl->level)
       return;
    _impl->write(LogRecord(level, msg, file, line, function));
 }
@@ -199,7 +210,7 @@ void Logger::write(Logger::Level level, const std::string& msg, const std::strin
  */
 void Logger::write(const std::exception& except, const std::string& file, int line, const std::string& function)
 {
-   if (Exception < _impl->level)
+   if (Exception <= _impl->level)
       return;
    _impl->write(LogExceptionRecord(except, file, line, function));
 }
@@ -220,7 +231,7 @@ void Logger::write(const std::exception& except, const std::string& file, int li
  */
 void Logger::start(std::function<std::string(void)> system_info)
 {
-   _impl->is_started = true;
+   _impl->is_running = true;
    _impl->write(LogStartRecord());
    _impl->write(LogSystemInfoRecord(system_info()));
 }
@@ -232,31 +243,47 @@ void Logger::start(std::function<std::string(void)> system_info)
 void Logger::shutdown()
 {
    _impl->write(LogEndRecord());
-   _impl->is_started = false;
+   _impl->is_running = false;
+}
+
+/*! 
+   Stop logging
+*/
+void Logger::stop()
+{
+   _impl->is_running = false;
+}
+
+/*! 
+   Resume logging
+*/
+void Logger::resume()
+{
+   _impl->is_running = true;
 }
 
 /*!
  */
 void Logger::push_scope()
 {
-   _impl->scope_count++;
+   _impl->scope_depth++;
 }
 
 /*!
  */
 void Logger::pop_scope()
 {
-   if (_impl->scope_count == 0)
+   if (_impl->scope_depth == 0)
       return;
 
-   _impl->scope_count--;
+   _impl->scope_depth--;
 }
 
 /*!
  */
-uint32_t Logger::scope_count()
+uint32_t Logger::scope_depth() const
 {
-   return _impl->scope_count;
+   return _impl->scope_depth;
 }
 
 /*!

@@ -23,7 +23,7 @@
 
 #ifndef LOG
 #define LOG(lvl) \
-if (orion::logging::Logger::get_logger().level() <= orion::logging::Logger::lvl) \
+if (orion::logging::Logger::get_logger().is_enabled(orion::logging::Logger::lvl)) \
    orion::logging::Logger::get_logger() += LogRecord(orion::logging::Logger::lvl, __FILE__, __LINE__, __FUNCTION__)
 #endif
 

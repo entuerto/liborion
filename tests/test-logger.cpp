@@ -46,7 +46,7 @@ TEST(TestLogDefaultLevel)
 {
    Logger& logger = Logger::get_logger();
 
-   EXPECT(logger.level() == Logger::All);
+   EXPECT(logger.level() == Logger::NotSet);
 }
 
 TEST(TestLogLevelChange)
@@ -69,8 +69,12 @@ TEST(TestLogLevelOutput)
    LOG(Logger::Debug) << "Debug message";
    EXPECT(output_record.level() == Logger::NotSet);
 
+   output_record.level(Logger::NotSet);
+
    LOG(Logger::Warning) << "Warning message";
    EXPECT(output_record.level() == Logger::Warning);
+
+   output_record.level(Logger::NotSet);
 
    LOG(Logger::Error) << "Error message";
    EXPECT(output_record.level() == Logger::Error);
@@ -80,7 +84,7 @@ TEST(TestLogErrorMessage)
 {
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::All);
+   logger.level(Logger::NotSet);
 
    LOG(Logger::Error) << "Error message";
 
@@ -92,7 +96,9 @@ TEST(TestLogFailMessage)
 {
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::All);
+   logger.level(Logger::NotSet);
+
+   output_record.level(Logger::NotSet);
 
    LOG_IF_FAIL(Error, 1 == 0)
 
@@ -122,7 +128,7 @@ void setup_logger(LogRecord& record)
 
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::All);
+   logger.level(Logger::NotSet);
    logger.output_handlers().push_back(out_handler);
 }
 
