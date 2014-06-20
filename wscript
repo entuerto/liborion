@@ -359,6 +359,7 @@ def build(bld):
    bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/logging', bld.path.ant_glob('include/orion/logging/*'))
    bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/unittest', bld.path.ant_glob('include/orion/unittest/*'))
    bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/ws', bld.path.ant_glob('include/orion/ws/*'))
+   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/ws/json', bld.path.ant_glob('lib/ws/json/*.h'))
    bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/plugin', bld.path.ant_glob('include/orion/plugin/*'))
 
    # Tests
