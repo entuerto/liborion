@@ -25,8 +25,8 @@ namespace orion
 {
 namespace ws
 {
-RpcRequestListener::RpcRequestListener() :
-   RequestListener(),
+RpcRequestListener::RpcRequestListener(const std::string& uri) :
+   RequestListener(uri),
    _RpcMethods()
 {
 }

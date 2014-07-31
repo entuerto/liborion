@@ -66,10 +66,14 @@ public:
    static Request::SharedPtr create(struct mg_connection* connection);
 
 private:
-   HeaderMap make_header_map(const struct mg_request_info* request_info);
+   HeaderMap make_header_map(const struct mg_connection* connection);
    void read_data(struct mg_connection* connection);
 
-   const struct mg_request_info* _request_info;
+   std::string _method;
+   std::string _uri;
+   std::string _http_version;
+   std::string _query_string;
+   std::string _remote_user;
    
 };
 

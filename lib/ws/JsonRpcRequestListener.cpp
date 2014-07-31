@@ -41,8 +41,8 @@ namespace orion
 {
 namespace ws
 {
-JsonRpcRequestListener::JsonRpcRequestListener() :
-   RpcRequestListener()
+JsonRpcRequestListener::JsonRpcRequestListener(const std::string& uri) :
+   RpcRequestListener(uri)
 {
 }
 
@@ -169,9 +169,9 @@ Json::Value JsonRpcRequestListener::make_json_rpc_response(const Json::Value& id
    return json_response;
 }
 
-JsonRpcRequestListener::SharedPtr JsonRpcRequestListener::create()
+JsonRpcRequestListener::SharedPtr JsonRpcRequestListener::create(const std::string& uri)
 {
-   return JsonRpcRequestListener::SharedPtr(new JsonRpcRequestListener);
+   return JsonRpcRequestListener::SharedPtr(new JsonRpcRequestListener(uri));
 }
 
 } // ws

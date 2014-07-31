@@ -8,6 +8,6 @@ def send_jsonrpc(url, data):
    return response_data
 
 if __name__ == '__main__':
-   stop_server = {"jsonrpc": "2.0", "method": "quit", "id": 60}
+   stop_server = {"jsonrpc": "2.0", "method": "shutdown", "id": 60}
 
    print send_jsonrpc('http://127.0.0.1:9090', json.dumps(stop_server))

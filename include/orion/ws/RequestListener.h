@@ -43,10 +43,12 @@ public:
 
    virtual ~RequestListener();
 
+   std::string uri() const;
+
    virtual Response::SharedPtr on_process_request(Request::SharedPtr request);
 
 protected:
-   RequestListener();
+   RequestListener(const std::string& uri);
 
    virtual Response::SharedPtr on_get(Request::SharedPtr request) =0;
 
@@ -55,6 +57,9 @@ protected:
    virtual Response::SharedPtr on_put(Request::SharedPtr request) =0;
 
    virtual Response::SharedPtr on_delete(Request::SharedPtr request) =0;
+
+private:
+   std::string _uri;
 };
 
 } // ws

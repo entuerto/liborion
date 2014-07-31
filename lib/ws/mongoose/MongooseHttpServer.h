@@ -46,16 +46,16 @@ public:
    virtual void send_response(Response::SharedPtr response);
    virtual void send_response(Response::SharedPtr response, struct mg_connection* connection);
 
-   static Server::SharedPtr create();
+   static Server::SharedPtr create(int port);
 
 protected:
-   MongooseHttpServer();
+   MongooseHttpServer(int port);
 
    std::string make_port_list();
 
 private:
    bool _is_running;
-   struct mg_context* _ctx;
+   struct mg_server* _server;
 };
 
 } // mongoose

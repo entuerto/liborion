@@ -18,8 +18,6 @@
 // MA 02110-1301, USA.
 
 #include <cstdio>
-#include <condition_variable>
-#include <mutex>
 #include <fstream>
 #include <iostream>
 
@@ -136,27 +134,23 @@ public:
 };
 
 //-----------------------------------------------------------------------------------
-// Quit example
+// Shutdown example
 //-----------------------------------------------------------------------------------
-struct StopServer
+struct ShutdownServer
 {
-   static bool _quit;
-   static std::condition_variable* _data_cond;
-
    static JsonRpcError::SharedPtr quit(Json::Value& json_request, Json::Value& json_result)
    {
-      StopServer::_quit = true;
-      StopServer::_data_cond->notify_all();
+      ShutdownServer::server->stop();
 
       json_result = "Stopping server";
       
       return nullptr;
    }
 
+   static Server::SharedPtr server;
 };
 
-bool StopServer::_quit = false;
-std::condition_variable* StopServer::_data_cond;
+Server::SharedPtr ShutdownServer::server;
 
 //-----------------------------------------------------------------------------------
 // Setup the logger options
@@ -168,7 +162,7 @@ void setup_logger(std::fstream& file_stream)
 
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::All);
+   logger.level(Logger::Debug);
    logger.output_handlers().push_back(cout_handler);
    logger.output_handlers().push_back(file_handler);
 }
@@ -183,41 +177,22 @@ int main (int argc, char** argv)
 
    LOG_START();
 
-   Server::SharedPtr server = HttpServer::create();
+   Server::SharedPtr server = HttpServer::create(9090);
 
-   JsonRpcRequestListener::SharedPtr rl = JsonRpcRequestListener::create();
+   JsonRpcRequestListener::SharedPtr rl = JsonRpcRequestListener::create("/");
 
    rl->register_method("add", AddMethod::create()); 
    rl->register_method("substract", JsonRpcMethodWrapper::create(substract, "substract", "Substract two numbers")); 
    rl->register_method("answer", JsonRpcMethodWrapper::create(Echo::answer, "answer")); 
-   rl->register_method("quit", JsonRpcMethodWrapper::create(StopServer::quit, "quit")); 
 
-   std::mutex m;
-   std::condition_variable data_cond;
-   
-   StopServer::_quit = false;
-   StopServer::_data_cond = &data_cond;
+   ShutdownServer::server = server;
+   rl->register_method("shutdown", JsonRpcMethodWrapper::create(ShutdownServer::quit, "shutdown")); 
 
-   server->add_request_listener(9090, rl);
+   server->add_request_listener(rl);
+
+   LOG(Info) << "Server starting...";
 
    server->start();
-
-   LOG(Info) << "Server started successfully";
-
-   while (true)
-   {
-      std::unique_lock<std::mutex> lk(m);
-
-      data_cond.wait(lk, [&] { return StopServer::_quit; });
-
-      lk.unlock();
-
-      if (StopServer::_quit)
-         {
-         server->stop();
-         break;
-         }
-   }
 
    LOG_END();
    return EXIT_SUCCESS;

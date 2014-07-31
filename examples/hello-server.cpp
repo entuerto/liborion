@@ -34,7 +34,7 @@ using namespace orion::ws;
 class HelloRequestListener : public RequestListener
 {
 public:
-   HelloRequestListener() : RequestListener()
+   HelloRequestListener() : RequestListener("/")
    {
    }
 
@@ -72,7 +72,7 @@ protected:
 class WorldRequestListener : public RequestListener
 {
 public:
-   WorldRequestListener() : RequestListener()
+   WorldRequestListener() : RequestListener("/")
    {
    }
 
@@ -114,7 +114,7 @@ void setup_logger(std::fstream& file_stream)
 
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::All);
+   logger.level(Logger::Debug);
    logger.output_handlers().push_back(cout_handler);
    logger.output_handlers().push_back(file_handler);
 }
@@ -126,16 +126,14 @@ int main (int argc, char** argv)
 
    LOG_START();
 
-   Server::SharedPtr server = HttpServer::create();
+   Server::SharedPtr server = HttpServer::create(9080);
 
-   server->add_request_listener(9080, WorldRequestListener::create());
-   server->add_request_listener(9090, HelloRequestListener::create());
+   server->add_request_listener(WorldRequestListener::create());
+   server->add_request_listener(HelloRequestListener::create());
+
+   LOG(Info) << "Server starting...";
 
    server->start();
-
-   LOG(Info) << "Server started successfully";
-
-   getchar();
 
    LOG_END();
    return EXIT_SUCCESS;

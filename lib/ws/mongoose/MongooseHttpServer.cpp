@@ -37,57 +37,68 @@ namespace mongoose
 {
 using namespace orion::logging;
 
-static int begin_request(struct mg_connection* connection)
+static int request_handler(struct mg_connection* connection, enum mg_event event)
 {
-   const struct mg_request_info* request_info = mg_get_request_info(connection);
+   int result = MG_FALSE;
 
-   MongooseHttpServer* server = static_cast<MongooseHttpServer*>(request_info->user_data);
+   switch (event)
+   {
+      case MG_REQUEST:
+      {
+         MongooseHttpServer* server = static_cast<MongooseHttpServer*>(connection->server_param);
 
-   Response::SharedPtr response = server->process_request(MongooseRequest::create(connection));
+         Response::SharedPtr response = server->process_request(MongooseRequest::create(connection));
 
-   server->send_response(response, connection);
+         server->send_response(response, connection);
 
-   return 1; //  processed
+         result = MG_TRUE;
+         break;
+      }
+      case MG_AUTH:
+      {
+         result = MG_TRUE;
+         break;
+      }
+   }
+
+   return result; //  processed
 }
 
-MongooseHttpServer::MongooseHttpServer() :
-   HttpServer(),
+MongooseHttpServer::MongooseHttpServer(int port) :
+   HttpServer(port),
    _is_running(false),
-   _ctx(nullptr)
+   _server(nullptr)
 {
+   _server = mg_create_server(this, request_handler);
 }
 
 MongooseHttpServer::~MongooseHttpServer()
 {
    stop();
+
+   mg_destroy_server(&_server);
 }
 
 void MongooseHttpServer::start()
 {
-   std::string ports = make_port_list();
+   LOG(Debug) << "listening port: " 
+              << _port;
 
-   LOG(Debug) << "listening ports: " 
-              << ports;
+   mg_set_option(_server, "listening_port", to_string(port()).c_str());
 
-   const char *options[] = { "listening_ports", ports.c_str(), NULL };
+   _is_running = true;
 
-   struct mg_callbacks callbacks;
-   memset(&callbacks, 0, sizeof(callbacks));
-
-   callbacks.begin_request = begin_request;
-
-   _ctx = mg_start(&callbacks, this, options);
-
-   if (_ctx != nullptr)
-      _is_running = true;
+   while (is_running()) 
+   {
+      mg_poll_server(_server, 1000);
+   }
+   
 }
 
 void MongooseHttpServer::stop()
 {
    if (not _is_running)
       return;
-
-   mg_stop(_ctx);
 
    _is_running = false;
 }
@@ -111,22 +122,9 @@ void MongooseHttpServer::send_response(Response::SharedPtr response, struct mg_c
    mg_write(connection, buffer.c_str(), buffer.size());
 }
 
-std::string MongooseHttpServer::make_port_list()
+Server::SharedPtr MongooseHttpServer::create(int port)
 {
-   auto it = _RequestListeners.begin();
-
-   std::string ports = std::to_string(it->first);
-   for (it++; it != _RequestListeners.end(); ++it) 
-   {
-      ports += ',';
-      ports += std::to_string(it->first);
-   }
-   return ports;
-}
-
-Server::SharedPtr MongooseHttpServer::create()
-{
-   return Server::SharedPtr(new MongooseHttpServer); 
+   return Server::SharedPtr(new MongooseHttpServer(port)); 
 }
 
 } // mongoose

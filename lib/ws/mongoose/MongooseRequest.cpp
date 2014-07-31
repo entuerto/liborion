@@ -33,13 +33,21 @@ namespace mongoose
 
 MongooseRequest::MongooseRequest(struct mg_connection* connection) :
    Request(),
-   _request_info()
+   _method(),
+   _uri(),
+   _http_version(),
+   _query_string(),
+   _remote_user()
 {
-   _request_info = mg_get_request_info(connection);
+   _method = connection->request_method;
+   _uri = connection->uri;
+   _http_version = connection->http_version;
+   _query_string = connection->query_string == nullptr ? "" : connection->query_string;
+   //_remote_user = ;
 
-   _http_header = make_header_map(_request_info);
+   _http_header = make_header_map(connection);
 
-   _remote_address = InetAddress::create(_request_info->remote_ip, _request_info->remote_port);
+   _remote_address = InetAddress::create(connection->remote_ip, connection->remote_port);
 
    StringVector host = split(this->header("Host"),  ':');
 
@@ -56,31 +64,31 @@ MongooseRequest::~MongooseRequest()
 //! "GET", "POST", etc
 std::string MongooseRequest::method() const
 {
-   return _request_info->request_method;
+   return _method;
 }
 
 //! URL-decoded URI
 std::string MongooseRequest::uri() const
 {
-   return _request_info->uri;
+   return _uri;
 }
 
 //! E.g. "1.0", "1.1"
 std::string MongooseRequest::http_version() const
 {
-   return _request_info->http_version;
+   return _http_version;
 }
    
 //! URL part after '?', not including '?', or NULL
 std::string MongooseRequest::query_string() const
 {
-   return (_request_info->query_string == nullptr ? "" : _request_info->query_string);
+   return _query_string;
 }
 
 //! Authenticated user, or NULL if no auth used
 std::string MongooseRequest::remote_user() const
 {
-   return (_request_info->remote_user == nullptr ? "" : _request_info->remote_user);
+   return _remote_user;
 }
    
 bool MongooseRequest::is_authenticated()  const
@@ -93,14 +101,14 @@ bool MongooseRequest::is_secure_connection() const
    return false; // TODO
 }
 
-HeaderMap MongooseRequest::make_header_map(const struct mg_request_info* request_info)
+HeaderMap MongooseRequest::make_header_map(const struct mg_connection* connection)
 {
    HeaderMap hm;
 
-   for (int i = 0; i < request_info->num_headers; i++)
+   for (int i = 0; i < connection->num_headers; i++)
    {
-      hm.insert(std::pair<std::string, std::string>(request_info->http_headers[i].name,
-                                                    request_info->http_headers[i].value));
+      hm.insert(std::pair<std::string, std::string>(connection->http_headers[i].name,
+                                                    connection->http_headers[i].value));
    }
 
    return hm;
@@ -108,17 +116,10 @@ HeaderMap MongooseRequest::make_header_map(const struct mg_request_info* request
 
 void MongooseRequest::read_data(struct mg_connection* connection)
 {
-   long len = std::atol(mg_get_header(connection, "Content-Length"));
-
-   if (len == 0)
+   if (connection->content_len == 0)
       return;
 
-   char* buffer = new char[len + 1];
-   mg_read(connection, buffer, len);
-
-   _data = buffer;
-
-   delete [] buffer;
+   _data = connection->content;
 }
 
 Request::SharedPtr MongooseRequest::create(struct mg_connection* connection)

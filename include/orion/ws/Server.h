@@ -44,7 +44,7 @@ public:
 
    virtual bool is_running() const =0;
 
-   virtual void add_request_listener(int port, RequestListener::SharedPtr listener) =0;
+   virtual void add_request_listener(RequestListener::SharedPtr listener) =0;
 
    virtual void send_response(Response::SharedPtr response) =0;
 };

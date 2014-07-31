@@ -35,7 +35,8 @@ using namespace orion::logging;
 using namespace orion::ws::mongoose;
 
 
-HttpServer::HttpServer() :
+HttpServer::HttpServer(int port) :
+   _port(port),
    _RequestListeners()
 {
 }
@@ -44,13 +45,16 @@ HttpServer::~HttpServer()
 {
 }
 
+int HttpServer::port() const
+{
+   return _port;
+}
+
 Response::SharedPtr HttpServer::process_request(Request::SharedPtr request)
 {
    LOG_FUNCTION(Debug2, "HttpServer::process_request()")
 
-   InetAddress::SharedPtr host = request->host_address();
-
-   auto it = _RequestListeners.find(host->port());
+   auto it = _RequestListeners.find(request->uri());
 
    if (it != _RequestListeners.end())
    {
@@ -62,14 +66,14 @@ Response::SharedPtr HttpServer::process_request(Request::SharedPtr request)
    return Response::create_404();
 }
 
-void HttpServer::add_request_listener(int port, RequestListener::SharedPtr listener)
+void HttpServer::add_request_listener(RequestListener::SharedPtr listener)
 {
-   _RequestListeners.insert(std::pair<int, RequestListener::SharedPtr>(port, listener));
+   _RequestListeners.insert(std::pair<std::string, RequestListener::SharedPtr>(listener->uri(), listener));
 }
 
-Server::SharedPtr HttpServer::create()
+Server::SharedPtr HttpServer::create(int port)
 {
-   return MongooseHttpServer::create(); 
+   return MongooseHttpServer::create(port); 
 }
 
 } // ws

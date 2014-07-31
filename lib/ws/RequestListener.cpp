@@ -26,12 +26,18 @@ namespace orion
 namespace ws
 {
 
-RequestListener::RequestListener() 
+RequestListener::RequestListener(const std::string& uri) :
+   _uri(uri)
 {
 }
 
 RequestListener::~RequestListener() 
 {
+}
+
+std::string RequestListener::uri() const
+{
+   return _uri;
 }
 
 Response::SharedPtr RequestListener::on_process_request(Request::SharedPtr request)

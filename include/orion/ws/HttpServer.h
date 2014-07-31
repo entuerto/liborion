@@ -33,7 +33,7 @@ namespace orion
 {
 namespace ws
 {
-typedef std::map<int, RequestListener::SharedPtr> listenerMap;
+typedef std::map<std::string, RequestListener::SharedPtr> listenerMap;
 
 //! This class provides an embedded HTTP Server
 /*!
@@ -45,15 +45,18 @@ class HttpServer : public Server
 public:
    virtual ~HttpServer();
 
-   virtual void add_request_listener(int port, RequestListener::SharedPtr listener);
+   virtual int port() const;
+
+   virtual void add_request_listener(RequestListener::SharedPtr listener);
 
    virtual Response::SharedPtr process_request(Request::SharedPtr request);
    
-   static Server::SharedPtr create();
+   static Server::SharedPtr create(int port);
 
 protected:
-   HttpServer();
+   HttpServer(int port);
 
+   int _port;
    listenerMap _RequestListeners;
 };
 

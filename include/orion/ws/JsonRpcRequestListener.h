@@ -51,10 +51,10 @@ public:
 
    virtual ~JsonRpcRequestListener();
 
-   static JsonRpcRequestListener::SharedPtr create();
+   static JsonRpcRequestListener::SharedPtr create(const std::string& uri);
 
 protected:
-   JsonRpcRequestListener();
+   JsonRpcRequestListener(const std::string& uri);
 
    virtual Response::SharedPtr on_post(Request::SharedPtr request);
 

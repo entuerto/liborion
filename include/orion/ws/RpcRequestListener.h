@@ -52,7 +52,7 @@ public:
    RpcMethod::SharedPtr get_method(const std::string& name);
 
 protected:
-   RpcRequestListener();
+   RpcRequestListener(const std::string& uri);
 
    virtual Response::SharedPtr on_get(Request::SharedPtr request);
 
