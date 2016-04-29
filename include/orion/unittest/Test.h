@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/unittest/TestResult.h>
 #include <orion/unittest/TestOutput.h>
@@ -35,7 +36,7 @@ namespace unittest
 //!
 /*!
  */
-class Test 
+class API_EXPORT Test 
 {
 public:
    DECLARE_POINTERS(Test)
@@ -68,7 +69,7 @@ private:
 //!
 /*!
  */
-class TestAddHelper
+class API_EXPORT TestAddHelper
 {
 public:
    TestAddHelper(Test::SharedPtrVector& tests, Test::SharedPtr test)
@@ -78,11 +79,11 @@ public:
 };
 
 //!
-int run_all_tests(TestOutput::SharedPtr output, const std::string& suite_name = "");
+API_EXPORT int run_all_tests(TestOutput::SharedPtr output, const std::string& suite_name = "");
 
 namespace UnitTestSuite
 {
-   inline const char* suite_name() { return "DefaultSuite"; }
+   API_EXPORT inline const char* suite_name() { return "DefaultSuite"; }
 }
 
 } // namespace orion

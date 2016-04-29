@@ -22,6 +22,7 @@
 
 #include <orion/uuid.h>
 
+#include <cstdint>
 #include <rpc.h>
 
 namespace orion

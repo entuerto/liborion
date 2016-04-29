@@ -22,6 +22,8 @@
 
 #include <memory>
 
+#include <orion/Orion-Stddefs.h>
+
 #define DECLARE_POINTERS(P) \
    typedef std::unique_ptr<P> UniquePtr; \
    typedef std::shared_ptr<P> SharedPtr; \
@@ -30,13 +32,13 @@
 namespace orion
 {
 template<typename R, typename T>
-inline std::shared_ptr<R> iface_cast(const std::shared_ptr<T>& other)
+API_EXPORT inline std::shared_ptr<R> iface_cast(const std::shared_ptr<T>& other)
 {
    return std::dynamic_pointer_cast<R>(other);
 }
 
 template<typename R, typename T>
-inline R* iface_cast(const T& other)
+API_EXPORT inline R* iface_cast(const T& other)
 {
    return dynamic_cast<R*>(other);
 }

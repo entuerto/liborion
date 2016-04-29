@@ -23,6 +23,8 @@
 #define ORION_WS_JSONRPCERROR_H
 
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/ws/RpcError.h>
 
@@ -40,7 +42,7 @@ namespace ws
 /*!
    
  */
-class JsonRpcError : public RpcError
+class API_EXPORT JsonRpcError : public RpcError
 {
 public:
    DECLARE_POINTERS(JsonRpcError)

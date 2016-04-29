@@ -23,6 +23,7 @@
 
 #include <ostream>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/unittest/TestOutput.h>
 
 namespace orion
@@ -32,7 +33,7 @@ namespace unittest
 //!
 /*!
  */
-class TestStdOutput :
+class API_EXPORT TestStdOutput :
    public TestOutput
 {
 public:

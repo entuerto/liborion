@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <string>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/logging/Logger.h>
 #include <orion/logging/LogRecord.h>
 
@@ -35,7 +36,7 @@ namespace logging
 /*!
     This Log record is used to record exceptions.
  */
-class LogExceptionRecord: public LogRecord
+class API_EXPORT LogExceptionRecord: public LogRecord
 {
 public:
    LogExceptionRecord(const std::exception& except);

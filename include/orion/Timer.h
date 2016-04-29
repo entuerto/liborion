@@ -22,11 +22,12 @@
 #define ORION_TIMER_H
 
 #include <chrono>
+#include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
 
-class Timer
+class API_EXPORT Timer
 {
 public:
    Timer();
@@ -41,8 +42,8 @@ public:
    double elapsed() const;
 
 private:
-   std::chrono::time_point<std::chrono::steady_clock> _time_point_start;
-   std::chrono::time_point<std::chrono::steady_clock> _time_point_end;
+   std::chrono::time_point<std::chrono::system_clock> _time_point_start;
+   std::chrono::time_point<std::chrono::system_clock> _time_point_end;
 };
 
 }

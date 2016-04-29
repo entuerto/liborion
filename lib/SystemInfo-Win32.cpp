@@ -19,15 +19,16 @@
 
 #include <orion/SystemInfo.h>
 
+#ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0500
+#endif
+
 #include <windows.h>
 #include <lmcons.h>   /* For UNLEN */
 #include <process.h>
 
+#ifndef __MINGW64__
 #include <ddk/ntifs.h>
-#include <psapi.h>
-
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 typedef struct _SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION {
 LARGE_INTEGER IdleTime;
@@ -37,6 +38,15 @@ LARGE_INTEGER IdleTime;
    LARGE_INTEGER InterruptTime;
    ULONG InterruptCount;   
 } SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION;
+#else
+#include <winternl.h>
+#endif
+
+#include <psapi.h>
+
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+
+
 
 
 namespace orion
@@ -123,7 +133,7 @@ std::vector<CpuInfo> get_cpu_info()
    ULONG result_size;
 
    DWORD sppi_size = cpu_count * sizeof(*sppi);
-   sppi = malloc(sppi_size);
+   sppi = (SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION*)malloc(sppi_size);
 
    NTSTATUS status = NtQuerySystemInformation(SystemProcessorPerformanceInformation,
                                               sppi,
@@ -188,7 +198,11 @@ std::vector<CpuInfo> get_cpu_info()
       cpu_times.nice = 0;
       cpu_times.sys  = (sppi[i].KernelTime.QuadPart - sppi[i].IdleTime.QuadPart) / 10000;
       cpu_times.idle = sppi[i].IdleTime.QuadPart / 10000;
+#ifndef __MINGW64__
       cpu_times.irq  = sppi[i].InterruptTime.QuadPart / 10000;
+#else
+      cpu_times.irq  = sppi[i].Reserved1[0].QuadPart / 10000;
+#endif
 
 
       len = WideCharToMultiByte(CP_UTF8, 0, cpu_brand, cpu_brand_size / sizeof(WCHAR), NULL, 0, NULL, NULL);

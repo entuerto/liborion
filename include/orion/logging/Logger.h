@@ -24,13 +24,14 @@
 
 #include <functional>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/logging/OutputHandler.h>
 
 namespace orion
 {
 namespace logging
 {
-std::string DefaultInfo();
+API_EXPORT std::string DefaultInfo();
 //--------------------------------------------------------------------------
 // forward declares
 class Formatter;
@@ -45,7 +46,7 @@ class LogRecord;
    to the output handlers of the logger and is formatted by the specified
    Formatter class.
  */
-class Logger
+class API_EXPORT Logger
 {
 public:
    typedef OutputHandler::SharedPtrVector OutputHandlers;
@@ -136,7 +137,7 @@ private:
 
 };
 
-std::string level_as_text(Logger::Level level);
+API_EXPORT std::string level_as_text(Logger::Level level);
 
 } // namespace logging
 } // namespace orion

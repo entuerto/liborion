@@ -23,6 +23,8 @@
 #define ORION_WS_SERVER_H
 
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/ws/RequestListener.h>
 #include <orion/ws/Response.h>

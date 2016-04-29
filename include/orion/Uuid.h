@@ -23,6 +23,7 @@
 #define UUID_H
 
 #include <string>
+#include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
@@ -34,7 +35,7 @@ namespace orion
  *    On win32 platform the RPC API is used to create uuids.
  *    On linux the libuuid is used.
  */
-class Uuid
+class API_EXPORT Uuid
 {
 public:
    Uuid();

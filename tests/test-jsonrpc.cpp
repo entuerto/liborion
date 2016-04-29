@@ -76,7 +76,7 @@ class MockJsonRpcRequestListener : public JsonRpcRequestListener
 public:
    DECLARE_POINTERS(MockJsonRpcRequestListener)
  
-   MockJsonRpcRequestListener() : JsonRpcRequestListener() {}
+   MockJsonRpcRequestListener() : JsonRpcRequestListener("") {}
    virtual ~MockJsonRpcRequestListener() {}
 
    Response::SharedPtr send_post_request(Request::SharedPtr request)

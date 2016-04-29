@@ -22,6 +22,7 @@
 #ifndef ORION_WS_REQUESTLISTENER_H
 #define ORION_WS_REQUESTLISTENER_H
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/ws/Response.h>
 #include <orion/ws/Request.h>
@@ -36,7 +37,7 @@ namespace ws
    responds to HTTP requests. The listener is active for the lifetime of the RequestListener
    object and runs within your application.
  */
-class RequestListener
+class API_EXPORT RequestListener
 {
 public:
    DECLARE_POINTERS(RequestListener)

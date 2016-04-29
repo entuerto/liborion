@@ -21,6 +21,8 @@
 #define ORION_LOGGING_IFORMATTER_H
 
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 
 namespace orion
@@ -35,7 +37,7 @@ class LogRecord;
    a readable form that will be interpreted by either a human or
    an external system.
  */
-class IFormatter 
+class API_EXPORT IFormatter 
 {
 public:
    DECLARE_POINTERS(IFormatter)

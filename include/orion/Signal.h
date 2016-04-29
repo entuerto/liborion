@@ -24,6 +24,8 @@
 #include <memory>
 #include <vector>
 
+#include <orion/Orion-Stddefs.h>
+
 namespace orion
 {
 /*
@@ -46,7 +48,7 @@ class Signal;
       signal.emit(7);
  */
 template<typename R, class... Args>
-class Signal<R(Args...)>
+class API_EXPORT Signal<R(Args...)>
 {
 public:
    typedef std::function<R (Args...)> Slot;
@@ -101,7 +103,7 @@ private:
    Specialisation class for void return type
  */
 template <>
-class Signal<void()>
+class API_EXPORT Signal<void()>
 {
 public:
    typedef std::function<void ()> Slot;

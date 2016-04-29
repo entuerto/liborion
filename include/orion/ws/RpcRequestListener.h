@@ -23,6 +23,8 @@
 #define ORION_WS_RPCREQUESTLISTENER_H
 
 #include <map>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/ws/Response.h>
 #include <orion/ws/Request.h>
@@ -40,7 +42,7 @@ typedef std::map<std::string, RpcMethod::SharedPtr> RpcMethodMap;
    Using the RpcRequestListener class, you can create a simple RPC protocol listener that 
    responds to RPC requests. 
  */
-class RpcRequestListener : public RequestListener
+class API_EXPORT RpcRequestListener : public RequestListener
 {
 public:
    DECLARE_POINTERS(RpcRequestListener)

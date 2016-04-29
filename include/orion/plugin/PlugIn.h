@@ -21,6 +21,8 @@
 #define ORION_PLUGIN_PLUGIN_H
 
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/NonCopyable.h>
 
@@ -35,7 +37,7 @@ class IExtension;
     To create a pluggable module for an application the program
     must sub class this class.
  */
-class PlugIn :
+class API_EXPORT PlugIn :
    private NonCopyable
 {
 public:
@@ -93,7 +95,7 @@ private:
 
 extern "C"
 {
-bool create_plugin_instance(orion::plugin::PlugIn*& plugin);
+API_EXPORT bool create_plugin_instance(orion::plugin::PlugIn*& plugin);
 }
 
 #endif // ORION_PLUGIN_PLUGIN_H

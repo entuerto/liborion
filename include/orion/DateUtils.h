@@ -22,25 +22,27 @@
 
 #include <string>
 
+#include <orion/Orion-Stddefs.h>
+
 namespace orion
 {
 /*!
    Returns the current date representation for current locale.
    \param date  a string to hold the return value.
  */
-void get_current_date(std::string& date);
+API_EXPORT void get_current_date(std::string& date);
 
 /*!
    Returns the current time representation for current locale.
    \param time  a string to hold the return value.
  */
-void get_current_time(std::string& time);
+API_EXPORT void get_current_time(std::string& time);
 
 /*!
    Returns the current date and time representation for current locale.
    \param datetime  a string to hold the return value.
  */
-void get_current_datetime(std::string& datetime);
+API_EXPORT void get_current_datetime(std::string& datetime);
 
 } // namespace orion
 

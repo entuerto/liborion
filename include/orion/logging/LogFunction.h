@@ -22,6 +22,7 @@
 
 #include <cstdint>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/logging/Logger.h>
 
 namespace orion
@@ -31,7 +32,7 @@ namespace logging
 //! A LogFunction represents an function being logged.
 /*!
  */
-class LogFunction 
+class API_EXPORT LogFunction 
 {
 public:
    LogFunction(Logger::Level level,

@@ -23,6 +23,8 @@
 #define ORION_WS_INETADDRESS_H
 
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 
 namespace orion
@@ -30,7 +32,7 @@ namespace orion
 namespace ws
 {
 //! Represents a network address as an IP address and a port number.
-class InetAddress
+class API_EXPORT InetAddress
 {
 public:
    DECLARE_POINTERS(InetAddress)

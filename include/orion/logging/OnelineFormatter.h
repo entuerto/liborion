@@ -22,6 +22,7 @@
 
 #include <string>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/NonCopyable.h>
 #include <orion/logging/IFormatter.h>
 
@@ -35,7 +36,7 @@ class LogRecord;
 /*!
     Formats the log record on a single line.
  */
-class OnelineFormatter :
+class API_EXPORT OnelineFormatter :
    public IFormatter,
    NonCopyable
 {

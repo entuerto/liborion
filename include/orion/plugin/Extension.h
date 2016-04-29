@@ -20,9 +20,10 @@
 #ifndef ORION_PLUGIN_EXTENSION_H
 #define ORION_PLUGIN_EXTENSION_H
 
-#include <orion/NonCopyable.h>
-
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
+#include <orion/NonCopyable.h>
 
 namespace orion
 {
@@ -42,7 +43,7 @@ struct IExtension
     Use this class to return and error message to the caller
     of the extension.
  */
-class ExtensionError :
+class API_EXPORT ExtensionError :
    private NonCopyable,
    public IExtension
 {

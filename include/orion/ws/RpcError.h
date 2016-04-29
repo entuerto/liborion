@@ -23,6 +23,8 @@
 #define ORION_WS_RPCERROR_H
 
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 
 namespace orion
@@ -33,7 +35,7 @@ namespace ws
 /*!
    
  */
-class RpcError
+class API_EXPORT RpcError
 {
 public:
    DECLARE_POINTERS(RpcError)

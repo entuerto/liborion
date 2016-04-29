@@ -24,6 +24,8 @@
 
 #include <functional>
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/ws/JsonRpcError.h>
 #include <orion/ws/JsonRpcMethod.h>
@@ -36,7 +38,7 @@ namespace ws
 /*!
    
  */
-class JsonRpcMethodWrapper : public JsonRpcMethod
+class API_EXPORT JsonRpcMethodWrapper : public JsonRpcMethod
 {
 public:
    DECLARE_POINTERS(JsonRpcMethodWrapper)

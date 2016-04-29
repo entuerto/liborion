@@ -24,6 +24,7 @@
 
 #include <string>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/ws/Server.h>
 #include <orion/ws/Response.h>
 #include <orion/ws/Request.h>
@@ -40,7 +41,7 @@ typedef std::map<std::string, RequestListener::SharedPtr> listenerMap;
    This class provides an embedded HTTP Server, based on Mongoose, to handle incoming Requests 
    and send HTTP 1.1 valid responses.
  */
-class HttpServer : public Server
+class API_EXPORT HttpServer : public Server
 {
 public:
    virtual ~HttpServer();

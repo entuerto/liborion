@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <string>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/NonCopyable.h>
 #include <orion/logging/IFormatter.h>
 
@@ -36,7 +37,7 @@ class LogRecord;
 /*!
     Formats the information on more than one line.
  */
-class MultilineFormatter :
+class API_EXPORT MultilineFormatter :
    public IFormatter,
    NonCopyable
 {

@@ -23,6 +23,7 @@
 
 #include <string>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/Timer.h>
 #include <orion/unittest/TestResultItem.h>
@@ -34,7 +35,7 @@ namespace unittest
 //!
 /*!
  */
-class TestResult 
+class API_EXPORT TestResult 
 {
 public:
    DECLARE_POINTERS(TestResult)

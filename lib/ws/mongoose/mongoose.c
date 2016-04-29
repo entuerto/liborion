@@ -1006,7 +1006,7 @@ void ns_server_free(struct ns_server *s) {
 #define flockfile(x)      ((void) (x))
 #define funlockfile(x)    ((void) (x))
 typedef struct _stati64 file_stat_t;
-//typedef HANDLE pid_t;
+typedef HANDLE pid_t;
 #else                    ////////////// UNIX specific defines and includes
 #include <dirent.h>
 #include <inttypes.h>

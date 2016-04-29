@@ -24,6 +24,7 @@
 
 #include <iosfwd>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/NonCopyable.h>
 #include <orion/logging/OutputHandler.h>
 
@@ -44,7 +45,7 @@ class LogRecord;
 
     Note that this class does not close the stream, as cout or cerr may be used.
  */
-class StreamOutputHandler :
+class API_EXPORT StreamOutputHandler :
    public OutputHandler,
    NonCopyable
 {

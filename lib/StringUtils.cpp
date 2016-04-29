@@ -94,8 +94,7 @@ std::string& trim_right(std::string& text)
    if (text.empty())
       return text;
 
-   std::string::iterator end = text.end();
-   std::string::iterator it  = --(text.end());
+   std::string::iterator it = --(text.end());
 
    for ( ; ; --it) 
    {

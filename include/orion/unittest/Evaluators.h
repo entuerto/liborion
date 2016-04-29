@@ -22,6 +22,7 @@
 
 #include <string>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/unittest/TestResult.h>
 
 namespace orion
@@ -48,7 +49,7 @@ bool equals_false(const T& val1)
 }
 
 template <typename P>
-bool evaluate(P predicate, TestResult::SharedPtr& test_result, TestResultItem::SharedPtr success, TestResultItem::SharedPtr failure)
+ bool evaluate(P predicate, TestResult::SharedPtr& test_result, TestResultItem::SharedPtr success, TestResultItem::SharedPtr failure)
 {
    try
    {

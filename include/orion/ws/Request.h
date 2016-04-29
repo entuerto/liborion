@@ -24,6 +24,8 @@
 
 #include <map>
 #include <string>
+ 
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/ws/InetAddress.h>
 
@@ -36,7 +38,7 @@ typedef std::map<std::string, std::string> HeaderMap;
 //! Encapsulates HTTP-request information.
 /*!
  */
-class Request
+class API_EXPORT Request
 {
 public:
    DECLARE_POINTERS(Request)

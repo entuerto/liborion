@@ -20,9 +20,10 @@
 #ifndef ORION_SYSTEMINFO_H
 #define ORION_SYSTEMINFO_H
 
+#include <cstdint>
 #include <string>
 #include <vector>
-
+#include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
@@ -37,7 +38,7 @@ struct CpuTimes
    uint32_t irq;
 };
 
-class CpuInfo
+class API_EXPORT CpuInfo
 {
 public:
    CpuInfo(const std::string& model, uint32_t speed, CpuTimes& times);

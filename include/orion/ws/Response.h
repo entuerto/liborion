@@ -23,6 +23,8 @@
 #define ORION_WS_RESPONSE_H
 
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 
 namespace orion
@@ -34,7 +36,7 @@ namespace ws
 /*!
    Response class is used to build HTTP responses from HTTP request..
  */
-class Response
+class API_EXPORT Response
 {
 public:
    DECLARE_POINTERS(Response)

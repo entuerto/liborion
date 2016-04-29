@@ -22,6 +22,7 @@
 
 #include <cstdint>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/logging/Logger.h>
 
@@ -38,7 +39,7 @@ namespace logging
     the jog of th Formatter to format the LogRecords information that
     will be saved by the OutputHandler.
  */
-class LogRecord 
+class API_EXPORT LogRecord 
 {
 public:
    DECLARE_POINTERS(LogRecord)

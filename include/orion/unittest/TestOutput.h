@@ -20,6 +20,7 @@
 #ifndef ORION_UNITTEST_TESTOUTPUT_H
 #define ORION_UNITTEST_TESTOUTPUT_H
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/unittest/TestResult.h>
 
@@ -30,7 +31,7 @@ namespace unittest
 //!
 /*!
  */
-class TestOutput
+class API_EXPORT TestOutput
 {
 public:
    DECLARE_POINTERS(TestOutput)

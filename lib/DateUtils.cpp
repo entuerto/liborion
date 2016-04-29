@@ -17,7 +17,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <sys/time.h>
+#include <chrono>
+#include <ctime>
 
 #include <orion/DateUtils.h>
 
@@ -27,16 +28,15 @@ namespace
 {
    void get_current_daytime_generic(std::string& time_str, const char* format)
    {
-      struct timeval tv;
-      struct tm* ptm;
-      // Assumed char* length enough for a datetime for any locale's encoding:
+      std::chrono::time_point<std::chrono::system_clock> now;
+      now = std::chrono::system_clock::now();
+
+      std::time_t current_time = std::chrono::system_clock::to_time_t(now);
+      std::tm tm = *std::localtime(&current_time);
+
       char time_string[128];
-      // Obtain the time of day, and convert it to a tm struct.
-      gettimeofday(&tv, NULL);
 
-      ptm = localtime(&tv.tv_sec);
-
-      strftime(time_string, sizeof (time_string), format, ptm);
+      std::strftime(time_string, sizeof (time_string), format, &tm);
 
       time_str = time_string;
    }

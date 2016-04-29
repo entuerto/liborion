@@ -21,6 +21,8 @@
 #define ORION_PLUGIN_PLUGINMANAGER_H
 
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/NonCopyable.h>
 #include <orion/Signal.h>
@@ -35,7 +37,7 @@ namespace plugin
 /*!
     The PlugInManager class loads PlugIns at run-time.
  */
-class PlugInManager :
+class API_EXPORT PlugInManager :
    NonCopyable
 {
 public:

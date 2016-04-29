@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <string>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/Exception.h>
 
 namespace orion
@@ -32,7 +33,7 @@ namespace orion
     The exception that is thrown when a requested method
     or operation is not implemented.
  */
-class NotImplementedException : public Exception
+class API_EXPORT NotImplementedException : public Exception
 {
 public:
    NotImplementedException(const std::string& text);

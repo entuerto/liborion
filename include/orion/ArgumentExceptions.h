@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <string>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/Exception.h>
 
 #ifndef THROW_IF_NULL
@@ -39,7 +40,7 @@ namespace orion
     The exception that is thrown when one of the arguments
     provided to a method is not valid.
  */
-class ArgumentException : public Exception
+class API_EXPORT ArgumentException : public Exception
 {
 public:
    ArgumentException(const std::string& text);
@@ -61,7 +62,7 @@ public:
     The exception that is thrown when a null pointer is passed to a
     method that does not accept it as a valid argument.
  */
-class ArgumentNullException : public ArgumentException
+class API_EXPORT ArgumentNullException : public ArgumentException
 {
 public:
    ArgumentNullException(const std::string& text);
@@ -84,7 +85,7 @@ public:
     outside the allowable range of values as defined by the invoked
     method.
  */
-class ArgumentOutOfRangeException : public ArgumentException
+class API_EXPORT ArgumentOutOfRangeException : public ArgumentException
 {
 public:
    ArgumentOutOfRangeException(const std::string& text);

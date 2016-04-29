@@ -25,6 +25,7 @@
 #include <iosfwd>
 #include <vector>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/logging/IFormatter.h>
 
@@ -42,7 +43,7 @@ class LogRecord;
     Output handlers can optionally use Formatter instances to format
     records as desired. By default, a basic one line formatter is specified.
  */
-class OutputHandler 
+class API_EXPORT OutputHandler 
 {
 public:
    DECLARE_POINTERS(OutputHandler)

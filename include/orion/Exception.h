@@ -23,13 +23,15 @@
 #include <cstdint>
 #include <string>
 
+#include <orion/Orion-Stddefs.h>
+
 namespace orion
 {
 //! Generic exception
 /*!
     Generic exception that all library exceptions inherits.
  */
-class Exception : public std::exception
+class API_EXPORT Exception : public std::exception
 {
 public:
    Exception(const std::string& text);

@@ -23,6 +23,7 @@
 #define ORION_OBJECT_H
 
 #include <string>
+#include <orion/Orion-Stddefs.h>
 #include <orion/Uuid.h>
 
 namespace orion
@@ -30,7 +31,7 @@ namespace orion
 //! Base object
 /*!
  */
-class Object 
+class API_EXPORT Object 
 {
 public:
    Object();

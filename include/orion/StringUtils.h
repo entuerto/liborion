@@ -14,13 +14,15 @@
 #include <typeinfo>
 #include <vector>
 
+#include <orion/Orion-Stddefs.h>
+
 namespace orion
 {
 typedef std::list<std::string> StringList;
 typedef std::vector<std::string> StringVector;
 
 
-class BadConversion : public std::runtime_error
+class API_EXPORT BadConversion : public std::runtime_error
 {
 public:
    BadConversion(const std::string& s)
@@ -29,31 +31,31 @@ public:
 };
 
 //! 
-bool equals_no_case(const std::string& str1, const std::string& str2);
+API_EXPORT bool equals_no_case(const std::string& str1, const std::string& str2);
 
 //! Splits a string into various substrings.
-StringVector split(const std::string& text,  char separator);
+API_EXPORT StringVector split(const std::string& text,  char separator);
 
 //! Remove whitespace on the left side of the string
-std::string& trim_left(std::string& text);
+API_EXPORT std::string& trim_left(std::string& text);
 
 //! Remove whitespace on the right side of the string
-std::string& trim_right(std::string& text);
+API_EXPORT std::string& trim_right(std::string& text);
 
 //! Remove whitespace on both sides of the string
-std::string& trim(std::string& text);
+API_EXPORT std::string& trim(std::string& text);
 
 //! lower case a string
-std::string& to_lower(std::string& text);
+API_EXPORT std::string& to_lower(std::string& text);
 
 //! Upper case a string
-std::string& to_upper(std::string& text);
+API_EXPORT std::string& to_upper(std::string& text);
 
 //! Hash a string
-uint32_t compute_hash(const std::string& text);
+API_EXPORT uint32_t compute_hash(const std::string& text);
 
 // Speperate a string into different tokens
-void tokenize(const std::string& input, std::vector<std::string>& tokens, const std::string& delimiters);
+API_EXPORT void tokenize(const std::string& input, std::vector<std::string>& tokens, const std::string& delimiters);
 
 //! Converts an ostream-able type to a std::string
 template<typename T>

@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 
 namespace orion
@@ -33,7 +34,7 @@ namespace unittest
 //!
 /*!
  */
-class TestResultItem 
+class API_EXPORT TestResultItem 
 {
 public:
    DECLARE_POINTERS(TestResultItem)

@@ -22,6 +22,8 @@
 
 #include <cstdint>
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/Exception.h>
 
 namespace orion
@@ -32,7 +34,7 @@ namespace plugin
 /*!
     Throw this exception for plugin errors.
  */
-class PlugInException :
+class API_EXPORT PlugInException :
    public Exception
 {
 public:
@@ -56,7 +58,7 @@ public:
     This exception is thrown when loading the modules
     and we cannot find the entry point in the module.
  */
-class PlugInSymbolNotFoundException :
+class API_EXPORT PlugInSymbolNotFoundException :
    public PlugInException
 {
 public:

@@ -22,6 +22,7 @@
 #ifndef ORION_WS_JSONRPCREQUESTLISTENER_H
 #define ORION_WS_JSONRPCREQUESTLISTENER_H
 
+#include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/ws/Response.h>
 #include <orion/ws/Request.h>
@@ -44,7 +45,7 @@ namespace ws
    responds to HTTP requests. The listener is active for the lifetime of the RequestListener
    object and runs within your application.
  */
-class JsonRpcRequestListener : public RpcRequestListener
+class API_EXPORT JsonRpcRequestListener : public RpcRequestListener
 {
 public:
    DECLARE_POINTERS(JsonRpcRequestListener)
