@@ -1,5 +1,8 @@
 .waf-*
 waf-*
+waf3*
 .lock*
 
 docs/html
+build
+node_modules

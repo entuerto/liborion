@@ -9,17 +9,17 @@ module.exports = function(grunt) {
 		cxxstlib: {
 			mongoose: {
 				options: {
-					cxxflags : ["-Wall", "-EHsc", "-GR", "-fms-compatibility-version=19"],
-					cppflags : ["-D __MINGW64__", "-D WIN32", "-D ORION_SHARED_EXPORTS"],
+					cxxflags : ["-Wall"],
 					includes : ["."],
+					defines  : ["ORION_SHARED_EXPORTS"]
 				},
 				src : ['lib/ws/mongoose/mongoose.c']
 			},
 			json: {
 				options: {
-					cxxflags : ["-Wall", "-EHsc", "-GR", "-fms-compatibility-version=19"],
-					cppflags : ["-D __MINGW64__", "-D WIN32", "-D ORION_SHARED_EXPORTS"],
+					cxxflags : ["-Wall"],
 					includes : [".", "lib/ws"],
+					defines  : ["ORION_SHARED_EXPORTS"]
 				},
 				src :  ['lib/ws/json/json_reader.cpp',
 						'lib/ws/json/json_value.cpp',
@@ -29,9 +29,9 @@ module.exports = function(grunt) {
 		cxxshlib: {
 			orion: {
 				options: {
-					cxxflags : ["-Wall", "-EHsc", "-GR", "-fms-compatibility-version=19"],
-					cppflags : ["-D __MINGW64__", "-D WIN32", "-D ORION_SHARED_EXPORTS"],
+					cxxflags : ["-Wall"],
 					includes : [".", "include/", "lib/"],
+					defines  : ["ORION_SHARED_EXPORTS"],
 					libs     : ["psapi.lib", "ntdll.lib", "rpcrt4.lib"]
 				},
 				src :  ['lib/ArgumentExceptions.cpp',
@@ -65,10 +65,10 @@ module.exports = function(grunt) {
 			},
 			'orion-ws': {
 				options: {
-					cxxflags : ["-Wall", "-EHsc", "-GR", "-fms-compatibility-version=19"],
-					cppflags : ["-D __MINGW64__", "-D WIN32", "-D ORION_SHARED_EXPORTS"],
+					cxxflags : ["-Wall"],
 					includes : [".", "include/", "lib/"],
-					libs     : ["psapi.lib", "ws2_32.lib", "rpcrt4.lib", "json.lib", "mongoose.lib", "liborion.lib"]
+					defines  : ["ORION_SHARED_EXPORTS"],
+					libs     : ["psapi.lib", "ws2_32.lib", "rpcrt4.lib", "libjson.lib", "libmongoose.lib", "liborion.dll.lib"]
 				},
 				src :  ['lib/ws/mongoose/MongooseRequest.cpp',
 						'lib/ws/mongoose/MongooseHttpServer.cpp',
@@ -88,19 +88,17 @@ module.exports = function(grunt) {
 		cxxprogram: {
 			'test-logger': {
 				options: {
-					cxxflags : ["-Wall", "-EHsc", "-GR", "-fms-compatibility-version=19"],
-					cppflags : ["-D __MINGW64__", "-D WIN32"],
+					cxxflags : ["-Wall"],
 					includes : [".", "include/", "lib/"],
-					libs     : ["liborion.lib"]
+					libs     : ["liborion.dll.lib"]
 				},
 				src : ['tests/test-logger.cpp']
 			},
 			'test-unittest': {
 				options: {
-					cxxflags : ["-Wall", "-EHsc", "-GR", "-fms-compatibility-version=19"],
-					cppflags : ["-D __MINGW64__", "-D WIN32"],
+					cxxflags : ["-Wall"],
 					includes : [".", "include/", "lib/"],
-					libs     : ["liborion.lib"]
+					libs     : ["liborion.dll.lib"]
 				},
 				src :  ['tests/test-unittest.cpp',
 						'tests/unittest/ClassTest.cpp',
@@ -109,21 +107,45 @@ module.exports = function(grunt) {
 			},
 			'test-string': {
 				options: {
-					cxxflags : ["-Wall", "-EHsc", "-GR", "-fms-compatibility-version=19"],
-					cppflags : ["-D __MINGW64__", "-D WIN32"],
+					cxxflags : ["-Wall"],
 					includes : [".", "include/", "lib/"],
-					libs     : ["liborion.lib"]
+					libs     : ["liborion.dll.lib"]
 				},
 				src : ['tests/test-string.cpp']
 			},
 			'test-jsonrpc': {
 				options: {
-					cxxflags : ["-Wall", "-EHsc", "-GR", "-fms-compatibility-version=19"],
-					cppflags : ["-D __MINGW64__", "-D WIN32"],
+					cxxflags : ["-Wall"],
 					includes : [".", "include/", "lib/"],
-					libs     : ["json.lib", "liborion.lib", "liborion-ws.lib"]
+					libs     : ["libjson.lib", "liborion.dll.lib", "liborion-ws.dll.lib"]
 				},
 				src : ['tests/test-jsonrpc.cpp']
+			}
+		},
+		cxxprogram: {
+			'signal-example': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : ['.', 'examples/', 'include/'],
+					libs     : ["liborion.dll.lib"]
+				},
+				src : ['examples/signal-example.cpp']
+			},
+			'log-example': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : ['.', 'examples/', 'include/'],
+					libs     : ["liborion.dll.lib"]
+				},
+				src : ['examples/log-example.cpp']
+			},
+			'system-info': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : ['.', 'examples/', 'include/'],
+					libs     : ["liborion.dll.lib"]
+				},
+				src : ['examples/system-info.cpp']
 			}
 		},
 		clean: {

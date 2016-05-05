@@ -48,7 +48,7 @@ class Signal;
       signal.emit(7);
  */
 template<typename R, class... Args>
-class API_EXPORT Signal<R(Args...)>
+class Signal<R(Args...)>
 {
 public:
    typedef std::function<R (Args...)> Slot;
@@ -103,7 +103,7 @@ private:
    Specialisation class for void return type
  */
 template <>
-class API_EXPORT Signal<void()>
+class Signal<void()>
 {
 public:
    typedef std::function<void ()> Slot;

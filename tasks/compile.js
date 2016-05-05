@@ -16,20 +16,18 @@ module.exports = function(grunt) {
 		fs.mkdirSync(grunt.buildDir);
 
 	grunt.registerMultiTask('cxxshlib', 'Compile and link a shared library', function() {
-		var options = this.options({
-			cxxflags: [],
-			cppflags: [],
-			includes: [],
+		let config = grunt.cxxshlibConfig(this.options({
 			ldflags : ["-dll", "-dynamicbase", '-libpath:build/'],
-			libs    : [],
 			outDir  : path.join(grunt.buildDir, this.target)
-		});
+		}));
 
-		if (!fs.existsSync(options.outDir))
-			fs.mkdirSync(options.outDir);
+		grunt.file.write('config.json', JSON.stringify(config, null, '\t'));
 
-		grunt.config.set('cxx.' + this.target, options);
-		grunt.config.set('shlib.' + this.target, options);
+		if (!fs.existsSync(config.options.outDir))
+			fs.mkdirSync(config.options.outDir);
+
+		grunt.config.set('cxx.' + this.target, config);
+		grunt.config.set('shlib.' + this.target, config);
 
 		var done = this.async();
 
@@ -46,19 +44,15 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerMultiTask('cxxstlib', 'Compile and create static library', function() {
-		var options = this.options({
-			cxxflags: [],
-			cppflags: [],
-			includes: [],
-			libs    : [],
+		let config = grunt.cxxstlibConfig(this.options({
 			outDir  : path.join(grunt.buildDir, this.target)
-		});
+		}));
 
-		if (!fs.existsSync(options.outDir))
-			fs.mkdirSync(options.outDir);
+		if (!fs.existsSync(config.options.outDir))
+			fs.mkdirSync(config.options.outDir);
 
-		grunt.config.set('cxx.' + this.target, options);
-		grunt.config.set('stlib.' + this.target, options);
+		grunt.config.set('cxx.' + this.target, config);
+		grunt.config.set('stlib.' + this.target, config);
 
 		var done = this.async();
 
@@ -75,20 +69,18 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerMultiTask('cxxprogram', 'Compile and link a program', function() {
-		var options = this.options({
-			cxxflags: [],
-			cppflags: [],
-			includes: [],
+		let config = grunt.cxxprogramConfig(this.options({
 			ldflags : ['-libpath:build/'],
-			libs    : [],
 			outDir  : path.join(grunt.buildDir, this.target)
-        });
+		}));
 
-		if (!fs.existsSync(options.outDir))
-			fs.mkdirSync(options.outDir);
+		grunt.verbose.writeflags(config, 'Config');
 
-		grunt.config.set('cxx.' + this.target, options);
-		grunt.config.set('program.' + this.target, options);
+		if (!fs.existsSync(config.options.outDir))
+			fs.mkdirSync(config.options.outDir);
+
+		grunt.config.set('cxx.' + this.target, config);
+		grunt.config.set('program.' + this.target, config);
 
 		var done = this.async();
 
@@ -100,7 +92,7 @@ module.exports = function(grunt) {
 
 		grunt.task.run(taskList);
 		grunt.task.run('program:' + target);
-
+                     
 		done();
 	});
 
@@ -109,18 +101,27 @@ module.exports = function(grunt) {
 			grunt.log.warn('Source file "' + srcFile + '" not found.');
 			return false;
 		}
-		var options = grunt.config.get('cxx.' + name);
+		let config  = grunt.config.get('cxx.' + name);
+		var options = config.options;
 
 		var outFile = path.join(options.outDir, path.basename(srcFile, ".cpp") + ".obj");
 
-		// ${CXX} ${CXXFLAGS} ${CPPFLAGS} ${INCLUDES} ${DEFINES} ${SRC}
-		var cxx = util.format("%s %s %s -I %s -c  %s -o %s",
-							  "c:\\Tools\\LLVM\\bin\\clang-cl.exe",
-							  options.cxxflags.join(" "),
-							  options.cppflags.join(" "),
-							  options.includes.join(" -I "),
-							  srcFile,
-							  outFile);
+		if (grunt.file.exists(outFile) &&
+		    fs.lstatSync(srcFile).mtime.getTime() <= 
+		    fs.lstatSync(outFile).mtime.getTime())
+		   return true; 
+
+		// '${CXX} ${CXXFLAGS} ${CPPFLAGS} ${DEFINES} ${INCLUDES} -c ${SRC} -o ${OUT}'
+		var cxx = config.templates.cxx({
+			CXX      : config.programs.CXX,
+			CXXFLAGS : options.cxxflags.join(" "),
+			CPPFLAGS : options.cppflags.join(" "),
+			DEFINES  : joinWith(options.defines, config.patterns.define),
+			INCLUDES : joinWith(options.includes, config.patterns.include), 
+			SRC      : srcFile,
+			OUT      : outFile
+		});
+		grunt.verbose.writeln(cxx);
 
 		var child = spawn('cmd.exe', ['/S', '/C', cxx]);
 
@@ -136,7 +137,8 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerTask('shlib', 'Link shared library', function(name) {
-		var options = grunt.config.get('shlib.' + name);
+		let config  = grunt.config.get('shlib.' + name);
+		var options = config.options;
 
 		var libs = ["kernel32.lib", 
 		            "user32.lib", 
@@ -144,19 +146,21 @@ module.exports = function(grunt) {
 		            "shell32.lib"].concat(options.libs);
 
 		var objFiles = grunt.file.expand(path.join(options.outDir, '*.obj')),
-		    outFile  = path.join(grunt.buildDir, util.format('lib%s.dll', name)),
-		    impFile  = util.format('-implib:build/lib%s.lib', name);
+		    outFile  = path.join(grunt.buildDir, util.format(config.patterns.shlib, name)),
+		    impFile  = path.join(grunt.buildDir, util.format(config.patterns.implib, name));
 
-		// ${LINK_CXX} ${LINKFLAGS} ${LIB} ${LDFLAGS}
-		var linkCXX = util.format("%s -o  %s %s -link %s %s %s",
-								  "c:\\Tools\\LLVM\\bin\\clang-cl.exe",
-								  outFile,
-								  objFiles.join(" "), 
-								  options.ldflags.join(" "),
-								  impFile,
-								  libs.join(" "));
-	
-		var child = spawn('cmd.exe', ['/S', '/C', linkCXX]);
+		// ${LINK} -o ${OUT} ${OBJS} -link ${IMPLIB} ${LDFLAGS} ${LDLIBS} 
+		var link = config.templates.link({
+			LINK    : config.programs.LINK,
+			LDLIBS  : libs.join(" "),
+			LDFLAGS : options.ldflags.join(" "),
+			IMPLIB  : impFile,
+			OBJS    : objFiles.join(" "),
+			OUT     : outFile
+		});
+		grunt.verbose.writeln(link);
+
+		var child = spawn('cmd.exe', ['/S', '/C', link]);
 
 		if (child.stdout && child.stdout.length > 0) {
 			grunt.log.writeln(child.stdout);
@@ -170,15 +174,19 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerTask('stlib', 'Create static library', function(name) {
-		var options = grunt.config.get('stlib.' + name);
+		let config  = grunt.config.get('stlib.' + name);
+		var options = config.options;
 
 		var objFiles = grunt.file.expand(path.join(options.outDir, '*.obj')),
-		    outFile  = path.join(grunt.buildDir, util.format('%s.lib', name));
+		    outFile  = path.join(grunt.buildDir, util.format(config.patterns.stlib, name));
 
-		var ar = util.format("%s -out:%s %s",
-			                 "c:\\Tools\\LLVM\\bin\\llvm-lib.exe",
-			                 outFile,
-			                 objFiles.join(" "));
+		// ${AR} -out:${OUT} ${OBJS} 
+		var ar = config.templates.ar({
+			AR   : config.programs.AR,
+			OUT  : outFile,
+			OBJS : objFiles.join(" ")
+		});
+		grunt.verbose.writeln(ar);
 
 		var child = spawn('cmd.exe', ['/S', '/C', ar]);
 
@@ -194,7 +202,8 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerTask('program', 'Link a program file', function(name) {
-		var options = grunt.config.get('program.' + name);
+		let config  = grunt.config.get('program.' + name);
+		var options = config.options;
 
 		var libs = ["kernel32.lib", 
 		            "user32.lib", 
@@ -204,15 +213,17 @@ module.exports = function(grunt) {
 		var objFiles = grunt.file.expand(path.join(options.outDir, '*.obj')),
 		    outFile  = path.join(grunt.buildDir, name + '.exe');
 
-		// ${LINK_CXX} ${LINKFLAGS} ${LIB} ${LDFLAGS}
-		var linkCXX = util.format("%s -v -o  %s %s -link %s %s",
-								  "c:\\Tools\\LLVM\\bin\\clang-cl.exe",
-								  outFile,
-								  objFiles.join(" "), 
-								  options.ldflags.join(" "),
-								  libs.join(" "));
+		// ${LINK} -o ${OUT} ${OBJS} -link ${LDFLAGS} ${LDLIBS} 
+		var link = config.templates.link({
+			LINK    : config.programs.LINK,
+			LDLIBS  : libs.join(" "),
+			LDFLAGS : "-libpath:build/", //options.ldflags.join(" "),
+			OBJS    : objFiles.join(" "),
+			OUT     : outFile
+		});
+		grunt.verbose.writeln(link);
 
-		var child = spawn('cmd.exe', ['/S', '/C', linkCXX]);
+		var child = spawn('cmd.exe', ['/S', '/C', link]);
 
 		if (child.stdout && child.stdout.length > 0) {
 			grunt.log.writeln(child.stdout);
@@ -224,5 +235,11 @@ module.exports = function(grunt) {
 			return false;
 		}
 	});
+
+	function joinWith(array, template) {
+		return array.map(function(currentValue) { 
+			return util.format(template, currentValue)
+		}).join(" ");
+	}
 
 };

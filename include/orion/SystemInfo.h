@@ -58,29 +58,29 @@ private:
 
 typedef std::vector<std::string> ModuleList;
 
-std::string human_readable(uint64_t value, uint64_t base = 1024);
+API_EXPORT std::string human_readable(uint64_t value, uint64_t base = 1024);
 
-std::string get_cpu_model();
+API_EXPORT std::string get_cpu_model();
 
-std::vector<CpuInfo> get_cpu_info();
+API_EXPORT std::vector<CpuInfo> get_cpu_info();
 
-std::string get_os_version();
+API_EXPORT std::string get_os_version();
 
-std::string get_host_name();
+API_EXPORT std::string get_host_name();
 
-std::string get_user_name();
+API_EXPORT std::string get_user_name();
 
-int get_process_id();
+API_EXPORT int get_process_id();
 
-std::string get_program_name();
+API_EXPORT std::string get_program_name();
 
-void get_loaded_modules(unsigned long process_id, ModuleList& modules);
+API_EXPORT void get_loaded_modules(unsigned long process_id, ModuleList& modules);
 
-void get_loadavg(double avg[3]);
+API_EXPORT void get_loadavg(double avg[3]);
 
-uint64_t get_free_memory();
+API_EXPORT uint64_t get_free_memory();
 
-uint64_t get_total_memory();
+API_EXPORT uint64_t get_total_memory();
 
 }
 } // namespace orion
