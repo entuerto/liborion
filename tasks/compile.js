@@ -10,24 +10,41 @@ module.exports = function(grunt) {
 	var path = require('path');
 	var util = require('util');
 
-	grunt.buildDir = 'build';
+	grunt.registerMultiTask('cshlib', 'Compile and link a C shared library', function() {
+		let options = this.options({
+			outDir : path.join(grunt.buildDir, this.target)
+		});
 
-	if (!fs.existsSync(grunt.buildDir))
-		fs.mkdirSync(grunt.buildDir);
+		if (!fs.existsSync(options.outDir))
+			fs.mkdirSync(options.outDir);
 
-	grunt.registerMultiTask('cxxshlib', 'Compile and link a shared library', function() {
-		let config = grunt.cxxshlibConfig(this.options({
-			ldflags : ["-dll", "-dynamicbase", '-libpath:build/'],
-			outDir  : path.join(grunt.buildDir, this.target)
-		}));
+		grunt.config.set('cc.' + this.target, options);
+		grunt.config.set('shlib.' + this.target, options);
 
-		grunt.file.write('config.json', JSON.stringify(config, null, '\t'));
+		var done = this.async();
 
-		if (!fs.existsSync(config.options.outDir))
-			fs.mkdirSync(config.options.outDir);
+		var target = this.target;
+		// Iterate over all src files.
+		var taskList = this.filesSrc.map(function(srcFile) {
+			return 'cc:' + target + ':' + srcFile;
+		});
 
-		grunt.config.set('cxx.' + this.target, config);
-		grunt.config.set('shlib.' + this.target, config);
+		grunt.task.run(taskList);
+		grunt.task.run('shlib:' + target);
+
+		done();
+	});
+
+	grunt.registerMultiTask('cxxshlib', 'Compile and link a C++ shared library', function() {
+		let options = this.options({
+			outDir : path.join(grunt.buildDir, this.target)
+		});
+
+		if (!fs.existsSync(options.outDir))
+			fs.mkdirSync(options.outDir);
+
+		grunt.config.set('cxx.' + this.target, options);
+		grunt.config.set('shlib.' + this.target, options);
 
 		var done = this.async();
 
@@ -43,16 +60,41 @@ module.exports = function(grunt) {
 		done();
 	});
 
+	grunt.registerMultiTask('cstlib', 'Compile and create static library', function() {
+		let options = this.options({
+			outDir : path.join(grunt.buildDir, this.target)
+		});
+
+		if (!fs.existsSync(options.outDir))
+			fs.mkdirSync(options.outDir);
+
+		grunt.config.set('cc.' + this.target, options);
+		grunt.config.set('stlib.' + this.target, options);
+
+		var done = this.async();
+
+		var target = this.target;
+		// Iterate over all src files.
+		var taskList = this.filesSrc.map(function(srcFile) {
+			return 'cc:' + target + ':' + srcFile;
+		});
+
+		grunt.task.run(taskList);
+		grunt.task.run('stlib:' + target);
+
+		done();
+	});
+
 	grunt.registerMultiTask('cxxstlib', 'Compile and create static library', function() {
-		let config = grunt.cxxstlibConfig(this.options({
-			outDir  : path.join(grunt.buildDir, this.target)
-		}));
+		let options = this.options({
+			outDir : path.join(grunt.buildDir, this.target)
+		});
 
-		if (!fs.existsSync(config.options.outDir))
-			fs.mkdirSync(config.options.outDir);
+		if (!fs.existsSync(options.outDir))
+			fs.mkdirSync(options.outDir);
 
-		grunt.config.set('cxx.' + this.target, config);
-		grunt.config.set('stlib.' + this.target, config);
+		grunt.config.set('cxx.' + this.target, options);
+		grunt.config.set('stlib.' + this.target, options);
 
 		var done = this.async();
 
@@ -68,19 +110,41 @@ module.exports = function(grunt) {
 		done();
 	});
 
+	grunt.registerMultiTask('cprogram', 'Compile and link a program', function() {
+		let options = this.options({
+			outDir : path.join(grunt.buildDir, this.target)
+		});
+
+		if (!fs.existsSync(options.outDir))
+			fs.mkdirSync(options.outDir);
+
+		grunt.config.set('cc.' + this.target, options);
+		grunt.config.set('program.' + this.target, options);
+
+		var done = this.async();
+
+		var target = this.target;
+		// Iterate over all src files.
+		var taskList = this.filesSrc.map(function(srcFile) {
+			return 'cc:' + target + ':' + srcFile;
+		});
+
+		grunt.task.run(taskList);
+		grunt.task.run('program:' + target);
+                     
+		done();
+	});
+
 	grunt.registerMultiTask('cxxprogram', 'Compile and link a program', function() {
-		let config = grunt.cxxprogramConfig(this.options({
-			ldflags : ['-libpath:build/'],
-			outDir  : path.join(grunt.buildDir, this.target)
-		}));
+		let options = this.options({
+			outDir : path.join(grunt.buildDir, this.target)
+		});
 
-		grunt.verbose.writeflags(config, 'Config');
+		if (!fs.existsSync(options.outDir))
+			fs.mkdirSync(options.outDir);
 
-		if (!fs.existsSync(config.options.outDir))
-			fs.mkdirSync(config.options.outDir);
-
-		grunt.config.set('cxx.' + this.target, config);
-		grunt.config.set('program.' + this.target, config);
+		grunt.config.set('cxx.' + this.target, options);
+		grunt.config.set('program.' + this.target, options);
 
 		var done = this.async();
 
@@ -96,15 +160,63 @@ module.exports = function(grunt) {
 		done();
 	});
 
+	grunt.registerTask('cc', 'Compile c source code', function(name, srcFile) {
+		if (!grunt.file.exists(srcFile)) {
+			grunt.log.warn('Source file "' + srcFile + '" not found.');
+			return false;
+		}
+
+		let config   = grunt.build.config('cc', grunt.config.get('cc.' + name)),
+		    options  = config.options,
+		    patterns = grunt.build.patterns('cc');
+
+		let outFile = path.join(options.outDir, 
+			                    util.format('%s.%s', path.parse(srcFile).name, 
+			                    	                 patterns.objExt));
+
+		if (grunt.file.exists(outFile) &&
+		    fs.lstatSync(srcFile).mtime.getTime() <= 
+		    fs.lstatSync(outFile).mtime.getTime())
+		   return true; 
+
+		// '${CC} ${CFLAGS} ${CPPFLAGS} ${DEFINES} ${INCLUDES} -c ${SRC} -o ${OUT}'
+		let cc = config.cmd({
+			CC       : config.CC,
+			CFLAGS   : options.cxxflags.join(" "),
+			CPPFLAGS : options.cppflags.join(" "),
+			DEFINES  : joinWith(options.defines, patterns.define),
+			INCLUDES : joinWith(options.includes, patterns.include), 
+			SRC      : srcFile,
+			OUT      : outFile
+		});
+		grunt.verbose.writeln(cc);
+
+		var child = spawn('cmd.exe', ['/S', '/C', cc]);
+
+		if (child.stdout && child.stdout.length > 0) {
+			grunt.log.writeln(child.stdout);
+		}
+		if (child.stderr && child.stderr.length > 0) {
+			grunt.log.writeln(child.stderr);
+		}
+		if (child.status != 0) {
+			return false;
+		}
+	});
+
 	grunt.registerTask('cxx', 'Compile c++ source code', function(name, srcFile) {
 		if (!grunt.file.exists(srcFile)) {
 			grunt.log.warn('Source file "' + srcFile + '" not found.');
 			return false;
 		}
-		let config  = grunt.config.get('cxx.' + name);
-		var options = config.options;
 
-		var outFile = path.join(options.outDir, path.basename(srcFile, ".cpp") + ".obj");
+		let config   = grunt.build.config('cxx', grunt.config.get('cxx.' + name)),
+		    options  = config.options,
+		    patterns = grunt.build.patterns('cxx');
+
+		let outFile = path.join(options.outDir, 
+			                    util.format('%s.%s', path.parse(srcFile).name, 
+			                    	                 patterns.objExt));
 
 		if (grunt.file.exists(outFile) &&
 		    fs.lstatSync(srcFile).mtime.getTime() <= 
@@ -112,12 +224,12 @@ module.exports = function(grunt) {
 		   return true; 
 
 		// '${CXX} ${CXXFLAGS} ${CPPFLAGS} ${DEFINES} ${INCLUDES} -c ${SRC} -o ${OUT}'
-		var cxx = config.templates.cxx({
-			CXX      : config.programs.CXX,
+		var cxx = config.cmd({
+			CXX      : config.CXX,
 			CXXFLAGS : options.cxxflags.join(" "),
 			CPPFLAGS : options.cppflags.join(" "),
-			DEFINES  : joinWith(options.defines, config.patterns.define),
-			INCLUDES : joinWith(options.includes, config.patterns.include), 
+			DEFINES  : joinWith(options.defines, patterns.define),
+			INCLUDES : joinWith(options.includes, patterns.include), 
 			SRC      : srcFile,
 			OUT      : outFile
 		});
@@ -134,24 +246,26 @@ module.exports = function(grunt) {
 		if (child.status != 0) {
 			return false;
 		}
+
 	});
 
 	grunt.registerTask('shlib', 'Link shared library', function(name) {
-		let config  = grunt.config.get('shlib.' + name);
-		var options = config.options;
+		let config   = grunt.build.config('shlib', grunt.config.get('shlib.' + name)),
+		    options  = config.options,
+		    patterns = grunt.build.patterns('shlib');
 
 		var libs = ["kernel32.lib", 
 		            "user32.lib", 
 		            "advapi32.lib", 
 		            "shell32.lib"].concat(options.libs);
 
-		var objFiles = grunt.file.expand(path.join(options.outDir, '*.obj')),
-		    outFile  = path.join(grunt.buildDir, util.format(config.patterns.shlib, name)),
-		    impFile  = path.join(grunt.buildDir, util.format(config.patterns.implib, name));
+		var objFiles = grunt.file.expand(path.join(options.outDir, patterns.objGlob)),
+		    outFile  = path.join(grunt.buildDir, util.format(patterns.shlib, name)),
+		    impFile  = path.join(grunt.buildDir, util.format(patterns.implib, name));
 
 		// ${LINK} -o ${OUT} ${OBJS} -link ${IMPLIB} ${LDFLAGS} ${LDLIBS} 
-		var link = config.templates.link({
-			LINK    : config.programs.LINK,
+		var link = config.cmd({
+			LINK    : config.LINK,
 			LDLIBS  : libs.join(" "),
 			LDFLAGS : options.ldflags.join(" "),
 			IMPLIB  : impFile,
@@ -174,21 +288,22 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerTask('stlib', 'Create static library', function(name) {
-		let config  = grunt.config.get('stlib.' + name);
-		var options = config.options;
+		let config   = grunt.build.config('stlib', grunt.config.get('stlib.' + name)),
+		    options  = config.options,
+		    patterns = grunt.build.patterns('stlib');
 
-		var objFiles = grunt.file.expand(path.join(options.outDir, '*.obj')),
-		    outFile  = path.join(grunt.buildDir, util.format(config.patterns.stlib, name));
+		let objFiles = grunt.file.expand(path.join(options.outDir, patterns.objGlob)),
+		    outFile  = path.join(grunt.buildDir, util.format(patterns.stlib, name));
 
 		// ${AR} -out:${OUT} ${OBJS} 
-		var ar = config.templates.ar({
-			AR   : config.programs.AR,
+		let ar = config.cmd({
+			AR   : config.AR,
 			OUT  : outFile,
 			OBJS : objFiles.join(" ")
 		});
 		grunt.verbose.writeln(ar);
 
-		var child = spawn('cmd.exe', ['/S', '/C', ar]);
+		let child = spawn('cmd.exe', ['/S', '/C', ar]);
 
 		if (child.stdout && child.stdout.length > 0) {
 			grunt.log.writeln(child.stdout);
@@ -202,22 +317,23 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerTask('program', 'Link a program file', function(name) {
-		let config  = grunt.config.get('program.' + name);
-		var options = config.options;
+		let config   = grunt.build.config('program', grunt.config.get('program.' + name)),
+		    options  = config.options,
+		    patterns = grunt.build.patterns('program');
 
 		var libs = ["kernel32.lib", 
 		            "user32.lib", 
 		            "advapi32.lib", 
 		            "shell32.lib"].concat(options.libs);
 
-		var objFiles = grunt.file.expand(path.join(options.outDir, '*.obj')),
-		    outFile  = path.join(grunt.buildDir, name + '.exe');
+		var objFiles = grunt.file.expand(path.join(options.outDir, patterns.objGlob)),
+		    outFile  = path.join(grunt.buildDir, util.format(patterns.prog, name));
 
 		// ${LINK} -o ${OUT} ${OBJS} -link ${LDFLAGS} ${LDLIBS} 
-		var link = config.templates.link({
-			LINK    : config.programs.LINK,
+		var link = config.cmd({
+			LINK    : config.LINK,
 			LDLIBS  : libs.join(" "),
-			LDFLAGS : "-libpath:build/", //options.ldflags.join(" "),
+			LDFLAGS : options.ldflags.join(" "),
 			OBJS    : objFiles.join(" "),
 			OUT     : outFile
 		});

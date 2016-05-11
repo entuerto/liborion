@@ -5,6 +5,21 @@
 module.exports = function(grunt) {
 	"use strict";
 
+	var path = require("path");
+
+	grunt.file.findProgram = function(name) {
+		var PATH = process.env.PATH.split(path.delimiter);
+
+		for (let dir of PATH) {
+			var file = path.join(dir, name);
+
+			if (grunt.file.exists(file)) {
+				return file;
+			}
+		}
+		throw new Error("findProgram: program not found, " + name);
+	};
+
 	grunt.buildDefaults = {
 			'darwin'  : {
 				programs: {
@@ -58,49 +73,66 @@ module.exports = function(grunt) {
 				}
 			}, 
 			'win32'   : {
-				programs: {
-					AR   : 'llvm-lib.exe', // Archive-maintaining program
-					CC   : 'clang-cl.exe', // Program for compiling C programs
-					CXX  : 'clang-cl.exe', // Program for compiling C++ programs
-					LINK : 'clang-cl.exe'
-				},
 				patterns: {
 					define  : '-D %s',
 					include : '-I %s',
 					stlib   : 'lib%s.lib',
 					shlib   : 'lib%s.dll',
-					implib  : 'lib%s.dll.lib'
+					implib  : 'lib%s.dll.lib',
+					prog    : '%s.exe',
+					objExt  : 'obj',
+					objGlob : '*.obj'
 				},
 				options: {
-					cxxflags : ["-Wall", "-EHsc", "-GR", "-fms-compatibility-version=19"],
-					cppflags : [],
 					includes : ["."],
 					defines  : ["__MINGW64__", "WIN32"],
-					ldflags  : [],
-					libs     : [],
 					outDir   : grunt.buildDir
+				},
+				cc: {
+					CC       : grunt.file.findProgram('clang-cl.exe'),
+					template : '${CC} ${CFLAGS} ${CPPFLAGS} ${DEFINES} ${INCLUDES} -c ${SRC} -o ${OUT}',
+					options  :{
+						cflags   : ["-Wall", "-EHsc", "-GR", "-fms-compatibility-version=19"],
+						cppflags : []
+					}
+				},
+				cxx: {
+					CXX      : grunt.file.findProgram('clang-cl.exe'), 
+					template : '${CXX} ${CXXFLAGS} ${CPPFLAGS} ${DEFINES} ${INCLUDES} -c ${SRC} -o ${OUT}',
+					options  : {
+						cxxflags : ["-Wall", "-EHsc", "-GR", "-fms-compatibility-version=19"],
+						cppflags : []
+					}
+				},
+				shlib: {
+					LINK     : grunt.file.findProgram('clang-cl.exe'),
+					template : '${LINK} -o ${OUT} ${OBJS} -link -implib:${IMPLIB} ${LDFLAGS} ${LDLIBS}',
+					options  : {
+						ldflags  : ["-dll", "-dynamicbase", '-libpath:build/'],
+						libs     : []
+					}
+				},
+				stlib: {
+					AR       : grunt.file.findProgram('llvm-lib.exe'), 
+					template : '${AR} -out:${OUT} ${OBJS}',
+					options  : {}
+				},
+				program: {
+					LINK     : grunt.file.findProgram('clang-cl.exe'),
+					template : '${LINK} -o ${OUT} ${OBJS} -link ${LDFLAGS} ${LDLIBS}',
+					options  : {
+						ldflags : ['-libpath:build/'],
+						libs    : []
+					}
 				}
 			}
 		};
 
-	grunt.docsDir = 'docs';
+	grunt.docsDir  = 'docs';
+	grunt.buildDir = 'build';
 
-	var path = require("path");
-
-	grunt.file.findProgram = function(name) {
-		var PATH = process.env.PATH.split(path.delimiter);
-
-		for (let dir of PATH) {
-			var file = path.join(dir, name);
-
-			if (grunt.file.exists(file)) {
-				return file;
-			}
-		}
-		throw new Error("findProgram: program not found, " + name);
-	};
-
-	var _ = require('lodash');
+	var _  = require('lodash');
+	var fs = require('fs');
 
 	//
 	// CXX       = Program for compiling C++
@@ -129,60 +161,47 @@ module.exports = function(grunt) {
 		}
 	};
 
-	grunt.cxxshlibConfig = function(userOptions) {
-		let defaults = grunt.buildDefaults[process.platform];
+	var buildConfig = null;
 
-		return {
-			programs: {
-				AR   : grunt.file.findProgram(defaults.programs.AR), 
-				CC   : grunt.file.findProgram(defaults.programs.CC), 
-				CXX  : grunt.file.findProgram(defaults.programs.CXX), 
-				LINK : grunt.file.findProgram(defaults.programs.LINK)
-			},
-			patterns: _.mergeWith({}, defaults.patterns, customizer),
-			templates: {
-				cxx  : _.template('${CXX} ${CXXFLAGS} ${CPPFLAGS} ${DEFINES} ${INCLUDES} -c ${SRC} -o ${OUT}'),
-				link : _.template('${LINK} -o ${OUT} ${OBJS} -link -implib:${IMPLIB} ${LDFLAGS} ${LDLIBS}')
-			},
-			options: _.mergeWith(defaults.options, userOptions, customizer)
+	grunt.build = {};
+	grunt.build.config = function(name, userOptions) {
+		if (!buildConfig) {
+			let configFile = path.join(grunt.buildDir, 'config.json');
+
+			if (!fs.existsSync(configFile))
+				throw new Error("Configure file not found, " + configFile);
+
+			buildConfig = grunt.file.readJSON(configFile);
+
+			buildConfig.cc.cmd      = _.template(buildConfig.cc.template);
+			buildConfig.cxx.cmd     = _.template(buildConfig.cxx.template);
+			buildConfig.shlib.cmd   = _.template(buildConfig.shlib.template);
+			buildConfig.stlib.cmd   = _.template(buildConfig.stlib.template);
+			buildConfig.program.cmd = _.template(buildConfig.program.template);
 		}
+		
+		_.mergeWith(buildConfig[name].options, userOptions, customizer);
+
+		return buildConfig[name]; 
 	};
 
-	grunt.cxxstlibConfig = function(userOptions) {
-		let defaults = grunt.buildDefaults[process.platform];
-
-		return {
-			programs: {
-				AR   : grunt.file.findProgram(defaults.programs.AR), 
-				CC   : grunt.file.findProgram(defaults.programs.CC), 
-				CXX  : grunt.file.findProgram(defaults.programs.CXX), 
-				LINK : grunt.file.findProgram(defaults.programs.LINK)
-			},
-			patterns: _.mergeWith({}, defaults.patterns, customizer),
-			templates: {
-				cxx : _.template('${CXX} ${CXXFLAGS} ${CPPFLAGS} ${DEFINES} ${INCLUDES} -c ${SRC} -o ${OUT}'),
-				ar  : _.template('${AR} -out:${OUT} ${OBJS}')
-			},
-			options: _.mergeWith(defaults.options, userOptions, customizer)
-		}
+	grunt.build.patterns = function(name) {
+		return grunt.buildDefaults[process.platform].patterns;
 	};
 
-	grunt.cxxprogramConfig = function(userOptions) {
-		let defaults = grunt.buildDefaults[process.platform];
+	grunt.registerTask('configure', 'Configure build enviroment', function() {
+		if (!fs.existsSync(grunt.buildDir))
+			fs.mkdirSync(grunt.buildDir);
 
-		return {
-			programs: {
-				AR   : grunt.file.findProgram(defaults.programs.AR), 
-				CC   : grunt.file.findProgram(defaults.programs.CC), 
-				CXX  : grunt.file.findProgram(defaults.programs.CXX), 
-				LINK : grunt.file.findProgram(defaults.programs.LINK)
-			},
-			patterns: _.mergeWith({}, defaults.patterns, customizer),
-			templates: {
-				cxx  : _.template('${CXX} ${CXXFLAGS} ${CPPFLAGS} ${DEFINES} ${INCLUDES} -c ${SRC} -o ${OUT}'),
-				link : _.template('${LINK} -o ${OUT} ${OBJS} -link ${LDFLAGS} ${LDLIBS}')
-			},
-			options: _.mergeWith(defaults.options, userOptions, customizer)
-		}
-	};
+		let defaults = grunt.buildDefaults[process.platform],
+		    outFile  = path.join(grunt.buildDir, 'config.json');
+
+		_.mergeWith(defaults.cc.options, defaults.options, customizer);
+		_.mergeWith(defaults.cxx.options, defaults.options, customizer);
+		_.mergeWith(defaults.shlib.options, defaults.options, customizer);
+		_.mergeWith(defaults.stlib.options, defaults.options, customizer);
+		_.mergeWith(defaults.program.options, defaults.options, customizer);
+
+		grunt.file.write(outFile, JSON.stringify(defaults, null, '\t'));
+	});
 };

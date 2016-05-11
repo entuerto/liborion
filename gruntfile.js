@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		cxxstlib: {
+		cstlib: {
 			mongoose: {
 				options: {
 					cxxflags : ["-Wall"],
@@ -14,7 +14,9 @@ module.exports = function(grunt) {
 					defines  : ["ORION_SHARED_EXPORTS"]
 				},
 				src : ['lib/ws/mongoose/mongoose.c']
-			},
+			}
+		},
+		cxxstlib: {
 			json: {
 				options: {
 					cxxflags : ["-Wall"],
@@ -120,9 +122,7 @@ module.exports = function(grunt) {
 					libs     : ["libjson.lib", "liborion.dll.lib", "liborion-ws.dll.lib"]
 				},
 				src : ['tests/test-jsonrpc.cpp']
-			}
-		},
-		cxxprogram: {
+			},
 			'signal-example': {
 				options: {
 					cxxflags : ["-Wall"],
@@ -158,6 +158,9 @@ module.exports = function(grunt) {
 	grunt.loadTasks('tasks');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 
-	grunt.registerTask('default', ['cxxstlib', 'cxxshlib', 'cxxprogram']);
+	grunt.registerTask('default', ['cstlib', 
+		                           'cxxstlib', 
+		                           'cxxshlib', 
+		                           'cxxprogram']);
 
 };
