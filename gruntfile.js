@@ -65,6 +65,18 @@ module.exports = function(grunt) {
 						'lib/unittest/TestResultItem.cpp',
 						'lib/unittest/TestStdOutput.cpp']
 			},
+			'orion-net': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : [".", "include/", "lib/"],
+					defines  : ["ORION_SHARED_EXPORTS"],
+					libs     : ["ws2_32.lib", "liborion.dll.lib"]
+				},
+				src :  ['lib/net/IP.cpp',
+						'lib/net/IPAddress.cpp',
+						'lib/net/TcpConnection.cpp',
+						'lib/net/TcpListener.cpp']	
+			},
 			'orion-ws': {
 				options: {
 					cxxflags : ["-Wall"],
@@ -122,6 +134,14 @@ module.exports = function(grunt) {
 					libs     : ["libjson.lib", "liborion.dll.lib", "liborion-ws.dll.lib"]
 				},
 				src : ['tests/test-jsonrpc.cpp']
+			},
+			'test-net': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : [".", "include/"],
+					libs     : ["liborion.dll.lib", "liborion-net.dll.lib"]
+				},
+				src : ['tests/test-net.cpp']
 			},
 			'signal-example': {
 				options: {
