@@ -22,6 +22,7 @@
 #ifndef UUID_H
 #define UUID_H
 
+#include <memory>
 #include <string>
 #include <orion/Orion-Stddefs.h>
 
@@ -54,7 +55,7 @@ public:
 
 private:
    struct Private;
-   Private* _impl;
+   std::unique_ptr<Private> _impl;
 
 };
 }

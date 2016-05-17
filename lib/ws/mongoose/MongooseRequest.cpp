@@ -124,7 +124,7 @@ void MongooseRequest::read_data(struct mg_connection* connection)
 
 Request::SharedPtr MongooseRequest::create(struct mg_connection* connection)
 {
-   return Request::SharedPtr(new MongooseRequest(connection)); 
+   return std::make_shared<MongooseRequest>(connection); 
 }
 
 } // mongoose

@@ -30,7 +30,7 @@ using namespace orion::logging;
 */
 Module::SharedPtr Module::create()
 {
-   return Module::SharedPtr(new Module);
+   return std::make_shared<Module>();
 }
    
 /*!

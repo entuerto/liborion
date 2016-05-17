@@ -73,7 +73,6 @@ Uuid::Uuid(const std::string& value) :
 
 Uuid::~Uuid()
 {
-   delete _impl;
 }
 
 bool Uuid::is_null() const
