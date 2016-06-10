@@ -4,6 +4,8 @@ liborion compilation
 module.exports = function(grunt) {
 	"use strict";
 
+	require('time-grunt')(grunt);
+
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		cstlib: {
@@ -29,15 +31,18 @@ module.exports = function(grunt) {
 			}
 		},
 		cxxshlib: {
+			options: {
+				cxxflags : ["-Wall"],
+				includes : [".", "include/", "lib/"],
+				defines  : ["ORION_SHARED_EXPORTS"]
+				},
 			orion: {
 				options: {
-					cxxflags : ["-Wall"],
-					includes : [".", "include/", "lib/"],
-					defines  : ["ORION_SHARED_EXPORTS"],
-					libs     : ["psapi.lib", "ntdll.lib", "rpcrt4.lib"]
+					libs : ["psapi.lib", "ntdll.lib", "rpcrt4.lib"]
 				},
 				src :  ['lib/ArgumentExceptions.cpp',
 						'lib/DateUtils.cpp',
+						'lib/Encoding.cpp',
 						'lib/Exception.cpp',
 						'lib/Module.cpp',
 						'lib/Module-win32.cpp',
@@ -67,10 +72,7 @@ module.exports = function(grunt) {
 			},
 			'orion-net': {
 				options: {
-					cxxflags : ["-Wall"],
-					includes : [".", "include/", "lib/"],
-					defines  : ["ORION_SHARED_EXPORTS"],
-					libs     : ["ws2_32.lib", "liborion.dll.lib"]
+					libs : ["ws2_32.lib", "liborion.dll.lib"]
 				},
 				src :  ['lib/net/IP.cpp',
 						'lib/net/IPAddress.cpp',
@@ -79,10 +81,7 @@ module.exports = function(grunt) {
 			},
 			'orion-ws': {
 				options: {
-					cxxflags : ["-Wall"],
-					includes : [".", "include/", "lib/"],
-					defines  : ["ORION_SHARED_EXPORTS"],
-					libs     : ["psapi.lib", "ws2_32.lib", "rpcrt4.lib", "libjson.lib", "libmongoose.lib", "liborion.dll.lib"]
+					libs : ["psapi.lib", "ws2_32.lib", "rpcrt4.lib", "libjson.lib", "libmongoose.lib", "liborion.dll.lib"]
 				},
 				src :  ['lib/ws/mongoose/MongooseRequest.cpp',
 						'lib/ws/mongoose/MongooseHttpServer.cpp',
@@ -143,6 +142,14 @@ module.exports = function(grunt) {
 				},
 				src : ['tests/test-net.cpp']
 			},
+			'test-encoding': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : [".", "include/"],
+					libs     : ["liborion.dll.lib"]
+				},
+				src : ['tests/test-encoding.cpp']
+			},
 			'signal-example': {
 				options: {
 					cxxflags : ["-Wall"],
@@ -166,6 +173,14 @@ module.exports = function(grunt) {
 					libs     : ["liborion.dll.lib"]
 				},
 				src : ['examples/system-info.cpp']
+			},
+			'net-example': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : ['.', 'examples/', 'include/'],
+					libs     : ["Iphlpapi.lib"]
+				},
+				src : ['examples/net-example.cpp']
 			}
 		},
 		clean: {
