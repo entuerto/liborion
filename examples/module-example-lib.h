@@ -20,6 +20,8 @@
 #ifndef MODULE_EXAMPLE_H
 #define MODULE_EXAMPLE_H
 
+#include <orion/Orion-Stddefs.h>
+
 struct Hello
 {
    virtual void print() =0;
@@ -27,7 +29,7 @@ struct Hello
 
 extern "C"
 {
-bool create_instance(Hello*& hello);
+API_EXPORT bool create_instance(Hello*& hello);
 }
 
 #endif

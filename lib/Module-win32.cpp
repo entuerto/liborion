@@ -36,11 +36,6 @@ struct Module::Private
    std::string name;
 };
 
-static int utf8_to_utf16(const char* utf8Buffer, WCHAR* utf16Buffer, size_t utf16Size) 
-{
-   return MultiByteToWideChar(CP_UTF8, 0, utf8Buffer, -1, utf16Buffer, utf16Size);
-}
-
 static void get_last_error_message(DWORD last_error_code, std::string& error_message)
 {
    wchar_t* buffer;
@@ -93,17 +88,7 @@ bool Module::is_open() const
 */
 void Module::open(const std::string& file_name)
 {
-   WCHAR file_name_w[32768];
-
-   if (not utf8_to_utf16(file_name.c_str(), file_name_w, 32768))
-   {
-      std::string error_message;
-
-      get_last_error_message(GetLastError(), error_message);
-      THROW_EXCEPTION(ModuleException, error_message); 
-   }
-
-   _impl->handle = LoadLibraryExW(file_name_w, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
+   _impl->handle = LoadLibraryExW(utf8_to_wstring(file_name).c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
 
    if (_impl->handle == nullptr)
    {

@@ -99,7 +99,7 @@ void PlugIn::enable()
  */
 void PlugIn::disable()
 {
-   if (do_disable())
+   if (do_disable()) 
       _is_enabled = false;
 }
 

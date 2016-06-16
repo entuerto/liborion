@@ -107,7 +107,7 @@ TEST(TestIPv6Move)
 // Main functions
 //----------------------------------------------------------------------------
 
-int main(int argc, char** argv)
+int main()
 {
    int ret = run_all_tests(TestStdOutput::create(std::cout));
 

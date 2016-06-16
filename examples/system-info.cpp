@@ -27,7 +27,7 @@ using namespace orion;
 using namespace orion::systeminfo;
 
 
-int main (int argc, char** argv)
+int main ()
 {
    std::cout << "System Information\n"
              << "  Name:       " << get_user_name() << "\n"

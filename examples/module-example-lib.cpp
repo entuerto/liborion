@@ -34,7 +34,7 @@ extern "C"
 
 bool create_instance(Hello*& hello)
 {
-   hello = new HelloWorld;
+   hello = new HelloWorld; 
    return true;
 }
 

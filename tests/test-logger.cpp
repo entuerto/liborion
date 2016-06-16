@@ -132,7 +132,7 @@ void setup_logger(LogRecord& record)
    logger.output_handlers().push_back(out_handler);
 }
 
-int main(int argc, char** argv)
+int main()
 {
    // Help with uncaught exceptions in g++
    //std::set_terminate(__gnu_cxx::__verbose_terminate_handler);

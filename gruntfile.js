@@ -71,6 +71,15 @@ module.exports = function(grunt) {
 						'lib/unittest/TestResultItem.cpp',
 						'lib/unittest/TestStdOutput.cpp']
 			},
+			'orion-plugin': {
+				options: {
+					libs : ['liborion.dll.lib']
+				},
+				src :  ['lib/plugin/Extension.cpp',
+                        'lib/plugin/PlugIn.cpp',
+                        'lib/plugin/PlugInException.cpp',
+                        'lib/plugin/PlugInManager.cpp']
+			},
 			'orion-net': {
 				options: {
 					libs : ["ws2_32.lib", "liborion.dll.lib"]
@@ -82,7 +91,12 @@ module.exports = function(grunt) {
 			},
 			'orion-ws': {
 				options: {
-					libs : ["psapi.lib", "ws2_32.lib", "rpcrt4.lib", "libjson.lib", "libmongoose.lib", "liborion.dll.lib"]
+					libs : ["psapi.lib", 
+					        "ws2_32.lib", 
+					        "rpcrt4.lib", 
+					        "libjson.lib", 
+					        "libmongoose.lib", 
+					        "liborion.dll.lib"]
 				},
 				src :  ['lib/ws/mongoose/MongooseRequest.cpp',
 						'lib/ws/mongoose/MongooseHttpServer.cpp',
@@ -97,6 +111,13 @@ module.exports = function(grunt) {
 						'lib/ws/JsonRpcRequestListener.cpp',
 						'lib/ws/Response.cpp',
 						'lib/ws/HttpServer.cpp']	
+			},
+			'module-example': {
+				options: {
+					includes : ['.', 'examples/', 'include/'],
+					libs     : ['liborion.dll.lib']
+				},
+				src :  ['examples/module-example-lib.cpp']
 			}	
 		},
 		cxxprogram: {
@@ -104,12 +125,42 @@ module.exports = function(grunt) {
 				libs     : ["liborion.dll.lib"],
 				libPaths : ["build"]
 			},
+			'test-encoding': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : [".", "include/"]
+				},
+				src : ['tests/test-encoding.cpp']
+			},
+			'test-jsonrpc': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : [".", "include/", "lib/"],
+					libs     : ["libjson.lib", "liborion.dll.lib", "liborion-ws.dll.lib"]
+				},
+				src : ['tests/test-jsonrpc.cpp']
+			},
 			'test-logger': {
 				options: {
 					cxxflags : ["-Wall"],
 					includes : [".", "include/", "lib/"]
 				},
 				src : ['tests/test-logger.cpp']
+			},
+			'test-net': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : [".", "include/"],
+					libs     : ["liborion.dll.lib", "liborion-net.dll.lib"]
+				},
+				src : ['tests/test-net.cpp']
+			},
+			'test-string': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : [".", "include/", "lib/"]
+				},
+				src : ['tests/test-string.cpp']
 			},
 			'test-unittest': {
 				options: {
@@ -121,43 +172,6 @@ module.exports = function(grunt) {
 						'tests/unittest/ClassTestResult.cpp',
 						'tests/unittest/EvalMacros.cpp'],
 			},
-			'test-string': {
-				options: {
-					cxxflags : ["-Wall"],
-					includes : [".", "include/", "lib/"]
-				},
-				src : ['tests/test-string.cpp']
-			},
-			'test-jsonrpc': {
-				options: {
-					cxxflags : ["-Wall"],
-					includes : [".", "include/", "lib/"],
-					libs     : ["libjson.lib", "liborion.dll.lib", "liborion-ws.dll.lib"]
-				},
-				src : ['tests/test-jsonrpc.cpp']
-			},
-			'test-net': {
-				options: {
-					cxxflags : ["-Wall"],
-					includes : [".", "include/"],
-					libs     : ["liborion.dll.lib", "liborion-net.dll.lib"]
-				},
-				src : ['tests/test-net.cpp']
-			},
-			'test-encoding': {
-				options: {
-					cxxflags : ["-Wall"],
-					includes : [".", "include/"]
-				},
-				src : ['tests/test-encoding.cpp']
-			},
-			'signal-example': {
-				options: {
-					cxxflags : ["-Wall"],
-					includes : ['.', 'examples/', 'include/']
-				},
-				src : ['examples/signal-example.cpp']
-			},
 			'log-example': {
 				options: {
 					cxxflags : ["-Wall"],
@@ -165,12 +179,12 @@ module.exports = function(grunt) {
 				},
 				src : ['examples/log-example.cpp']
 			},
-			'system-info': {
+			'module-example': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : ['.', 'examples/', 'include/'],
+					includes : ['.', 'examples/', 'include/']
 				},
-				src : ['examples/system-info.cpp']
+				src : ['examples/module-example.cpp']
 			},
 			'net-example': {
 				options: {
@@ -179,6 +193,20 @@ module.exports = function(grunt) {
 					libs     : ["Iphlpapi.lib"]
 				},
 				src : ['examples/net-example.cpp']
+			},
+			'signal-example': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : ['.', 'examples/', 'include/']
+				},
+				src : ['examples/signal-example.cpp']
+			},
+			'system-info': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : ['.', 'examples/', 'include/'],
+				},
+				src : ['examples/system-info.cpp']
 			}
 		},
 		clean: {
