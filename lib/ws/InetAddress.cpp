@@ -62,7 +62,7 @@ InetAddress::SharedPtr InetAddress::create(long ip, int port)
    struct in_addr ra;
    ra.s_addr = ip;
    
-   return InetAddress::SharedPtr(new InetAddress(inet_ntoa(ra), port));
+   return std::make_shared<InetAddress>(inet_ntoa(ra), port);
 }
 
 } // ws
