@@ -271,7 +271,7 @@ TEST(TestIdAsInt)
 //----------------------------------------------------------------------------
 // Main functions
 //----------------------------------------------------------------------------
-int main(int argc, char** argv)
+int main()
 {
    return run_all_tests(TestStdOutput::create(std::cout));
 }

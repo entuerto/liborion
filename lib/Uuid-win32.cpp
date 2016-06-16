@@ -25,6 +25,8 @@
 #include <cstdint>
 #include <rpc.h>
 
+#include <orion/StringUtils.h>
+
 namespace orion
 {
 //--------------------------------------------------------------------------
@@ -33,16 +35,6 @@ namespace orion
 struct Uuid::Private
 {
    uuid_t _uuid;
-   unsigned char* _str_uuid;
-
-   Private() : _str_uuid(NULL)
-   {}
-
-   ~Private()
-   {
-      if (_str_uuid != NULL)
-         RpcStringFree(&_str_uuid);
-   }
 };
 
 Uuid::Uuid() :
@@ -63,9 +55,9 @@ Uuid::Uuid(const Uuid& rhs) :
 Uuid::Uuid(const std::string& value) :
    _impl(new Private)
 {
-   uint8_t* str_uuid = (uint8_t*)value.c_str();
+   std::wstring str_uuid = utf8_to_wstring(value);
 
-   RPC_STATUS ret = UuidFromString(str_uuid, &(_impl->_uuid));
+   RPC_STATUS ret = UuidFromStringW((RPC_WSTR)str_uuid.data(), &(_impl->_uuid));
 
    if (ret != RPC_S_OK)
       UuidCreateNil(&(_impl->_uuid));
@@ -88,12 +80,12 @@ bool Uuid::is_null() const
 
 std::string Uuid::to_string() const
 {
-   if (_impl->_str_uuid == NULL) {
-      if (UuidToString(&(_impl->_uuid), &(_impl->_str_uuid)) != RPC_S_OK)
-         return "";
-   }
+   RPC_WSTR str_uuid;
 
-   return std::string(reinterpret_cast<char*>(_impl->_str_uuid));
+   if (UuidToStringW(&(_impl->_uuid), &str_uuid) != RPC_S_OK)
+      return "";
+
+   return wstring_to_utf8((wchar_t*)str_uuid);
 }
 
 Uuid& Uuid::operator=(const Uuid& rhs)
@@ -101,12 +93,7 @@ Uuid& Uuid::operator=(const Uuid& rhs)
    if (this == &rhs)
       return *this;
 
-   _impl->_uuid     = rhs._impl->_uuid;
-
-   if (_impl->_str_uuid != NULL)
-      RpcStringFree(&(_impl->_str_uuid));
-
-   _impl->_str_uuid = NULL;
+   _impl->_uuid = rhs._impl->_uuid;
 
    return *this;
 }

@@ -33,7 +33,7 @@ namespace plugin
 /*!
    Base class for all extensions in a plugin.
  */
-struct IExtension
+struct API_EXPORT IExtension
 {
    virtual ~IExtension() {}
 };

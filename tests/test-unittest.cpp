@@ -2,7 +2,7 @@
 #include <orion/TestUtils.h>
 #include <iostream>
 
-int main(int argc, char** argv)
+int main()
 {
    // Help with uncaught exceptions in g++
    //std::set_terminate(__gnu_cxx::__verbose_terminate_handler);
