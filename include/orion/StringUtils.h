@@ -30,6 +30,12 @@ public:
    { }
 };
 
+/// convert UTF-8 string to wstring
+API_EXPORT std::wstring utf8_to_wstring(const std::string& str);
+
+/// convert wstring to UTF-8 string
+API_EXPORT std::string wstring_to_utf8(const std::wstring& str);
+
 //! 
 API_EXPORT bool equals_no_case(const std::string& str1, const std::string& str2);
 

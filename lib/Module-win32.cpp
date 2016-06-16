@@ -23,6 +23,7 @@
 #include <orion/ErrorMacros.h>
 #include <orion/ModuleException.h>
 #include <orion/Logging.h>
+#include <orion/StringUtils.h>
 
 namespace orion
 {
@@ -42,18 +43,18 @@ static int utf8_to_utf16(const char* utf8Buffer, WCHAR* utf16Buffer, size_t utf1
 
 static void get_last_error_message(DWORD last_error_code, std::string& error_message)
 {
-   char* buffer;
+   wchar_t* buffer;
 
-   FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                 NULL,
-                 last_error_code,
-                 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                 (LPSTR) &buffer,
-                 0, NULL);
+   FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                  nullptr,
+                  last_error_code,
+                  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  (LPWSTR) &buffer,
+                  0, nullptr);
 
    if (buffer)
    {
-      error_message = buffer;
+      error_message = wstring_to_utf8(buffer);
 
       LocalFree(buffer);
    }
@@ -102,7 +103,7 @@ void Module::open(const std::string& file_name)
       THROW_EXCEPTION(ModuleException, error_message); 
    }
 
-   _impl->handle = LoadLibraryExW(file_name_w, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+   _impl->handle = LoadLibraryExW(file_name_w, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
 
    if (_impl->handle == nullptr)
    {

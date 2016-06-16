@@ -100,19 +100,21 @@ module.exports = function(grunt) {
 			}	
 		},
 		cxxprogram: {
+			options: {
+				libs     : ["liborion.dll.lib"],
+				libPaths : ["build"]
+			},
 			'test-logger': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : [".", "include/", "lib/"],
-					libs     : ["liborion.dll.lib"]
+					includes : [".", "include/", "lib/"]
 				},
 				src : ['tests/test-logger.cpp']
 			},
 			'test-unittest': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : [".", "include/", "lib/"],
-					libs     : ["liborion.dll.lib"]
+					includes : [".", "include/", "lib/"]
 				},
 				src :  ['tests/test-unittest.cpp',
 						'tests/unittest/ClassTest.cpp',
@@ -122,8 +124,7 @@ module.exports = function(grunt) {
 			'test-string': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : [".", "include/", "lib/"],
-					libs     : ["liborion.dll.lib"]
+					includes : [".", "include/", "lib/"]
 				},
 				src : ['tests/test-string.cpp']
 			},
@@ -146,24 +147,21 @@ module.exports = function(grunt) {
 			'test-encoding': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : [".", "include/"],
-					libs     : ["liborion.dll.lib"]
+					includes : [".", "include/"]
 				},
 				src : ['tests/test-encoding.cpp']
 			},
 			'signal-example': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : ['.', 'examples/', 'include/'],
-					libs     : ["liborion.dll.lib"]
+					includes : ['.', 'examples/', 'include/']
 				},
 				src : ['examples/signal-example.cpp']
 			},
 			'log-example': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : ['.', 'examples/', 'include/'],
-					libs     : ["liborion.dll.lib"]
+					includes : ['.', 'examples/', 'include/']
 				},
 				src : ['examples/log-example.cpp']
 			},
@@ -171,7 +169,6 @@ module.exports = function(grunt) {
 				options: {
 					cxxflags : ["-Wall"],
 					includes : ['.', 'examples/', 'include/'],
-					libs     : ["liborion.dll.lib"]
 				},
 				src : ['examples/system-info.cpp']
 			},

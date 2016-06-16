@@ -27,7 +27,7 @@
 #include <lmcons.h>   /* For UNLEN */
 #include <process.h>
 
-#ifndef __MINGW64__
+#if 0 //ndef __MINGW64__
 #include <ddk/ntifs.h>
 
 typedef struct _SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION {
@@ -44,10 +44,9 @@ LARGE_INTEGER IdleTime;
 
 #include <psapi.h>
 
+#include <orion/StringUtils.h>
+
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-
-
-
 
 namespace orion
 {
@@ -62,22 +61,24 @@ void get_loaded_modules(unsigned long process_id, ModuleList& modules)
    // Get a list of all the modules in this process.
    HANDLE process_handle = OpenProcess(PROCESS_QUERY_INFORMATION |
                                        PROCESS_VM_READ,
-                                       FALSE, process_id);
-   if (NULL == process_handle)
+                                       FALSE, 
+                                       process_id);
+   if (process_handle == nullptr)
        return;
 
    HMODULE module_handles[1024];
 
-   if (EnumProcessModules(process_handle, module_handles, sizeof(module_handles), &cbNeeded)) {
-      for (int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) {
-         TCHAR module_name[MAX_PATH];
+   if (EnumProcessModulesEx(process_handle, module_handles, sizeof(module_handles), &cbNeeded, LIST_MODULES_ALL)) 
+   {
+      for (int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) 
+      {
+         wchar_t module_name[MAX_PATH];
 
          // Get the full path to the module's file.
-         if (GetModuleFileNameEx(process_handle,
-                                 module_handles[i],
-                                 module_name, sizeof(module_name) / sizeof(TCHAR))) {
+         if (GetModuleFileNameExW(process_handle, module_handles[i], module_name, sizeof(module_name))) 
+         {
             // Print the module name and handle value.
-            modules.push_back(module_name);
+            modules.push_back(wstring_to_utf8(module_name));
          }
       }
    }
@@ -86,22 +87,23 @@ void get_loaded_modules(unsigned long process_id, ModuleList& modules)
 
 std::string get_cpu_model()
 {
-   DWORD type = REG_SZ;
-   HKEY hKey = nullptr;
    const uint32_t max_length = 4096;
 
-   DWORD length = max_length;
-   char  value[max_length];
+   DWORD   type = REG_SZ;
+   HKEY    hKey = nullptr;
+   DWORD   length = max_length;
+   wchar_t value[max_length];
+
    ZeroMemory(value, max_length);
 
-   const char* keyToOpen = "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
-   const char* valueToFind = "ProcessorNameString";
+   const wchar_t* keyToOpen = L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
+   const wchar_t* valueToFind = L"ProcessorNameString";
 
-   RegOpenKeyEx(HKEY_LOCAL_MACHINE, keyToOpen, 0, KEY_READ, &hKey);
-   RegQueryValueEx(hKey, valueToFind, NULL, &type, (LPBYTE)&value, &length);
+   RegOpenKeyExW(HKEY_LOCAL_MACHINE, keyToOpen, 0, KEY_READ, &hKey);
+   RegQueryValueExW(hKey, valueToFind, nullptr, &type, (LPBYTE)&value, &length);
    RegCloseKey(hKey);
 
-   std::string cpuName = value;
+   std::string cpuName = wstring_to_utf8(value);
 
    SYSTEM_INFO sysinfo;
    ZeroMemory(&sysinfo, sizeof(SYSTEM_INFO));
@@ -198,7 +200,7 @@ std::vector<CpuInfo> get_cpu_info()
       cpu_times.nice = 0;
       cpu_times.sys  = (sppi[i].KernelTime.QuadPart - sppi[i].IdleTime.QuadPart) / 10000;
       cpu_times.idle = sppi[i].IdleTime.QuadPart / 10000;
-#ifndef __MINGW64__
+#if 0 //ndef __MINGW64__
       cpu_times.irq  = sppi[i].InterruptTime.QuadPart / 10000;
 #else
       cpu_times.irq  = sppi[i].Reserved1[0].QuadPart / 10000;
@@ -245,7 +247,7 @@ std::string get_os_version()
    // If that fails, try using the OSVERSIONINFO structure.
    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
-   bool os_version_info_ex = GetVersionEx((OSVERSIONINFO*) &osvi);
+   bool os_version_info_ex = GetVersionExW((OSVERSIONINFO*) &osvi);
 
    if (not os_version_info_ex) 
    {
@@ -305,58 +307,49 @@ std::string get_os_version()
 
 std::string get_host_name()
 {
-   char hostname[100];
+   wchar_t hostname[100];
    DWORD size = sizeof (hostname);
-   bool hostname_fail = not GetComputerName(hostname, &size);
+   bool hostname_fail = not GetComputerNameW(hostname, &size);
 
-   return hostname_fail ? "localhost" : hostname;
+   return hostname_fail ? "localhost" : wstring_to_utf8(hostname);
 }
 
 std::string get_user_name()
 {
-/*
+   std::string user_name;
+
    uint32_t len = UNLEN + 1;
    wchar_t  buffer[UNLEN + 1];
     
    if (GetUserNameW(buffer, (LPDWORD) &len))
    {
-      // wide to UTF-8
-      std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-      return conv.to_bytes(buffer);
+      user_name = wstring_to_utf8(buffer);
    }
-*/   
-   uint32_t len = UNLEN + 1;
-   char buffer[UNLEN + 1];
-    
-   if (GetUserName(buffer, (LPDWORD) &len))
-   {
-      return buffer;
-   }
-   return "";
+   return user_name;
 }
 
 int get_process_id()
 {
-   return getpid();
+   return GetCurrentProcessId();
 }
 
 std::string get_program_name()
 {
    HANDLE process_handle = OpenProcess(PROCESS_QUERY_INFORMATION |
                                        PROCESS_VM_READ,
-                                       FALSE, getpid());
-   if (NULL == process_handle)
+                                       FALSE, get_process_id());
+   if (process_handle == nullptr)
        return "";
 
-   TCHAR module_name[MAX_PATH];
+   wchar_t module_name[MAX_PATH];
 
    GetModuleFileNameEx(process_handle,
-                           NULL,
-                           module_name, sizeof(module_name) / sizeof(TCHAR)); 
+                       nullptr,
+                       module_name, sizeof(module_name)); 
 
    CloseHandle(process_handle);
 
-   return module_name;
+   return wstring_to_utf8(module_name);
 }
 
 void get_loadavg(double avg[3])
