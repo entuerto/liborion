@@ -34,7 +34,8 @@ module.exports = function(grunt) {
 			options: {
 				cxxflags : ["-Wall"],
 				includes : [".", "include/", "lib/"],
-				defines  : ["ORION_SHARED_EXPORTS"]
+				defines  : ["ORION_SHARED_EXPORTS"],
+				libPaths : ["build"]
 				},
 			orion: {
 				options: {
