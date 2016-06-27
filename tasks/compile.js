@@ -7,8 +7,9 @@ module.exports = function(grunt) {
 
 	var spawn = require('child_process').spawnSync;
 	var fs   = require('fs');
-	var path = require('path');
+	var path = require('path').posix;
 	var util = require('util');
+	var semver = require('semver');
 
 	function compileCC(srcFile, trgtOpts) {
 		let config   = grunt.build.config('cc', trgtOpts),
@@ -38,7 +39,7 @@ module.exports = function(grunt) {
 		});
 		grunt.verbose.writeln(cc);
 
-		var child = spawn('cmd.exe', ['/S', '/C', cc]);
+		var child = spawn(cc, { shell: true });
 
 		if (child.stdout && child.stdout.length > 0) {
 			grunt.log.writeln(child.stdout);
@@ -49,6 +50,8 @@ module.exports = function(grunt) {
 		if (child.status != 0) {
 			return false;
 		}
+
+		return true;
 	}
 
 	function compileCXX(srcFile, trgtOpts) {
@@ -79,7 +82,7 @@ module.exports = function(grunt) {
 		});
 		grunt.verbose.writeln(cxx);
 
-		var child = spawn('cmd.exe', ['/S', '/C', cxx]);
+		var child = spawn(cxx, { shell: true });
 
 		if (child.stdout && child.stdout.length > 0) {
 			grunt.log.writeln(child.stdout);
@@ -97,12 +100,14 @@ module.exports = function(grunt) {
 	function linkSharedLib(target, trgtOpts) {
 		let config   = grunt.build.config('shlib', trgtOpts),
 		    options  = config.options,
+		    pkg      = grunt.config.get('pkg'),
 		    patterns = grunt.build.patterns();
 
-		var libs = options.stdLibs.concat(options.libs);
+		var libs = options.stdLibs.concat(options.libs),
+		    v = util.format(patterns.version, semver.major(pkg.version), semver.minor(pkg.version));
 
 		var objFiles = grunt.file.expand(path.join(options.outDir, patterns.objGlob)),
-		    outFile  = path.join(grunt.buildDir, util.format(patterns.shlib, target))
+		    outFile  = path.join(grunt.buildDir, util.format(patterns.shlib, target, v))
 
 		options.ldflags.push(joinWith(options.libPaths, patterns.libpath));
 
@@ -111,7 +116,7 @@ module.exports = function(grunt) {
 		// ${LINK} -o ${OUT} ${OBJS} -link ${IMPLIB} ${LDFLAGS} ${LDLIBS} 
 		var link = config.cmd({
 			LINK    : config.LINK,
-			LDLIBS  : libs.join(" "),
+			LDLIBS  : joinWith(libs, patterns.lib),
 			LDFLAGS : options.ldflags.join(" "),
 			IMPLIB  : util.format(patterns.implib, grunt.buildDir, target),
 			OBJS    : objFiles.join(" "),
@@ -119,7 +124,7 @@ module.exports = function(grunt) {
 		});
 		grunt.verbose.writeln(link);
 
-		var child = spawn('cmd.exe', ['/S', '/C', link]);
+		var child = spawn(link, { shell: true });
 
 		if (child.stdout && child.stdout.length > 0) {
 			grunt.log.writeln(child.stdout);
@@ -152,7 +157,7 @@ module.exports = function(grunt) {
 		});
 		grunt.verbose.writeln(ar);
 
-		let child = spawn('cmd.exe', ['/S', '/C', ar]);
+		let child = spawn(ar, { shell: true });
 
 		if (child.stdout && child.stdout.length > 0) {
 			grunt.log.writeln(child.stdout);
@@ -184,14 +189,14 @@ module.exports = function(grunt) {
 		// ${LINK} -o ${OUT} ${OBJS} -link ${LDFLAGS} ${LDLIBS} 
 		var link = config.cmd({
 			LINK    : config.LINK,
-			LDLIBS  : libs.join(" "),
+			LDLIBS  : joinWith(libs, patterns.lib),
 			LDFLAGS : options.ldflags.join(" "),
 			OBJS    : objFiles.join(" "),
 			OUT     : outFile
 		});
 		grunt.verbose.writeln(link);
 
-		var child = spawn('cmd.exe', ['/S', '/C', link]);
+		var child = spawn(link, { shell: true });
 
 		if (child.stdout && child.stdout.length > 0) {
 			grunt.log.writeln(child.stdout);
@@ -410,4 +415,9 @@ module.exports = function(grunt) {
 		}).join(" ");
 	}
 
+	/*
+		_.mapKeys(grunt.config.get('cstlib'), function(value, key) {
+			grunt.log.writeln(key);
+		});
+	*/
 };

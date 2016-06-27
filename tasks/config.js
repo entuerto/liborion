@@ -5,7 +5,10 @@
 module.exports = function(grunt) {
 	"use strict";
 
-	var path = require("path");
+	var path = require("path").posix;
+	var util = require('util');
+
+	var pkg = grunt.config.get('pkg');
 
 	grunt.file.findProgram = function(name) {
 		var PATH = process.env.PATH.split(path.delimiter);
@@ -32,11 +35,12 @@ module.exports = function(grunt) {
 			lib     : '-l%s',
 			libpath : '-L%s',
 			stlib   : 'lib%s.a',
-			shlib   : 'lib%s.so',
+			shlib   : 'lib%s-%s.so',
 			implib  : '',
 			prog    : '%s',
 			objExt  : 'o',
-			objGlob : '*.o'
+			objGlob : '*.o',
+			version : '%s.%s'
 		},
 		options: {
 			debug   : {
@@ -90,7 +94,7 @@ module.exports = function(grunt) {
 			options  : {
 				defines : [],
 				includes: ['.'],
-				cxxflags: ["-Wall"],
+				cxxflags: ["-Wall", "-std=c++14"],
 				cppflags: []
 			}
 		},
@@ -99,7 +103,6 @@ module.exports = function(grunt) {
 			template : '${LINK} -o ${OUT} ${OBJS} -link ${LDFLAGS} ${LDLIBS}',
 			options  : {
 				ldflags : [],
-				libs    : [],
 				libPaths: [],
 				implib  : [],
 				libs    : []
@@ -107,7 +110,7 @@ module.exports = function(grunt) {
 		},
 		stlib: {
 			AR       : '', 
-			template : '${AR} -out:${OUT} ${OBJS}',
+			template : '${AR} cr ${OUT} ${OBJS}',
 			options  : {}
 		},
 		program: {
@@ -115,7 +118,6 @@ module.exports = function(grunt) {
 			template : '${LINK} -o ${OUT} ${OBJS} -link ${LDFLAGS} ${LDLIBS}',
 			options  : {
 				ldflags : [],
-				libs    : [],
 				libPaths: [],
 				libs    : []
 			}
@@ -131,8 +133,9 @@ module.exports = function(grunt) {
 
 	grunt.build.opts['win32-g++'] = {
 		patterns: {
-			stlib   : 'lib%s.lib',
-			shlib   : 'lib%s.dll',
+			stlib   : 'lib%s.a',
+			shlib   : 'lib%s-%s.dll',
+			implib  : '--out-implib,%s/lib%s.dll.a',
 			prog    : '%s.exe',
 			objExt  : 'o',
 			objGlob : '*.o'
@@ -149,16 +152,49 @@ module.exports = function(grunt) {
 			          '-luuid', 
 			          '-lcomdlg32', 
 			          '-ladvapi32']
+		},
+		cc: {
+			CC     : grunt.file.findProgram('gcc.exe'),
+			options: {
+				defines : ['WIN32', 'UNICODE']
+			}
+		},
+		cxx: {
+			CXX    : grunt.file.findProgram('g++.exe'), 
+			options: {
+				defines : ['WIN32', 'UNICODE']
+			}
+		},
+		stlib: {
+			AR : grunt.file.findProgram('ar.exe'), 
+		},
+		shlib: {
+			LINK     : grunt.file.findProgram('g++.exe'),
+			template : '${LINK} -shared -o ${OUT} ${OBJS} -Wl,${IMPLIB} ${LDFLAGS} ${LDLIBS}',
+			options  : {
+				ldflags:  ['-Wl,-Bdynamic', '-Wl,--enable-auto-import'],
+				libPaths: [],
+				libs    : []
+			}
+		},
+		program: {
+			LINK     : grunt.file.findProgram('g++.exe'),
+			template : '${LINK} -o ${OUT} ${OBJS}  ${LDFLAGS} ${LDLIBS}',
+			options  : {
+				ldflags : ['-Wl,-Bdynamic', '-Wl,--enable-auto-import'],
+				libPaths: [],
+				libs    : []
+			}
 		}
 	};
 
 	grunt.build.opts['win32-clang-cl'] = {
 		patterns: {
-			lib     : '%s',
+			lib     : '%s.lib',
 			libpath : '-libpath:%s',
 			stlib   : 'lib%s.lib',
-			shlib   : 'lib%s.dll',
-			implib  : '-implib:%s/lib%s.dll.lib',
+			shlib   : '%s-%s.dll',
+			implib  : '-implib:%s/%s.lib',
 			prog    : '%s.exe',
 			objExt  : 'obj',
 			objGlob : '*.obj'
@@ -175,28 +211,28 @@ module.exports = function(grunt) {
 				},
 				stlib: {},
 				shlib: {
-					stdLibs : ['kernel32.lib', 
-				               'user32.lib', 
-				               'gdi32.lib', 
-				               'winspool.lib', 
-				               'shell32.lib', 
-				               'ole32.lib', 
-				               'oleaut32.lib', 
-				               'uuid.lib', 
-				               'comdlg32.lib', 
-				               'advapi32.lib']
+					stdLibs : ['kernel32', 
+				               'user32', 
+				               'gdi32', 
+				               'winspool', 
+				               'shell32', 
+				               'ole32', 
+				               'oleaut32', 
+				               'uuid', 
+				               'comdlg32', 
+				               'advapi32']
 				},
 				program: {
-					stdLibs : ['kernel32.lib', 
-				               'user32.lib', 
-				               'gdi32.lib', 
-				               'winspool.lib', 
-				               'shell32.lib', 
-				               'ole32.lib', 
-				               'oleaut32.lib', 
-				               'uuid.lib', 
-				               'comdlg32.lib', 
-				               'advapi32.lib']
+					stdLibs : ['kernel32', 
+				               'user32', 
+				               'gdi32', 
+				               'winspool', 
+				               'shell32', 
+				               'ole32', 
+				               'oleaut32', 
+				               'uuid', 
+				               'comdlg32', 
+				               'advapi32']
 				}
 			},
 			release : {
@@ -210,28 +246,28 @@ module.exports = function(grunt) {
 				},
 				stlib: {},
 				shlib: {
-					stdLibs : ['kernel32.lib', 
-				               'user32.lib', 
-				               'gdi32.lib', 
-				               'winspool.lib', 
-				               'shell32.lib', 
-				               'ole32.lib', 
-				               'oleaut32.lib', 
-				               'uuid.lib', 
-				               'comdlg32.lib', 
-				               'advapi32.lib']
+					stdLibs : ['kernel32', 
+				               'user32', 
+				               'gdi32', 
+				               'winspool', 
+				               'shell32', 
+				               'ole32', 
+				               'oleaut32', 
+				               'uuid', 
+				               'comdlg32', 
+				               'advapi32']
 				},
 				program: {
-					stdLibs : ['kernel32.lib', 
-				               'user32.lib', 
-				               'gdi32.lib', 
-				               'winspool.lib', 
-				               'shell32.lib', 
-				               'ole32.lib', 
-				               'oleaut32.lib', 
-				               'uuid.lib', 
-				               'comdlg32.lib', 
-				               'advapi32.lib']
+					stdLibs : ['kernel32', 
+				               'user32', 
+				               'gdi32', 
+				               'winspool', 
+				               'shell32', 
+				               'ole32', 
+				               'oleaut32', 
+				               'uuid', 
+				               'comdlg32', 
+				               'advapi32']
 				}
 			}
 		},
@@ -312,6 +348,37 @@ module.exports = function(grunt) {
 		}
 	};
 
+	function defaultCompiler() {
+		switch(process.platform) {
+			case 'darwin':
+			case 'freebsd':
+				return 'clang++'
+			case 'linux':
+			case 'sunos':
+				return 'g++';
+			case 'win32':
+				return 'clang-cl'
+			default:
+				break;
+		}
+		throw "Unkown platform."
+	};
+
+	function defaultPrefix() {
+		switch(process.platform) {
+			case 'darwin':
+			case 'freebsd':
+			case 'linux':
+			case 'sunos':
+				return '/usr/local';
+			case 'win32':
+				return 'C:/Program Files'
+			default:
+				break;
+		}
+		throw "Unkown platform."
+	};
+
 	var buildConfig = null;
 
 	grunt.build.config = function(name, userOptions) {
@@ -346,10 +413,17 @@ module.exports = function(grunt) {
 			fs.mkdirSync(grunt.buildDir);
 
 		let defaults = {},
-		    outFile  = path.join(grunt.buildDir, 'config.json');
+		    outFile  = path.join(grunt.buildDir, 'config.json'),
+			pkg      = grunt.config.get('pkg'),
+		    compiler = grunt.option('compiler') || defaultCompiler(),
+		    prefix   = path.join(grunt.option('prefix') || defaultPrefix(), pkg.name),
+		    bindir   = grunt.option('bindir') || path.join(prefix, 'bin'),
+		    datadir  = grunt.option('datadir') || path.join(prefix, 'share'),
+		    libdir   = grunt.option('libdir')  || path.join(prefix, 'lib'),
+		    includedir = grunt.option('includedir') || path.join(prefix, 'include');
 
 		_.merge(defaults, grunt.build.opts.common, 
-			              grunt.build.opts['win32-clang-cl']);
+			              grunt.build.opts[util.format('%s-%s', process.platform, compiler)]);
 
 		let opt = {};
 
@@ -379,7 +453,30 @@ module.exports = function(grunt) {
 		tgt.program = defaults.program;
 		_.mergeWith(tgt.program.options, opt.program, customizer);
 	
-		grunt.file.write(outFile, JSON.stringify(tgt, null, '\t'));
+		tgt.dirs = {
+			prefix    : prefix,
+			bindir    : bindir,
+			datadir   : datadir,
+			libdir    : libdir,
+			includedir: includedir
+		};
 
+		grunt.log.writeln();
+		grunt.log.writeln("liborion " + pkg.version);
+		grunt.log.writeln();
+		grunt.log.writeln("Configuration:");
+		grunt.log.writeln()
+		grunt.log.writeln("  prefix                  : " + prefix); 
+		grunt.log.writeln("  bindir                  : " + bindir); 
+		grunt.log.writeln("  datadir                 : " + datadir); 
+		grunt.log.writeln("  libdir                  : " + libdir); 
+		grunt.log.writeln("  includedir              : " + includedir); 
+		grunt.log.writeln("  C Compiler              : " + tgt.cc.CC);
+		grunt.log.writeln("  C++ Compiler            : " + tgt.cxx.CXX)
+		grunt.log.writeln(util.format("  CFLAGS                  : %s", tgt.cc.options.cflags));
+		grunt.log.writeln(util.format("  CXXFLAGS                : %s", tgt.cxx.options.cxxflags));
+		grunt.log.writeln(util.format("  CPPFLAGS                : %s", tgt.cxx.options.cppflags));
+
+		grunt.file.write(outFile, JSON.stringify(tgt, null, '\t'));
 	});
 };
