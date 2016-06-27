@@ -35,25 +35,25 @@ module.exports = function(grunt) {
 				cxxflags : ["-Wall"],
 				includes : [".", "include/", "lib/"],
 				defines  : ["ORION_SHARED_EXPORTS"],
-				libPaths : ["build"]
+				libPaths : ["build/"]
 				},
 			orion: {
 				options: {
-					libs : ["psapi.lib", "ntdll.lib", "rpcrt4.lib"]
+					libs : ["psapi", "ntdll", "rpcrt4"]
 				},
 				src :  ['lib/ArgumentExceptions.cpp',
 						'lib/DateUtils.cpp',
 						'lib/Encoding.cpp',
 						'lib/Exception.cpp',
 						'lib/Module.cpp',
-						'lib/Module-win32.cpp',
+						'lib/Module-<%= process.platform %>.cpp',
 						'lib/ModuleException.cpp',
 						'lib/NotImplementedException.cpp',
 						'lib/StringUtils.cpp',
 						'lib/SystemInfo.cpp',
-						'lib/SystemInfo-win32.cpp',
+						'lib/SystemInfo-<%= process.platform %>.cpp',
 						'lib/Timer.cpp',
-						'lib/Uuid-win32.cpp',
+						'lib/Uuid-<%= process.platform %>.cpp',
 						'lib/logging/LogEndRecord.cpp',
 						'lib/logging/LogExceptionRecord.cpp',
 						'lib/logging/LogFunction.cpp',
@@ -73,7 +73,7 @@ module.exports = function(grunt) {
 			},
 			'orion-plugin': {
 				options: {
-					libs : ['liborion.dll.lib']
+					libs : ['orion']
 				},
 				src :  ['lib/plugin/Extension.cpp',
                         'lib/plugin/PlugIn.cpp',
@@ -82,7 +82,7 @@ module.exports = function(grunt) {
 			},
 			'orion-net': {
 				options: {
-					libs : ["ws2_32.lib", "liborion.dll.lib"]
+					libs : ["orion", "ws2_32"]
 				},
 				src :  ['lib/net/IP.cpp',
 						'lib/net/IPAddress.cpp',
@@ -91,12 +91,12 @@ module.exports = function(grunt) {
 			},
 			'orion-ws': {
 				options: {
-					libs : ["psapi.lib", 
-					        "ws2_32.lib", 
-					        "rpcrt4.lib", 
-					        "libjson.lib", 
-					        "libmongoose.lib", 
-					        "liborion.dll.lib"]
+					libs : ["json", 
+					        "mongoose", 
+					        "orion",
+					        "psapi", 
+					        "ws2_32", 
+					        "rpcrt4"]
 				},
 				src :  ['lib/ws/mongoose/MongooseRequest.cpp',
 						'lib/ws/mongoose/MongooseHttpServer.cpp',
@@ -115,15 +115,15 @@ module.exports = function(grunt) {
 			'module-example': {
 				options: {
 					includes : ['.', 'examples/', 'include/'],
-					libs     : ['liborion.dll.lib']
+					libs     : ['orion']
 				},
 				src :  ['examples/module-example-lib.cpp']
 			}	
 		},
 		cxxprogram: {
 			options: {
-				libs     : ["liborion.dll.lib"],
-				libPaths : ["build"]
+				libs     : ["orion"],
+				libPaths : ["build/"]
 			},
 			'test-encoding': {
 				options: {
@@ -136,7 +136,7 @@ module.exports = function(grunt) {
 				options: {
 					cxxflags : ["-Wall"],
 					includes : [".", "include/", "lib/"],
-					libs     : ["libjson.lib", "liborion.dll.lib", "liborion-ws.dll.lib"]
+					libs     : ["json", "orion", "orion-ws"]
 				},
 				src : ['tests/test-jsonrpc.cpp']
 			},
@@ -151,7 +151,7 @@ module.exports = function(grunt) {
 				options: {
 					cxxflags : ["-Wall"],
 					includes : [".", "include/"],
-					libs     : ["liborion.dll.lib", "liborion-net.dll.lib"]
+					libs     : ["orion", "orion-net"]
 				},
 				src : ['tests/test-net.cpp']
 			},
@@ -190,7 +190,7 @@ module.exports = function(grunt) {
 				options: {
 					cxxflags : ["-Wall"],
 					includes : ['.', 'examples/', 'include/'],
-					libs     : ["Iphlpapi.lib"]
+					libs     : ["Iphlpapi"]
 				},
 				src : ['examples/net-example.cpp']
 			},
