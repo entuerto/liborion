@@ -23,9 +23,9 @@ namespace orion
 {
 
 Exception::Exception(const std::string& text) :
+   _line_number(-1),
    _text(text),
    _file_name(),
-   _line_number(-1),
    _function_name()
 {
 }
@@ -33,9 +33,9 @@ Exception::Exception(const std::string& text) :
 Exception::Exception(const std::string& text,
                      const std::string& file_name,
                            int32_t      line_number) :
+   _line_number(line_number),
    _text(text),
    _file_name(file_name),
-   _line_number(line_number),
    _function_name()
 {
 }
@@ -44,18 +44,26 @@ Exception::Exception(const std::string& text,
                      const std::string& file_name,
                            int32_t      line_number,
                      const std::string& function) :
+   _line_number(line_number),
    _text(text),
    _file_name(file_name),
-   _line_number(line_number),
    _function_name(function)
 {
 }
 
 Exception::Exception(const Exception& other) :
+   _line_number(other._line_number),
    _text(other._text),
    _file_name(other._file_name),
-   _line_number(other._line_number),
    _function_name(other._function_name)
+{
+}
+
+Exception::Exception(Exception&& other) :
+   _line_number(std::move(other._line_number)),
+   _text(std::move(other._text)),
+   _file_name(std::move(other._file_name)),
+   _function_name(std::move(other._function_name))
 {
 }
 
@@ -93,6 +101,16 @@ Exception& Exception::operator=(const Exception& other)
    _file_name = other._file_name;
    _line_number = other._line_number;
    _function_name = other._function_name;
+
+   return *this ;
+}
+
+Exception& Exception::operator=(Exception&& other)
+{
+   _text = std::move(other._text);
+   _file_name = std::move(other._file_name);
+   _line_number = std::move(other._line_number);
+   _function_name = std::move(other._function_name);
 
    return *this ;
 }

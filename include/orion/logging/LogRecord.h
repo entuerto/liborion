@@ -61,6 +61,7 @@ public:
              const std::string& function);
 
    LogRecord(const LogRecord& rhs);
+   LogRecord(LogRecord&& rhs);
 
    virtual ~LogRecord();
 
@@ -98,6 +99,7 @@ public:
    virtual void function_name(const std::string& function);
 
    LogRecord& operator=(const LogRecord& rhs);
+   LogRecord& operator=(LogRecord&& rhs);
 
    //! Log zero terminated strings
    LogRecord& operator<<(const std::string& value);

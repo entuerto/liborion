@@ -25,7 +25,6 @@
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
-#include <orion/NonCopyable.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,11 +36,13 @@ namespace orion
    Dynamic Loading of Modules These functions provide a portable way to 
    dynamically load object files. 
  */
-class API_EXPORT Module :
-   private NonCopyable
+class API_EXPORT Module 
 {
 public:
    DECLARE_POINTERS(Module)
+
+   NO_COPY(Module)
+   NO_MOVE(Module)
 
    Module();
    ~Module();

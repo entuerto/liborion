@@ -53,6 +53,11 @@ Uuid::Uuid(const Uuid& rhs) :
    uuid_copy(_impl->_uuid, rhs._impl->_uuid);
 }
 
+Uuid::Uuid(const Uuid&& rhs) :
+   _impl(std::move(rhs._impl))
+{
+}
+
 Uuid::Uuid(const std::string& value) :
    _impl(new Private)
 {
@@ -83,6 +88,13 @@ Uuid& Uuid::operator=(const Uuid& rhs)
       return *this;
 
    uuid_copy(_impl->_uuid, rhs._impl->_uuid);
+
+   return *this;
+}
+
+Uuid& Uuid::operator=(const Uuid&& rhs)
+{
+   _impl = std::move(rhs._impl);
 
    return *this;
 }

@@ -43,6 +43,11 @@ LogEndRecord::LogEndRecord(const LogEndRecord& rhs) :
 {
 }
 
+LogEndRecord::LogEndRecord(LogEndRecord&& rhs) :
+   LogRecord(std::move(rhs))
+{
+}
+
 LogEndRecord::~LogEndRecord()
 {
 
@@ -139,6 +144,13 @@ LogEndRecord& LogEndRecord::operator=(const LogEndRecord& rhs)
       return *this;
 
    LogRecord::operator=(rhs);
+
+   return *this;
+}
+
+LogEndRecord& LogEndRecord::operator=(LogEndRecord&& rhs)
+{
+   LogRecord::operator=(std::move(rhs));
 
    return *this;
 }

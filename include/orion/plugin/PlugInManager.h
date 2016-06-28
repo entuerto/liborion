@@ -24,7 +24,6 @@
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
-#include <orion/NonCopyable.h>
 #include <orion/Signal.h>
 #include <orion/StringUtils.h>
 #include <orion/plugin/PlugIn.h>
@@ -37,11 +36,13 @@ namespace plugin
 /*!
     The PlugInManager class loads PlugIns at run-time.
  */
-class API_EXPORT PlugInManager :
-   NonCopyable
+class API_EXPORT PlugInManager
 {
 public:
    DECLARE_POINTERS(PlugInManager)
+
+   NO_COPY(PlugInManager)
+   NO_MOVE(PlugInManager)
 
    typedef std::vector<PlugIn::SharedPtr> PlugInVector;
 

@@ -23,7 +23,6 @@
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/NonCopyable.h>
 
 namespace orion
 {
@@ -43,11 +42,12 @@ struct API_EXPORT IExtension
     Use this class to return and error message to the caller
     of the extension.
  */
-class API_EXPORT ExtensionError :
-   private NonCopyable,
-   public IExtension
+class API_EXPORT ExtensionError : public IExtension
 {
 public:
+   NO_COPY(ExtensionError)
+   NO_MOVE(ExtensionError)
+   
    ExtensionError(const std::string& message);
 
    virtual ~ExtensionError();

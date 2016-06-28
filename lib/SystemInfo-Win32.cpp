@@ -239,20 +239,20 @@ std::vector<CpuInfo> get_cpu_info()
 
 std::string get_os_version()
 {
-   OSVERSIONINFOEX osvi;
+   OSVERSIONINFOEXW osvi;
 
-   ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
+   ZeroMemory(&osvi, sizeof(OSVERSIONINFOEXW));
 
    // Try calling GetVersionEx using the OSVERSIONINFOEX structure.
    // If that fails, try using the OSVERSIONINFO structure.
-   osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+   osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
 
-   bool os_version_info_ex = GetVersionExW((OSVERSIONINFO*) &osvi);
+   bool os_version_info_ex = GetVersionExW((OSVERSIONINFOW*) &osvi);
 
    if (not os_version_info_ex) 
    {
-      osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-      if (not GetVersionEx((OSVERSIONINFO*) &osvi))
+      osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
+      if (not GetVersionExW((OSVERSIONINFOW*) &osvi))
          return "";
    }
 
@@ -343,9 +343,9 @@ std::string get_program_name()
 
    wchar_t module_name[MAX_PATH];
 
-   GetModuleFileNameEx(process_handle,
-                       nullptr,
-                       module_name, sizeof(module_name)); 
+   GetModuleFileNameExW(process_handle,
+                        nullptr,
+                        module_name, sizeof(module_name)); 
 
    CloseHandle(process_handle);
 

@@ -101,6 +101,16 @@ LogRecord::LogRecord(const LogRecord& rhs) :
 {
 }
 
+LogRecord::LogRecord(LogRecord&& rhs) :
+   _level(std::move(rhs._level)),
+   _time_stamp(std::move(rhs._time_stamp)),
+   _message(std::move(rhs._message)),
+   _file_name(std::move(rhs._file_name)),
+   _line(std::move(rhs._line)),
+   _function_name(std::move(rhs._function_name))
+{
+}
+
 LogRecord::~LogRecord()
 {
 
@@ -205,6 +215,18 @@ LogRecord& LogRecord::operator=(const LogRecord& rhs)
    _file_name = rhs._file_name;
    _line = rhs._line;
    _function_name = rhs._function_name;
+
+   return *this;
+}
+
+LogRecord& LogRecord::operator=(LogRecord&& rhs)
+{
+   _level = std::move(rhs._level);
+   _time_stamp = std::move(rhs._time_stamp);
+   _message = std::move(rhs._message);
+   _file_name = std::move(rhs._file_name);
+   _line = std::move(rhs._line);
+   _function_name = std::move(rhs._function_name);
 
    return *this;
 }

@@ -47,6 +47,7 @@ public:
                       const std::string& function);
 
    LogExceptionRecord(const LogExceptionRecord& rhs);
+   LogExceptionRecord(LogExceptionRecord&& rhs);
 
    virtual ~LogExceptionRecord();
 
@@ -57,6 +58,7 @@ public:
    std::string thrown_function_name() const;
 
    LogExceptionRecord& operator=(const LogExceptionRecord& rhs);
+   LogExceptionRecord& operator=(LogExceptionRecord&& rhs);
 
 private:
    std::string _thrown_file_name;

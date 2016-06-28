@@ -53,7 +53,7 @@ IPv4::IPv4(const IPv4& Other):
 
 }
 
-IPv4::IPv4(const IPv4&& Other):
+IPv4::IPv4(IPv4&& Other):
    _a(std::move(Other._a)) 
 {
 
@@ -73,7 +73,7 @@ IPv4& IPv4::operator=(const IPv4& Rhs)
    return *this;
 }
 
-IPv4& IPv4::operator=(const IPv4&& Rhs) 
+IPv4& IPv4::operator=(IPv4&& Rhs) 
 {
    _a = std::move(Rhs._a);
    return *this;
@@ -140,7 +140,7 @@ IPv6::IPv6(const IPv6& Other):
 
 }
 
-IPv6::IPv6(const IPv6&& Other):
+IPv6::IPv6(IPv6&& Other):
    _a(std::move(Other._a)) 
 {
 
@@ -160,7 +160,7 @@ IPv6& IPv6::operator=(const IPv6& Rhs)
    return *this;
 }
 
-IPv6& IPv6::operator=(const IPv6&& Rhs) 
+IPv6& IPv6::operator=(IPv6&& Rhs) 
 {
    _a = std::move(Rhs._a);
    return *this;

@@ -43,6 +43,11 @@ LogStartRecord::LogStartRecord(const LogStartRecord& rhs) :
 {
 }
 
+LogStartRecord::LogStartRecord(LogStartRecord&& rhs) :
+   LogRecord(std::move(rhs))
+{
+}
+
 LogStartRecord::~LogStartRecord()
 {
 
@@ -139,6 +144,13 @@ LogStartRecord& LogStartRecord::operator=(const LogStartRecord& rhs)
       return *this;
 
    LogRecord::operator=(rhs);
+
+   return *this;
+}
+
+LogStartRecord& LogStartRecord::operator=(LogStartRecord&& rhs)
+{
+   LogRecord::operator=(std::move(rhs));
 
    return *this;
 }

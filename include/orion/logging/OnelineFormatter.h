@@ -23,7 +23,6 @@
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/NonCopyable.h>
 #include <orion/logging/IFormatter.h>
 
 namespace orion
@@ -36,18 +35,18 @@ class LogRecord;
 /*!
     Formats the log record on a single line.
  */
-class API_EXPORT OnelineFormatter :
-   public IFormatter,
-   NonCopyable
+class API_EXPORT OnelineFormatter : public IFormatter
 {
 public:
+   NO_COPY(OnelineFormatter)
+   NO_MOVE(OnelineFormatter)
+   
    OnelineFormatter();
    virtual ~OnelineFormatter();
 
    virtual std::string format(const LogRecord& log_record);
 
    static IFormatter::SharedPtr create();
-
 };
 
 } // namespace logging

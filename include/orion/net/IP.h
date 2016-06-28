@@ -55,11 +55,11 @@ public:
    IPv4();
    IPv4(uint8_t a, uint8_t b, uint8_t c, uint8_t d);
    IPv4(const IPv4& Other);
-   IPv4(const IPv4&& Other);
+   IPv4(IPv4&& Other);
    virtual ~IPv4();
 
    IPv4& operator=(const IPv4& Rhs);
-   IPv4& operator=(const IPv4&& Rhs);
+   IPv4& operator=(IPv4&& Rhs);
 
    bool operator==(const IPv4& Rhs) const;
 
@@ -87,11 +87,11 @@ public:
    IPv6();
    IPv6(const std::array<uint8_t, 16>& a);
    IPv6(const IPv6& Other);
-   IPv6(const IPv6&& Other);
+   IPv6(IPv6&& Other);
    virtual ~IPv6();
 
    IPv6& operator=(const IPv6& Rhs);
-   IPv6& operator=(const IPv6&& Rhs);
+   IPv6& operator=(IPv6&& Rhs);
 
    bool operator==(const IPv6& Rhs) const;
 

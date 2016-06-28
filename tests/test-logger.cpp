@@ -13,11 +13,12 @@ LogRecord output_record;
 //----------------------------------------------------------------------------
 // Test log classes
 //----------------------------------------------------------------------------
-class LogRecordOutputHandler :
-   public OutputHandler,
-   NonCopyable
+class LogRecordOutputHandler : public OutputHandler
 {
 public:
+   NO_COPY(LogRecordOutputHandler)
+   NO_MOVE(LogRecordOutputHandler)
+   
    LogRecordOutputHandler(LogRecord& record) : _out_record(record) {}
    virtual ~LogRecordOutputHandler() {}
 

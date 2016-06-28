@@ -54,6 +54,12 @@ LogFunction::LogFunction(const LogFunction& rhs) :
 {
 }
 
+LogFunction::LogFunction(LogFunction&& rhs) :
+   _level(std::move(rhs._level)),
+   _function_name(std::move(rhs._function_name))
+{
+}
+
 LogFunction::~LogFunction()
 {
    Logger& logger = Logger::get_logger();
@@ -109,6 +115,13 @@ LogFunction& LogFunction::operator=(const LogFunction& rhs)
    return *this;
 }
 
+LogFunction& LogFunction::operator=(LogFunction&& rhs)
+{
+   _level = std::move(rhs._level);
+   _function_name = std::move(rhs._function_name);
+
+   return *this;
+}
 
 } // namespace logging
 } // namespace orion

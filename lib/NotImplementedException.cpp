@@ -49,6 +49,11 @@ NotImplementedException::NotImplementedException(const NotImplementedException& 
 {
 }
 
+NotImplementedException::NotImplementedException(NotImplementedException&& other) :
+   Exception(std::move(other))
+{
+}
+
 NotImplementedException::~NotImplementedException() throw()
 {
 }
@@ -60,6 +65,13 @@ NotImplementedException& NotImplementedException::operator=(const NotImplemented
    }
 
    Exception::operator=(other);
+
+   return *this ;
+}
+
+NotImplementedException& NotImplementedException::operator=(NotImplementedException&& other)
+{
+   Exception::operator=(std::move(other));
 
    return *this ;
 }

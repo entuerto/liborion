@@ -25,7 +25,6 @@
 #include <iosfwd>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/NonCopyable.h>
 #include <orion/logging/OutputHandler.h>
 
 namespace orion
@@ -45,11 +44,12 @@ class LogRecord;
 
     Note that this class does not close the stream, as cout or cerr may be used.
  */
-class API_EXPORT StreamOutputHandler :
-   public OutputHandler,
-   NonCopyable
+class API_EXPORT StreamOutputHandler : public OutputHandler
 {
 public:
+   NO_COPY(StreamOutputHandler)
+   NO_MOVE(StreamOutputHandler)
+   
    StreamOutputHandler(std::ostream& stream);
    virtual ~StreamOutputHandler();
 

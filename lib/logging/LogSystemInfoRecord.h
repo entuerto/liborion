@@ -43,6 +43,7 @@ public:
    LogSystemInfoRecord(const std::string& msg);
 
    LogSystemInfoRecord(const LogSystemInfoRecord& rhs);
+   LogSystemInfoRecord(LogSystemInfoRecord&& rhs);
 
    virtual ~LogSystemInfoRecord();
 
@@ -69,6 +70,7 @@ public:
    virtual void function_name(const std::string& function);
 
    LogSystemInfoRecord& operator=(const LogSystemInfoRecord& rhs);
+   LogSystemInfoRecord& operator=(LogSystemInfoRecord&& rhs);
 
 private:
    std::string _message;

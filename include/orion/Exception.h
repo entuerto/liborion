@@ -43,6 +43,7 @@ public:
                    int32_t      line_number,
              const std::string& function);
    Exception(const Exception& other);
+   Exception(Exception&& other);
    virtual ~Exception() throw();
 
    std::string file_name() const;
@@ -54,11 +55,12 @@ public:
    const char* what() const throw();
 
    Exception& operator=(const Exception& other);
+   Exception& operator=(Exception&& other);
 
 private:
+   int32_t _line_number;
    std::string _text;
    std::string _file_name;
-   int32_t _line_number;
    std::string _function_name;
 };
 

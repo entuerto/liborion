@@ -52,6 +52,11 @@ PlugInException::PlugInException(const PlugInException& other) :
 {
 }
 
+PlugInException::PlugInException(PlugInException&& other) :
+   Exception(std::move(other))
+{
+}
+
 PlugInException::~PlugInException() throw()
 {
 }
@@ -64,6 +69,13 @@ PlugInException& PlugInException::operator=(const PlugInException& other)
    }
 
    Exception::operator=(other);
+
+   return *this ;
+}
+
+PlugInException& PlugInException::operator=(PlugInException&& other)
+{
+   Exception::operator=(std::move(other));
 
    return *this ;
 }
@@ -96,6 +108,11 @@ PlugInSymbolNotFoundException::PlugInSymbolNotFoundException(const PlugInSymbolN
 {
 }
 
+PlugInSymbolNotFoundException::PlugInSymbolNotFoundException(PlugInSymbolNotFoundException&& other) :
+   PlugInException(std::move(other))
+{
+}
+
 PlugInSymbolNotFoundException::~PlugInSymbolNotFoundException() throw()
 {
 }
@@ -108,6 +125,13 @@ PlugInSymbolNotFoundException& PlugInSymbolNotFoundException::operator=(const Pl
    }
 
    PlugInException::operator=(other);
+
+   return *this ;
+}
+
+PlugInSymbolNotFoundException& PlugInSymbolNotFoundException::operator=(PlugInSymbolNotFoundException&& other)
+{
+   PlugInException::operator=(std::move(other));
 
    return *this ;
 }

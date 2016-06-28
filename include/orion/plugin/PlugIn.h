@@ -24,7 +24,6 @@
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
-#include <orion/NonCopyable.h>
 
 namespace orion
 {
@@ -37,11 +36,13 @@ class IExtension;
     To create a pluggable module for an application the program
     must sub class this class.
  */
-class API_EXPORT PlugIn :
-   private NonCopyable
+class API_EXPORT PlugIn 
 {
 public:
    DECLARE_POINTERS(PlugIn)
+
+   NO_COPY(PlugIn)
+   NO_MOVE(PlugIn)
 
    PlugIn(const std::string& name,
           const std::string& description,

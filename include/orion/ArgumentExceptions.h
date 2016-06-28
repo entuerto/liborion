@@ -52,9 +52,11 @@ public:
                            int32_t      line_number,
                      const std::string& function);
    ArgumentException(const ArgumentException& other);
+   ArgumentException(ArgumentException&& other);
    virtual ~ArgumentException() throw();
 
    ArgumentException& operator=(const ArgumentException& other);
+   ArgumentException& operator=(ArgumentException&& other);
 };
 
 //! Argument null exception
@@ -74,9 +76,11 @@ public:
                                int32_t      line_number,
                          const std::string& function);
    ArgumentNullException(const ArgumentNullException& other);
+   ArgumentNullException(ArgumentNullException&& other);
    virtual ~ArgumentNullException() throw();
 
    ArgumentNullException& operator=(const ArgumentNullException& other);
+   ArgumentNullException& operator=(ArgumentNullException&& other);
 };
 
 //! Argument out of range exception
@@ -97,9 +101,11 @@ public:
                                      int32_t      line_number,
                                const std::string& function);
    ArgumentOutOfRangeException(const ArgumentOutOfRangeException& other);
+   ArgumentOutOfRangeException(ArgumentOutOfRangeException&& other);
    virtual ~ArgumentOutOfRangeException() throw();
 
    ArgumentOutOfRangeException& operator=(const ArgumentOutOfRangeException& other);
+   ArgumentOutOfRangeException& operator=(ArgumentOutOfRangeException&& other);
 };
 
 } // namespace orion
