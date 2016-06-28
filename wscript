@@ -138,7 +138,7 @@ def options(opt):
                               help    = 'compile examples [default: No]',
                               dest    = 'compile_examples')
 
-   cxx_option_group = opt.get_option_group('C++ Compiler Options')
+   cxx_option_group = opt.add_option_group('C++ Compiler Options')
 
    cxx_option_group.add_option('--debug-level',
                                action  = 'store',
@@ -220,7 +220,9 @@ def configure(conf):
 
    conf.write_config_header('config.h')
 
-   conf.env.append_value('CPPFLAGS', '-DHAVE_CONFIG_H')
+   conf.env.append_value('CPPFLAGS', '-DHAVE_CONFIG_H') 
+   conf.env.append_value('CPPFLAGS', '-UNICODE') 
+   conf.env.append_value('CPPFLAGS', '-DORION_SHARED_EXPORTS') 
 
    conf.env['CXXFLAGS'] = debug_level[Options.options.debug_level]
    conf.env.append_value('CXXFLAGS', warning_level[Options.options.warning_level])
@@ -231,7 +233,6 @@ def configure(conf):
 
    if is_win32:
       conf.env.append_value('CXXFLAGS', '-fpermissive')
-      conf.env.append_value('LDFLAGS', '-no-undefined')
 
    _print(conf, "")
    _print(conf, "liborion {0}".format(VERSION))
@@ -522,11 +523,11 @@ def list_targets(ctx):
 
    bld.add_subdirs([os.path.split(Utils.g_module.root_path)[0]])
 
-   print 'targets to build: '
+   print('targets to build: ')
 
    for x in bld.all_task_gen:
       try:
-         print ' -- ', x.name or x.target
+         print(' -- ', x.name or x.target)
       except AttributeError:
          pass
 
