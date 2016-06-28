@@ -30,4 +30,16 @@
    #define API_EXPORT
 #endif
 
+#ifndef NO_COPY
+#define NO_COPY(klass) \
+   klass(const klass&) = delete; \
+   klass& operator=(const klass&) = delete;
+#endif
+
+#ifndef NO_MOVE
+#define NO_MOVE(klass) \
+   klass(klass&&) = delete; \
+   klass& operator=(klass&&) = delete;   
+#endif
+   
 #endif

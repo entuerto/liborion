@@ -23,7 +23,6 @@
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/NonCopyable.h>
 #include <orion/logging/IFormatter.h>
 
 namespace orion
@@ -37,11 +36,12 @@ class LogRecord;
     Formats the log record on a single line with source line
     information.
  */
-class API_EXPORT OnelineWithSourceInfoFormatter :
-   public IFormatter,
-   NonCopyable
+class API_EXPORT OnelineWithSourceInfoFormatter : public IFormatter
 {
 public:
+   NO_COPY(OnelineWithSourceInfoFormatter)
+   NO_MOVE(OnelineWithSourceInfoFormatter)
+   
    OnelineWithSourceInfoFormatter();
    virtual ~OnelineWithSourceInfoFormatter();
 

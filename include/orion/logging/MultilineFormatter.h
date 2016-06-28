@@ -24,7 +24,6 @@
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/NonCopyable.h>
 #include <orion/logging/IFormatter.h>
 
 namespace orion
@@ -37,11 +36,12 @@ class LogRecord;
 /*!
     Formats the information on more than one line.
  */
-class API_EXPORT MultilineFormatter :
-   public IFormatter,
-   NonCopyable
+class API_EXPORT MultilineFormatter : public IFormatter
 {
 public:
+   NO_COPY(MultilineFormatter)
+   NO_MOVE(MultilineFormatter)
+   
    MultilineFormatter();
    virtual ~MultilineFormatter();
 
