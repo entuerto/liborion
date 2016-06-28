@@ -49,6 +49,11 @@ LogSystemInfoRecord::LogSystemInfoRecord(const LogSystemInfoRecord& rhs) :
 {
 }
 
+LogSystemInfoRecord::LogSystemInfoRecord(LogSystemInfoRecord&& rhs) :
+   LogRecord(std::move(rhs))
+{
+}
+
 LogSystemInfoRecord::~LogSystemInfoRecord()
 {
 
@@ -143,6 +148,13 @@ LogSystemInfoRecord& LogSystemInfoRecord::operator=(const LogSystemInfoRecord& r
       return *this;
 
    LogRecord::operator=(rhs);
+
+   return *this;
+}
+
+LogSystemInfoRecord& LogSystemInfoRecord::operator=(LogSystemInfoRecord&& rhs)
+{
+   LogRecord::operator=(std::move(rhs));
 
    return *this;
 }

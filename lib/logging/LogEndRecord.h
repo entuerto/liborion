@@ -42,6 +42,7 @@ public:
    LogEndRecord();
 
    LogEndRecord(const LogEndRecord& rhs);
+   LogEndRecord(LogEndRecord&& rhs);
 
    virtual ~LogEndRecord();
 
@@ -68,6 +69,7 @@ public:
    virtual void function_name(const std::string& function);
 
    LogEndRecord& operator=(const LogEndRecord& rhs);
+   LogEndRecord& operator=(LogEndRecord&& rhs);
 
 private:
 

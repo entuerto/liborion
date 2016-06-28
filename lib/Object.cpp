@@ -27,18 +27,20 @@ namespace orion
 Object::Object() :
    _uuid()
 {
-
 }
 
 Object::Object(const Object& rhs) :
    _uuid(rhs._uuid)
 {
+}
 
+Object::Object(Object&& rhs) :
+   _uuid(std::move(rhs._uuid))
+{
 }
 
 Object::~Object()
 {
-
 }
 
 Uuid Object::id() const
@@ -57,6 +59,13 @@ Object& Object::operator=(const Object& rhs)
       return *this;
 
    _uuid = rhs._uuid;
+
+   return *this;
+}
+
+Object& Object::operator=(Object&& rhs)
+{
+   _uuid = std::move(rhs._uuid);
 
    return *this;
 }

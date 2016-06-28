@@ -43,11 +43,11 @@ public:
                          int32_t      line_number,
                    const std::string& function);
    ModuleException(const ModuleException& other);
-   ModuleException(const ModuleException&& other);
+   ModuleException(ModuleException&& other);
    virtual ~ModuleException() throw();
 
    ModuleException& operator=(const ModuleException& other);
-   ModuleException& operator=(const ModuleException&& other);
+   ModuleException& operator=(ModuleException&& other);
 
 };
 
@@ -69,11 +69,11 @@ public:
                                        int32_t      line_number,
                                  const std::string& function);
    ModuleSymbolNotFoundException(const ModuleSymbolNotFoundException& other);
-   ModuleSymbolNotFoundException(const ModuleSymbolNotFoundException&& other);
+   ModuleSymbolNotFoundException(ModuleSymbolNotFoundException&& other);
    virtual ~ModuleSymbolNotFoundException() throw();
 
    ModuleSymbolNotFoundException& operator=(const ModuleSymbolNotFoundException& other);
-   ModuleSymbolNotFoundException& operator=(const ModuleSymbolNotFoundException&& other);
+   ModuleSymbolNotFoundException& operator=(ModuleSymbolNotFoundException&& other);
 };
 
 } // namespace orion

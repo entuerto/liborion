@@ -78,6 +78,14 @@ LogExceptionRecord::LogExceptionRecord(const LogExceptionRecord& rhs) :
 {
 }
 
+LogExceptionRecord::LogExceptionRecord(LogExceptionRecord&& rhs) :
+   LogRecord(std::move(rhs)),
+   _thrown_file_name(std::move(rhs._thrown_file_name)),
+   _thrown_line_number(std::move(rhs._thrown_line_number)),
+   _thrown_function_name(std::move(rhs._thrown_function_name))
+{
+}
+
 LogExceptionRecord::~LogExceptionRecord()
 {
 
@@ -108,6 +116,17 @@ LogExceptionRecord& LogExceptionRecord::operator=(const LogExceptionRecord& rhs)
    _thrown_file_name = rhs._thrown_file_name;
    _thrown_line_number = rhs._thrown_line_number;
    _thrown_function_name = rhs._thrown_function_name;
+
+   return *this;
+}
+
+LogExceptionRecord& LogExceptionRecord::operator=(LogExceptionRecord&& rhs)
+{
+   LogRecord::operator=(std::move(rhs));
+
+   _thrown_file_name = std::move(rhs._thrown_file_name);
+   _thrown_line_number = std::move(rhs._thrown_line_number);
+   _thrown_function_name = std::move(rhs._thrown_function_name);
 
    return *this;
 }

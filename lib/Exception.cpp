@@ -59,7 +59,7 @@ Exception::Exception(const Exception& other) :
 {
 }
 
-Exception::Exception(const Exception&& other) :
+Exception::Exception(Exception&& other) :
    _line_number(std::move(other._line_number)),
    _text(std::move(other._text)),
    _file_name(std::move(other._file_name)),
@@ -105,7 +105,7 @@ Exception& Exception::operator=(const Exception& other)
    return *this ;
 }
 
-Exception& Exception::operator=(const Exception&& other)
+Exception& Exception::operator=(Exception&& other)
 {
    _text = std::move(other._text);
    _file_name = std::move(other._file_name);

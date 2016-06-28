@@ -36,6 +36,7 @@ class API_EXPORT Object
 public:
    Object();
    Object(const Object& rhs);
+   Object(Object&& rhs);
    virtual ~Object();
 
    virtual Uuid id() const;
@@ -44,6 +45,7 @@ public:
    virtual std::string to_string() const;
 
    Object& operator=(const Object& rhs);
+   Object& operator=(Object&& rhs);
 
 private:
    Uuid _uuid;

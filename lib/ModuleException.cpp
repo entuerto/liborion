@@ -49,7 +49,7 @@ ModuleException::ModuleException(const ModuleException& other) :
 {
 }
 
-ModuleException::ModuleException(const ModuleException&& other) :
+ModuleException::ModuleException(ModuleException&& other) :
    Exception(std::move(other))
 {
 }
@@ -70,7 +70,7 @@ ModuleException& ModuleException::operator=(const ModuleException& other)
    return *this ;
 }
 
-ModuleException& ModuleException::operator=(const ModuleException&& other)
+ModuleException& ModuleException::operator=(ModuleException&& other)
 {
    Exception::operator=(std::move(other));
 
@@ -105,7 +105,7 @@ ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(const ModuleSymbolN
 {
 }
 
-ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(const ModuleSymbolNotFoundException&& other) :
+ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(ModuleSymbolNotFoundException&& other) :
    ModuleException(std::move(other))
 {
 }
@@ -126,7 +126,7 @@ ModuleSymbolNotFoundException& ModuleSymbolNotFoundException::operator=(const Mo
    return *this ;
 }
 
-ModuleSymbolNotFoundException& ModuleSymbolNotFoundException::operator=(const ModuleSymbolNotFoundException&& other)
+ModuleSymbolNotFoundException& ModuleSymbolNotFoundException::operator=(ModuleSymbolNotFoundException&& other)
 {
    ModuleException::operator=(std::move(other));
 

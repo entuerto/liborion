@@ -41,6 +41,7 @@ class API_EXPORT Uuid
 public:
    Uuid();
    Uuid(const Uuid& rhs);
+   Uuid(Uuid&& rhs);
    Uuid(const std::string& value);
    virtual ~Uuid();
 
@@ -49,6 +50,7 @@ public:
    virtual std::string to_string() const;
 
    virtual Uuid& operator=(const Uuid& rhs);
+   virtual Uuid& operator=(Uuid&& rhs);
 
    virtual bool operator==(const Uuid& rhs) const;
    virtual bool operator!=(const Uuid& rhs) const;

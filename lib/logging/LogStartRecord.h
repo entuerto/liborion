@@ -42,6 +42,7 @@ public:
    LogStartRecord();
 
    LogStartRecord(const LogStartRecord& rhs);
+   LogStartRecord(LogStartRecord&& rhs);
 
    virtual ~LogStartRecord();
 
@@ -68,6 +69,7 @@ public:
    virtual void function_name(const std::string& function);
 
    LogStartRecord& operator=(const LogStartRecord& rhs);
+   LogStartRecord& operator=(LogStartRecord&& rhs);
 
 private:
 

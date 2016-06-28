@@ -56,7 +56,9 @@ public:
 
 protected:
    LogFunction(const LogFunction& rhs);
+   LogFunction(LogFunction&& rhs);
    LogFunction& operator=(const LogFunction& rhs);
+   LogFunction& operator=(LogFunction&& rhs);
 
 private:
    Logger::Level _level;
