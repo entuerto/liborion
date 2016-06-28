@@ -45,9 +45,11 @@ public:
                                  int32_t      line_number,
                            const std::string& function);
    NotImplementedException(const NotImplementedException& other);
+   NotImplementedException(const NotImplementedException&& other);
    virtual ~NotImplementedException() throw();
 
    NotImplementedException& operator=(const NotImplementedException& other);
+   NotImplementedException& operator=(const NotImplementedException&& other);
 
 };
 

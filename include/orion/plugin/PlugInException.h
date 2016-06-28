@@ -47,9 +47,11 @@ public:
                          int32_t      line_number,
                    const std::string& function);
    PlugInException(const PlugInException& other);
+   PlugInException(const PlugInException&& other);
    virtual ~PlugInException() throw();
 
    PlugInException& operator=(const PlugInException& other);
+   PlugInException& operator=(const PlugInException&& other);
 
 };
 
@@ -71,9 +73,11 @@ public:
                                        int32_t      line_number,
                                  const std::string& function);
    PlugInSymbolNotFoundException(const PlugInSymbolNotFoundException& other);
+   PlugInSymbolNotFoundException(const PlugInSymbolNotFoundException&& other);
    virtual ~PlugInSymbolNotFoundException() throw();
 
    PlugInSymbolNotFoundException& operator=(const PlugInSymbolNotFoundException& other);
+   PlugInSymbolNotFoundException& operator=(const PlugInSymbolNotFoundException&& other);
 };
 
 } // namespace plugin

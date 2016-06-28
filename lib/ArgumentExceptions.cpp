@@ -49,6 +49,11 @@ ArgumentException::ArgumentException(const ArgumentException& other) :
 {
 }
 
+ArgumentException::ArgumentException(const ArgumentException&& other) :
+   Exception(std::move(other))
+{
+}
+
 ArgumentException::~ArgumentException() throw()
 {
 }
@@ -60,6 +65,13 @@ ArgumentException& ArgumentException::operator=(const ArgumentException& other)
    }
 
    Exception::operator=(other);
+
+   return *this ;
+}
+
+ArgumentException& ArgumentException::operator=(const ArgumentException&& other)
+{
+   Exception::operator=(std::move(other));
 
    return *this ;
 }
@@ -92,6 +104,11 @@ ArgumentNullException::ArgumentNullException(const ArgumentNullException& other)
 {
 }
 
+ArgumentNullException::ArgumentNullException(const ArgumentNullException&& other) :
+   ArgumentException(std::move(other))
+{
+}
+
 ArgumentNullException::~ArgumentNullException() throw()
 {
 }
@@ -103,6 +120,13 @@ ArgumentNullException& ArgumentNullException::operator=(const ArgumentNullExcept
    }
 
    ArgumentException::operator=(other);
+
+   return *this ;
+}
+
+ArgumentNullException& ArgumentNullException::operator=(const ArgumentNullException&& other)
+{
+   ArgumentException::operator=(std::move(other));
 
    return *this ;
 }
@@ -135,6 +159,11 @@ ArgumentOutOfRangeException::ArgumentOutOfRangeException(const ArgumentOutOfRang
 {
 }
 
+ArgumentOutOfRangeException::ArgumentOutOfRangeException(const ArgumentOutOfRangeException&& other) :
+   ArgumentException(std::move(other))
+{
+}
+
 ArgumentOutOfRangeException::~ArgumentOutOfRangeException() throw()
 {
 }
@@ -146,6 +175,13 @@ ArgumentOutOfRangeException& ArgumentOutOfRangeException::operator=(const Argume
    }
 
    ArgumentException::operator=(other);
+
+   return *this ;
+}
+
+ArgumentOutOfRangeException& ArgumentOutOfRangeException::operator=(const ArgumentOutOfRangeException&& other)
+{
+   ArgumentException::operator=(std::move(other));
 
    return *this ;
 }
