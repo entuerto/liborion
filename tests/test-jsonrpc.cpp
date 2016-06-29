@@ -8,8 +8,7 @@
 #include <orion/ws/JsonRpcMethod.h>
 #include <orion/ws/JsonRpcRequestListener.h>
 
-#include <ws/json/reader.h>
-#include <ws/json/value.h>
+#include <jsoncpp/json/json.h>
 
 using namespace orion;
 using namespace orion::ws;

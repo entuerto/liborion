@@ -15,19 +15,17 @@ module.exports = function(grunt) {
 					includes : ["."],
 					defines  : ["ORION_SHARED_EXPORTS"]
 				},
-				src : ['lib/ws/mongoose/mongoose.c']
+				src : ['deps/mongoose/mongoose.c']
 			}
 		},
 		cxxstlib: {
 			json: {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : [".", "lib/ws"],
+					includes : [".", "deps/jsoncpp"],
 					defines  : ["ORION_SHARED_EXPORTS"]
 				},
-				src :  ['lib/ws/json/json_reader.cpp',
-						'lib/ws/json/json_value.cpp',
-						'lib/ws/json/json_writer.cpp']
+				src :  ['deps/jsoncpp/jsoncpp.cpp']
 			}
 		},
 		cxxshlib: {
@@ -91,6 +89,7 @@ module.exports = function(grunt) {
 			},
 			'orion-ws': {
 				options: {
+					includes : ["deps/", "include/", "lib/"],
 					libs : ["json", 
 					        "mongoose", 
 					        "orion",
@@ -98,8 +97,8 @@ module.exports = function(grunt) {
 					        "ws2_32", 
 					        "rpcrt4"]
 				},
-				src :  ['lib/ws/mongoose/MongooseRequest.cpp',
-						'lib/ws/mongoose/MongooseHttpServer.cpp',
+				src :  ['lib/ws/impl/MongooseRequest.cpp',
+						'lib/ws/impl/MongooseHttpServer.cpp',
 						'lib/ws/InetAddress.cpp',
 						'lib/ws/RpcError.cpp',
 						'lib/ws/RpcMethod.cpp',
@@ -135,7 +134,7 @@ module.exports = function(grunt) {
 			'test-jsonrpc': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : [".", "include/", "lib/"],
+					includes : [".", "include/", "lib/", "deps/"],
 					libs     : ["json", "orion", "orion-ws"]
 				},
 				src : ['tests/test-jsonrpc.cpp']

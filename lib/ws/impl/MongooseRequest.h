@@ -26,7 +26,7 @@
 #include <orion/MemoryUtils.h>
 #include <orion/ws/InetAddress.h>
 #include <orion/ws/Request.h>
-#include <ws/mongoose/mongoose.h>
+#include <mongoose/mongoose.h>
 
 namespace orion
 {
