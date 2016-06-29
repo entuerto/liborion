@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <ws/mongoose/MongooseRequest.h>
+#include <ws/impl/MongooseRequest.h>
 
 #include <cstdlib>
 #include <orion/StringUtils.h>

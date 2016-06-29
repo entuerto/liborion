@@ -21,7 +21,7 @@
 
 #include <orion/ws/JsonRpcError.h>
 
-#include <ws/json/value.h>
+#include <jsoncpp/json/json.h>
 
 namespace orion
 {

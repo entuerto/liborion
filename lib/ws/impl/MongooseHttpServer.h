@@ -24,7 +24,7 @@
 
 #include <string>
 #include <orion/ws/HttpServer.h>
-#include <ws/mongoose/mongoose.h>
+#include <mongoose/mongoose.h>
 
 namespace orion
 {

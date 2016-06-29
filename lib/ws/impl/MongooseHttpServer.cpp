@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <ws/mongoose/MongooseHttpServer.h>
+#include <ws/impl/MongooseHttpServer.h>
 
 #include <cstring>
 #include <iostream>
@@ -27,7 +27,7 @@
 
 #include <orion/Logging.h>
 #include <orion/StringUtils.h>
-#include <ws/mongoose/MongooseRequest.h>
+#include <ws/impl/MongooseRequest.h>
 
 namespace orion
 {

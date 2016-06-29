@@ -23,8 +23,7 @@
 
 #include <orion/Logging.h>
 #include <orion/ws/InetAddress.h>
-#include <ws/mongoose/mongoose.h>
-#include <ws/mongoose/MongooseHttpServer.h>
+#include <ws/impl/MongooseHttpServer.h>
 
 
 namespace orion

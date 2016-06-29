@@ -21,9 +21,7 @@
 
 #include <orion/ws/JsonRpcRequestListener.h>
 
-#include <ws/json/reader.h>
-#include <ws/json/value.h>
-#include <ws/json/writer.h>
+#include <jsoncpp/json/json.h>
 
 #include <orion/Logging.h>
 #include <orion/ErrorMacros.h>
