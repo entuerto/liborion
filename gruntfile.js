@@ -161,6 +161,13 @@ module.exports = function(grunt) {
 				},
 				src : ['tests/test-string.cpp']
 			},
+			'test-units': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : [".", "include/"]
+				},
+				src :  ['tests/test-units.cpp'],
+			},
 			'test-unittest': {
 				options: {
 					cxxflags : ["-Wall"],
