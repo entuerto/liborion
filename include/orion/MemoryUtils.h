@@ -38,9 +38,14 @@ API_EXPORT inline std::shared_ptr<R> iface_cast(const std::shared_ptr<T>& other)
 }
 
 template<typename R, typename T>
-API_EXPORT inline R* iface_cast(const T& other)
+inline R iface_cast(T other)
 {
-   return dynamic_cast<R*>(other);
+   auto ptr = dynamic_cast<R>(other);
+   
+   if (ptr == nullptr)
+      return static_cast<R>(*other);
+
+   return ptr;
 }
 
 }
