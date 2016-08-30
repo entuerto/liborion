@@ -38,32 +38,30 @@ public:
    {
    }
 
-   virtual ~HelloRequestListener()
-   {
-   }
+   virtual ~HelloRequestListener() = default;
 
-   static RequestListener::SharedPtr create()
+   static std::unique_ptr<RequestListener> create()
    {
-      return RequestListener::SharedPtr(new HelloRequestListener);
+      return std::make_unique<HelloRequestListener>();
    }
    
 protected:
-   virtual Response::SharedPtr on_get(Request::SharedPtr request)
+   virtual std::unique_ptr<Response> on_get(const Request* /* request */)
    {
       return Response::create("Hello");
    }
 
-   virtual Response::SharedPtr on_post(Request::SharedPtr request)
+   virtual std::unique_ptr<Response> on_post(const Request* /* request */)
    {
       return Response::create_400();
    }
 
-   virtual Response::SharedPtr on_put(Request::SharedPtr request) 
+   virtual std::unique_ptr<Response> on_put(const Request* /* request */) 
    {
       return Response::create_400();
    }
 
-   virtual Response::SharedPtr on_delete(Request::SharedPtr request)
+   virtual std::unique_ptr<Response> on_delete(const Request* /* request */)
    {
       return Response::create_400();
    }
@@ -76,32 +74,30 @@ public:
    {
    }
 
-   virtual ~WorldRequestListener()
-   {
-   }
+   virtual ~WorldRequestListener() = default;
 
-   static RequestListener::SharedPtr create()
+   static std::unique_ptr<RequestListener> create()
    {
-      return RequestListener::SharedPtr(new WorldRequestListener);
+      return std::make_unique<WorldRequestListener>();
    }
    
 protected:
-   virtual Response::SharedPtr on_get(Request::SharedPtr request)
+   virtual std::unique_ptr<Response> on_get(const Request* /* request */)
    {
       return Response::create("World");
    }
 
-   virtual Response::SharedPtr on_post(Request::SharedPtr request)
+   virtual std::unique_ptr<Response> on_post(const Request* /* request */)
    {
       return Response::create_400();
    }
 
-   virtual Response::SharedPtr on_put(Request::SharedPtr request) 
+   virtual std::unique_ptr<Response> on_put(const Request* /* request */) 
    {
       return Response::create_400();
    }
 
-   virtual Response::SharedPtr on_delete(Request::SharedPtr request)
+   virtual std::unique_ptr<Response> on_delete(const Request* /* request */)
    {
       return Response::create_400();
    }
@@ -109,24 +105,24 @@ protected:
 
 void setup_logger(std::fstream& file_stream)
 {
-   StreamOutputHandler::SharedPtr cout_handler = StreamOutputHandler::create(std::cout);
-   StreamOutputHandler::SharedPtr file_handler = StreamOutputHandler::create(file_stream);
+   auto cout_handler = StreamOutputHandler::create(std::cout);
+   auto file_handler = StreamOutputHandler::create(file_stream);
 
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::Debug);
-   logger.output_handlers().push_back(cout_handler);
-   logger.output_handlers().push_back(file_handler);
+   logger.level(Level::Debug);
+   logger.output_handlers().push_back(std::move(cout_handler));
+   logger.output_handlers().push_back(std::move(file_handler));
 }
 
-int main (int argc, char** argv)
+int main ()
 {
    std::fstream fout("hello-server.log", std::fstream::out | std::fstream::trunc);
    setup_logger(fout);
 
    LOG_START();
 
-   Server::SharedPtr server = HttpServer::create(9080);
+   auto server = HttpServer::create(9080);
 
    server->add_request_listener(WorldRequestListener::create());
    server->add_request_listener(HelloRequestListener::create());

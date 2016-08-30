@@ -212,6 +212,22 @@ module.exports = function(grunt) {
 					includes : ['.', 'examples/', 'include/'],
 				},
 				src : ['examples/system-info.cpp']
+			},
+			'hello-server': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : ['.', 'examples/', 'include/'],
+					libs     : ["libjson", "orion", "orion-ws"]
+				},
+				src : ['examples/hello-server.cpp']
+			},
+			'add-json-rpc-server': {
+				options: {
+					cxxflags : ["-Wall"],
+					includes : ['.', 'examples/', 'include/', "deps/"],
+					libs     : ["libjson", "orion", "orion-ws"]
+				},
+				src : ['examples/add-json-rpc-server.cpp']
 			}
 		},
 		clean: {

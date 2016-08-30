@@ -28,7 +28,7 @@
 #include <orion/ws/JsonRpcMethod.h>
 #include <orion/ws/JsonRpcMethodWrapper.h>
 
-#include <ws/json/value.h>
+#include <jsoncpp/json/json.h>
 
 using namespace orion;
 using namespace orion::logging;
@@ -44,9 +44,7 @@ public:
    {
    }
 
-   virtual ~AddMethod()
-   {
-   }
+   virtual ~AddMethod() = default;
 
    virtual std::string name() const
    {
@@ -58,7 +56,7 @@ public:
       return "Add to numbers together.";
    }
 
-   virtual JsonRpcError::SharedPtr call(Json::Value& json_request, Json::Value& json_result)
+   virtual std::unique_ptr<JsonRpcError> call(Json::Value& json_request, Json::Value& json_result)
    {
       int param1 = 0;
       int param2 = 0;
@@ -83,18 +81,16 @@ public:
       return nullptr;
    }
 
-   static RpcMethod::SharedPtr create()
+   static std::unique_ptr<RpcMethod> create()
    {
-      AddMethod* add = new AddMethod;
-
-      return RpcMethod::SharedPtr(add);
+      return std::make_unique<AddMethod>();
    }
 };
 
 //-----------------------------------------------------------------------------------
 // Free function example
 //-----------------------------------------------------------------------------------
-JsonRpcError::SharedPtr substract(Json::Value& json_request, Json::Value& json_result)
+std::unique_ptr<JsonRpcError> substract(Json::Value& json_request, Json::Value& json_result)
 {
     int param1 = 0;
     int param2 = 0;
@@ -126,7 +122,7 @@ class Echo
 {
 public:
 
-   static JsonRpcError::SharedPtr answer(Json::Value& json_request, Json::Value& json_result)
+   static std::unique_ptr<JsonRpcError> answer(Json::Value& /* json_request */, Json::Value& json_result)
    {
       json_result = "Hello World!";
       return nullptr;
@@ -138,7 +134,7 @@ public:
 //-----------------------------------------------------------------------------------
 struct ShutdownServer
 {
-   static JsonRpcError::SharedPtr quit(Json::Value& json_request, Json::Value& json_result)
+   static std::unique_ptr<JsonRpcError> quit(Json::Value& /* json_request */, Json::Value& json_result)
    {
       ShutdownServer::server->stop();
 
@@ -147,52 +143,51 @@ struct ShutdownServer
       return nullptr;
    }
 
-   static Server::SharedPtr server;
+   static std::unique_ptr<Server> server;
 };
 
-Server::SharedPtr ShutdownServer::server;
+std::unique_ptr<Server> ShutdownServer::server;
 
 //-----------------------------------------------------------------------------------
 // Setup the logger options
 //-----------------------------------------------------------------------------------
 void setup_logger(std::fstream& file_stream)
 {
-   StreamOutputHandler::SharedPtr cout_handler = StreamOutputHandler::create(std::cout);
-   StreamOutputHandler::SharedPtr file_handler = StreamOutputHandler::create(file_stream);
+   auto cout_handler = StreamOutputHandler::create(std::cout);
+   auto file_handler = StreamOutputHandler::create(file_stream);
 
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::Debug);
-   logger.output_handlers().push_back(cout_handler);
-   logger.output_handlers().push_back(file_handler);
+   logger.level(Level::Debug);
+   logger.output_handlers().push_back(std::move(cout_handler));
+   logger.output_handlers().push_back(std::move(file_handler));
 }
 
 //-----------------------------------------------------------------------------------
 // Main function
 //-----------------------------------------------------------------------------------
-int main (int argc, char** argv)
+int main ()
 {
    std::fstream fout("add-json-rpc-server.log", std::fstream::out | std::fstream::trunc);
    setup_logger(fout);
 
    LOG_START();
 
-   Server::SharedPtr server = HttpServer::create(9090);
+   ShutdownServer::server = HttpServer::create(9090);
 
-   JsonRpcRequestListener::SharedPtr rl = JsonRpcRequestListener::create("/");
+   auto rl = JsonRpcRequestListener::create("/");
 
    rl->register_method("add", AddMethod::create()); 
    rl->register_method("substract", JsonRpcMethodWrapper::create(substract, "substract", "Substract two numbers")); 
    rl->register_method("answer", JsonRpcMethodWrapper::create(Echo::answer, "answer")); 
 
-   ShutdownServer::server = server;
    rl->register_method("shutdown", JsonRpcMethodWrapper::create(ShutdownServer::quit, "shutdown")); 
 
-   server->add_request_listener(rl);
+   ShutdownServer::server->add_request_listener(std::move(rl));
 
    LOG(Info) << "Server starting...";
 
-   server->start();
+   ShutdownServer::server->start();
 
    LOG_END();
    return EXIT_SUCCESS;
