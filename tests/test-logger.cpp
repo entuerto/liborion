@@ -31,9 +31,9 @@ public:
 
    virtual void close() {}
 
-   static OutputHandler::SharedPtr create(LogRecord& record)
+   static std::unique_ptr<OutputHandler> create(LogRecord& record)
    {
-      return OutputHandler::SharedPtr(new LogRecordOutputHandler(record));
+      return std::make_unique<LogRecordOutputHandler>(record);
    }
 
 private:
@@ -47,49 +47,49 @@ TEST(TestLogDefaultLevel)
 {
    Logger& logger = Logger::get_logger();
 
-   EXPECT(logger.level() == Logger::NotSet);
+   EXPECT(logger.level() == Level::NotSet);
 }
 
 TEST(TestLogLevelChange)
 {
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::Warning);
+   logger.level(Level::Warning);
 
-   EXPECT(logger.level() == Logger::Warning);
+   EXPECT(logger.level() == Level::Warning);
 }
 
 TEST(TestLogLevelOutput)
 {
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::Warning);
+   logger.level(Level::Warning);
 
-   output_record.level(Logger::NotSet);
+   output_record.level(Level::NotSet);
 
-   LOG(Logger::Debug) << "Debug message";
-   EXPECT(output_record.level() == Logger::NotSet);
+   LOG(Debug) << "Debug message";
+   EXPECT(output_record.level() == Level::NotSet);
 
-   output_record.level(Logger::NotSet);
+   output_record.level(Level::NotSet);
 
-   LOG(Logger::Warning) << "Warning message";
-   EXPECT(output_record.level() == Logger::Warning);
+   LOG(Warning) << "Warning message";
+   EXPECT(output_record.level() == Level::Warning);
 
-   output_record.level(Logger::NotSet);
+   output_record.level(Level::NotSet);
 
-   LOG(Logger::Error) << "Error message";
-   EXPECT(output_record.level() == Logger::Error);
+   LOG(Error) << "Error message";
+   EXPECT(output_record.level() == Level::Error);
 }
 
 TEST(TestLogErrorMessage)
 {
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::NotSet);
+   logger.level(Level::NotSet);
 
-   LOG(Logger::Error) << "Error message";
+   LOG(Error) << "Error message";
 
-   EXPECT(output_record.level() == Logger::Error);
+   EXPECT(output_record.level() == Level::Error);
    EXPECT(output_record.message() == "Error message");
 }
 
@@ -97,13 +97,13 @@ TEST(TestLogFailMessage)
 {
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::NotSet);
+   logger.level(Level::NotSet);
 
-   output_record.level(Logger::NotSet);
+   output_record.level(Level::NotSet);
 
    LOG_IF_FAIL(Error, 1 == 0)
 
-   EXPECT(output_record.level() == Logger::Error);
+   EXPECT(output_record.level() == Level::Error);
    EXPECT(output_record.message() == "Condition failed ( 1 == 0 )");
 }
 
@@ -111,9 +111,9 @@ TEST(TestLogRecordOutput)
 {
    Logger& logger = Logger::get_logger();
 
-   logger += LogRecord(Logger::Message, "FileName", 99, "function name") << "message";
+   logger += LogRecord(Level::Message, "FileName", 99, "function name") << "message";
 
-   EXPECT(output_record.level() == Logger::Message);
+   EXPECT(output_record.level() == Level::Message);
    EXPECT(output_record.file_name() == "FileName");
    EXPECT(output_record.line() == 99);
    EXPECT(output_record.function_name() == "function name");
@@ -125,12 +125,12 @@ TEST(TestLogRecordOutput)
 //----------------------------------------------------------------------------
 void setup_logger(LogRecord& record)
 {
-   OutputHandler::SharedPtr out_handler = LogRecordOutputHandler::create(record);
+   auto out_handler = LogRecordOutputHandler::create(record);
 
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::NotSet);
-   logger.output_handlers().push_back(out_handler);
+   logger.level(Level::NotSet);
+   logger.output_handlers().push_back(std::move(out_handler));
 }
 
 int main()

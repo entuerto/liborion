@@ -35,15 +35,15 @@ void function_a()
 
 void setup_logger()
 {
-   StreamOutputHandler::SharedPtr cout_handler = StreamOutputHandler::create(std::cout);
+   auto cout_handler = StreamOutputHandler::create(std::cout);
 
    //cout_handler->set_formatter(MultilineFormatter::create());
    //cout_handler->set_formatter(OnelineWithSourceInfoFormatter::create());
 
    Logger& logger = Logger::get_logger();
 
-   logger.level(Logger::Debug);
-   logger.output_handlers().push_back(cout_handler);
+   logger.level(Level::Debug);
+   logger.output_handlers().push_back(std::move(cout_handler));
 }
 
 //----------------------------------------------------------

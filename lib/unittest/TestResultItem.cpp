@@ -37,7 +37,7 @@ TestResultItem::~TestResultItem()
 {
 }
 
-TestResultItem::Result TestResultItem::result() const
+Result TestResultItem::result() const
 {
    return _result;
 }
@@ -57,14 +57,18 @@ int TestResultItem::line_number() const
    return _line_number;
 }
 
-TestResultItem::SharedPtr TestResultItem::create_success(const std::string& msg, const std::string& file_name, int line_number)
+std::unique_ptr<TestResultItem> TestResultItem::create_success(const std::string& msg, 
+                                                               const std::string& file_name, 
+                                                                     int line_number)
 {
-   return SharedPtr(new TestResultItem(Passed, msg, file_name, line_number));
+   return std::make_unique<TestResultItem>(Result::Passed, msg, file_name, line_number);
 }
 
-TestResultItem::SharedPtr TestResultItem::create_failure(const std::string& msg, const std::string& file_name, int line_number)
+std::unique_ptr<TestResultItem> TestResultItem::create_failure(const std::string& msg, 
+                                                               const std::string& file_name, 
+                                                                     int line_number)
 {
-   return SharedPtr(new TestResultItem(Failed, msg, file_name, line_number));
+   return std::make_unique<TestResultItem>(Result::Failed, msg, file_name, line_number);
 }
 
 } // namespace orion

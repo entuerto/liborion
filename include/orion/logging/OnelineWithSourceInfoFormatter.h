@@ -20,6 +20,7 @@
 #ifndef ORION_LOGGING_ONELINEWITHSOURCEINFOFORMATTER_H
 #define ORION_LOGGING_ONELINEWITHSOURCEINFOFORMATTER_H
 
+#include <memory>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
@@ -47,7 +48,7 @@ public:
 
    virtual std::string format(const LogRecord& log_record);
 
-   static IFormatter::SharedPtr create();
+   static std::unique_ptr<IFormatter> create();
 };
 
 } // namespace logging

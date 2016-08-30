@@ -47,7 +47,7 @@ OnelineWithSourceInfoFormatter::~OnelineWithSourceInfoFormatter()
 
 std::string OnelineWithSourceInfoFormatter::format(const LogRecord& log_record)
 {
-   if (log_record.level() == Logger::NotSet)
+   if (log_record.level() == Level::NotSet)
       return log_record.message();
 
    std::string scope;
@@ -61,7 +61,7 @@ std::string OnelineWithSourceInfoFormatter::format(const LogRecord& log_record)
    std::string source_info;
    std::string except_info;
 
-   if (log_record.level() == Logger::Exception)
+   if (log_record.level() == Level::Exception)
    {
       try
       {
@@ -117,9 +117,9 @@ std::string OnelineWithSourceInfoFormatter::format(const LogRecord& log_record)
    return stream.str();
 }
 
-IFormatter::SharedPtr OnelineWithSourceInfoFormatter::create()
+std::unique_ptr<IFormatter> OnelineWithSourceInfoFormatter::create()
 {
-   return IFormatter::SharedPtr(new OnelineWithSourceInfoFormatter);
+   return std::make_unique<OnelineWithSourceInfoFormatter>();
 }
 
 } // namespace logging

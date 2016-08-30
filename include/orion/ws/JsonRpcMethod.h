@@ -39,11 +39,9 @@ namespace ws
 class JsonRpcMethod : public RpcMethod
 {
 public:
-   DECLARE_POINTERS(JsonRpcMethod)
+   virtual ~JsonRpcMethod() = default;
 
-   virtual ~JsonRpcMethod() {}
-
-   virtual JsonRpcError::SharedPtr call(Json::Value& json_request, Json::Value& json_result) =0;
+   virtual std::unique_ptr<JsonRpcError> call(Json::Value& json_request, Json::Value& json_result) =0;
 };
 
 } // ws

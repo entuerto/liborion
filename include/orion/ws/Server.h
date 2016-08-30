@@ -37,18 +37,16 @@ namespace ws
 class Server
 {
 public:
-   DECLARE_POINTERS(Server)
-
-   virtual ~Server() {}
+   virtual ~Server() = default;
 
    virtual void start() =0;
    virtual void stop() =0;
 
    virtual bool is_running() const =0;
 
-   virtual void add_request_listener(RequestListener::SharedPtr listener) =0;
+   virtual void add_request_listener(std::unique_ptr<RequestListener>&& listener) =0;
 
-   virtual void send_response(Response::SharedPtr response) =0;
+   virtual void send_response(const Response* response) =0;
 };
 
 } // ws

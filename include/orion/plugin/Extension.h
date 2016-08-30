@@ -34,7 +34,7 @@ namespace plugin
  */
 struct API_EXPORT IExtension
 {
-   virtual ~IExtension() {}
+   virtual ~IExtension() = default;
 };
 
 //! Error extension class

@@ -56,9 +56,9 @@ void StreamOutputHandler::close()
    // Do not close stream in case cout or cerr is used.
 }
 
-OutputHandler::SharedPtr StreamOutputHandler::create(std::ostream& stream)
+std::unique_ptr<OutputHandler> StreamOutputHandler::create(std::ostream& stream)
 {
-   return OutputHandler::SharedPtr(new StreamOutputHandler(stream));
+   return std::make_unique<StreamOutputHandler>(stream);
 }
 
 } // namespace logging

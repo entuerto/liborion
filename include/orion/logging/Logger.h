@@ -23,6 +23,8 @@
 #define ORION_LOGGING_LOGGER_H
 
 #include <functional>
+#include <memory>
+#include <vector>
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/logging/OutputHandler.h>
@@ -37,6 +39,19 @@ API_EXPORT std::string DefaultInfo();
 class Formatter;
 class LogRecord;
 
+enum class Level
+{
+   NotSet    = 0,
+   Debug3    = 10,
+   Debug2    = 20,
+   Debug     = 30,
+   Info      = 40,
+   Message   = 50,
+   Warning   = 60,
+   Error     = 70,
+   Exception = 80
+};
+
 //--------------------------------------------------------------------------
 // Class Logger
 
@@ -49,20 +64,7 @@ class LogRecord;
 class API_EXPORT Logger
 {
 public:
-   typedef OutputHandler::SharedPtrVector OutputHandlers;
-
-   enum Level
-   {
-      NotSet    = 0,
-      Debug3    = 10,
-      Debug2    = 20,
-      Debug     = 30,
-      Info      = 40,
-      Message   = 50,
-      Warning   = 60,
-      Error     = 70,
-      Exception = 80
-   };
+   typedef std::vector<std::unique_ptr<OutputHandler>> OutputHandlers;
 
 public:
    virtual ~Logger();
@@ -137,7 +139,7 @@ private:
 
 };
 
-API_EXPORT std::string level_as_text(Logger::Level level);
+API_EXPORT std::string level_as_text(Level level);
 
 } // namespace logging
 } // namespace orion

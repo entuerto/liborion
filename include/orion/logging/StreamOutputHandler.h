@@ -53,13 +53,13 @@ public:
    StreamOutputHandler(std::ostream& stream);
    virtual ~StreamOutputHandler();
 
-   virtual void write(const LogRecord& log_record);
+   virtual void write(const LogRecord& log_record) override;
 
-   virtual void flush();
+   virtual void flush() override;
 
-   virtual void close();
+   virtual void close() override;
 
-   static OutputHandler::SharedPtr create(std::ostream& stream);
+   static std::unique_ptr<OutputHandler> create(std::ostream& stream);
 
 private:
    std::ostream& _ostream;

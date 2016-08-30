@@ -21,10 +21,10 @@
 #ifndef ORION_UNITTEST_TESTRESULT_H
 #define ORION_UNITTEST_TESTRESULT_H
 
+#include <memory>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 #include <orion/Timer.h>
 #include <orion/unittest/TestResultItem.h>
 
@@ -38,8 +38,9 @@ namespace unittest
 class API_EXPORT TestResult 
 {
 public:
-   DECLARE_POINTERS(TestResult)
-
+   NO_COPY(TestResult)
+   NO_MOVE(TestResult)
+   
    ~TestResult();
 
    std::string name() const;
@@ -53,16 +54,16 @@ public:
 
    double time_elapsed() const;
 
-   const TestResultItem::SharedPtrVector& result_items() const;
+   const std::vector<std::unique_ptr<TestResultItem>>& result_items() const;
 
    void on_start();
-   void on_failure(TestResultItem::SharedPtr item);
-   void on_success(TestResultItem::SharedPtr item);
+   void on_failure(std::unique_ptr<TestResultItem> item);
+   void on_success(std::unique_ptr<TestResultItem> item);
    void on_end();
 
-   static TestResult::SharedPtr create(const std::string& name, const std::string& suite_name = "DefaultSuite");
+   static std::unique_ptr<TestResult> create(const std::string& name, const std::string& suite_name = "DefaultSuite");
 
-protected:
+public:
    TestResult(const std::string& name, const std::string& suite_name);
 
 private:
@@ -71,7 +72,8 @@ private:
    int _failed_item_count;
    int _passed_item_count;
    Timer _timer;
-   TestResultItem::SharedPtrVector _result_items;
+
+   std::vector<std::unique_ptr<TestResultItem>> _result_items;
 };
 
 } // namespace orion

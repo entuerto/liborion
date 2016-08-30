@@ -28,16 +28,16 @@ using namespace orion::logging;
 
 /*!
 */
-Module::SharedPtr Module::create()
+std::unique_ptr<Module> Module::create()
 {
-   return std::make_shared<Module>();
+   return std::make_unique<Module>();
 }
    
 /*!
 */
-Module::SharedPtr Module::create_and_open(const std::string& file_name)
+std::unique_ptr<Module> Module::create_and_open(const std::string& file_name)
 {
-   Module::SharedPtr module = Module::create();
+   std::unique_ptr<Module> module = Module::create();
 
    module->open(file_name);
 

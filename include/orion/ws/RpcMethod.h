@@ -25,7 +25,6 @@
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 
 namespace orion
 {
@@ -38,9 +37,7 @@ namespace ws
 class RpcMethod
 {
 public:
-   DECLARE_POINTERS(RpcMethod)
-
-   virtual ~RpcMethod() {}
+   virtual ~RpcMethod() = default;
 
    virtual std::string name() const =0;
 

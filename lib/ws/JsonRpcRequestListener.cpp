@@ -48,7 +48,7 @@ JsonRpcRequestListener::~JsonRpcRequestListener()
 {
 }
 
-Response::SharedPtr JsonRpcRequestListener::on_post(Request::SharedPtr request)
+std::unique_ptr<Response> JsonRpcRequestListener::on_post(const Request* request)
 {
    LOG_FUNCTION(Debug2, "JsonRpcRequestListener::on_post()")
 
@@ -56,8 +56,6 @@ Response::SharedPtr JsonRpcRequestListener::on_post(Request::SharedPtr request)
    Json::Value  json_request;
    Json::Value  json_response;
    Json::Value  json_result;
-
-   JsonRpcError::SharedPtr error;
 
    if (reader.parse(request->content(), json_request, false))
    {
@@ -67,10 +65,10 @@ Response::SharedPtr JsonRpcRequestListener::on_post(Request::SharedPtr request)
          {
             Json::Value id = json_request[i][JSON_RPC_ID];
 
-            error = process_method(json_request[i], json_result);
+            auto error = process_method(json_request[i], json_result);
 
             json_response.append((not error) ? make_json_rpc_response(id, json_result) :
-                                               make_json_rpc_response(id, error));
+                                               make_json_rpc_response(id, error.get()));
          }
         
       } 
@@ -78,16 +76,16 @@ Response::SharedPtr JsonRpcRequestListener::on_post(Request::SharedPtr request)
       {
          Json::Value id = json_request[JSON_RPC_ID];
 
-         error = process_method(json_request, json_result);
+         auto error = process_method(json_request, json_result);
 
          json_response = (not error) ? make_json_rpc_response(id, json_result) :
-                                       make_json_rpc_response(id, error);
+                                       make_json_rpc_response(id, error.get());
       }
    }
    else
    {
-      error = JsonRpcError::create_parse_error(request->content());
-      json_response = make_json_rpc_response("", error);
+      auto error = JsonRpcError::create_parse_error(request->content());
+      json_response = make_json_rpc_response("", error.get());
    }
    
    Json::FastWriter writer;
@@ -95,27 +93,27 @@ Response::SharedPtr JsonRpcRequestListener::on_post(Request::SharedPtr request)
 }
 
 //!
-JsonRpcError::SharedPtr JsonRpcRequestListener::process_method(Json::Value& json_request, Json::Value& json_result)
+std::unique_ptr<JsonRpcError> JsonRpcRequestListener::process_method(Json::Value& json_request, Json::Value& json_result)
 {
    LOG_FUNCTION(Debug2, "JsonRpcRequestListener::process_method()")
 
-   JsonRpcError::SharedPtr error = validate(json_request);
+   std::unique_ptr<JsonRpcError> error = validate(json_request);
 
    if (error)
       return error;
 
-   RpcMethod::SharedPtr method = get_method(json_request[JSON_RPC_METHODNAME].asString());
+   RpcMethod* method = get_method(json_request[JSON_RPC_METHODNAME].asString());
 
    if (not method)
       return JsonRpcError::create_method_not_found();
 
-   JsonRpcMethod::SharedPtr json_method = iface_cast<JsonRpcMethod>(method);
+   JsonRpcMethod* json_method = dynamic_cast<JsonRpcMethod*>(method);
 
    return json_method->call(json_request, json_result);
 }
 
 //!
-JsonRpcError::SharedPtr JsonRpcRequestListener::validate(Json::Value& json_request)
+std::unique_ptr<JsonRpcError> JsonRpcRequestListener::validate(Json::Value& json_request)
 {
    LOG_FUNCTION(Debug2, "JsonRpcRequestListener::validate()")
 
@@ -155,7 +153,7 @@ Json::Value JsonRpcRequestListener::make_json_rpc_response(const Json::Value& id
 }
 
 //!
-Json::Value JsonRpcRequestListener::make_json_rpc_response(const Json::Value& id, JsonRpcError::SharedPtr error)
+Json::Value JsonRpcRequestListener::make_json_rpc_response(const Json::Value& id, const JsonRpcError* error)
 {
    Json::Value  json_response;
 
@@ -167,9 +165,9 @@ Json::Value JsonRpcRequestListener::make_json_rpc_response(const Json::Value& id
    return json_response;
 }
 
-JsonRpcRequestListener::SharedPtr JsonRpcRequestListener::create(const std::string& uri)
+std::unique_ptr<JsonRpcRequestListener> JsonRpcRequestListener::create(const std::string& uri)
 {
-   return JsonRpcRequestListener::SharedPtr(new JsonRpcRequestListener(uri));
+   return std::make_unique<JsonRpcRequestListener>(uri);
 }
 
 } // ws

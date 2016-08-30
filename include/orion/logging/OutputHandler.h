@@ -22,11 +22,10 @@
 #ifndef ORION_LOGGING_OUTPUTHANDLER_H
 #define ORION_LOGGING_OUTPUTHANDLER_H
 
-#include <iosfwd>
+#include <memory>
 #include <vector>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 #include <orion/logging/IFormatter.h>
 
 namespace orion
@@ -41,23 +40,21 @@ class LogRecord;
 //! OutputHandler instances dispatch logging events to specific destinations.
 /*!
     Output handlers can optionally use Formatter instances to format
-    records as desired. By default, a basic one line formatter is specified.
+    records as desired. 
+
+    By default, a basic one line formatter is specified.
  */
 class API_EXPORT OutputHandler 
 {
 public:
-   DECLARE_POINTERS(OutputHandler)
-
-   typedef std::vector<SharedPtr> SharedPtrVector;
-
    OutputHandler();
    virtual ~OutputHandler();
 
    //! Gets the formatter of the output handler
-   IFormatter::SharedPtr formatter() const;
+   IFormatter* formatter() const;
 
-   //! Sets the formatter of the output handler
-   void set_formatter(IFormatter::SharedPtr formatter);
+   //! Sets the formatter of the output handler. 
+   void set_formatter(std::unique_ptr<IFormatter>&& formatter);
 
    //! Writes a log record
    virtual void write(const LogRecord& log_record) =0;
@@ -69,7 +66,7 @@ public:
    virtual void close() =0;
 
 private:
-   IFormatter::SharedPtr _formatter;
+   std::unique_ptr<IFormatter> _formatter;
 
 };
 

@@ -38,9 +38,15 @@ namespace ws
 class API_EXPORT RpcError
 {
 public:
-   DECLARE_POINTERS(RpcError)
+   RpcError(int32_t code, const std::string& message, const std::string& data);
+
+   RpcError(const RpcError& Other);
+   RpcError(RpcError&& Other);
 
    virtual ~RpcError();
+
+   RpcError& operator=(const RpcError& Rhs);
+   RpcError& operator=(RpcError&& Rhs);
 
    //! A Number that indicates the error type that occurred.
    virtual int32_t code() const;
@@ -51,14 +57,11 @@ public:
    //! A Primitive or Structured value that contains additional information about the error.
    virtual std::string data() const;
 
-
+public:
    //! Create a RPC Error object
-   static RpcError::SharedPtr create(int32_t code, const std::string& message, const std::string& data = "");
+   static std::unique_ptr<RpcError> create(int32_t code, const std::string& message, const std::string& data = "");
 
-
-protected:
-  RpcError(int32_t code, const std::string& message, const std::string& data);
-
+private:
   int32_t _code; 
   std::string _message; 
   std::string _data;

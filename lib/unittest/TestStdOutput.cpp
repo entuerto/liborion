@@ -17,20 +17,20 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 //
-
-#include <iomanip>
+#include <orion/unittest/TestStdOutput.h>
 
 #include <orion/unittest/Test.h>
-#include <orion/unittest/TestStdOutput.h>
 #include <orion/unittest/TestResultItem.h>
+
+#include <iomanip>
 
 namespace orion
 {
 namespace unittest
 {
 
-TestStdOutput::TestStdOutput(std::ostream& stream)
-	: TestOutput(),
+TestStdOutput::TestStdOutput(std::ostream& stream) :
+	TestOutput(),
    _stream(stream)
 {
 }
@@ -39,7 +39,7 @@ TestStdOutput::~TestStdOutput()
 {
 }
 
-void TestStdOutput::write(const TestResult::SharedPtr& test_result)
+void TestStdOutput::write(const TestResult* test_result) const
 {
    if (not test_result->failed())
       return;
@@ -47,26 +47,22 @@ void TestStdOutput::write(const TestResult::SharedPtr& test_result)
    _stream << "Test "
            << test_result->name() << ": \n";
 
-   const TestResultItem::SharedPtrVector& result_items = test_result->result_items();
-
-   TestResultItem::SharedPtrVector::const_iterator iter = result_items.begin();
-   TestResultItem::SharedPtrVector::const_iterator end  = result_items.end();
-
-   for ( ; iter != end; ++iter)
+   for (auto&& item : test_result->result_items())
    {
-      if ((*iter)->result() == TestResultItem::Passed)
+      if (item->result() == Result::Passed)
          continue;
 
       _stream << "   "
-              << (((*iter)->result() == TestResultItem::Passed) ? "Passed: " : "Failed: ")
-              << (*iter)->message()
-              << ", file " << (*iter)->file_name()
-              << ", line " << (*iter)->line_number()
+              << ((item->result() == Result::Passed) ? "Passed: " : "Failed: ")
+              << item->message()
+              << ", file " << item->file_name()
+              << ", line " << item->line_number()
               << "\n";
    }
+   
 }
 
-void TestStdOutput::write_summary(int failure_count, int failed_item_count, int test_count, double time_elapsed)
+void TestStdOutput::write_summary(int failure_count, int failed_item_count, int test_count, double time_elapsed) const
 {
    if (failure_count > 0)
    {
@@ -86,9 +82,9 @@ void TestStdOutput::write_summary(int failure_count, int failed_item_count, int 
            << " seconds.\n";
 }
 
-TestOutput::SharedPtr TestStdOutput::create(std::ostream& stream)
+std::unique_ptr<TestOutput> TestStdOutput::create(std::ostream& stream)
 {
-   return TestOutput::SharedPtr(new TestStdOutput(stream));
+   return std::make_unique<TestStdOutput>(stream);
 }
 
 } // namespace orion

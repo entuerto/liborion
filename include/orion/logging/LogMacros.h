@@ -23,8 +23,8 @@
 
 #ifndef LOG
 #define LOG(lvl) \
-if (orion::logging::Logger::get_logger().is_enabled(orion::logging::Logger::lvl)) \
-   orion::logging::Logger::get_logger() += LogRecord(orion::logging::Logger::lvl, __FILE__, __LINE__, __FUNCTION__)
+if (orion::logging::Logger::get_logger().is_enabled(orion::logging::Level::lvl)) \
+   orion::logging::Logger::get_logger() += LogRecord(orion::logging::Level::lvl, __FILE__, __LINE__, __FUNCTION__)
 #endif
 
 #ifndef LOG_EXCEPTION
@@ -34,7 +34,7 @@ orion::logging::Logger::get_logger() += LogExceptionRecord(except, __FILE__, __L
 
 #ifndef LOG_FUNCTION
 #define LOG_FUNCTION(lvl, func_name) \
-orion::logging::LogFunction log_func(orion::logging::Logger::lvl, func_name, __FILE__, __LINE__);
+orion::logging::LogFunction log_func(orion::logging::Level::lvl, func_name, __FILE__, __LINE__);
 #endif
 
 #ifndef LOG_IF_FAIL

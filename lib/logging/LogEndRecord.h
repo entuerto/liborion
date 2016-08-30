@@ -46,27 +46,27 @@ public:
 
    virtual ~LogEndRecord();
 
-   virtual Logger::Level level() const;
+   virtual Level level() const override;
 
-   virtual void level(Logger::Level level);
+   virtual void level(Level level) override;
 
-   virtual std::string time_stamp() const;
+   virtual std::string time_stamp() const override;
 
-   virtual std::string message() const;
+   virtual std::string message() const override;
 
-   virtual void message(const std::string& msg);
+   virtual void message(const std::string& msg) override;
 
-   virtual std::string file_name() const;
+   virtual std::string file_name() const override;
 
-   virtual void file_name(const std::string& file);
+   virtual void file_name(const std::string& file) override;
 
-   virtual int32_t line() const;
+   virtual int32_t line() const override;
 
-   virtual void line(int32_t l);
+   virtual void line(int32_t l) override;
 
-   virtual std::string function_name() const;
+   virtual std::string function_name() const override;
 
-   virtual void function_name(const std::string& function);
+   virtual void function_name(const std::string& function) override;
 
    LogEndRecord& operator=(const LogEndRecord& rhs);
    LogEndRecord& operator=(LogEndRecord&& rhs);

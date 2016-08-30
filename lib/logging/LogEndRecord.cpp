@@ -56,15 +56,15 @@ LogEndRecord::~LogEndRecord()
 /*!
    Returns the level of the log record
  */
-Logger::Level LogEndRecord::level() const
+Level LogEndRecord::level() const
 {
-   return Logger::NotSet;
+   return Level::NotSet;
 }
 
 /*!
    Records the level of the log record
  */
-void LogEndRecord::level(Logger::Level /* level */)
+void LogEndRecord::level(Level /* level */)
 {
 }
 

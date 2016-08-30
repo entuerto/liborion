@@ -22,7 +22,6 @@
 #include <orion/ws/HttpServer.h>
 
 #include <orion/Logging.h>
-#include <orion/ws/InetAddress.h>
 #include <ws/impl/MongooseHttpServer.h>
 
 
@@ -49,7 +48,7 @@ int HttpServer::port() const
    return _port;
 }
 
-Response::SharedPtr HttpServer::process_request(Request::SharedPtr request)
+std::unique_ptr<Response> HttpServer::process_request(const Request* request)
 {
    LOG_FUNCTION(Debug2, "HttpServer::process_request()")
 
@@ -57,7 +56,7 @@ Response::SharedPtr HttpServer::process_request(Request::SharedPtr request)
 
    if (it != _RequestListeners.end())
    {
-      RequestListener::SharedPtr rl = it->second;
+      auto&& rl = it->second;
 
       return rl->on_process_request(request);
    }
@@ -65,12 +64,12 @@ Response::SharedPtr HttpServer::process_request(Request::SharedPtr request)
    return Response::create_404();
 }
 
-void HttpServer::add_request_listener(RequestListener::SharedPtr listener)
+void HttpServer::add_request_listener(std::unique_ptr<RequestListener>&& listener)
 {
-   _RequestListeners.insert(std::pair<std::string, RequestListener::SharedPtr>(listener->uri(), listener));
+   _RequestListeners.insert(std::make_pair<std::string, std::unique_ptr<RequestListener>>(listener->uri(), std::move(listener)));
 }
 
-Server::SharedPtr HttpServer::create(int port)
+std::unique_ptr<Server> HttpServer::create(int port)
 {
    return MongooseHttpServer::create(port); 
 }

@@ -8,7 +8,7 @@ namespace
 
 TEST(InitialValues)
 {
-   TestResult::SharedPtr tr = TestResult::create("toto", "toto_suite");
+   auto tr = TestResult::create("toto", "toto_suite");
 
    EXPECT(tr->name() == "toto");
    EXPECT(tr->suite_name() == "toto_suite");
@@ -20,7 +20,7 @@ TEST(InitialValues)
 
 TEST(NumberOfFailedItems)
 {
-   TestResult::SharedPtr tr = TestResult::create("toto", "toto_suite");
+   auto tr = TestResult::create("toto", "toto_suite");
 
    tr->on_failure(TestResultItem::create_failure("1"));
    tr->on_failure(TestResultItem::create_failure("2"));
@@ -31,7 +31,7 @@ TEST(NumberOfFailedItems)
 
 TEST(NumberOfPassedItems)
 {
-   TestResult::SharedPtr tr = TestResult::create("toto", "toto_suite");
+   auto tr = TestResult::create("toto", "toto_suite");
 
    tr->on_success(TestResultItem::create_success("1"));
    tr->on_success(TestResultItem::create_success("2"));
@@ -42,9 +42,9 @@ TEST(NumberOfPassedItems)
 
 TEST(TestResultItemSuccessCreation)
 {
-   TestResultItem::SharedPtr tri = TestResultItem::create_success("toto", "toto.txt", 99);
+   auto tri = TestResultItem::create_success("toto", "toto.txt", 99);
 
-   EXPECT(tri->result() == TestResultItem::Passed);
+   EXPECT(tri->result() == Result::Passed);
    EXPECT(tri->message() == "toto");
    EXPECT(tri->file_name() == "toto.txt");
    EXPECT(tri->line_number() == 99);
@@ -52,9 +52,9 @@ TEST(TestResultItemSuccessCreation)
 
 TEST(TestResultItemFailureCreation)
 {
-   TestResultItem::SharedPtr tri = TestResultItem::create_failure("tata", "tata.txt", 88);
+   auto tri = TestResultItem::create_failure("tata", "tata.txt", 88);
 
-   EXPECT(tri->result() == TestResultItem::Failed);
+   EXPECT(tri->result() == Result::Failed);
    EXPECT(tri->message() == "tata");
    EXPECT(tri->file_name() == "tata.txt");
    EXPECT(tri->line_number() == 88);

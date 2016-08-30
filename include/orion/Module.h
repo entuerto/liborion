@@ -39,8 +39,6 @@ namespace orion
 class API_EXPORT Module 
 {
 public:
-   DECLARE_POINTERS(Module)
-
    NO_COPY(Module)
    NO_MOVE(Module)
 
@@ -63,9 +61,9 @@ public:
    void get_symbol(const std::string& symbol_name, void*& symbol);
 
    
-   static Module::SharedPtr create();
+   static std::unique_ptr<Module> create();
    
-   static Module::SharedPtr create_and_open(const std::string& file_name);
+   static std::unique_ptr<Module> create_and_open(const std::string& file_name);
 
 private:
    struct Private;

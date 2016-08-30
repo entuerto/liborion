@@ -38,17 +38,17 @@
    public: \
       Test##Name() : Test(#Name, UnitTestSuite::suite_name()) {}  \
    \
-      static Test::SharedPtr create() \
+      static Test* create() \
       { \
-         return std::shared_ptr<Test##Name>(new Test##Name); \
+         return new  Test##Name; \
       } \
    protected: \
-        virtual void execute_test_impl(TestResult::SharedPtr test_result) const;  \
+        virtual void execute_test_impl(TestResult* test_result) const;  \
    }; \
    \
    orion::unittest::TestAddHelper add_##Name(Test::tests(), Test##Name::create()); \
                                                      \
-   void Test##Name::execute_test_impl(TestResult::SharedPtr test_result) const
+   void Test##Name::execute_test_impl(TestResult* test_result) const
 
 
 #define EXPECT(expression) \
@@ -61,7 +61,8 @@
    } \
    catch (...) \
    { \
-      test_result->on_failure(TestResultItem::create_failure("Unhandled exception in EXPECT(" #expression ")", __FILE__, __LINE__)); \
+      auto item = TestResultItem::create_failure("Unhandled exception in EXPECT(" #expression ")", __FILE__, __LINE__);\
+      test_result->on_failure(std::move(item)); \
    } \
 }
 
@@ -76,7 +77,8 @@
    } \
    catch (...) \
    { \
-      test_result->on_failure(TestResultItem::create_failure("Unhandled exception in EXPECT_CLOSE", __FILE__, __LINE__)); \
+      auto item = TestResultItem::create_failure("Unhandled exception in EXPECT_CLOSE", __FILE__, __LINE__);\
+      test_result->on_failure(std::move(item)); \
    } \
 }
 
@@ -88,9 +90,15 @@
    catch (const ExpectedException&) { caught = true; } \
    catch (...) {} \
    if (caught) \
-      test_result->on_success(TestResultItem::create_success("Expected exception " #ExpectedException, __FILE__, __LINE__)); \
+   { \
+      auto item = TestResultItem::create_success("Expected exception " #ExpectedException, __FILE__, __LINE__);\
+      test_result->on_success(std::move(item)); \
+   } \
    else \
-      test_result->on_failure(TestResultItem::create_failure("Expected exception " #ExpectedException, __FILE__, __LINE__)); \
+   { \
+      auto item = TestResultItem::create_failure("Expected exception " #ExpectedException, __FILE__, __LINE__);\
+      test_result->on_failure(std::move(item)); \
+   } \
 }
 
 
@@ -104,7 +112,8 @@
    } \
    catch (...) \
    { \
-      test_result->on_failure(TestResultItem::create_failure("Unhandled exception in FAIL_IF(" #expression ")", __FILE__, __LINE__)); \
+      auto item = TestResultItem::create_failure("Unhandled exception in FAIL_IF(" #expression ")", __FILE__, __LINE__);\
+      test_result->on_failure(std::move(item)); \
    } \
 }
 
@@ -116,9 +125,15 @@
    catch (const UnexpectedException&) { caught = true; } \
    catch (...) {} \
    if (caught) \
-      test_result->on_failure(TestResultItem::create_failure("Unexpected exception " #UnexpectedException, __FILE__, __LINE__)); \
+   { \
+      auto item = TestResultItem::create_failure("Unexpected exception " #UnexpectedException, __FILE__, __LINE__);\
+      test_result->on_failure(std::move(item)); \
+   } \
    else \
-      test_result->on_success(TestResultItem::create_success("Unexpected exception " #UnexpectedException, __FILE__, __LINE__)); \
+   { \
+      auto item = TestResultItem::create_success("Unexpected exception " #UnexpectedException, __FILE__, __LINE__);\
+      test_result->on_success(std::move(item)); \
+   } \
 }
 
 #endif /* ORION_UNITTEST_TESTMACROS_H */

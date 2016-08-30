@@ -28,10 +28,8 @@ using namespace orion::unittest;
 class MockRequest : public Request
 {
 public:
-   DECLARE_POINTERS(MockRequest)
-
    MockRequest(const std::string& data) : Request() { _data = data; }
-   virtual ~MockRequest()    {}
+   virtual ~MockRequest() = default;
 
    virtual std::string method() const        { return "POST"; }
    virtual std::string uri() const           { return "";}
@@ -41,9 +39,9 @@ public:
    virtual bool is_authenticated()  const    { return false; }
    virtual bool is_secure_connection() const { return false; }
 
-   static Request::SharedPtr create(const std::string& data)
+   static std::unique_ptr<Request> create(const std::string& data)
    {
-      return Request::SharedPtr(new MockRequest(data));
+      return std::make_unique<MockRequest>(data);
    }
 
 };
@@ -52,33 +50,29 @@ class MockMethod : public JsonRpcMethod
 {
 public:
    MockMethod() : JsonRpcMethod() {}
-   virtual ~MockMethod()  {}
+   virtual ~MockMethod() = default;
 
    virtual std::string name() const        { return "mock"; }
    virtual std::string description() const { return "Mock method for tests."; }
 
-   virtual JsonRpcError::SharedPtr call(Json::Value& json_request, Json::Value& json_result)
+   virtual std::unique_ptr<JsonRpcError> call(Json::Value& json_request, Json::Value& json_result)
    {
       return nullptr;
    }
 
-   static RpcMethod::SharedPtr create()
+   static std::unique_ptr<RpcMethod> create()
    {
-      MockMethod* m = new MockMethod;
-
-      return RpcMethod::SharedPtr(m);
+      return std::make_unique<MockMethod>();
    }
 };
 
 class MockJsonRpcRequestListener : public JsonRpcRequestListener
 {
 public:
-   DECLARE_POINTERS(MockJsonRpcRequestListener)
- 
    MockJsonRpcRequestListener() : JsonRpcRequestListener("") {}
-   virtual ~MockJsonRpcRequestListener() {}
+   virtual ~MockJsonRpcRequestListener() = default;
 
-   Response::SharedPtr send_post_request(Request::SharedPtr request)
+   std::unique_ptr<Response> send_post_request(const Request* request)
    {
       return on_post(request);
    }
@@ -114,7 +108,7 @@ TEST(TestRequest)
 { 
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"subtract\", \"id\": 1}";
 
-   Request::SharedPtr mr = MockRequest::create(data);
+   auto mr = MockRequest::create(data);
 
    FAIL_IF(not mr);
    EXPECT(mr->content() == data);
@@ -124,10 +118,10 @@ TEST(TestInvalidJsonResponse)
 {
    std::string data = "toto";
 
-   Request::SharedPtr mr = MockRequest::create(data);
+   auto mr = MockRequest::create(data);
 
    MockJsonRpcRequestListener mrl;
-   Response::SharedPtr response = mrl.send_post_request(mr);
+   auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
    EXPECT(response->code() == 200);
@@ -143,10 +137,10 @@ TEST(TestValidJsonResponse)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"subtract\", \"id\": \"1\"}";
 
-   Request::SharedPtr mr = MockRequest::create(data);
+   auto mr = MockRequest::create(data);
 
    MockJsonRpcRequestListener mrl;
-   Response::SharedPtr response = mrl.send_post_request(mr);
+   auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
    EXPECT(response->code() == 200);
@@ -164,12 +158,12 @@ TEST(TestMethodNotFound)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"subtract\", \"id\": \"1\"}";
 
-   Request::SharedPtr mr = MockRequest::create(data);
+   auto mr = MockRequest::create(data);
 
    MockJsonRpcRequestListener mrl;
 
    mrl.register_method("mock", MockMethod::create());
-   Response::SharedPtr response = mrl.send_post_request(mr);
+   auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
    EXPECT(response->code() == 200);
@@ -193,12 +187,12 @@ TEST(TestMethodFound)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"mock\", \"id\": \"1\"}";
 
-   Request::SharedPtr mr = MockRequest::create(data);
+   auto mr = MockRequest::create(data);
 
    MockJsonRpcRequestListener mrl;
 
    mrl.register_method("mock", MockMethod::create());
-   Response::SharedPtr response = mrl.send_post_request(mr);
+   auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
    EXPECT(response->code() == 200);
@@ -219,12 +213,12 @@ TEST(TestIdAsString)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"mock\", \"id\": \"1\"}";
 
-   Request::SharedPtr mr = MockRequest::create(data);
+   auto mr = MockRequest::create(data);
 
    MockJsonRpcRequestListener mrl;
 
    mrl.register_method("mock", MockMethod::create());
-   Response::SharedPtr response = mrl.send_post_request(mr);
+   auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
    EXPECT(response->code() == 200);
@@ -245,12 +239,12 @@ TEST(TestIdAsInt)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"mock\", \"id\": 1}";
 
-   Request::SharedPtr mr = MockRequest::create(data);
+   auto mr = MockRequest::create(data);
 
    MockJsonRpcRequestListener mrl;
 
    mrl.register_method("mock", MockMethod::create());
-   Response::SharedPtr response = mrl.send_post_request(mr);
+   auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
    EXPECT(response->code() == 200);

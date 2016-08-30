@@ -35,39 +35,39 @@ RpcRequestListener::~RpcRequestListener()
 {
 }
 
-void RpcRequestListener::register_method(const std::string& name, RpcMethod::SharedPtr method)
+void RpcRequestListener::register_method(const std::string& name, std::unique_ptr<RpcMethod>&& method)
 {
-   _RpcMethods.insert(std::pair<std::string, RpcMethod::SharedPtr>(name, method));
+   _RpcMethods.insert(std::make_pair(name, std::move(method)));
 }
 
-RpcMethod::SharedPtr RpcRequestListener::get_method(const std::string& name)
+RpcMethod* RpcRequestListener::get_method(const std::string& name) const
 {
-   auto it = _RpcMethods.find(name);
+   const auto& it = _RpcMethods.find(name);
 
    if (it != _RpcMethods.end())
    {
-      return it->second;
+      return (it->second).get();
    }
 
    return nullptr;
 }
 
-Response::SharedPtr RpcRequestListener::on_get(Request::SharedPtr request)
+std::unique_ptr<Response> RpcRequestListener::on_get(const Request* /* request */)
 {
    return Response::create_404();
 }
 
-Response::SharedPtr RpcRequestListener::on_post(Request::SharedPtr request)
+std::unique_ptr<Response> RpcRequestListener::on_post(const Request* /* request */)
 {
    return Response::create_404();
 }
 
-Response::SharedPtr RpcRequestListener::on_put(Request::SharedPtr request)
+std::unique_ptr<Response> RpcRequestListener::on_put(const Request* /* request */)
 {
    return Response::create_404();
 }
 
-Response::SharedPtr RpcRequestListener::on_delete(Request::SharedPtr request)
+std::unique_ptr<Response> RpcRequestListener::on_delete(const Request* /* request */)
 {
    return Response::create_404();
 }

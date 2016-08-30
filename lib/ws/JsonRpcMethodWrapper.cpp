@@ -26,7 +26,7 @@ namespace orion
 namespace ws
 {
 
-JsonRpcMethodWrapper::JsonRpcMethodWrapper(      std::function<JsonRpcError::SharedPtr(Json::Value&, Json::Value&)> func, 
+JsonRpcMethodWrapper::JsonRpcMethodWrapper(      std::function<std::unique_ptr<JsonRpcError>(Json::Value&, Json::Value&)> func, 
                                            const std::string& name, 
                                            const std::string& desc) :
    JsonRpcMethod(),
@@ -50,17 +50,16 @@ std::string JsonRpcMethodWrapper::description() const
    return _description;
 }
 
-JsonRpcError::SharedPtr JsonRpcMethodWrapper::call(Json::Value& json_request, Json::Value& json_result)
+std::unique_ptr<JsonRpcError> JsonRpcMethodWrapper::call(Json::Value& json_request, Json::Value& json_result)
 {
    return _function(json_request, json_result);
 }
 
-RpcMethod::SharedPtr JsonRpcMethodWrapper::create(      std::function<JsonRpcError::SharedPtr(Json::Value&, Json::Value&)> func, 
-                                                  const std::string& name, 
-                                                  const std::string& desc)
+std::unique_ptr<RpcMethod> JsonRpcMethodWrapper::create(      std::function<std::unique_ptr<JsonRpcError>(Json::Value&, Json::Value&)> func, 
+                                                        const std::string& name, 
+                                                        const std::string& desc)
 {
-   JsonRpcMethodWrapper* wrapper = new JsonRpcMethodWrapper(func, name, desc);
-   return RpcMethod::SharedPtr(wrapper);
+   return std::make_unique<JsonRpcMethodWrapper>(func, name, desc);
 }
 
 } // ws

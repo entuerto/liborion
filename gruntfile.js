@@ -67,7 +67,7 @@ module.exports = function(grunt) {
 						'lib/unittest/Test.cpp',
 						'lib/unittest/TestResult.cpp',
 						'lib/unittest/TestResultItem.cpp',
-						'lib/unittest/TestStdOutput.cpp']
+						'lib/unittest/TestStdOutput.cpp'] 
 			},
 			'orion-plugin': {
 				options: {
@@ -90,18 +90,17 @@ module.exports = function(grunt) {
 			'orion-ws': {
 				options: {
 					includes : ["deps/", "include/", "lib/"],
-					libs : ["json", 
-					        "mongoose", 
+					libs : ["libjson", 
+					        "libmongoose", 
 					        "orion",
+					        "orion-net",
 					        "psapi", 
 					        "ws2_32", 
 					        "rpcrt4"]
 				},
 				src :  ['lib/ws/impl/MongooseRequest.cpp',
-						'lib/ws/impl/MongooseHttpServer.cpp',
-						'lib/ws/InetAddress.cpp',
+						'lib/ws/impl/MongooseHttpServer.cpp', 
 						'lib/ws/RpcError.cpp',
-						'lib/ws/RpcMethod.cpp',
 						'lib/ws/JsonRpcError.cpp',
 						'lib/ws/JsonRpcMethodWrapper.cpp',
 						'lib/ws/Request.cpp',
@@ -135,7 +134,7 @@ module.exports = function(grunt) {
 				options: {
 					cxxflags : ["-Wall"],
 					includes : [".", "include/", "lib/", "deps/"],
-					libs     : ["json", "orion", "orion-ws"]
+					libs     : ["libjson", "orion", "orion-ws"]
 				},
 				src : ['tests/test-jsonrpc.cpp']
 			},

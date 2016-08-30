@@ -35,7 +35,7 @@ namespace logging
 class API_EXPORT LogFunction 
 {
 public:
-   LogFunction(Logger::Level level,
+   LogFunction(      Level level,
                const std::string& function_name,
                const std::string& file,
                int32_t line);
@@ -43,10 +43,10 @@ public:
    virtual ~LogFunction();
 
    //! Returns the level of the log record
-   virtual Logger::Level level() const;
+   virtual Level level() const;
 
    //! Records the level of the log record
-   virtual void level(Logger::Level level);
+   virtual void level(Level level);
 
    //! Returns the function name recorded
    virtual std::string function_name() const;
@@ -61,7 +61,7 @@ protected:
    LogFunction& operator=(LogFunction&& rhs);
 
 private:
-   Logger::Level _level;
+   Level _level;
    std::string   _function_name;
 
 };

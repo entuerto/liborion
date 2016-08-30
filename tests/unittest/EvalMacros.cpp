@@ -14,7 +14,8 @@ TEST(CheckSuccessOnTrue)
 {
    bool failure = true;
    {
-      TestResult::SharedPtr test_result = TestResult::create("scope test result");
+      auto r = TestResult::create("scope test result");
+      TestResult* test_result = r.get();
 
       EXPECT(true);
 
@@ -28,7 +29,8 @@ TEST(CheckFailureOnFalse)
 {
    bool failure = true;
    {
-      TestResult::SharedPtr test_result = TestResult::create("scope test result");
+      auto r = TestResult::create("scope test result");
+      TestResult* test_result = r.get();
 
       EXPECT(false);
 
@@ -47,7 +49,8 @@ TEST(CheckFailureOnException)
 {
    bool failure = false;
    {
-      TestResult::SharedPtr test_result = TestResult::create("scope test result");
+      auto r = TestResult::create("scope test result");
+      TestResult* test_result = r.get();
 
       EXPECT(throwing_function() == 1);
 
@@ -68,7 +71,8 @@ TEST(CheckEqualDoesNotHaveSideEffectsWhenPassing)
 {
    side_effect = 0;
    {
-      TestResult::SharedPtr test_result = TestResult::create("scope test result");
+      auto r = TestResult::create("scope test result");
+      TestResult* test_result = r.get();
 
       EXPECT(1 == function_with_side_effects());
    }
@@ -79,7 +83,8 @@ TEST(CheckCloseSuccessOnEqual)
 {
    bool failure = true;
    {
-      TestResult::SharedPtr test_result = TestResult::create("scope test result");
+      auto r = TestResult::create("scope test result");
+      TestResult* test_result = r.get();
 
       EXPECT_CLOSE(1.0f, 1.001f, 0.01f);
 
@@ -93,7 +98,8 @@ TEST(CheckCloseFailsOnNotEqual)
 {
    bool failure = false;
    {
-      TestResult::SharedPtr test_result = TestResult::create("scope test result");
+      auto r = TestResult::create("scope test result");
+      TestResult* test_result = r.get();
 
       EXPECT_CLOSE(1.0f, 1.1f, 0.01f);
 
@@ -107,7 +113,8 @@ TEST(CheckCloseFailsOnException)
 {
    bool failure = false;
    {
-      TestResult::SharedPtr test_result = TestResult::create("scope test result");
+      auto r = TestResult::create("scope test result");
+      TestResult* test_result = r.get();
 
       EXPECT_CLOSE((float)throwing_function(), 1.0001f, 0.1f);
 
@@ -121,7 +128,8 @@ TEST(CheckExpectThrowOnSuccess)
 {
    bool failure = true;
    {
-      TestResult::SharedPtr test_result = TestResult::create("scope test result");
+      auto r = TestResult::create("scope test result");
+      TestResult* test_result = r.get();
 
       EXPECT_THROW(throwing_function(), orion::Exception);
 
@@ -135,7 +143,8 @@ TEST(CheckExpectThrowOnFailure)
 {
    bool failure = false;
    {
-      TestResult::SharedPtr test_result = TestResult::create("scope test result");
+      auto r = TestResult::create("scope test result");
+      TestResult* test_result = r.get();
 
       EXPECT_THROW(throwing_function(), std::logic_error);
 
@@ -149,7 +158,8 @@ TEST(CheckFailIfOnTrue)
 {
    bool failure = false;
    {
-      TestResult::SharedPtr test_result = TestResult::create("scope test result");
+      auto r = TestResult::create("scope test result");
+      TestResult* test_result = r.get();
 
       FAIL_IF(true);
 
@@ -163,7 +173,8 @@ TEST(CheckFailIfOnFalse)
 {
    bool failure = false;
    {
-      TestResult::SharedPtr test_result = TestResult::create("scope test result");
+      auto r = TestResult::create("scope test result");
+      TestResult* test_result = r.get();
 
       FAIL_IF(false);
 

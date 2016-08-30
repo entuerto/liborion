@@ -56,15 +56,15 @@ LogStartRecord::~LogStartRecord()
 /*!
    Returns the level of the log record
  */
-Logger::Level LogStartRecord::level() const
+Level LogStartRecord::level() const
 {
-   return Logger::NotSet;
+   return Level::NotSet;
 }
 
 /*!
    Records the level of the log record
  */
-void LogStartRecord::level(Logger::Level /* level */)
+void LogStartRecord::level(Level /* level */)
 {
 }
 

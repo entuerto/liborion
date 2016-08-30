@@ -24,7 +24,6 @@
 
 #include <string>
 #include <orion/MemoryUtils.h>
-#include <orion/ws/InetAddress.h>
 #include <orion/ws/Request.h>
 #include <mongoose/mongoose.h>
 
@@ -38,8 +37,6 @@ namespace mongoose
 class MongooseRequest : public Request
 {
 public:
-   DECLARE_POINTERS(MongooseRequest)
-
    MongooseRequest(struct mg_connection* connection);
 
    virtual ~MongooseRequest();
@@ -63,7 +60,7 @@ public:
 
    virtual bool is_secure_connection() const;
 
-   static Request::SharedPtr create(struct mg_connection* connection);
+   static std::unique_ptr<Request> create(struct mg_connection* connection);
 
 private:
    HeaderMap make_header_map(const struct mg_connection* connection);

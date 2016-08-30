@@ -36,36 +36,39 @@ namespace net
 /*!
    A Listener is a generic network listener for stream-oriented protocols.
  */
-class API_EXPORT Listener {
+class API_EXPORT Listener 
+{
 public:
-	DECLARE_POINTERS(Listener)
-
-   virtual ~Listener() {}
+   virtual ~Listener() = default;
 
    // Accept waits for and returns the next connection to the listener.
-   virtual Connection::SharedPtr accept() =0;
+   virtual std::unique_ptr<Connection> accept() =0;
 
    // Close closes the listener.
    // Any blocked Accept operations will be unblocked and return errors.
    virtual void close() =0;
 
    // Addr returns the listener's network address.
-   virtual IPAddress::WeakPtr addr() const  =0;
+   virtual IPAddress* addr() const  =0;
 };
 
 //! TCPListener is a TCP network listener. 
-class API_EXPORT TcpListener : public Listener {
+class API_EXPORT TcpListener : public Listener 
+{
 public:
+   NO_COPY(TcpListener)
+   NO_MOVE(TcpListener)
+
    ~TcpListener();
 
-   virtual Connection::SharedPtr accept() override;
+   virtual std::unique_ptr<Connection> accept() override;
 
    virtual void close() override;
 
-   virtual IPAddress::WeakPtr addr() const override;
+   virtual IPAddress* addr() const override;
 
-   static Listener::SharedPtr open_tcp4(const TcpAddress& addr);
-   static Listener::SharedPtr open_tcp6(const TcpAddress& addr);
+   static std::unique_ptr<Listener> open_tcp4(const TcpAddress& addr);
+   static std::unique_ptr<Listener> open_tcp6(const TcpAddress& addr);
 
 private:
 	struct Impl;

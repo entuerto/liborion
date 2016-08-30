@@ -138,60 +138,60 @@ std::string Response::to_string() const
    return stream.str();
 }
 
-Response::SharedPtr Response::create() 
+std::unique_ptr<Response> Response::create() 
 {
-   return Response::SharedPtr(new Response(200));
+   return std::make_unique<Response>(200);
 }
 
-Response::SharedPtr Response::create(const std::string& content, const std::string& content_type) 
+std::unique_ptr<Response> Response::create(const std::string& content, const std::string& content_type) 
 {
-   return Response::SharedPtr(new Response(200, content, content_type));
+   return std::make_unique<Response>(200, content, content_type);
 }
 
 
-Response::SharedPtr Response::create_400() 
+std::unique_ptr<Response> Response::create_400() 
 {
-   return Response::SharedPtr(new Response(400, "The browser (or proxy) sent a request that this server could not understand."));
+   return std::make_unique<Response>(400, "The browser (or proxy) sent a request that this server could not understand.");
 }
 
-Response::SharedPtr Response::create_401() 
+std::unique_ptr<Response> Response::create_401() 
 {
-   return Response::SharedPtr(new Response(401, "The server could not verify that you are authorized to access the URL requested."));
+   return std::make_unique<Response>(401, "The server could not verify that you are authorized to access the URL requested.");
 }
 
-Response::SharedPtr Response::create_403() 
+std::unique_ptr<Response> Response::create_403() 
 {
-   return Response::SharedPtr(new Response(403, "You don't have the permission to access the requested resource."));
+   return std::make_unique<Response>(403, "You don't have the permission to access the requested resource.");
 }
 
-Response::SharedPtr Response::create_404() 
+std::unique_ptr<Response> Response::create_404() 
 {
-   return Response::SharedPtr(new Response(404, "The requested URL was not found on the server."));
+   return std::make_unique<Response>(404, "The requested URL was not found on the server.");
 }
 
-Response::SharedPtr Response::create_405() 
+std::unique_ptr<Response> Response::create_405() 
 {
-   return Response::SharedPtr(new Response(405, "The method is not allowed for the requested URL."));
+   return std::make_unique<Response>(405, "The method is not allowed for the requested URL.");
 }
 
-Response::SharedPtr Response::create_406() 
+std::unique_ptr<Response> Response::create_406() 
 {
-   return Response::SharedPtr(new Response(406, "The resource identified by the request is only capable of "
-                                                "generating response entities which have content characteristics "
-                                                "not acceptable according to the accept headers sent in the "
-                                                "request."));
+   return std::make_unique<Response>(406, "The resource identified by the request is only capable of "
+                                          "generating response entities which have content characteristics "
+                                          "not acceptable according to the accept headers sent in the "
+                                          "request.");
 }
 
-Response::SharedPtr Response::create_408() 
+std::unique_ptr<Response> Response::create_408() 
 {
-   return Response::SharedPtr(new Response(408, "The server closed the network connection because the browser "
-                                                "didn't finish the request within the specified time."));
+   return std::make_unique<Response>(408, "The server closed the network connection because the browser "
+                                          "didn't finish the request within the specified time.");
 }
 
-Response::SharedPtr Response::create_409() 
+std::unique_ptr<Response> Response::create_409() 
 {
-   return Response::SharedPtr(new Response(409, "A conflict happened while processing the request.  The resource "
-                                                "might have been modified while the request was being processed."));
+   return std::make_unique<Response>(409, "A conflict happened while processing the request.  The resource "
+                                          "might have been modified while the request was being processed.");
 }
 
 } // ws

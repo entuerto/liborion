@@ -48,28 +48,26 @@ namespace ws
 class API_EXPORT JsonRpcRequestListener : public RpcRequestListener
 {
 public:
-   DECLARE_POINTERS(JsonRpcRequestListener)
-
+   JsonRpcRequestListener(const std::string& uri);
    virtual ~JsonRpcRequestListener();
 
-   static JsonRpcRequestListener::SharedPtr create(const std::string& uri);
+   static std::unique_ptr<JsonRpcRequestListener> create(const std::string& uri);
 
 protected:
-   JsonRpcRequestListener(const std::string& uri);
-
-   virtual Response::SharedPtr on_post(Request::SharedPtr request);
-
-   //!
-   JsonRpcError::SharedPtr process_method(Json::Value& json_request, Json::Value& json_result);
+   ///
+   virtual std::unique_ptr<Response> on_post(const Request* request) override;
 
    //!
-   JsonRpcError::SharedPtr validate(Json::Value& json_request);
+   std::unique_ptr<JsonRpcError> process_method(Json::Value& json_request, Json::Value& json_result);
+
+   //!
+   std::unique_ptr<JsonRpcError> validate(Json::Value& json_request);
 
    //!
    Json::Value make_json_rpc_response(const Json::Value& id, Json::Value& json_result);
 
    //!
-   Json::Value make_json_rpc_response(const Json::Value& id, JsonRpcError::SharedPtr error);
+   Json::Value make_json_rpc_response(const Json::Value& id, const JsonRpcError* error);
 
 };
 

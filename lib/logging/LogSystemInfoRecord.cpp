@@ -62,15 +62,15 @@ LogSystemInfoRecord::~LogSystemInfoRecord()
 /*!
    Returns the level of the log record
  */
-Logger::Level LogSystemInfoRecord::level() const
+Level LogSystemInfoRecord::level() const
 {
-   return Logger::NotSet;
+   return Level::NotSet;
 }
 
 /*!
    Records the level of the log record
  */
-void LogSystemInfoRecord::level(Logger::Level /* level */)
+void LogSystemInfoRecord::level(Level /* level */)
 {
 }
 

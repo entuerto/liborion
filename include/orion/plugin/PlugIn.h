@@ -39,8 +39,6 @@ class IExtension;
 class API_EXPORT PlugIn 
 {
 public:
-   DECLARE_POINTERS(PlugIn)
-
    NO_COPY(PlugIn)
    NO_MOVE(PlugIn)
 

@@ -21,6 +21,7 @@
 #define ORION_LOGGING_MULTILINEFORMATTER_H
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
@@ -47,7 +48,7 @@ public:
 
    virtual std::string format(const LogRecord& log_record);
 
-   static IFormatter::SharedPtr create();
+   static std::unique_ptr<IFormatter> create();
 
 private:
    std::string format_source_info(const std::string& prefix,

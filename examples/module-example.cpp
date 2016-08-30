@@ -28,11 +28,11 @@ using namespace orion;
 //----------------------------------------------------------
 int main()
 {
-   Module::SharedPtr module;
+   std::unique_ptr<Module> module;
    
    try 
    {
-      module = Module::create_and_open("libmodule-example.dll");
+      module = Module::create_and_open("module-example-0.1.dll");
    }
    catch (ModuleException& me)
    {

@@ -45,33 +45,36 @@ namespace ws
 class API_EXPORT JsonRpcError : public RpcError
 {
 public:
-   DECLARE_POINTERS(JsonRpcError)
+   JsonRpcError(int32_t code, const std::string& message, const std::string& data);
+
+   JsonRpcError(const JsonRpcError& Other);
+   JsonRpcError(JsonRpcError&& Other);
 
    virtual ~JsonRpcError();
 
+   JsonRpcError& operator=(const JsonRpcError& Rhs);
+   JsonRpcError& operator=(JsonRpcError&& Rhs);
+
    Json::Value to_json() const;
 
+public:
     //! Create a RPC Error object
-   static JsonRpcError::SharedPtr create(int32_t code, const std::string& message, const std::string& data = "");
+   static std::unique_ptr<JsonRpcError> create(int32_t code, const std::string& message, const std::string& data = "");
 
    //! Invalid JSON was received by the server.
-   static JsonRpcError::SharedPtr create_parse_error(const std::string& data = "");
+   static std::unique_ptr<JsonRpcError> create_parse_error(const std::string& data = "");
 
    //! The JSON sent is not a valid Request object.
-   static JsonRpcError::SharedPtr create_invalid_request(const std::string& data = "");
+   static std::unique_ptr<JsonRpcError> create_invalid_request(const std::string& data = "");
 
    //! The method does not exist / is not available.
-   static JsonRpcError::SharedPtr create_method_not_found(const std::string& data = "");
+   static std::unique_ptr<JsonRpcError> create_method_not_found(const std::string& data = "");
 
    //! Invalid method parameter(s).
-   static JsonRpcError::SharedPtr create_invalid_params(const std::string& data = "");
+   static std::unique_ptr<JsonRpcError> create_invalid_params(const std::string& data = "");
 
    //! Internal JSON-RPC error.
-   static JsonRpcError::SharedPtr create_internal_error(const std::string& data = "");
-
-
-protected:
-  JsonRpcError(int32_t code, const std::string& message, const std::string& data);
+   static std::unique_ptr<JsonRpcError> create_internal_error(const std::string& data = "");
 
 };
 

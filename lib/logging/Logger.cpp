@@ -47,13 +47,13 @@ const std::string consolePath = "/dev/tty";
 struct Logger::Private
 {
    Private() :
-      output_handlers(), level(Logger::Warning), is_running(false), scope_depth(0)
+      output_handlers(), level(Level::Warning), is_running(false), scope_depth(0)
       {}
 
    void write(const LogRecord& log_record);
 
    OutputHandlers output_handlers;
-   Logger::Level level;
+   Level level;
    bool is_running;
    uint32_t scope_depth;
 };
@@ -75,7 +75,7 @@ void Logger::Private::write(const LogRecord& log_record)
 // Logger
 
 Logger::Logger() :
-   _impl(new Private)
+   _impl(std::make_unique<Private>())
 {
 }
 
@@ -86,7 +86,7 @@ Logger::~Logger()
 /*!
    \return the current level of the logger
  */
-Logger::Level Logger::level() const
+Level Logger::level() const
 {
    return _impl->level;
 }
@@ -94,7 +94,7 @@ Logger::Level Logger::level() const
 /*!
    \param level level to set
  */
-void Logger::level(Logger::Level level)
+void Logger::level(Level level)
 {
    _impl->level = level;
 }
@@ -123,9 +123,9 @@ Logger::OutputHandlers& Logger::output_handlers()
  */
 void Logger::info(const std::string& msg)
 {
-   if (Info <= _impl->level)
+   if (Level::Info <= _impl->level)
       return;
-   _impl->write(LogRecord(Info, msg));
+   _impl->write(LogRecord(Level::Info, msg));
 }
 
 /*!
@@ -133,9 +133,9 @@ void Logger::info(const std::string& msg)
  */
 void Logger::warning(const std::string& msg)
 {
-   if (Warning <= _impl->level)
+   if (Level::Warning <= _impl->level)
       return;
-   _impl->write(LogRecord(Warning, msg));
+   _impl->write(LogRecord(Level::Warning, msg));
 }
 
 /*!
@@ -143,9 +143,9 @@ void Logger::warning(const std::string& msg)
  */
 void Logger::error(const std::string& msg)
 {
-   if (Error <= _impl->level)
+   if (Level::Error <= _impl->level)
       return;
-   _impl->write(LogRecord(Error, msg));
+   _impl->write(LogRecord(Level::Error, msg));
 }
 
 /*!
@@ -153,9 +153,9 @@ void Logger::error(const std::string& msg)
  */
 void Logger::debug(const std::string& msg)
 {
-   if (Debug <= _impl->level)
+   if (Level::Debug <= _impl->level)
       return;
-   _impl->write(LogRecord(Debug, msg));
+   _impl->write(LogRecord(Level::Debug, msg));
 }
 
 /*!
@@ -163,7 +163,7 @@ void Logger::debug(const std::string& msg)
  */
 void Logger::exception(const std::exception& except)
 {
-   if (Exception <= _impl->level)
+   if (Level::Exception <= _impl->level)
       return;
    _impl->write(LogExceptionRecord(except));
 }
@@ -173,14 +173,14 @@ void Logger::exception(const std::exception& except)
  */
 void Logger::write(const std::string& msg)
 {
-   _impl->write(LogRecord(Logger::NotSet, msg));
+   _impl->write(LogRecord(Level::NotSet, msg));
 }
 
 /*!
    \param level level of the log message
    \param msg message to write
  */
-void Logger::write(Logger::Level level, const std::string& msg)
+void Logger::write(Level level, const std::string& msg)
 {
    if (level <= _impl->level)
       return;
@@ -194,7 +194,7 @@ void Logger::write(Logger::Level level, const std::string& msg)
    \param line line number from where the function was called
    \param function function name from where the function was called
  */
-void Logger::write(Logger::Level level, const std::string& msg, const std::string& file, int line, const std::string& function)
+void Logger::write(Level level, const std::string& msg, const std::string& file, int line, const std::string& function)
 {
    if (level <= _impl->level)
       return;
@@ -210,7 +210,7 @@ void Logger::write(Logger::Level level, const std::string& msg, const std::strin
  */
 void Logger::write(const std::exception& except, const std::string& file, int line, const std::string& function)
 {
-   if (Exception <= _impl->level)
+   if (Level::Exception <= _impl->level)
       return;
    _impl->write(LogExceptionRecord(except, file, line, function));
 }
@@ -307,25 +307,25 @@ Logger& Logger::operator+=(LogRecord log_record)
 
 //--------------------------------------------------------------------------
 //
-std::string level_as_text(Logger::Level level)
+std::string level_as_text(Level level)
 {
    switch (level)
    {
-      case Logger::Debug3:
+      case Level::Debug3:
          return "Debug3    ";
-      case Logger::Debug2:
+      case Level::Debug2:
          return "Debug2    ";
-      case Logger::Debug:
+      case Level::Debug:
          return "Debug     ";
-      case Logger::Info:
+      case Level::Info:
          return "Info      ";
-      case Logger::Message:
+      case Level::Message:
          return "Message   ";
-      case Logger::Warning:
+      case Level::Warning:
          return "Warning   ";
-      case Logger::Error:
+      case Level::Error:
          return "Error     ";
-      case Logger::Exception:
+      case Level::Exception:
          return "Exception ";
       default:
          break;

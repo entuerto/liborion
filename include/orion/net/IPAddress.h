@@ -34,13 +34,17 @@ namespace net
 {
 
 //! IPAddress represents the address of an IP end point.
-class API_EXPORT IPAddress {
+class API_EXPORT IPAddress 
+{
 public:
-	DECLARE_POINTERS(IPAddress)
-
+   IPAddress(const IPAddress& Other);
+   IPAddress(IPAddress&& Other);
    virtual ~IPAddress();
 
-   virtual IP::WeakPtr ip() const;
+   IPAddress& operator=(const IPAddress& Rhs);
+   IPAddress& operator=(IPAddress&& Rhs);
+
+   virtual IP* ip() const;
 
    virtual std::string zone() const;
 
@@ -48,17 +52,31 @@ protected:
    IPAddress(IP* ip, const std::string& zone);
 
 private:
-   IP::SharedPtr _ip;
+   std::unique_ptr<IP> _ip;
    std::string _zone;
 };
 
 //! TcpAddress represents the address of a TCP end point. 
-class API_EXPORT TcpAddress : public IPAddress {
+class API_EXPORT TcpAddress : public IPAddress 
+{
 public:
    TcpAddress(IP* ip, int port, const std::string& zone = "");
+
+   TcpAddress(const TcpAddress& Other);
+   TcpAddress(TcpAddress&& Other);
+
    ~TcpAddress();
 
+   TcpAddress& operator=(const TcpAddress& Rhs);
+   TcpAddress& operator=(TcpAddress&& Rhs);
+
    int port() const;
+
+public:
+   ///
+   static std::unique_ptr<TcpAddress> create(const IP& ip, int port);
+   ///
+   static std::unique_ptr<TcpAddress> create(const std::string& ip, int port);
 
 private:
    int _port;

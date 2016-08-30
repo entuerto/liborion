@@ -29,13 +29,11 @@ namespace unittest
 
 namespace
 {
-   bool is_test_in_suite(const Test::SharedPtr& test , const std::string& suite_name)
+   bool is_test_in_suite(const Test* test , const std::string& suite_name)
    {
 	   return suite_name.empty() or test->suite_name() == suite_name;
    }
 }
-
-Test::SharedPtrVector Test::s_tests;
 
 /*!
  */
@@ -66,27 +64,27 @@ std::string Test::suite_name() const
    return _suite_name;
 }
 
-TestResult::SharedPtr Test::test_result() const
+TestResult* Test::test_result() const
 {
-   return _test_result;
+   return _test_result.get();
 }
 
 /*!
  */
-void Test::execute_test_impl(TestResult::SharedPtr /* test_result */) const
+void Test::execute_test_impl(TestResult* /* test_result */) const
 {
 }
 
 /*!
  */
-TestResult::SharedPtr Test::execute_test()
+TestResult* Test::execute_test()
 {
    _test_result = TestResult::create(name(), suite_name());
 
    _test_result->on_start();
    try
    {
-      execute_test_impl(_test_result);
+      execute_test_impl(_test_result.get());
    }
    catch (const std::exception& e)
    {
@@ -94,35 +92,34 @@ TestResult::SharedPtr Test::execute_test()
 
       msg += e.what();
 
-      _test_result->on_failure(TestResultItem::create_failure(msg, __FILE__, __LINE__));
+      auto item = TestResultItem::create_failure(msg, __FILE__, __LINE__); 
+      _test_result->on_failure(std::move(item));
    }
    catch (...)
    {
-      _test_result->on_failure(TestResultItem::create_failure("Unhandled exception: Crash!",__FILE__, __LINE__));
+      auto item = TestResultItem::create_failure("Unhandled exception: Crash!",__FILE__, __LINE__);
+      _test_result->on_failure(std::move(item));
    }
    _test_result->on_end();
 
-   return _test_result;
+   return _test_result.get();
 }
 
 /*!
  */
-Test::SharedPtrVector& Test::tests()
+std::vector<std::unique_ptr<Test>>& Test::tests()
 {
+   static std::vector<std::unique_ptr<Test>> s_tests;
+
    return s_tests;
 }
 
 /*!
  */
-int run_all_tests(TestOutput::SharedPtr output, const std::string& suite_name)
+int run_all_tests(const std::unique_ptr<TestOutput>& output, const std::string& suite_name)
 {
    //if (not Glib::thread_supported())
    //   Glib::thread_init();
-
-   Test::SharedPtrVector all_tests = Test::tests();
-
-   Test::SharedPtrVector::const_iterator iter = all_tests.begin();
-   Test::SharedPtrVector::const_iterator end  = all_tests.end();
 
    int failure_count = 0;
    int failed_item_count = 0;
@@ -131,11 +128,13 @@ int run_all_tests(TestOutput::SharedPtr output, const std::string& suite_name)
 
    timer.start();
 
-   for ( ; iter != end; ++iter)
+   auto& all_tests = Test::tests();
+
+   for (auto&& test : all_tests)
    {
-      if (is_test_in_suite(*iter, suite_name))
+      if (is_test_in_suite(test.get(), suite_name))
       {
-         TestResult::SharedPtr test_result = (*iter)->execute_test();
+         auto test_result = test->execute_test();
 
          if (test_result->failed())
          {

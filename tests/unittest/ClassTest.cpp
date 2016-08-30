@@ -12,7 +12,7 @@ TEST(PassingTestHasNoFailures)
    {
    public:
       PassingTest() : Test("passing") {}
-      virtual void execute_test_impl(TestResult::SharedPtr test_result) const
+      virtual void execute_test_impl(TestResult* test_result) const
       {
          EXPECT(true);
       }
@@ -20,7 +20,7 @@ TEST(PassingTestHasNoFailures)
 
    PassingTest passing_test;
 
-   TestResult::SharedPtr scope_test_result = passing_test.execute_test();
+   TestResult* scope_test_result = passing_test.execute_test();
 
    FAIL_IF(scope_test_result->failed());
 }
@@ -32,7 +32,7 @@ TEST(FailingTestHasFailures)
    {
    public:
       FailingTest() : Test("failing") {}
-      virtual void execute_test_impl(TestResult::SharedPtr test_result) const
+      virtual void execute_test_impl(TestResult* test_result) const
       {
          EXPECT(false);
       }
@@ -40,7 +40,7 @@ TEST(FailingTestHasFailures)
 
    FailingTest failing_test;
 
-   TestResult::SharedPtr scope_test_result = failing_test.execute_test();
+   TestResult* scope_test_result = failing_test.execute_test();
 
    EXPECT(scope_test_result->failed());
 }
@@ -52,7 +52,7 @@ TEST(ThrowingTestsAreReportedAsFailures)
    {
    public:
       CrashingTest() : Test("throwing") {}
-      virtual void execute_test_impl(TestResult::SharedPtr /* test_result */) const
+      virtual void execute_test_impl(TestResult* /* test_result */) const
       {
          throw "Blah";
       }
@@ -60,7 +60,7 @@ TEST(ThrowingTestsAreReportedAsFailures)
 
    CrashingTest crashing_test;
 
-   TestResult::SharedPtr scope_test_result = crashing_test.execute_test();
+   TestResult* scope_test_result = crashing_test.execute_test();
 
    EXPECT(scope_test_result->failed());
 }

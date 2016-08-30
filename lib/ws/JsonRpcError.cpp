@@ -34,9 +34,36 @@ JsonRpcError::JsonRpcError(int32_t code, const std::string& message, const std::
 
 }
 
+JsonRpcError::JsonRpcError(const JsonRpcError& Other) :
+   RpcError(Other)
+{
+}
+
+JsonRpcError::JsonRpcError(JsonRpcError&& Other) :
+   RpcError(std::move(Other))
+{
+}
+
 //!
 JsonRpcError::~JsonRpcError()
 {
+}
+
+JsonRpcError& JsonRpcError::operator=(const JsonRpcError& Rhs)
+{
+   if (this == &Rhs)
+      return *this;
+
+   RpcError::operator=(Rhs);
+
+   return *this;
+}
+
+JsonRpcError& JsonRpcError::operator=(JsonRpcError&& Rhs)
+{
+   RpcError::operator=(std::move(Rhs));
+
+   return *this;
 }
 
 //!
@@ -52,37 +79,37 @@ Json::Value JsonRpcError::to_json() const
 }
 
 //! Create a RPC Error object
-JsonRpcError::SharedPtr JsonRpcError::create(int32_t code, const std::string& message, const std::string& data)
+std::unique_ptr<JsonRpcError> JsonRpcError::create(int32_t code, const std::string& message, const std::string& data)
 {
-   return JsonRpcError::SharedPtr(new JsonRpcError(code, message, data));
+   return std::make_unique<JsonRpcError>(code, message, data);
 }
 
 //! Invalid JSON was received by the server.
-JsonRpcError::SharedPtr JsonRpcError::create_parse_error(const std::string& data)
+std::unique_ptr<JsonRpcError> JsonRpcError::create_parse_error(const std::string& data)
 {
    return create(-32700, "An error occurred on the server while parsing the JSON text.", data);
 }
 
 //! The JSON sent is not a valid Request object.
-JsonRpcError::SharedPtr JsonRpcError::create_invalid_request(const std::string& data)
+std::unique_ptr<JsonRpcError> JsonRpcError::create_invalid_request(const std::string& data)
 {
    return create(-32600, "The JSON sent is not a valid Request object.", data);
 }
 
 //! The method does not exist / is not available.
-JsonRpcError::SharedPtr JsonRpcError::create_method_not_found(const std::string& data)
+std::unique_ptr<JsonRpcError> JsonRpcError::create_method_not_found(const std::string& data)
 {
    return create(-32601, "The method does not exist / is not available.", data);
 }
 
 //! Invalid method parameter(s).
-JsonRpcError::SharedPtr JsonRpcError::create_invalid_params(const std::string& data)
+std::unique_ptr<JsonRpcError> JsonRpcError::create_invalid_params(const std::string& data)
 {
    return create(-32602, "Invalid method parameter(s).", data);
 }
 
 //! Internal JSON-RPC error.
-JsonRpcError::SharedPtr JsonRpcError::create_internal_error(const std::string& data)
+std::unique_ptr<JsonRpcError> JsonRpcError::create_internal_error(const std::string& data)
 {
    return create(-32603, "Internal JSON-RPC error.", data);
 }

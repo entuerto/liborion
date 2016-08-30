@@ -39,19 +39,17 @@ namespace plugin
 class API_EXPORT PlugInManager
 {
 public:
-   DECLARE_POINTERS(PlugInManager)
-
    NO_COPY(PlugInManager)
    NO_MOVE(PlugInManager)
 
-   typedef std::vector<PlugIn::SharedPtr> PlugInVector;
+   typedef std::vector<std::unique_ptr<PlugIn>> PlugIns;
 
-   typedef PlugInVector::iterator iterator;
-   typedef PlugInVector::const_iterator const_iterator;
-   typedef PlugInVector::reverse_iterator reverse_iterator;
-   typedef PlugInVector::const_reverse_iterator const_reverse_iterator;
+   typedef PlugIns::iterator iterator;
+   typedef PlugIns::const_iterator const_iterator;
+   typedef PlugIns::reverse_iterator reverse_iterator;
+   typedef PlugIns::const_reverse_iterator const_reverse_iterator;
 
-   typedef Signal< void(PlugIn::SharedPtr) > OnLoadedPlugIn;
+   typedef Signal< void(PlugIn*) > OnLoadedPlugIn;
 
 public:
    PlugInManager();
@@ -70,7 +68,7 @@ public:
    const_reverse_iterator rend() const;
 
    //! Finds a plug-in by name
-   PlugIn::SharedPtr find(const std::string& name);
+   PlugIn* find(const std::string& name);
 
    //! Paths where the modules will be loaded
    void add_path(const std::string& dir);
@@ -92,7 +90,7 @@ private:
 private:
    typedef std::vector<std::string> PathList;
 
-   PlugInVector _plugins;
+   PlugIns _plugins;
    PathList _paths;
 
 };

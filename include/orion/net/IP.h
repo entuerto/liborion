@@ -34,11 +34,10 @@ namespace net
 {
 
 //! IPAddress represents the address of an IP end point.
-class API_EXPORT IP {
+class API_EXPORT IP 
+{
 public:
-   DECLARE_POINTERS(IP)
-   
-   virtual ~IP() {}
+   virtual ~IP() = default;
 
    //! Reports whether ip is a loopback address.
    virtual bool is_loopback() const =0;
@@ -50,7 +49,8 @@ public:
    virtual std::string to_string() const =0;
 };
 
-class API_EXPORT IPv4 : public IP {
+class API_EXPORT IPv4 : public IP 
+{
 public:
    IPv4();
    IPv4(uint8_t a, uint8_t b, uint8_t c, uint8_t d);
@@ -82,7 +82,8 @@ private:
    std::array<uint8_t, 4> _a;
 };
 
-class API_EXPORT IPv6 : public IP {
+class API_EXPORT IPv6 : public IP 
+{
 public:
    IPv6();
    IPv6(const std::array<uint8_t, 16>& a);

@@ -27,7 +27,7 @@
  
 #include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
-#include <orion/ws/InetAddress.h>
+#include <orion/net/IPAddress.h>
 
 namespace orion
 {
@@ -41,8 +41,6 @@ typedef std::map<std::string, std::string> HeaderMap;
 class API_EXPORT Request
 {
 public:
-   DECLARE_POINTERS(Request)
-
    Request();
    virtual ~Request();
 
@@ -62,10 +60,10 @@ public:
    virtual std::string remote_user() const =0;    
    
    //! Client's IP and port address
-   virtual InetAddress::SharedPtr remote_address() const;             
+   virtual const net::IPAddress* remote_address() const;             
    
    //! Host  IP and port address
-   virtual InetAddress::SharedPtr host_address() const;            
+   virtual const net::IPAddress* host_address() const;            
 
    virtual bool is_authenticated()  const =0;
 
@@ -77,8 +75,8 @@ public:
   
 
 protected:
-   InetAddress::SharedPtr _remote_address;
-   InetAddress::SharedPtr _host_address;
+   std::unique_ptr<net::IPAddress> _remote_address;
+   std::unique_ptr<net::IPAddress> _host_address;
 
    HeaderMap   _http_header;
    std::string _data;   

@@ -38,14 +38,17 @@ OutputHandler::~OutputHandler()
 {
 }
 
-IFormatter::SharedPtr OutputHandler::formatter() const
+IFormatter* OutputHandler::formatter() const
 {
-   return _formatter;
+   return _formatter.get();
 }
 
-void OutputHandler::set_formatter(IFormatter::SharedPtr formatter)
+///
+/// the output handler takes ownership of the formatter.
+/// @param formatter  Formatter for the output
+void OutputHandler::set_formatter(std::unique_ptr<IFormatter>&& formatter)
 {
-   _formatter = formatter;
+   _formatter = std::move(formatter);
 }
 
 } // namespace logging

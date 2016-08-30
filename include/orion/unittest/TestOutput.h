@@ -34,12 +34,10 @@ namespace unittest
 class API_EXPORT TestOutput
 {
 public:
-   DECLARE_POINTERS(TestOutput)
+   virtual ~TestOutput() = default;
 
-   virtual ~TestOutput() {}
-
-   virtual void write(const TestResult::SharedPtr& test_result) =0;
-   virtual void write_summary(int failure_count, int failed_item_count, int test_count, double time_elapsed) =0;
+   virtual void write(const TestResult* test_result) const =0;
+   virtual void write_summary(int failure_count, int failed_item_count, int test_count, double time_elapsed) const =0;
 };
 
 } // namespace orion

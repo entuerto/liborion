@@ -27,7 +27,7 @@ namespace logging
 {
 
 LogExceptionRecord::LogExceptionRecord(const std::exception& except) :
-   LogRecord(Logger::Exception, except.what()),
+   LogRecord(Level::Exception, except.what()),
    _thrown_file_name(),
    _thrown_line_number(-1),
    _thrown_function_name()
@@ -49,7 +49,7 @@ LogExceptionRecord::LogExceptionRecord(const std::exception& except,
                                        const std::string& file,
                                              int32_t line,
                                        const std::string& function) :
-	LogRecord(Logger::Exception, except.what(), file, line, function),
+	LogRecord(Level::Exception, except.what(), file, line, function),
    _thrown_file_name(),
    _thrown_line_number(-1),
    _thrown_function_name()

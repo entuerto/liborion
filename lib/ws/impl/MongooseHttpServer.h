@@ -36,6 +36,7 @@ namespace mongoose
 class MongooseHttpServer : public HttpServer
 {
 public:
+   MongooseHttpServer(int port);
    virtual ~MongooseHttpServer();
 
    virtual void start();
@@ -43,14 +44,12 @@ public:
 
    virtual bool is_running() const;
 
-   virtual void send_response(Response::SharedPtr response);
-   virtual void send_response(Response::SharedPtr response, struct mg_connection* connection);
+   virtual void send_response(const Response* response);
+   virtual void send_response(const Response* response, struct mg_connection* connection);
 
-   static Server::SharedPtr create(int port);
+   static std::unique_ptr<Server> create(int port);
 
 protected:
-   MongooseHttpServer(int port);
-
    std::string make_port_list();
 
 private:

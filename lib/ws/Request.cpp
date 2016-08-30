@@ -42,15 +42,15 @@ Request::~Request()
 }
 
 //! Client's IP address
-InetAddress::SharedPtr Request::remote_address() const
+const net::IPAddress* Request::remote_address() const
 {
-   return _remote_address;
+   return _remote_address.get();
 }
 
 //! Host IP address
-InetAddress::SharedPtr Request::host_address() const
+const net::IPAddress* Request::host_address() const
 {
-   return _host_address;
+   return _host_address.get();
 }
 
 std::string Request::header(const std::string& name) const

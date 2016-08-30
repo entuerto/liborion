@@ -30,7 +30,7 @@ namespace logging
    Constructor
  */
 LogRecord::LogRecord() :
-   _level(Logger::NotSet),
+   _level(Level::NotSet),
    _time_stamp(),
    _message(),
    _file_name(),
@@ -43,7 +43,7 @@ LogRecord::LogRecord() :
 /*!
    Constructor
  */
-LogRecord::LogRecord(Logger::Level level, const std::string& msg) :
+LogRecord::LogRecord(Level level, const std::string& msg) :
    _level(level),
    _time_stamp(),
    _message(msg),
@@ -57,9 +57,9 @@ LogRecord::LogRecord(Logger::Level level, const std::string& msg) :
 /*!
    Constructor
  */
-LogRecord::LogRecord(Logger::Level level,
+LogRecord::LogRecord(      Level level,
                      const std::string& file,
-                     int32_t line,
+                           int32_t line,
                      const std::string& function) :
    _level(level),
    _time_stamp(),
@@ -74,10 +74,10 @@ LogRecord::LogRecord(Logger::Level level,
 /*!
    Constructor
  */
-LogRecord::LogRecord(Logger::Level level,
+LogRecord::LogRecord(      Level level,
                      const std::string& msg,
                      const std::string& file,
-                     int32_t line,
+                           int32_t line,
                      const std::string& function) :
    _level(level),
    _time_stamp(),
@@ -119,7 +119,7 @@ LogRecord::~LogRecord()
 /*!
    Returns the level of the log record
  */
-Logger::Level LogRecord::level() const
+Level LogRecord::level() const
 {
    return _level;
 }
@@ -127,7 +127,7 @@ Logger::Level LogRecord::level() const
 /*!
    Records the level of the log record
  */
-void LogRecord::level(Logger::Level level)
+void LogRecord::level(Level level)
 {
    _level = level;
 }
@@ -267,31 +267,31 @@ LogRecord& LogRecord::operator<<(char value)
    return *this;
 }
 
-LogRecord::SharedPtr LogRecord::create()
+std::unique_ptr<LogRecord> LogRecord::create()
 {
-   return LogRecord::SharedPtr(new LogRecord);
+   return std::make_unique<LogRecord>();
 }
 
-LogRecord::SharedPtr LogRecord::create(Logger::Level level, const std::string& msg)
+std::unique_ptr<LogRecord> LogRecord::create(Level level, const std::string& msg)
 {
-   return LogRecord::SharedPtr(new LogRecord(level, msg));
+   return std::make_unique<LogRecord>(level, msg);
 }
 
-LogRecord::SharedPtr LogRecord::create(Logger::Level level,
-                                       const std::string& file,
-                                             int32_t line,
-                                       const std::string& function)
+std::unique_ptr<LogRecord> LogRecord::create(      Level level,
+                                             const std::string& file,
+                                                   int32_t line,
+                                             const std::string& function)
 {
-   return LogRecord::SharedPtr(new LogRecord(level, file, line, function));
+   return std::make_unique<LogRecord>(level, file, line, function);
 }
 
-LogRecord::SharedPtr LogRecord::create(Logger::Level level,
-                                       const std::string& msg,
-                                       const std::string& file,
-                                             int32_t line,
-                                       const std::string& function)
+std::unique_ptr<LogRecord> LogRecord::create(      Level level,
+                                             const std::string& msg,
+                                             const std::string& file,
+                                                   int32_t line,
+                                             const std::string& function)
 {
-   return LogRecord::SharedPtr(new LogRecord(level, msg, file, line, function));
+   return std::make_unique<LogRecord>(level, msg, file, line, function);
 }
 
 } // namespace logging

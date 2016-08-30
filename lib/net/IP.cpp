@@ -38,30 +38,25 @@ IPv4 IPv4::zero        = IPv4(0, 0, 0, 0);
 IPv4::IPv4():
    _a(IPv4::zero._a)
 {
-
 }
 
 IPv4::IPv4(uint8_t a, uint8_t b, uint8_t c, uint8_t d):
    _a({ {a, b, c, d} })
 {
-
 }
 
 IPv4::IPv4(const IPv4& Other):
    _a(Other._a) 
 {
-
 }
 
 IPv4::IPv4(IPv4&& Other):
    _a(std::move(Other._a)) 
 {
-
 }
 
 IPv4::~IPv4() 
 {
-
 }
 
 IPv4& IPv4::operator=(const IPv4& Rhs) 

@@ -37,14 +37,17 @@ class API_EXPORT TestStdOutput :
    public TestOutput
 {
 public:
+   NO_COPY(TestStdOutput)
+   NO_MOVE(TestStdOutput)
+
    virtual ~TestStdOutput();
 
-   virtual void write(const TestResult::SharedPtr& test_result);
-   virtual void write_summary(int failure_count, int failed_item_count, int test_count, double time_elapsed);
+   virtual void write(const TestResult* test_result) const override;
+   virtual void write_summary(int failure_count, int failed_item_count, int test_count, double time_elapsed) const override;
 
-   static TestOutput::SharedPtr create(std::ostream& stream);
+   static std::unique_ptr<TestOutput> create(std::ostream& stream);
 
-protected:
+public:
    TestStdOutput(std::ostream& stream);
 
 private:

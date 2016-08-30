@@ -40,7 +40,7 @@ std::string RequestListener::uri() const
    return _uri;
 }
 
-Response::SharedPtr RequestListener::on_process_request(Request::SharedPtr request)
+std::unique_ptr<Response> RequestListener::on_process_request(const Request* request)
 {
    if (request->method() == "GET")
       return on_get(request);
@@ -56,4 +56,3 @@ Response::SharedPtr RequestListener::on_process_request(Request::SharedPtr reque
 
 } // ws
 } // orion
-

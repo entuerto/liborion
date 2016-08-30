@@ -41,29 +41,27 @@ namespace ws
 class API_EXPORT JsonRpcMethodWrapper : public JsonRpcMethod
 {
 public:
-   DECLARE_POINTERS(JsonRpcMethodWrapper)
-
    virtual ~JsonRpcMethodWrapper();
 
-   virtual std::string name() const;
+   virtual std::string name() const override;
 
-   virtual std::string description() const;
+   virtual std::string description() const override;
 
-   virtual JsonRpcError::SharedPtr call(Json::Value& json_request, Json::Value& json_result);
+   virtual std::unique_ptr<JsonRpcError> call(Json::Value& json_request, Json::Value& json_result) override;
 
-   static RpcMethod::SharedPtr create(      std::function<JsonRpcError::SharedPtr(Json::Value&, Json::Value&)> func, 
-                                      const std::string& name, 
-                                      const std::string& desc = "");
+   static std::unique_ptr<RpcMethod> create(      std::function<std::unique_ptr<JsonRpcError>(Json::Value&, Json::Value&)> func, 
+                                            const std::string& name, 
+                                            const std::string& desc = "");
 
-protected:
-   JsonRpcMethodWrapper(      std::function<JsonRpcError::SharedPtr(Json::Value&, Json::Value&)> func, 
+public:
+   JsonRpcMethodWrapper(      std::function<std::unique_ptr<JsonRpcError>(Json::Value&, Json::Value&)> func, 
                         const std::string& name, 
                         const std::string& desc = "");
 
 private:
    std::string _name;
    std::string _description;
-   std::function<JsonRpcError::SharedPtr(Json::Value&, Json::Value&)> _function;
+   std::function<std::unique_ptr<JsonRpcError>(Json::Value&, Json::Value&)> _function;
 };
 
 } // ws

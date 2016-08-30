@@ -37,12 +37,12 @@ using namespace orion::logging;
 // Predicate class for find
 
 class ByName :
-   public std::unary_function<const PlugIn::SharedPtr&, bool>
+   public std::unary_function<const std::unique_ptr<PlugIn>&, bool>
 {
 public:
    ByName(const std::string& name) : _name(name) {}
 
-   bool operator() (const PlugIn::SharedPtr& plugin)
+   bool operator() (const std::unique_ptr<PlugIn>& plugin)
    {
       return plugin->name() == _name;
    }
@@ -126,14 +126,14 @@ PlugInManager::const_reverse_iterator PlugInManager::rend() const
 
 /*!
  */
-PlugIn::SharedPtr PlugInManager::find(const std::string& name)
+PlugIn* PlugInManager::find(const std::string& name)
 {
    PlugInManager::iterator iter = std::find_if(begin(), end(), ByName(name));
 
    if (iter != end())
-      return *iter;
+      return (*iter).get();
 
-   return PlugIn::SharedPtr();
+   return nullptr;
 }
 
 /*!
@@ -150,15 +150,11 @@ void PlugInManager::add_path(const std::string& dir)
  */
 void PlugInManager::load_modules()
 {
-   PathList::iterator begin = _paths.begin();
-   PathList::iterator end   = _paths.end();
-   PathList::iterator iter  = begin;
-
-   for (; iter != end; ++iter)
+   for (auto&& path : _paths)
    {
       try
       {
-         load_modules_in_directory(*iter);
+         load_modules_in_directory(path);
       }
       catch (Exception& error) // TODO: Change exception type
       {
@@ -213,7 +209,7 @@ void PlugInManager::load_modules_in_directory(const std::string& dir_name)
  */
 void PlugInManager::load_module(const std::string& name)
 {
-   Module::SharedPtr module;
+   std::unique_ptr<Module> module;
    
    try 
    {
@@ -239,11 +235,9 @@ void PlugInManager::load_module(const std::string& name)
    PlugIn* plugin = NULL;
    (*func)(plugin);
 
-   PlugIn::SharedPtr sp(plugin);
+   _plugins.push_back(std::unique_ptr<PlugIn>(plugin));
 
-   _plugins.push_back(sp);
-
-   _signal_on_loaded_plugin.emit(sp);
+   _signal_on_loaded_plugin.emit(plugin);
 
 }
 

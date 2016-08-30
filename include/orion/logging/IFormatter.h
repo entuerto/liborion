@@ -23,7 +23,6 @@
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 
 namespace orion
 {
@@ -40,9 +39,7 @@ class LogRecord;
 class API_EXPORT IFormatter 
 {
 public:
-   DECLARE_POINTERS(IFormatter)
-
-   virtual ~IFormatter() {}
+   virtual ~IFormatter() = default;
 
    //! Formats the LogRecord into a reable form
    virtual std::string format(const LogRecord& log_record) =0;

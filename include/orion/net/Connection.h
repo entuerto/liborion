@@ -37,38 +37,39 @@ namespace net
  */
 class API_EXPORT Connection {
 public:
-   DECLARE_POINTERS(Connection)
-
-   virtual ~Connection() {}
+   virtual ~Connection() = default;
 
    // Close closes the connection.
    // Any blocked Read or Write operations will be unblocked and return errors.
    virtual void close() =0;
 
    // LocalAddr returns the local network address.
-   virtual IPAddress::WeakPtr local_addr() const =0;
+   virtual IPAddress* local_addr() const =0;
 
    // RemoteAddr returns the remote network address.
-   virtual IPAddress::WeakPtr remote_addr() const =0;
+   virtual IPAddress* remote_addr() const =0;
 };
 
 //!  
 class API_EXPORT TcpConnection : public Connection {
 public:
+   NO_COPY(TcpConnection)
+   NO_MOVE(TcpConnection)
+   
    TcpConnection();
    ~TcpConnection();
 
    virtual void close() override;
 
    // LocalAddr returns the local network address.
-   virtual IPAddress::WeakPtr local_addr() const override;
+   virtual IPAddress* local_addr() const override;
 
    // RemoteAddr returns the remote network address.
-   virtual IPAddress::WeakPtr remote_addr() const override;
+   virtual IPAddress* remote_addr() const override;
 
 private:
-   IPAddress::SharedPtr _local_addr;
-   IPAddress::SharedPtr _remote_addr;
+   std::unique_ptr<IPAddress> _local_addr;
+   std::unique_ptr<IPAddress> _remote_addr;
 };
 
 } // net

@@ -40,7 +40,6 @@ TestResult::TestResult(const std::string& name, const std::string& suite_name) :
 
 TestResult::~TestResult()
 {
-
 }
 
 /*!
@@ -94,7 +93,7 @@ double TestResult::time_elapsed() const
 
 /*!
  */
-const TestResultItem::SharedPtrVector& TestResult::result_items() const
+const std::vector<std::unique_ptr<TestResultItem>>& TestResult::result_items() const
 {
    return _result_items;
 }
@@ -108,24 +107,24 @@ void TestResult::on_start()
 
 /*!
  */
-void TestResult::on_failure(TestResultItem::SharedPtr item)
+void TestResult::on_failure(std::unique_ptr<TestResultItem> item)
 {
-   if (item->result() != TestResultItem::Failed)
+   if (item->result() != Result::Failed)
       return;
 
    ++_failed_item_count;
-   _result_items.push_back(item);
+   _result_items.push_back(std::move(item));
 }
 
 /*!
  */
-void TestResult::on_success(TestResultItem::SharedPtr item)
+void TestResult::on_success(std::unique_ptr<TestResultItem> item)
 {
-   if (item->result() != TestResultItem::Passed)
+   if (item->result() != Result::Passed)
       return;
 
    ++_passed_item_count;
-   _result_items.push_back(item);
+   _result_items.push_back(std::move(item));
 }
 
 /*!
@@ -137,9 +136,9 @@ void TestResult::on_end()
 
 /*!
  */
-TestResult::SharedPtr TestResult::create(const std::string& name, const std::string& suite_name)
+std::unique_ptr<TestResult> TestResult::create(const std::string& name, const std::string& suite_name)
 {
-   return SharedPtr(new TestResult(name, suite_name));
+   return std::make_unique<TestResult>(name, suite_name);
 }
 
 } // namespace orion

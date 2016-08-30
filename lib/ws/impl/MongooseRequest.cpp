@@ -23,6 +23,7 @@
 
 #include <cstdlib>
 #include <orion/StringUtils.h>
+#include <orion/net/IPAddress.h>
 
 namespace orion
 {
@@ -30,6 +31,7 @@ namespace ws
 {
 namespace mongoose
 {
+using namespace orion::net;
 
 MongooseRequest::MongooseRequest(struct mg_connection* connection) :
    Request(),
@@ -47,12 +49,12 @@ MongooseRequest::MongooseRequest(struct mg_connection* connection) :
 
    _http_header = make_header_map(connection);
 
-   _remote_address = InetAddress::create(connection->remote_ip, connection->remote_port);
+   _remote_address = TcpAddress::create(connection->remote_ip, connection->remote_port);
 
    StringVector host = split(this->header("Host"),  ':');
 
    if (host.size() == 2)
-      _host_address = InetAddress::create(host[0], std::atoi(host[1].c_str()));
+      _host_address = TcpAddress::create(host[0], std::atoi(host[1].c_str()));
 
    read_data(connection);
 }
@@ -93,12 +95,12 @@ std::string MongooseRequest::remote_user() const
    
 bool MongooseRequest::is_authenticated()  const
 {
-   return false; // TODO
+   return false; // @TODO
 }
 
 bool MongooseRequest::is_secure_connection() const
 {
-   return false; // TODO
+   return false; // @TODO
 }
 
 HeaderMap MongooseRequest::make_header_map(const struct mg_connection* connection)
@@ -122,9 +124,9 @@ void MongooseRequest::read_data(struct mg_connection* connection)
    _data = connection->content;
 }
 
-Request::SharedPtr MongooseRequest::create(struct mg_connection* connection)
+std::unique_ptr<Request> MongooseRequest::create(struct mg_connection* connection)
 {
-   return std::make_shared<MongooseRequest>(connection); 
+   return std::make_unique<MongooseRequest>(connection); 
 }
 
 } // mongoose

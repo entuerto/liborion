@@ -24,11 +24,6 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#define DECLARE_POINTERS(P) \
-   typedef std::unique_ptr<P> UniquePtr; \
-   typedef std::shared_ptr<P> SharedPtr; \
-   typedef std::weak_ptr<P> WeakPtr; 
-
 namespace orion
 {
 template<typename R, typename T>

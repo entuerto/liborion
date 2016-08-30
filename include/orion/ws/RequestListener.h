@@ -40,24 +40,25 @@ namespace ws
 class API_EXPORT RequestListener
 {
 public:
-   DECLARE_POINTERS(RequestListener)
+   NO_COPY(RequestListener)
+   NO_MOVE(RequestListener)
 
    virtual ~RequestListener();
 
    std::string uri() const;
 
-   virtual Response::SharedPtr on_process_request(Request::SharedPtr request);
+   virtual std::unique_ptr<Response> on_process_request(const Request* request);
 
 protected:
    RequestListener(const std::string& uri);
 
-   virtual Response::SharedPtr on_get(Request::SharedPtr request) =0;
+   virtual std::unique_ptr<Response> on_get(const Request* request) =0;
 
-   virtual Response::SharedPtr on_post(Request::SharedPtr request) =0;
+   virtual std::unique_ptr<Response> on_post(const Request* request) =0;
 
-   virtual Response::SharedPtr on_put(Request::SharedPtr request) =0;
+   virtual std::unique_ptr<Response> on_put(const Request* request) =0;
 
-   virtual Response::SharedPtr on_delete(Request::SharedPtr request) =0;
+   virtual std::unique_ptr<Response> on_delete(const Request* request) =0;
 
 private:
    std::string _uri;
@@ -67,4 +68,3 @@ private:
 } // orion
 
 #endif
-

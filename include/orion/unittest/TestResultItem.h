@@ -21,33 +21,32 @@
 #ifndef ORION_UNITTEST_TESTRESULTITEM_H
 #define ORION_UNITTEST_TESTRESULTITEM_H
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 
 namespace orion
 {
 namespace unittest
 {
+
+enum class Result
+{
+   Failed,
+   Passed
+};
+
 //!
 /*!
  */
 class API_EXPORT TestResultItem 
 {
 public:
-   DECLARE_POINTERS(TestResultItem)
-
-   typedef std::vector<SharedPtr> SharedPtrVector;
-
-   enum Result
-   {
-      Failed,
-      Passed
-   };
-
-public:
+   NO_COPY(TestResultItem)
+   NO_MOVE(TestResultItem)
+   
    virtual ~TestResultItem();
 
    Result result() const;
@@ -58,11 +57,15 @@ public:
 
    int line_number() const;
 
-   static TestResultItem::SharedPtr create_success(const std::string& msg, const std::string& file_name = "", int line_number = 0);
+   static std::unique_ptr<TestResultItem> create_success(const std::string& msg, 
+                                                         const std::string& file_name = "", 
+                                                               int line_number = 0);
 
-   static TestResultItem::SharedPtr create_failure(const std::string& msg, const std::string& file_name = "", int line_number = 0);
+   static std::unique_ptr<TestResultItem> create_failure(const std::string& msg, 
+                                                         const std::string& file_name = "", 
+                                                               int line_number = 0);
 
-protected:
+public:
    TestResultItem(Result result, const std::string& msg, const std::string& file_name = "", int line_number = 0);
 
 private:

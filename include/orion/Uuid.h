@@ -43,22 +43,22 @@ public:
    Uuid(const Uuid& rhs);
    Uuid(Uuid&& rhs);
    Uuid(const std::string& value);
-   virtual ~Uuid();
+   ~Uuid();
 
-   virtual bool is_null() const;
+   bool is_null() const;
 
-   virtual std::string to_string() const;
+   std::string to_string() const;
 
-   virtual Uuid& operator=(const Uuid& rhs);
-   virtual Uuid& operator=(Uuid&& rhs);
+   Uuid& operator=(const Uuid& rhs);
+   Uuid& operator=(Uuid&& rhs);
 
-   virtual bool operator==(const Uuid& rhs) const;
-   virtual bool operator!=(const Uuid& rhs) const;
+   bool operator==(const Uuid& rhs) const;
+   bool operator!=(const Uuid& rhs) const;
 
 private:
    struct Private;
    std::unique_ptr<Private> _impl;
-
 };
+
 }
 #endif /* UUID_H */

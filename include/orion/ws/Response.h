@@ -39,8 +39,8 @@ namespace ws
 class API_EXPORT Response
 {
 public:
-   DECLARE_POINTERS(Response)
-
+   Response(uint32_t code);
+   Response(uint32_t code, const std::string& content, const std::string& content_type = "text/plain");
    virtual ~Response();
 
    virtual uint32_t code() const;
@@ -53,22 +53,19 @@ public:
 
    virtual std::string to_string() const;
 
-   static Response::SharedPtr create();
-   static Response::SharedPtr create(const std::string& content, const std::string& content_type = "text/plain");
+   static std::unique_ptr<Response> create();
+   static std::unique_ptr<Response> create(const std::string& content, const std::string& content_type = "text/plain");
 
-   static Response::SharedPtr create_400();
-   static Response::SharedPtr create_401();
-   static Response::SharedPtr create_403();
-   static Response::SharedPtr create_404();
-   static Response::SharedPtr create_405();
-   static Response::SharedPtr create_406();
-   static Response::SharedPtr create_408();
-   static Response::SharedPtr create_409();
+   static std::unique_ptr<Response> create_400();
+   static std::unique_ptr<Response> create_401();
+   static std::unique_ptr<Response> create_403();
+   static std::unique_ptr<Response> create_404();
+   static std::unique_ptr<Response> create_405();
+   static std::unique_ptr<Response> create_406();
+   static std::unique_ptr<Response> create_408();
+   static std::unique_ptr<Response> create_409();
 
 protected:
-   Response(uint32_t code);
-   Response(uint32_t code, const std::string& content, const std::string& content_type = "text/plain");
-
    uint32_t _code;
    std::string _mimetype;
    std::string _content;

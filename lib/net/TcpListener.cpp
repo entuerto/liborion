@@ -34,7 +34,7 @@ using namespace orion::logging;
 
 struct TcpListener::Impl 
 {
-   IPAddress::SharedPtr addr;
+   std::unique_ptr<IPAddress> addr;
 
    SOCKET sock;
 };
@@ -51,7 +51,7 @@ TcpListener::~TcpListener()
 
 }
 
-Connection::SharedPtr TcpListener::accept() 
+std::unique_ptr<Connection> TcpListener::accept() 
 {
    return nullptr;
 }
@@ -61,12 +61,12 @@ void TcpListener::close()
 
 }
 
-IPAddress::WeakPtr TcpListener::addr() const 
+IPAddress* TcpListener::addr() const 
 {
-   return _impl->addr;
+   return _impl->addr.get();
 }
 
-Listener::SharedPtr TcpListener::open_tcp4(const TcpAddress& addr) 
+std::unique_ptr<Listener> TcpListener::open_tcp4(const TcpAddress& addr) 
 {
    DWORD  flags = 0x01;
 
@@ -78,12 +78,12 @@ Listener::SharedPtr TcpListener::open_tcp4(const TcpAddress& addr)
    auto imp = new TcpListener::Impl;
 
    imp->sock = sock;
-   imp->addr = std::make_shared<TcpAddress>(addr);
+   imp->addr = std::make_unique<TcpAddress>(addr);
 
-   return Listener::SharedPtr(new TcpListener(imp));
+   return std::unique_ptr<Listener>(new TcpListener(imp));
 }
 
-Listener::SharedPtr TcpListener::open_tcp6(const TcpAddress& addr) 
+std::unique_ptr<Listener> TcpListener::open_tcp6(const TcpAddress& /* addr */) 
 {
    return nullptr;
 }

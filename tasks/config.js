@@ -428,7 +428,7 @@ module.exports = function(grunt) {
 		let opt = {};
 
 		_.mergeWith(opt, defaults.options, 
-			             defaults.options.release, 
+			             defaults.options.debug, 
 			             customizer);
 
 		delete opt.debug;

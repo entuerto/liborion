@@ -42,19 +42,17 @@ namespace logging
 class API_EXPORT LogRecord 
 {
 public:
-   DECLARE_POINTERS(LogRecord)
-
    LogRecord();
 
-   LogRecord(Logger::Level level,
+   LogRecord(      Level level,
              const std::string& msg);
 
-   LogRecord(Logger::Level level,
+   LogRecord(      Level level,
              const std::string& file,
                    int32_t line,
              const std::string& function);
 
-   LogRecord(Logger::Level level,
+   LogRecord(      Level level,
              const std::string& msg,
              const std::string& file,
                    int32_t line,
@@ -66,10 +64,10 @@ public:
    virtual ~LogRecord();
 
    //! Returns the level of the log record
-   virtual Logger::Level level() const;
+   virtual Level level() const;
 
    //! Records the level of the log record
-   virtual void level(Logger::Level level);
+   virtual void level(Level level);
 
    //! Returns the time stamp of the log record
    virtual std::string time_stamp() const;
@@ -113,27 +111,27 @@ public:
    //! Log a character
    LogRecord& operator<<(char value);
 
-   static LogRecord::SharedPtr create();
+   static std::unique_ptr<LogRecord> create();
 
-   static LogRecord::SharedPtr create(Logger::Level level, const std::string& msg);
+   static std::unique_ptr<LogRecord> create(Level level, const std::string& msg);
 
-   static LogRecord::SharedPtr create(Logger::Level level,
-                                      const std::string& file,
-                                            int32_t line,
-                                      const std::string& function);
+   static std::unique_ptr<LogRecord> create(      Level         level,
+                                            const std::string&  file,
+                                                  int32_t       line,
+                                            const std::string&  function);
 
-   static LogRecord::SharedPtr create(Logger::Level level,
-                                      const std::string& msg,
-                                      const std::string& file,
-                                            int32_t line,
-                                      const std::string& function);
+   static std::unique_ptr<LogRecord> create(      Level         level,
+                                            const std::string&  msg,
+                                            const std::string&  file,
+                                                  int32_t       line,
+                                            const std::string&  function);
 private:
-   Logger::Level _level;
-   std::string   _time_stamp;
-   std::string   _message;
-   std::string   _file_name;
-   int32_t       _line;
-   std::string   _function_name;
+   Level       _level;
+   std::string _time_stamp;
+   std::string _message;
+   std::string _file_name;
+   int32_t     _line;
+   std::string _function_name;
 
 };
 

@@ -45,14 +45,14 @@ void TcpConnection::close()
 
 }
 
-IPAddress::WeakPtr TcpConnection::local_addr() const
+IPAddress* TcpConnection::local_addr() const
 {
-   return _local_addr;
+   return _local_addr.get();
 }
 
-IPAddress::WeakPtr TcpConnection::remote_addr() const
+IPAddress* TcpConnection::remote_addr() const
 {
-   return _remote_addr;
+   return _remote_addr.get();
 }
 
 } // net

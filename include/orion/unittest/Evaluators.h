@@ -49,20 +49,23 @@ bool equals_false(const T& val1)
 }
 
 template <typename P>
- bool evaluate(P predicate, TestResult::SharedPtr& test_result, TestResultItem::SharedPtr success, TestResultItem::SharedPtr failure)
+bool evaluate(P predicate, TestResult* test_result, 
+                           std::unique_ptr<TestResultItem>&& success, 
+                           std::unique_ptr<TestResultItem>&& failure)
 {
    try
    {
       if (predicate)
       {
-         test_result->on_success(success);
+         test_result->on_success(std::move(success));
          return true;
       }
-      test_result->on_failure(failure);
+      test_result->on_failure(std::move(failure));
    }
    catch (...)
    {
-      test_result->on_failure(TestResultItem::create_failure("Unhandled exception", __FILE__, __LINE__));
+      auto item = TestResultItem::create_failure("Unhandled exception", __FILE__, __LINE__);
+      test_result->on_failure(std::move(item));
    }
    return false;
 }

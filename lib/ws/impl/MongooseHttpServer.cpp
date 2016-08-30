@@ -47,9 +47,10 @@ static int request_handler(struct mg_connection* connection, enum mg_event event
       {
          MongooseHttpServer* server = static_cast<MongooseHttpServer*>(connection->server_param);
 
-         Response::SharedPtr response = server->process_request(MongooseRequest::create(connection));
+         std::unique_ptr<Request>  request = MongooseRequest::create(connection);
+         std::unique_ptr<Response> response = server->process_request(request.get());
 
-         server->send_response(response, connection);
+         server->send_response(response.get(), connection);
 
          result = MG_TRUE;
          break;
@@ -108,12 +109,12 @@ bool MongooseHttpServer::is_running() const
    return _is_running;
 }
 
-void MongooseHttpServer::send_response(Response::SharedPtr response)
+void MongooseHttpServer::send_response(const Response* /* response */)
 {
    
 }
 
-void MongooseHttpServer::send_response(Response::SharedPtr response, struct mg_connection* connection)
+void MongooseHttpServer::send_response(const Response* response, struct mg_connection* connection)
 {
    std::string buffer = response->to_string();
 
@@ -122,9 +123,9 @@ void MongooseHttpServer::send_response(Response::SharedPtr response, struct mg_c
    mg_write(connection, buffer.c_str(), buffer.size());
 }
 
-Server::SharedPtr MongooseHttpServer::create(int port)
+std::unique_ptr<Server> MongooseHttpServer::create(int port)
 {
-   return Server::SharedPtr(new MongooseHttpServer(port)); 
+   return std::make_unique<MongooseHttpServer>(port); 
 }
 
 } // mongoose

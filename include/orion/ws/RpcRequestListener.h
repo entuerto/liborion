@@ -35,7 +35,7 @@ namespace orion
 {
 namespace ws
 {
-typedef std::map<std::string, RpcMethod::SharedPtr> RpcMethodMap;
+typedef std::map<std::string, std::unique_ptr<RpcMethod>> RpcMethodMap;
 
 //! Provides RPC protocol listener.
 /*!
@@ -45,24 +45,22 @@ typedef std::map<std::string, RpcMethod::SharedPtr> RpcMethodMap;
 class API_EXPORT RpcRequestListener : public RequestListener
 {
 public:
-   DECLARE_POINTERS(RpcRequestListener)
-
    virtual ~RpcRequestListener();
 
-   void register_method(const std::string& name, RpcMethod::SharedPtr method);
+   void register_method(const std::string& name, std::unique_ptr<RpcMethod>&& method);
 
-   RpcMethod::SharedPtr get_method(const std::string& name);
+   RpcMethod* get_method(const std::string& name) const;
 
 protected:
    RpcRequestListener(const std::string& uri);
 
-   virtual Response::SharedPtr on_get(Request::SharedPtr request);
+   virtual std::unique_ptr<Response> on_get(const Request* request) override;
 
-   virtual Response::SharedPtr on_post(Request::SharedPtr request);
+   virtual std::unique_ptr<Response> on_post(const Request* request) override;
 
-   virtual Response::SharedPtr on_put(Request::SharedPtr request);
+   virtual std::unique_ptr<Response> on_put(const Request* request) override;
 
-   virtual Response::SharedPtr on_delete(Request::SharedPtr request);
+   virtual std::unique_ptr<Response> on_delete(const Request* request) override;
 
 protected:
    RpcMethodMap _RpcMethods;

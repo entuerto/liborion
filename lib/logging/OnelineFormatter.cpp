@@ -46,7 +46,7 @@ OnelineFormatter::~OnelineFormatter()
 
 std::string OnelineFormatter::format(const LogRecord& log_record)
 {
-   if (log_record.level() == Logger::NotSet)
+   if (log_record.level() == Level::NotSet)
       return log_record.message();
 
    std::string scope;
@@ -70,9 +70,9 @@ std::string OnelineFormatter::format(const LogRecord& log_record)
    return stream.str();
 }
 
-IFormatter::SharedPtr OnelineFormatter::create()
+std::unique_ptr<IFormatter> OnelineFormatter::create()
 {
-   return IFormatter::SharedPtr(new OnelineFormatter);
+   return std::make_unique<OnelineFormatter>();
 }
 
 } // namespace logging

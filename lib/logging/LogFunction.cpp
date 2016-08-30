@@ -29,9 +29,9 @@ namespace logging
 /*!
    Constructor
  */
-LogFunction::LogFunction(Logger::Level level, const std::string& function_name,
-                                              const std::string& file,
-                                                    int32_t line) :
+LogFunction::LogFunction(Level level, const std::string& function_name,
+                                      const std::string& file,
+                                                 int32_t line) :
    _level(level),
    _function_name(function_name)
 {
@@ -75,7 +75,7 @@ LogFunction::~LogFunction()
 /*!
    Returns the level of the log record
  */
-Logger::Level LogFunction::level() const
+Level LogFunction::level() const
 {
    return _level;
 }
@@ -83,7 +83,7 @@ Logger::Level LogFunction::level() const
 /*!
    Records the level of the log record
  */
-void LogFunction::level(Logger::Level level)
+void LogFunction::level(Level level)
 {
    _level = level;
 }

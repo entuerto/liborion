@@ -21,11 +21,11 @@
 #ifndef ORION_UNITTEST_TEST_H
 #define ORION_UNITTEST_TEST_H
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 #include <orion/unittest/TestResult.h>
 #include <orion/unittest/TestOutput.h>
 
@@ -39,31 +39,25 @@ namespace unittest
 class API_EXPORT Test 
 {
 public:
-   DECLARE_POINTERS(Test)
-
-   typedef std::vector<SharedPtr> SharedPtrVector;
-
    Test(const std::string& name, const std::string& suite_name = "DefaultSuite");
    virtual ~Test();
 
    std::string name() const;
    std::string suite_name() const;
 
-   TestResult::SharedPtr test_result() const;
+   TestResult* test_result() const;
 
-   TestResult::SharedPtr execute_test();
+   TestResult* execute_test();
 
-   static Test::SharedPtrVector& tests();
+   static std::vector<std::unique_ptr<Test>>& tests();
 
 protected:
-   virtual void execute_test_impl(TestResult::SharedPtr test_result) const;
+   virtual void execute_test_impl(TestResult* test_result) const;
 
 private:
-   static Test::SharedPtrVector s_tests;
-
    std::string _name;
    std::string _suite_name;
-   TestResult::SharedPtr _test_result;
+   std::unique_ptr<TestResult> _test_result;
 };
 
 //!
@@ -72,14 +66,14 @@ private:
 class API_EXPORT TestAddHelper
 {
 public:
-   TestAddHelper(Test::SharedPtrVector& tests, Test::SharedPtr test)
+   TestAddHelper(std::vector<std::unique_ptr<Test>>& tests, Test* test)
    {
-      tests.push_back(test);
+      tests.push_back(std::unique_ptr<Test>(test));
    }
 };
 
 //!
-API_EXPORT int run_all_tests(TestOutput::SharedPtr output, const std::string& suite_name = "");
+API_EXPORT int run_all_tests(const std::unique_ptr<TestOutput>& output, const std::string& suite_name = "");
 
 namespace UnitTestSuite
 {
