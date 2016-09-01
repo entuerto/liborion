@@ -22,13 +22,13 @@
 #include <iostream>
 
 #include <orion/Logging.h>
-#include <orion/ws/Server.h>
-#include <orion/ws/HttpServer.h>
-#include <orion/ws/Response.h>
+#include <orion/net/Server.h>
+#include <orion/net/HttpServer.h>
+#include <orion/net/Response.h>
 
 using namespace orion;
 using namespace orion::logging;
-using namespace orion::ws;
+using namespace orion::net;
 
 
 class HelloRequestListener : public RequestListener

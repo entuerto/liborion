@@ -23,10 +23,10 @@
 #define ORION_WS_JSONRPCMETHODWRAPPER_H
 
 #include <functional>
+#include <memory>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 #include <orion/ws/JsonRpcError.h>
 #include <orion/ws/JsonRpcMethod.h>
 

@@ -19,8 +19,8 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_WS_REQUEST_H
-#define ORION_WS_REQUEST_H
+#ifndef ORION_NET_REQUEST_H
+#define ORION_NET_REQUEST_H
 
 #include <map>
 #include <string>
@@ -31,10 +31,10 @@
 
 namespace orion
 {
-namespace ws
+namespace net
 {
 
-typedef std::map<std::string, std::string> HeaderMap;
+typedef std::map<std::string, std::string> Header;
 //! Encapsulates HTTP-request information.
 /*!
  */
@@ -60,10 +60,10 @@ public:
    virtual std::string remote_user() const =0;    
    
    //! Client's IP and port address
-   virtual const net::IPAddress* remote_address() const;             
+   virtual const IPAddress* remote_address() const;             
    
    //! Host  IP and port address
-   virtual const net::IPAddress* host_address() const;            
+   virtual const IPAddress* host_address() const;            
 
    virtual bool is_authenticated()  const =0;
 
@@ -75,15 +75,15 @@ public:
   
 
 protected:
-   std::unique_ptr<net::IPAddress> _remote_address;
-   std::unique_ptr<net::IPAddress> _host_address;
+   std::unique_ptr<IPAddress> _remote_address;
+   std::unique_ptr<IPAddress> _host_address;
 
-   HeaderMap   _http_header;
+   Header _header;
    std::string _data;   
 
 };
 
-} // ws
+} // net
 } // orion
 
 #endif

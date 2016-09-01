@@ -25,9 +25,11 @@ namespace orion
 {
 namespace ws
 {
+using namespace orion::net;
+
 RpcRequestListener::RpcRequestListener(const std::string& uri) :
    RequestListener(uri),
-   _RpcMethods()
+   _rpc_methods()
 {
 }
 
@@ -37,14 +39,14 @@ RpcRequestListener::~RpcRequestListener()
 
 void RpcRequestListener::register_method(const std::string& name, std::unique_ptr<RpcMethod>&& method)
 {
-   _RpcMethods.insert(std::make_pair(name, std::move(method)));
+   _rpc_methods.insert(std::make_pair(name, std::move(method)));
 }
 
 RpcMethod* RpcRequestListener::get_method(const std::string& name) const
 {
-   const auto& it = _RpcMethods.find(name);
+   const auto& it = _rpc_methods.find(name);
 
-   if (it != _RpcMethods.end())
+   if (it != _rpc_methods.end())
    {
       return (it->second).get();
    }

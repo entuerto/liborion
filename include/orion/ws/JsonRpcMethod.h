@@ -22,10 +22,10 @@
 #ifndef ORION_WS_JSONRPCMETHOD_H
 #define ORION_WS_JSONRPCMETHOD_H
 
+#include <memory>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 #include <orion/ws/RpcMethod.h>
 
 namespace orion

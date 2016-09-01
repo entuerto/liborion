@@ -23,26 +23,26 @@
 #define ORION_WS_RPCREQUESTLISTENER_H
 
 #include <map>
+#include <memory>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
-#include <orion/ws/Response.h>
-#include <orion/ws/Request.h>
-#include <orion/ws/RequestListener.h>
+#include <orion/net/Response.h>
+#include <orion/net/Request.h>
+#include <orion/net/RequestListener.h>
 #include <orion/ws/RpcMethod.h>
 
 namespace orion
 {
 namespace ws
 {
-typedef std::map<std::string, std::unique_ptr<RpcMethod>> RpcMethodMap;
+typedef std::map<std::string, std::unique_ptr<RpcMethod>> RpcMethods;
 
 //! Provides RPC protocol listener.
 /*!
    Using the RpcRequestListener class, you can create a simple RPC protocol listener that 
    responds to RPC requests. 
  */
-class API_EXPORT RpcRequestListener : public RequestListener
+class API_EXPORT RpcRequestListener : public net::RequestListener
 {
 public:
    virtual ~RpcRequestListener();
@@ -54,16 +54,16 @@ public:
 protected:
    RpcRequestListener(const std::string& uri);
 
-   virtual std::unique_ptr<Response> on_get(const Request* request) override;
+   virtual std::unique_ptr<net::Response> on_get(const net::Request* request) override;
 
-   virtual std::unique_ptr<Response> on_post(const Request* request) override;
+   virtual std::unique_ptr<net::Response> on_post(const net::Request* request) override;
 
-   virtual std::unique_ptr<Response> on_put(const Request* request) override;
+   virtual std::unique_ptr<net::Response> on_put(const net::Request* request) override;
 
-   virtual std::unique_ptr<Response> on_delete(const Request* request) override;
+   virtual std::unique_ptr<net::Response> on_delete(const net::Request* request) override;
 
 protected:
-   RpcMethodMap _RpcMethods;
+   RpcMethods _rpc_methods;
 
 };
 

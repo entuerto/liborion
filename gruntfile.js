@@ -31,7 +31,7 @@ module.exports = function(grunt) {
 		cxxshlib: {
 			options: {
 				cxxflags : ["-Wall"],
-				includes : [".", "include/", "lib/"],
+				includes : [".", "include/", "lib/", "/Tools/boost_1_61_0"],
 				defines  : ["ORION_SHARED_EXPORTS"],
 				libPaths : ["build/"]
 				},
@@ -80,53 +80,54 @@ module.exports = function(grunt) {
 			},
 			'orion-net': {
 				options: {
-					libs : ["orion", "ws2_32"]
+					includes: ["deps/", "include/", "lib/", "/Tools/boost_1_61_0"],
+					libs: ["libmongoose",
+					       "orion", 
+					       "ws2_32"]
 				},
-				src :  ['lib/net/IP.cpp',
+				src: ['lib/net/impl/MongooseRequest.cpp',
+						'lib/net/impl/MongooseHttpServer.cpp',
+						'lib/net/IP.cpp',
 						'lib/net/IPAddress.cpp',
+						'lib/net/Request.cpp',
+						'lib/net/RequestListener.cpp',
+						'lib/net/Response.cpp',
+						'lib/net/HttpServer.cpp',
 						'lib/net/TcpConnection.cpp',
 						'lib/net/TcpListener.cpp']	
 			},
 			'orion-ws': {
 				options: {
-					includes : ["deps/", "include/", "lib/"],
-					libs : ["libjson", 
-					        "libmongoose", 
-					        "orion",
-					        "orion-net",
-					        "psapi", 
-					        "ws2_32", 
-					        "rpcrt4"]
+					includes: ["deps/", "include/", "lib/", "/Tools/boost_1_61_0"],
+					libs: ["libjson", 
+					       "orion",
+					       "orion-net",
+					       "psapi", 
+					       "rpcrt4"]
 				},
-				src :  ['lib/ws/impl/MongooseRequest.cpp',
-						'lib/ws/impl/MongooseHttpServer.cpp', 
-						'lib/ws/RpcError.cpp',
+				src: ['lib/ws/RpcError.cpp',
 						'lib/ws/JsonRpcError.cpp',
 						'lib/ws/JsonRpcMethodWrapper.cpp',
-						'lib/ws/Request.cpp',
-						'lib/ws/RequestListener.cpp',
 						'lib/ws/RpcRequestListener.cpp',
-						'lib/ws/JsonRpcRequestListener.cpp',
-						'lib/ws/Response.cpp',
-						'lib/ws/HttpServer.cpp']	
+						'lib/ws/JsonRpcRequestListener.cpp']	
 			},
 			'module-example': {
 				options: {
-					includes : ['.', 'examples/', 'include/'],
-					libs     : ['orion']
+					includes: ['.', 'examples/', 'include/'],
+					libs    : ['orion']
 				},
-				src :  ['examples/module-example-lib.cpp']
+				src: ['examples/module-example-lib.cpp']
 			}	
 		},
 		cxxprogram: {
 			options: {
-				libs     : ["orion"],
-				libPaths : ["build/"]
+				libs    : ["orion"],
+				libPaths: ["build/"]
 			},
 			'test-encoding': {
 				options: {
-					cxxflags : ["-Wall"],
-					includes : [".", "include/"]
+					cxxflags: ["-Wall"],
+					includes: [".", "include/"]
 				},
 				src : ['tests/test-encoding.cpp']
 			},
@@ -134,14 +135,14 @@ module.exports = function(grunt) {
 				options: {
 					cxxflags : ["-Wall"],
 					includes : [".", "include/", "lib/", "deps/"],
-					libs     : ["libjson", "orion", "orion-ws"]
+					libs     : ["libjson", "orion", "orion-net", "orion-ws"]
 				},
 				src : ['tests/test-jsonrpc.cpp']
 			},
 			'test-logger': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : [".", "include/", "lib/"]
+					includes : [".", "include/", "lib/", "/Tools/boost_1_61_0"]
 				},
 				src : ['tests/test-logger.cpp']
 			},
@@ -180,7 +181,7 @@ module.exports = function(grunt) {
 			'log-example': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : ['.', 'examples/', 'include/']
+					includes : ['.', 'examples/', 'include/', "/Tools/boost_1_61_0"]
 				},
 				src : ['examples/log-example.cpp']
 			},
@@ -216,16 +217,16 @@ module.exports = function(grunt) {
 			'hello-server': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : ['.', 'examples/', 'include/'],
-					libs     : ["libjson", "orion", "orion-ws"]
+					includes : ['.', 'examples/', 'include/', "/Tools/boost_1_61_0"],
+					libs     : ["libjson", "orion", "orion-net"]
 				},
 				src : ['examples/hello-server.cpp']
 			},
 			'add-json-rpc-server': {
 				options: {
 					cxxflags : ["-Wall"],
-					includes : ['.', 'examples/', 'include/', "deps/"],
-					libs     : ["libjson", "orion", "orion-ws"]
+					includes : ['.', 'examples/', 'include/', "deps/", "/Tools/boost_1_61_0"],
+					libs     : ["libjson", "orion", "orion-net", "orion-ws"]
 				},
 				src : ['examples/add-json-rpc-server.cpp']
 			}

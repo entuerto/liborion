@@ -19,17 +19,17 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_WS_REQUESTLISTENER_H
-#define ORION_WS_REQUESTLISTENER_H
+#ifndef ORION_NET_REQUESTLISTENER_H
+#define ORION_NET_REQUESTLISTENER_H
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
-#include <orion/ws/Response.h>
-#include <orion/ws/Request.h>
+#include <orion/net/Response.h>
+#include <orion/net/Request.h>
 
 namespace orion
 {
-namespace ws
+namespace net
 {
 //! Provides a simple, programmatically controlled HTTP protocol listener.
 /*!
@@ -64,7 +64,7 @@ private:
    std::string _uri;
 };
 
-} // ws
+} // net
 } // orion
 
 #endif

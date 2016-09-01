@@ -1,5 +1,5 @@
 /*
- * HttpServer.h
+ * MongooseHttpServer.h
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,51 +19,45 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_WS_HTTPSERVER_H
-#define ORION_WS_HTTPSERVER_H
+#ifndef ORION_NET_MONGOOSEHTTPSERVER_H
+#define ORION_NET_MONGOOSEHTTPSERVER_H
 
 #include <string>
-
-#include <orion/Orion-Stddefs.h>
-#include <orion/ws/Server.h>
-#include <orion/ws/Response.h>
-#include <orion/ws/Request.h>
-#include <orion/ws/RequestListener.h>
+#include <orion/net/HttpServer.h>
+#include <mongoose/mongoose.h>
 
 namespace orion
 {
-namespace ws
+namespace net
 {
-typedef std::map<std::string, std::unique_ptr<RequestListener>> listenerMap;
+namespace mongoose
+{
 
-//! This class provides an embedded HTTP Server
-/*!
-   This class provides an embedded HTTP Server, based on Mongoose, to handle incoming Requests 
-   and send HTTP 1.1 valid responses.
- */
-class API_EXPORT HttpServer : public Server
+class MongooseHttpServer : public HttpServer
 {
 public:
-   NO_COPY(HttpServer)
-   NO_MOVE(HttpServer)
+   MongooseHttpServer(int port);
+   virtual ~MongooseHttpServer();
 
-   virtual ~HttpServer();
+   virtual void start();
+   virtual void stop();
 
-   virtual int port() const;
+   virtual bool is_running() const;
 
-   virtual void add_request_listener(std::unique_ptr<RequestListener>&& listener);
+   virtual void send_response(const Response* response);
+   virtual void send_response(const Response* response, struct mg_connection* connection);
 
-   virtual std::unique_ptr<Response> process_request(const Request* request);
-   
    static std::unique_ptr<Server> create(int port);
 
 protected:
-   HttpServer(int port);
+   std::string make_port_list();
 
-   int _port;
-   listenerMap _RequestListeners;
+private:
+   bool _is_running;
+   struct mg_mgr _mgr; 
 };
 
-} // ws
+} // mongoose
+} // net
 } // orion
 #endif 

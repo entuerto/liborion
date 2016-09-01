@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <orion/ws/Response.h>
+#include <orion/net/Response.h>
 
 #include <sstream>
 #include <orion/StringUtils.h>
 
 namespace orion
 {
-namespace ws
+namespace net
 {
 
 static std::string status_code_as_string(uint32_t code)
@@ -194,6 +194,6 @@ std::unique_ptr<Response> Response::create_409()
                                           "might have been modified while the request was being processed.");
 }
 
-} // ws
+} // net
 } // orion
 

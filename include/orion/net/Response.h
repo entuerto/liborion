@@ -19,8 +19,8 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_WS_RESPONSE_H
-#define ORION_WS_RESPONSE_H
+#ifndef ORION_NET_RESPONSE_H
+#define ORION_NET_RESPONSE_H
 
 #include <string>
 
@@ -29,7 +29,7 @@
 
 namespace orion
 {
-namespace ws
+namespace net
 {
 
 //! Encapsulates HTTP-response information.
@@ -71,7 +71,7 @@ protected:
    std::string _content;
 };
 
-} // ws
+} // net
 } // orion
 
 #endif

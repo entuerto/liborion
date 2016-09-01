@@ -2,8 +2,8 @@
 #include <iostream>
 #include <orion/TestUtils.h>
 #include <orion/MemoryUtils.h>
-#include <orion/ws/Request.h>
-#include <orion/ws/Response.h>
+#include <orion/net/Request.h>
+#include <orion/net/Response.h>
 #include <orion/ws/JsonRpcError.h>
 #include <orion/ws/JsonRpcMethod.h>
 #include <orion/ws/JsonRpcRequestListener.h>
@@ -11,6 +11,7 @@
 #include <jsoncpp/json/json.h>
 
 using namespace orion;
+using namespace orion::net;
 using namespace orion::ws;
 using namespace orion::unittest;
 

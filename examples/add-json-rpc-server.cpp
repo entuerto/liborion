@@ -22,8 +22,8 @@
 #include <iostream>
 
 #include <orion/Logging.h>
-#include <orion/ws/Server.h>
-#include <orion/ws/HttpServer.h>
+#include <orion/net/Server.h>
+#include <orion/net/HttpServer.h>
 #include <orion/ws/JsonRpcRequestListener.h>
 #include <orion/ws/JsonRpcMethod.h>
 #include <orion/ws/JsonRpcMethodWrapper.h>
@@ -32,6 +32,7 @@
 
 using namespace orion;
 using namespace orion::logging;
+using namespace orion::net;
 using namespace orion::ws;
 
 //-----------------------------------------------------------------------------------

@@ -267,6 +267,12 @@ LogRecord& LogRecord::operator<<(char value)
    return *this;
 }
 
+LogRecord& LogRecord::operator<<(const boost::format& fmt)
+{
+   _message += fmt.str();
+   return *this;
+}
+
 std::unique_ptr<LogRecord> LogRecord::create()
 {
    return std::make_unique<LogRecord>();

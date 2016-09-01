@@ -19,17 +19,18 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef MONGOOSEREQUEST_H
-#define MONGOOSEREQUEST_H
+#ifndef ORION_NET_MONGOOSEREQUEST_H
+#define ORION_NET_MONGOOSEREQUEST_H
 
+#include <memory>
 #include <string>
-#include <orion/MemoryUtils.h>
-#include <orion/ws/Request.h>
+
+#include <orion/net/Request.h>
 #include <mongoose/mongoose.h>
 
 namespace orion
 {
-namespace ws
+namespace net
 {
 namespace mongoose
 {
@@ -37,45 +38,43 @@ namespace mongoose
 class MongooseRequest : public Request
 {
 public:
-   MongooseRequest(struct mg_connection* connection);
+   MongooseRequest(struct mg_connection* connection, struct http_message* hm);
 
    virtual ~MongooseRequest();
 
    //! "GET", "POST", etc
-   virtual std::string method() const; 
+   virtual std::string method() const override; 
 
    //! URL-decoded URI
-   virtual std::string uri() const;
+   virtual std::string uri() const override;
 
    //! E.g. "1.0", "1.1"
-   virtual std::string http_version() const;   
+   virtual std::string http_version() const override;   
    
    //! URL part after '?', not including '?', or NULL
-   virtual std::string query_string() const;   
+   virtual std::string query_string() const override;   
 
    //! Authenticated user, or NULL if no auth used
-   virtual std::string remote_user() const;    
+   virtual std::string remote_user() const override;    
    
-   virtual bool is_authenticated()  const;
+   virtual bool is_authenticated()  const override;
 
-   virtual bool is_secure_connection() const;
+   virtual bool is_secure_connection() const override;
 
-   static std::unique_ptr<Request> create(struct mg_connection* connection);
+   virtual std::string header(const std::string& name) const override;
+
+   static std::unique_ptr<Request> create(struct mg_connection* connection, struct http_message* hm);
 
 private:
-   HeaderMap make_header_map(const struct mg_connection* connection);
-   void read_data(struct mg_connection* connection);
+   void read_data(struct http_message* hm);
 
-   std::string _method;
-   std::string _uri;
-   std::string _http_version;
-   std::string _query_string;
-   std::string _remote_user;
+   struct mg_connection* _connection;
+   struct http_message* _hm;
    
 };
 
 } // mongoose
-} // ws
+} // net
 } // orion
 
 #endif

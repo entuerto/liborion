@@ -22,10 +22,11 @@
 #ifndef ORION_WS_JSONRPCREQUESTLISTENER_H
 #define ORION_WS_JSONRPCREQUESTLISTENER_H
 
+#include <memory>
+
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
-#include <orion/ws/Response.h>
-#include <orion/ws/Request.h>
+#include <orion/net/Response.h>
+#include <orion/net/Request.h>
 #include <orion/ws/RpcRequestListener.h>
 #include <orion/ws/JsonRpcError.h>
 
@@ -55,7 +56,7 @@ public:
 
 protected:
    ///
-   virtual std::unique_ptr<Response> on_post(const Request* request) override;
+   virtual std::unique_ptr<net::Response> on_post(const net::Request* request) override;
 
    //!
    std::unique_ptr<JsonRpcError> process_method(Json::Value& json_request, Json::Value& json_result);

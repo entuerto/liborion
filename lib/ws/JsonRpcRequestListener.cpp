@@ -39,6 +39,8 @@ namespace orion
 {
 namespace ws
 {
+using namespace orion::net;
+   
 JsonRpcRequestListener::JsonRpcRequestListener(const std::string& uri) :
    RpcRequestListener(uri)
 {

@@ -19,18 +19,18 @@
  * MA 02110-1301, USA.
  */
 
-#include <orion/ws/HttpServer.h>
+#include <orion/net/HttpServer.h>
 
 #include <orion/Logging.h>
-#include <ws/impl/MongooseHttpServer.h>
+#include <net/impl/MongooseHttpServer.h>
 
 
 namespace orion
 {
-namespace ws
+namespace net
 {
 using namespace orion::logging;
-using namespace orion::ws::mongoose;
+using namespace orion::net::mongoose;
 
 
 HttpServer::HttpServer(int port) :
@@ -66,7 +66,7 @@ std::unique_ptr<Response> HttpServer::process_request(const Request* request)
 
 void HttpServer::add_request_listener(std::unique_ptr<RequestListener>&& listener)
 {
-   _RequestListeners.insert(std::make_pair<std::string, std::unique_ptr<RequestListener>>(listener->uri(), std::move(listener)));
+   _RequestListeners.insert(std::make_pair(listener->uri(), std::move(listener)));
 }
 
 std::unique_ptr<Server> HttpServer::create(int port)
@@ -74,6 +74,6 @@ std::unique_ptr<Server> HttpServer::create(int port)
    return MongooseHttpServer::create(port); 
 }
 
-} // ws
+} // net
 } // orion
 

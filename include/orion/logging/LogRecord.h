@@ -22,8 +22,9 @@
 
 #include <cstdint>
 
+#include <boost/format.hpp>
+
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 #include <orion/logging/Logger.h>
 
 namespace orion
@@ -110,6 +111,9 @@ public:
 
    //! Log a character
    LogRecord& operator<<(char value);
+
+   //! Log boost format
+   LogRecord& operator<<(const boost::format& fmt);
 
    static std::unique_ptr<LogRecord> create();
 

@@ -19,19 +19,19 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_WS_SERVER_H
-#define ORION_WS_SERVER_H
+#ifndef ORION_NET_SERVER_H
+#define ORION_NET_SERVER_H
 
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
-#include <orion/ws/RequestListener.h>
-#include <orion/ws/Response.h>
+#include <orion/net/RequestListener.h>
+#include <orion/net/Response.h>
 
 namespace orion
 {
-namespace ws 
+namespace net 
 {
 //! Server interface declaration
 class Server
@@ -49,7 +49,7 @@ public:
    virtual void send_response(const Response* response) =0;
 };
 
-} // ws
+} // net
 } // orion
 #endif 
 

@@ -30,9 +30,9 @@ JsonRpcMethodWrapper::JsonRpcMethodWrapper(      std::function<std::unique_ptr<J
                                            const std::string& name, 
                                            const std::string& desc) :
    JsonRpcMethod(),
-   _function(func),
    _name(name),
-   _description(desc)
+   _description(desc),
+   _function(func)
 {
 }
 

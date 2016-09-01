@@ -1,5 +1,5 @@
 /*
- * Request.cpp
+ * RequestListener.cpp
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,55 +19,40 @@
  * MA 02110-1301, USA.
  */
 
-#include <orion/ws/Request.h>
-
-#include <cstdlib>
-#include <orion/StringUtils.h>
+#include <orion/net/RequestListener.h>
 
 namespace orion
 {
-namespace ws
+namespace net
 {
 
-Request::Request() :
-   _remote_address(),
-   _host_address(),
-   _http_header(),
-   _data()
+RequestListener::RequestListener(const std::string& uri) :
+   _uri(uri)
 {
 }
 
-Request::~Request()
+RequestListener::~RequestListener() 
 {
 }
 
-//! Client's IP address
-const net::IPAddress* Request::remote_address() const
+std::string RequestListener::uri() const
 {
-   return _remote_address.get();
+   return _uri;
 }
 
-//! Host IP address
-const net::IPAddress* Request::host_address() const
+std::unique_ptr<Response> RequestListener::on_process_request(const Request* request)
 {
-   return _host_address.get();
+   if (request->method() == "GET")
+      return on_get(request);
+   else if (request->method() == "POST")
+      return on_post(request);
+   else if (request->method() == "PUT")
+      return on_put(request);
+   else if (request->method() == "DELETE")
+      return on_delete(request);
+
+   return Response::create_400();
 }
 
-std::string Request::header(const std::string& name) const
-{
-   auto it = _http_header.find(name);
-
-   if (it != _http_header.end())
-      return it->second;
-
-   return "";
-}
-
-std::string Request::content() const
-{
-   return _data;
-}
-
-} // ws
+} // net
 } // orion
-
