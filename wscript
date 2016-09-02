@@ -31,12 +31,6 @@ DEPENDENCIES = ''
 top = '.'
 out = 'build'
 
-mongoose_sources = ['lib/ws/mongoose/mongoose.c']
-
-json_sources = ['lib/ws/json/json_reader.cpp',
-                'lib/ws/json/json_value.cpp',
-                'lib/ws/json/json_writer.cpp']
-
 plugin_sources = ['lib/plugin/Extension.cpp',
                   'lib/plugin/PlugIn.cpp',
                   'lib/plugin/PlugInException.cpp',
@@ -58,14 +52,17 @@ ws_sources =  ['lib/ws/mongoose/MongooseRequest.cpp',
 
 core_sources = ['lib/ArgumentExceptions.cpp',
                 'lib/DateUtils.cpp',
+                'lib/Encoding.cpp',
                 'lib/Exception.cpp',
                 'lib/Module.cpp',
+                'lib/Module-{0}.cpp'.format(sys.platform),
                 'lib/ModuleException.cpp',
                 'lib/NotImplementedException.cpp',
                 'lib/StringUtils.cpp',
                 'lib/SystemInfo.cpp',
+                'lib/SystemInfo-{0}.cpp'.format(sys.platform),
                 'lib/Timer.cpp',
-                'lib/fs/FileUtils.cpp',
+                'lib/Uuid-{0}.cpp'.format(sys.platform),
                 'lib/logging/LogEndRecord.cpp',
                 'lib/logging/LogExceptionRecord.cpp',
                 'lib/logging/LogFunction.cpp',
@@ -94,12 +91,29 @@ warning_level = {'none'  : [],
                  'fatal' : ['-Wall', '-Wextra', '-Werror']
                 }
 
+compiler_options = {
+   'win32' : {
+      'cflags'   : ['-Wall', '-fms-compatibility-version=19'],
+      'cxxflags' : ['-Wall', '-EHsc', '-GR', '-fms-compatibility-version=19'],
+      'debug' : {
+         'cflags'   : ['-MDd', '-Zi', '-Ob0', '-Od'],
+         'cxxflags' : ['-MDd', '-Zi', '-Ob0', '-Od'],
+         'cppflags' : ['-D DEBUG', '-D _DEBUG']
+      },
+      'release' : {
+         'cflags'   : ['-MD', '-O2', '-Ob2'],
+         'cxxflags' : ['-MD', '-O2', '-Ob2'],
+         'cppflags' : ['-D NDEBUG']
+      }
+   }
+}
+
 
 def options(opt):
    # Disable MSVC detection on win32: building with MSVC is currently not supported
    # If anyone wants to add support for building with MSVC, this hack should be removed.
-   c_compiler['win32'] = ['gcc']
-   cxx_compiler['win32'] = ['g++']
+   #c_compiler['win32'] = ['clang']
+   #cxx_compiler['win32'] = ['clang++']
 
    opt.load('compiler_c')
    opt.load('compiler_cxx')
@@ -115,6 +129,8 @@ def options(opt):
    opt.parser.remove_option('--mandir')
    opt.parser.remove_option('--pdfdir')
    opt.parser.remove_option('--psdir')
+   opt.parser.remove_option('--sbindir')
+   opt.parser.remove_option('--libexecdir')
 
    test_option_group = opt.add_option_group('Test options')
 
@@ -166,22 +182,27 @@ def configure(conf):
 
    # This is specific to compiling with mingw
    if is_win32:
-      # overwrite default prefix on Windows (tempfile.gettempdir() is the Waf default)
-      if conf.options.prefix.lower() == tempfile.gettempdir().lower():
-         conf.options.prefix = os.path.join(os.path.abspath(top), '%s-%s' % (APPNAME, VERSION))
-         _add_value(conf, 'PREFIX', conf.options.prefix, quote=True)
+      conf.env['CC']       = 'clang-cl.exe' 
+      #conf.env['LINK_CC']  = 'clang.exe' 
+      conf.env['CXX']      = 'clang-cl.exe'
+      #conf.env['LINK_CXX'] = 'clang.exe'
+      conf.env['AR']       = 'llvm-lib.exe'
+
+      _clang_cl_common_flags(conf)
 
       # Make sure we don't have -fPIC in the CCFLAGS
-      conf.env["shlib_CCFLAGS"] = []
+      #conf.env["shlib_CCFLAGS"] = []
 
       # Adjust file naming
-      conf.env["cshlib_PATTERN"]   = 'lib%s.dll'
-      conf.env["cxxshlib_PATTERN"] = 'lib%s.dll'
-      conf.env['program_PATTERN']  = '%s.exe'
+      #conf.env["cstlib_PATTERN"]   = 'lib%s.lib'
+      #conf.env["cshlib_PATTERN"]   = '%s.dll'
+      #conf.env["cxxstlib_PATTERN"] = 'lib%s.lib'
+      #conf.env["cxxshlib_PATTERN"] = '%s.dll'
+      #conf.env['program_PATTERN']  = '%s.exe'
 
       # Use Visual C++ compatible alignment
-      conf.env.append_value ('CCFLAGS', '-mms-bitfields')
-      conf.env['staticlib_LINKFLAGS'] = []
+      # conf.env.append_value ('CCFLAGS', '-mms-bitfields')
+      #conf.env['staticlib_LINKFLAGS'] = []
 
    # Load gnu_dirs here because we modify PREFIX for win32
    conf.load('gnu_dirs')
@@ -196,16 +217,12 @@ def configure(conf):
       uuid_version = conf.check_cfg(modversion='uuid', uselib_store='UUID', mandatory=False)
 
 
-   conf.check(header_name='sys/time.h')
-   conf.check(header_name='sys/types.h')
-   conf.check(header_name='sys/stat.h')
-
    conf.define('PACKAGE', APPNAME)
    conf.define('VERSION', VERSION)
 
    conf.define('PACKAGE_NAME', APPNAME)
    conf.define('PACKAGE_VERSION', VERSION)
-   conf.define('PACKAGE_BUGREPORT', 'tomasp@videotron.ca')
+   conf.define('PACKAGE_BUGREPORT', 'tomas.plzls@gmail.com')
    conf.define('GETTEXT_PACKAGE', APPNAME)
 
    conf.define('LIBORION_MAJOR_VERSION', major)
@@ -221,18 +238,14 @@ def configure(conf):
    conf.write_config_header('config.h')
 
    conf.env.append_value('CPPFLAGS', '-DHAVE_CONFIG_H') 
-   conf.env.append_value('CPPFLAGS', '-UNICODE') 
+   conf.env.append_value('CPPFLAGS', '-DUNICODE') 
    conf.env.append_value('CPPFLAGS', '-DORION_SHARED_EXPORTS') 
 
-   conf.env['CXXFLAGS'] = debug_level[Options.options.debug_level]
-   conf.env.append_value('CXXFLAGS', warning_level[Options.options.warning_level])
-   conf.env.append_value('CXXFLAGS', '-std=c++11')
+   conf.env['CFLAGS'] = compiler_options[sys.platform]['cflags']
+   conf.env.append_value('CFLAGS', compiler_options[sys.platform]['debug']['cflags'])
 
-   if _target_is_darwin(conf):
-      conf.env.append_value('CXXFLAGS', '-stdlib=libc++')
-
-   if is_win32:
-      conf.env.append_value('CXXFLAGS', '-fpermissive')
+   conf.env['CXXFLAGS'] = compiler_options[sys.platform]['cxxflags']
+   conf.env.append_value('CXXFLAGS', compiler_options[sys.platform]['debug']['cxxflags'])
 
    _print(conf, "")
    _print(conf, "liborion {0}".format(VERSION))
@@ -256,223 +269,211 @@ def build(bld):
    is_win32 = _target_is_win32(bld)
    is_darwin = _target_is_darwin(bld)
 
-   if is_win32:
-      core_sources.append('lib/Module-Win32.cpp')
-      core_sources.append('lib/SystemInfo-Win32.cpp')
-      core_sources.append('lib/Uuid-win32.cpp')
-   elif is_darwin:
-      core_sources.append('lib/SystemInfo-osx.cpp')
-      core_sources.append('lib/Uuid.cpp')
-   else:
-      core_sources.append('lib/Module-linux.cpp')
-      core_sources.append('lib/SystemInfo-linux.cpp')
-      core_sources.append('lib/Uuid.cpp')
-   
    obj = bld.stlib(target   = 'mongoose',
                    features = 'c cstlib',
-                   source   = mongoose_sources,
-                   includes  = ['.'],
-                   lib       = '',
-                   uselib    = '')
+                   source   = ['deps/mongoose/mongoose.c'],
+                   includes = ['.'],
+                   lib      = '',
+                   uselib   = '')
 
    obj = bld.stlib(target    = 'json',
                    features  = 'cxx cxxstlib',
-                   source    = json_sources,
-                   includes  = ['.', 'lib/ws'],
+                   source    = ['deps/jsoncpp/jsoncpp.cpp'],
+                   includes  = ['.', 'deps/jsoncpp'],
                    lib       = 'c++' if is_darwin else '',
                    uselib    = '')
 
    obj = bld.shlib(target    = 'orion',
                    features  = 'cxx cxxshlib',
                    source    = core_sources,
-                   includes  = ['.', 'include/', 'lib/'],
+                   includes  = ['.', 'include/', 'lib/', 'c:/Tools/boost_1_61_0'],
                    lib       = 'c++' if is_darwin else '',
                    uselib    = '')
 
    if is_win32:
       obj.lib = ['psapi', 'rpcrt4', 'ntdll']
-
-   obj = bld.shlib(target    = 'orion-ws',
-                   features  = 'cxx cxxshlib',
-                   source    = ws_sources,
-                   includes  = ['.', 'include/', 'lib/'],
-                   lib       = 'c++' if is_darwin else '',
-                   uselib    = '',
-                   use       = ['orion', 'json', 'mongoose'])
-
-   if is_win32:
-      obj.lib = ['psapi', 'rpcrt4', 'ws2_32']
-
-   obj = bld.shlib(target    = 'orion-plugin',
-                   features  = 'cxx cxxshlib',
-                   source    = plugin_sources,
-                   includes  = ['.', 'include/', 'lib/'],
-                   lib       = 'c++' if is_darwin else '',
-                   uselib    = '',
-                   use       = ['orion'])
-
-   obj = bld(features     = 'subst',
-             source       = 'liborion.pc.in',
-             target       = 'liborion-' + LIBORION_API_VERSION + '.pc',
-             dct          = {'VERSION' : VERSION,
-                             'DEPENDENCIES' : DEPENDENCIES,
-                             'prefix': bld.env['PREFIX'],
-                             'exec_prefix': '${prefix}',
-                             'libdir': '${exec_prefix}/lib',
-                             'includedir': '${prefix}/include',
-                             'datarootdir': '${prefix}/share',
-                             'datadir': '${datarootdir}',
-                             'localedir': '${datarootdir}/locale',
-                             'LIBORION_API_VERSION': LIBORION_API_VERSION},
-             install_path = '${LIBDIR}/pkgconfig')
-
-   obj = bld(features     = 'subst',
-             source       = 'liborion-ws.pc.in',
-             target       = 'liborion-ws-' + LIBORION_API_VERSION + '.pc',
-             dct          = {'VERSION' : VERSION,
-                             'DEPENDENCIES' : DEPENDENCIES + 'liborion-' + LIBORION_API_VERSION,
-                             'prefix': bld.env['PREFIX'],
-                             'exec_prefix': '${prefix}',
-                             'libdir': '${exec_prefix}/lib',
-                             'includedir': '${prefix}/include',
-                             'datarootdir': '${prefix}/share',
-                             'datadir': '${datarootdir}',
-                             'localedir': '${datarootdir}/locale',
-                             'LIBORION_API_VERSION': LIBORION_API_VERSION},
-             install_path = '${LIBDIR}/pkgconfig')
-
-   obj = bld(features     = 'subst',
-             source       = 'liborion-plugin.pc.in',
-             target       = 'liborion-plugin-' + LIBORION_API_VERSION + '.pc',
-             dct          = {'VERSION' : VERSION,
-                             'DEPENDENCIES' : DEPENDENCIES + 'liborion-' + LIBORION_API_VERSION,
-                             'prefix': bld.env['PREFIX'],
-                             'exec_prefix': '${prefix}',
-                             'libdir': '${exec_prefix}/lib',
-                             'includedir': '${prefix}/include',
-                             'datarootdir': '${prefix}/share',
-                             'datadir': '${datarootdir}',
-                             'localedir': '${datarootdir}/locale',
-                             'LIBORION_API_VERSION': LIBORION_API_VERSION},
-             install_path = '${LIBDIR}/pkgconfig')
-
-   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion', bld.path.ant_glob('include/orion/*'))
-   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/logging', bld.path.ant_glob('include/orion/logging/*'))
-   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/unittest', bld.path.ant_glob('include/orion/unittest/*'))
-   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/ws', bld.path.ant_glob('include/orion/ws/*'))
-   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/ws/json', bld.path.ant_glob('lib/ws/json/*.h'))
-   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/plugin', bld.path.ant_glob('include/orion/plugin/*'))
-
-   # Tests
-   if Options.options.compile_tests or Options.options.run_tests:
-      bld.program(
-          target       = 'test-logger',
-          features     = 'cxx cprogram',
-          source       = ['tests/test-logger.cpp'],
-          includes     = ['.', 'tests/', 'include/'],
-          use          = ['orion'],
-          lib          = 'c++' if is_darwin else '',
-          install_path = None,
-          unit_test    = 1)
-
-      bld.program(
-          target       = 'test-unittest',
-          features     = 'cxx cprogram',
-          source       = ['tests/test-unittest.cpp',
-                          'tests/unittest/ClassTest.cpp',
-                          'tests/unittest/ClassTestResult.cpp',
-                          'tests/unittest/EvalMacros.cpp'],
-          includes     = ['.', 'tests/', 'include/'],
-          use          = ['orion'],
-          lib          = 'c++' if is_darwin else '',
-          install_path = None,
-          unit_test    = 1)
-
-      bld.program(
-          target       = 'test-jsonrpc',
-          features     = 'cxx cprogram',
-          source       = ['tests/test-jsonrpc.cpp'],
-          includes     = ['.', 'tests/', 'include/', 'lib/'],
-          use          = ['orion-ws', 'orion'],
-          lib          = 'c++' if is_darwin else '',
-          install_path = None,
-          unit_test    = 1)
-
-      bld.program(
-          target       = 'test-string',
-          features     = 'cxx cprogram',
-          source       = ['tests/test-string.cpp'],
-          includes     = ['.', 'tests/', 'include/', 'lib/'],
-          use          = ['orion'],
-          lib          = 'c++' if is_darwin else '',
-          install_path = None,
-          unit_test    = 1)
-
-   # Examples
-   if Options.options.compile_examples:
-      bld.program(
-          target       = 'hello-server',
-          features     = 'cxx cprogram',
-          source       = ['examples/hello-server.cpp'],
-          includes     = ['.', 'examples/', 'include/'],
-          use          = ['orion-ws', 'orion'],
-          lib          = 'c++' if is_darwin else '',
-          install_path = None)
-
-      bld.program(
-          target       = 'add-json-rpc-server',
-          features     = 'cxx cprogram',
-          source       = ['examples/add-json-rpc-server.cpp'],
-          includes     = ['.', 'examples/', 'include/', 'lib/'],
-          use          = ['orion-ws', 'orion'],
-          lib          = 'c++' if is_darwin else '',
-          install_path = None)
-
-      bld.program(
-          target       = 'system-info',
-          features     = 'cxx cprogram',
-          source       = ['examples/system-info.cpp'],
-          includes     = ['.', 'examples/', 'include/', 'lib/'],
-          use          = ['orion'],
-          lib          = 'c++' if is_darwin else '',
-          install_path = None)
-
-      bld.program(
-          target       = 'signal-example',
-          features     = 'cxx cprogram',
-          source       = ['examples/signal-example.cpp'],
-          includes     = ['.', 'examples/', 'include/', 'lib/'],
-          use          = ['orion'],
-          lib          = 'c++' if is_darwin else '',
-          install_path = None)
-
-      bld.program(
-          target       = 'log-example',
-          features     = 'cxx cprogram',
-          source       = ['examples/log-example.cpp'],
-          includes     = ['.', 'examples/', 'include/', 'lib/'],
-          use          = ['orion'],
-          lib          = 'c++' if is_darwin else '',
-          install_path = None)
-
-      obj = bld.shlib(target    = 'module-example',
-                      features  = 'cxx cxxshlib',
-                      source    = ['examples/module-example-lib.cpp'],
-                      includes  = ['.', 'examples/', 'include/', 'lib/'],
-                      use       = ['orion'],
-                      lib       = 'c++' if is_darwin else '',
-                      uselib    = '')
-
-      bld.program(
-          target       = 'module-example',
-          features     = 'cxx cprogram',
-          source       = ['examples/module-example.cpp'],
-          includes     = ['.', 'examples/', 'include/', 'lib/'],
-          use          = ['orion'],
-          lib          = 'c++' if is_darwin else '',
-          install_path = None)
-
-   bld.add_post_fun(summary)
+#
+#   obj = bld.shlib(target    = 'orion-ws',
+#                   features  = 'cxx cxxshlib',
+#                   source    = ws_sources,
+#                   includes  = ['.', 'include/', 'lib/'],
+#                   lib       = 'c++' if is_darwin else '',
+#                   uselib    = '',
+#                   use       = ['orion', 'json', 'mongoose'])
+#
+#   if is_win32:
+#      obj.lib = ['psapi', 'rpcrt4', 'ws2_32']
+#
+#   obj = bld.shlib(target    = 'orion-plugin',
+#                   features  = 'cxx cxxshlib',
+#                   source    = plugin_sources,
+#                   includes  = ['.', 'include/', 'lib/'],
+#                   lib       = 'c++' if is_darwin else '',
+#                   uselib    = '',
+#                   use       = ['orion'])
+#
+#   obj = bld(features     = 'subst',
+#             source       = 'liborion.pc.in',
+#             target       = 'liborion-' + LIBORION_API_VERSION + '.pc',
+#             dct          = {'VERSION' : VERSION,
+#                             'DEPENDENCIES' : DEPENDENCIES,
+#                             'prefix': bld.env['PREFIX'],
+#                             'exec_prefix': '${prefix}',
+#                             'libdir': '${exec_prefix}/lib',
+#                             'includedir': '${prefix}/include',
+#                             'datarootdir': '${prefix}/share',
+#                             'datadir': '${datarootdir}',
+#                             'localedir': '${datarootdir}/locale',
+#                             'LIBORION_API_VERSION': LIBORION_API_VERSION},
+#             install_path = '${LIBDIR}/pkgconfig')
+#
+#   obj = bld(features     = 'subst',
+#             source       = 'liborion-ws.pc.in',
+#             target       = 'liborion-ws-' + LIBORION_API_VERSION + '.pc',
+#             dct          = {'VERSION' : VERSION,
+#                             'DEPENDENCIES' : DEPENDENCIES + 'liborion-' + LIBORION_API_VERSION,
+#                             'prefix': bld.env['PREFIX'],
+#                             'exec_prefix': '${prefix}',
+#                             'libdir': '${exec_prefix}/lib',
+#                             'includedir': '${prefix}/include',
+#                             'datarootdir': '${prefix}/share',
+#                             'datadir': '${datarootdir}',
+#                             'localedir': '${datarootdir}/locale',
+#                             'LIBORION_API_VERSION': LIBORION_API_VERSION},
+#             install_path = '${LIBDIR}/pkgconfig')
+#
+#   obj = bld(features     = 'subst',
+#             source       = 'liborion-plugin.pc.in',
+#             target       = 'liborion-plugin-' + LIBORION_API_VERSION + '.pc',
+#             dct          = {'VERSION' : VERSION,
+#                             'DEPENDENCIES' : DEPENDENCIES + 'liborion-' + LIBORION_API_VERSION,
+#                             'prefix': bld.env['PREFIX'],
+#                             'exec_prefix': '${prefix}',
+#                             'libdir': '${exec_prefix}/lib',
+#                             'includedir': '${prefix}/include',
+#                             'datarootdir': '${prefix}/share',
+#                             'datadir': '${datarootdir}',
+#                             'localedir': '${datarootdir}/locale',
+#                             'LIBORION_API_VERSION': LIBORION_API_VERSION},
+#             install_path = '${LIBDIR}/pkgconfig')
+#
+#   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion', bld.path.ant_glob('include/orion/*'))
+#   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/logging', bld.path.ant_glob('include/orion/logging/*'))
+#   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/unittest', bld.path.ant_glob('include/orion/unittest/*'))
+#   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/ws', bld.path.ant_glob('include/orion/ws/*'))
+#   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/ws/json', bld.path.ant_glob('lib/ws/json/*.h'))
+#   bld.install_files('${PREFIX}/include/orion-' + LIBORION_API_VERSION + '/orion/plugin', bld.path.ant_glob('include/orion/plugin/*'))
+#
+#   # Tests
+#   if Options.options.compile_tests or Options.options.run_tests:
+#      bld.program(
+#          target       = 'test-logger',
+#          features     = 'cxx cprogram',
+#          source       = ['tests/test-logger.cpp'],
+#          includes     = ['.', 'tests/', 'include/'],
+#          use          = ['orion'],
+#          lib          = 'c++' if is_darwin else '',
+#          install_path = None,
+#          unit_test    = 1)
+#
+#      bld.program(
+#          target       = 'test-unittest',
+#          features     = 'cxx cprogram',
+#          source       = ['tests/test-unittest.cpp',
+#                          'tests/unittest/ClassTest.cpp',
+#                          'tests/unittest/ClassTestResult.cpp',
+#                          'tests/unittest/EvalMacros.cpp'],
+#          includes     = ['.', 'tests/', 'include/'],
+#          use          = ['orion'],
+#          lib          = 'c++' if is_darwin else '',
+#          install_path = None,
+#          unit_test    = 1)
+#
+#      bld.program(
+#          target       = 'test-jsonrpc',
+#          features     = 'cxx cprogram',
+#          source       = ['tests/test-jsonrpc.cpp'],
+#          includes     = ['.', 'tests/', 'include/', 'lib/'],
+#          use          = ['orion-ws', 'orion'],
+#          lib          = 'c++' if is_darwin else '',
+#          install_path = None,
+#          unit_test    = 1)
+#
+#      bld.program(
+#          target       = 'test-string',
+#          features     = 'cxx cprogram',
+#          source       = ['tests/test-string.cpp'],
+#          includes     = ['.', 'tests/', 'include/', 'lib/'],
+#          use          = ['orion'],
+#          lib          = 'c++' if is_darwin else '',
+#          install_path = None,
+#          unit_test    = 1)
+#
+#   # Examples
+#   if Options.options.compile_examples:
+#      bld.program(
+#          target       = 'hello-server',
+#          features     = 'cxx cprogram',
+#          source       = ['examples/hello-server.cpp'],
+#          includes     = ['.', 'examples/', 'include/'],
+#          use          = ['orion-ws', 'orion'],
+#          lib          = 'c++' if is_darwin else '',
+#          install_path = None)
+#
+#      bld.program(
+#          target       = 'add-json-rpc-server',
+#          features     = 'cxx cprogram',
+#          source       = ['examples/add-json-rpc-server.cpp'],
+#          includes     = ['.', 'examples/', 'include/', 'lib/'],
+#          use          = ['orion-ws', 'orion'],
+#          lib          = 'c++' if is_darwin else '',
+#          install_path = None)
+#
+#      bld.program(
+#          target       = 'system-info',
+#          features     = 'cxx cprogram',
+#          source       = ['examples/system-info.cpp'],
+#          includes     = ['.', 'examples/', 'include/', 'lib/'],
+#          use          = ['orion'],
+#          lib          = 'c++' if is_darwin else '',
+#          install_path = None)
+#
+#      bld.program(
+#          target       = 'signal-example',
+#          features     = 'cxx cprogram',
+#          source       = ['examples/signal-example.cpp'],
+#          includes     = ['.', 'examples/', 'include/', 'lib/'],
+#          use          = ['orion'],
+#          lib          = 'c++' if is_darwin else '',
+#          install_path = None)
+#
+#      bld.program(
+#          target       = 'log-example',
+#          features     = 'cxx cprogram',
+#          source       = ['examples/log-example.cpp'],
+#          includes     = ['.', 'examples/', 'include/', 'lib/'],
+#          use          = ['orion'],
+#          lib          = 'c++' if is_darwin else '',
+#          install_path = None)
+#
+#      obj = bld.shlib(target    = 'module-example',
+#                      features  = 'cxx cxxshlib',
+#                      source    = ['examples/module-example-lib.cpp'],
+#                      includes  = ['.', 'examples/', 'include/', 'lib/'],
+#                      use       = ['orion'],
+#                      lib       = 'c++' if is_darwin else '',
+#                      uselib    = '')
+#
+#      bld.program(
+#          target       = 'module-example',
+#          features     = 'cxx cprogram',
+#          source       = ['examples/module-example.cpp'],
+#          includes     = ['.', 'examples/', 'include/', 'lib/'],
+#          use          = ['orion'],
+#          lib          = 'c++' if is_darwin else '',
+#          install_path = None)
+#
+#   bld.add_post_fun(summary)
 
 
 def summary(ctx):
@@ -576,3 +577,59 @@ def _print(ctx, msg):
    ctx.to_log(msg)
    Logs.pprint('NORMAL', msg)
 
+
+def _clang_cl_common_flags(conf):
+   """
+   Setup the flags required for executing the clang-cl compiler
+   """
+   e = conf.env
+
+   e.ARFLAGS    = ''
+   e.CFLAGS     = ''
+   e.CXXFLAGS   = ''
+   e.LINKFLAGS  = ''
+   e.DEFINES_ST = '-D%s'
+
+   e.CC_SRC_F     = ''
+   e.CC_TGT_F     = ['-c', '-Fo']
+   e.CXX_SRC_F    = ''
+   e.CXX_TGT_F    = ['-c', '-Fo']
+
+   e.CPPPATH_ST = '-I%s' # template for adding include paths
+
+   e.AR_TGT_F     = '-out:'
+   #e.CCLNK_TGT_F  = '/out: '
+   #e.CXXLNK_TGT_F = '/out: '
+
+   # CRT specific flags
+   e.CFLAGS_CRT_MULTITHREADED     = e.CXXFLAGS_CRT_MULTITHREADED     = ['-MT']
+   e.CFLAGS_CRT_MULTITHREADED_DLL = e.CXXFLAGS_CRT_MULTITHREADED_DLL = ['-MD']
+
+   e.CFLAGS_CRT_MULTITHREADED_DBG     = e.CXXFLAGS_CRT_MULTITHREADED_DBG     = ['-MTd']
+   e.CFLAGS_CRT_MULTITHREADED_DLL_DBG = e.CXXFLAGS_CRT_MULTITHREADED_DLL_DBG = ['-MDd']
+
+   e.LIB_ST       = '%s.lib'
+   #e.LIBPATH_ST   = '/LIBPATH:%s'
+   e.STLIB_ST     = '%s.lib'
+   #e.STLIBPATH_ST = '/LIBPATH:%s'
+
+   #e.CFLAGS_cshlib     = []
+   #e.CXXFLAGS_cxxshlib = []
+   
+   #e.cshlib_PATTERN    = e.cxxshlib_PATTERN = '%s.dll'
+   #e.implib_PATTERN    = '%s.lib'
+   #e.IMPLIB_ST         = '/IMPLIB:%s'
+
+   # Disable -Bdynamic and -Bstatic markers as for link.exe
+   e.SHLIB_MARKER = ''
+   e.STLIB_MARKER = ''
+
+   #e.LINKFLAGS_cstlib   = []
+   #e.LINKFLAGS_cxxstlib = []
+   #e.LINKFLAGS_cshlib   = []
+   #e.LINKFLAGS_cxxshlib = []
+   e.cstlib_PATTERN     = e.cxxstlib_PATTERN = '%s.lib'
+
+   e.cprogram_PATTERN = e.cxxprogram_PATTERN = '%s.exe'
+
+   #e.LDFLAGS = '/DLL'
