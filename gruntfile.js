@@ -11,9 +11,11 @@ module.exports = function(grunt) {
       cstlib: {
          mongoose: {
             options: {
-               cxxflags : ["-Wall"],
+               cflags : ["-Wall"],
                includes : ["."],
-               defines  : ["ORION_SHARED_EXPORTS"]
+               defines  : ["ORION_SHARED_EXPORTS", 
+                           "_CRT_SECURE_NO_WARNINGS", 
+                           "_WINSOCK_DEPRECATED_NO_WARNINGS"]
             },
             src: ['deps/mongoose/mongoose.c']
          }
@@ -119,7 +121,10 @@ module.exports = function(grunt) {
    });
 
    grunt.loadTasks('tests');
-   grunt.loadTasks('examples');
+
+   if (grunt.option('examples')) {
+      grunt.loadTasks('examples');
+   }
 
    // Load this plugin's task(s).
    grunt.loadTasks('tasks');

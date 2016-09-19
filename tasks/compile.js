@@ -30,7 +30,7 @@ module.exports = function(grunt) {
 		// '${CC} ${CFLAGS} ${CPPFLAGS} ${DEFINES} ${INCLUDES} -c ${SRC} -o ${OUT}'
 		let cc = config.cmd({
 			CC       : config.CC,
-			CFLAGS   : options.cxxflags.join(" "),
+			CFLAGS   : options.cflags.join(" "),
 			CPPFLAGS : options.cppflags.join(" "),
 			DEFINES  : joinWith(options.defines, patterns.define),
 			INCLUDES : joinWith(options.includes, patterns.include), 
@@ -269,6 +269,10 @@ module.exports = function(grunt) {
 				return done(false);
 			}
 		});
+
+		if (grunt.fail.errorcount > 0) {
+			return done(false);
+		}
 
 		if (!linkSharedLib(this.target, options)) {
 			return done(false);
