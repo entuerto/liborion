@@ -70,7 +70,7 @@ Object& Object::operator=(Object&& rhs)
    return *this;
 }
 
-Glib::ustring Object::to_string() const
+std::string Object::to_string() const
 {
    return _uuid.to_string();
 }

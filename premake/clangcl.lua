@@ -1,9 +1,7 @@
 ---
 -- clangcl.lua
 -- Interface for the MS C/C++ compiler.
--- Author Jason Perkins
--- Modified by Manu Evans
--- Copyright (c) 2009-2015 Jason Perkins and the Premake project
+-- Copyright (c) 2016 Tomas Palazuelos
 ---
 
 

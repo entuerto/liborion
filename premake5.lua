@@ -1,7 +1,16 @@
+--
+-- premake5.lua
+-- liborion configuration file.
+-- Copyright (c) 2016 Tomas Palazuelos
+--
 
 require "premake/clangcl"
+require "premake/utils"
 
 workspace "liborion"
+   --setVersion(0, 1, 0)
+   version "0.1.0"
+
    -- We set the location of the files Premake will generate
    location "build"
 
@@ -31,6 +40,7 @@ workspace "liborion"
    filter { }
 
    -- Common Compiler flags
+   flags { "C++14","NoPCH" }
    rtti "On"
 
    includedirs { "include", "lib", "deps", "/Tools/boost_1_61_0" }
@@ -65,28 +75,16 @@ project "orion"
 
    defines { "ORION_SHARED_EXPORTS" }
 
+   filter "system:Windows"
+      links { "Advapi32", "psapi", "ntdll", "rpcrt4" }
+
    files { 
-      "lib/ArgumentExceptions.cpp",
-      "lib/DateUtils.cpp",
-      "lib/Encoding.cpp",
-      "lib/Exception.cpp",
-      "lib/Module.cpp", 
-      "lib/ModuleException.cpp",
-      "lib/NotImplementedException.cpp",
-      "lib/StringUtils.cpp",
-      "lib/SystemInfo.cpp",
-      "lib/Timer.cpp",
+      "lib/*.cpp",
       "lib/logging/*.cpp", 
       "lib/unittest/*.cpp" 
    }
 
-   filter "system:Windows"
-      files { 
-         "lib/Module-win32.cpp",
-         "lib/SystemInfo-win32.cpp",
-         "lib/Uuid-win32.cpp" 
-      }
-      links { "Advapi32", "psapi", "ntdll", "rpcrt4" }
+   FilterPlatformSourceFiles()
 
 
 project "orion-plugin"
@@ -96,11 +94,13 @@ project "orion-plugin"
 
    defines { "ORION_SHARED_EXPORTS" }
 
+   links "orion"
+
    files { 
       "lib/plugin/*.cpp" 
    }
-
-   links "orion"
+   
+   FilterPlatformSourceFiles()
 
 
 project "orion-net"
@@ -110,14 +110,16 @@ project "orion-net"
 
    defines { "ORION_SHARED_EXPORTS" }
 
-   files { 
-      "lib/net/**.cpp" 
-   }
-
    links { "mongoose", "orion" }
 
    filter "system:Windows"
       links { "Advapi32", "ws2_32" }
+
+   files { 
+      "lib/net/**.cpp" 
+   }
+
+   FilterPlatformSourceFiles()
 
 
 project "orion-ws"
@@ -127,14 +129,16 @@ project "orion-ws"
 
    defines { "ORION_SHARED_EXPORTS" }
 
-   files { 
-      "lib/ws/**.cpp" 
-   }
-
    links { "jsoncpp", "orion", "orion-net" }
 
    filter "system:Windows"
       links { "psapi", "rpcrt4" }
+
+   files { 
+      "lib/ws/**.cpp" 
+   }
+
+   FilterPlatformSourceFiles()
 
 
 -- Unit tests
@@ -143,10 +147,10 @@ project "test-encoding"
 
    dependson "orion"
 
-   files "tests/test-encoding.cpp"
-
    links "orion"
 
+   files "tests/test-encoding.cpp"
+   
 
 project "test-string"
    kind "ConsoleApp"
