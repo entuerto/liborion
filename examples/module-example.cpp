@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <module-example-lib.h>
+#include "module-example-lib.h"
 
 #include <iostream>
 #include <orion/Module.h>
@@ -32,7 +32,7 @@ int main()
    
    try 
    {
-      module = Module::create_and_open("module-example-0.1.dll");
+      module = Module::create_and_open("mod-example-0.1.dll");
    }
    catch (ModuleException& me)
    {

@@ -45,232 +45,110 @@ workspace "liborion"
 
    includedirs { "include", "lib", "deps", "/Tools/boost_1_61_0" }
 
-project "mongoose"
-   kind "StaticLib"
+group "Libraries"
+   project "mongoose"
+      kind "StaticLib"
 
-   language "C"
+      language "C"
 
-   defines { 
-      "_CRT_SECURE_NO_WARNINGS", 
-      "_WINSOCK_DEPRECATED_NO_WARNINGS" 
-   }
+      defines { 
+         "_CRT_SECURE_NO_WARNINGS", 
+         "_WINSOCK_DEPRECATED_NO_WARNINGS" 
+      }
 
-   removeincludedirs "*" 
-   includedirs "deps/mongoose" 
-               
-   files "deps/mongoose/mongoose.c"
-
-
-project "jsoncpp"
-   kind "StaticLib"
-
-   removeincludedirs "*"
-   includedirs "deps/jsoncpp" 
-               
-   files "deps/jsoncpp/jsoncpp.cpp"
-
-         
-project "orion"
-   kind "SharedLib"
-
-   defines { "ORION_SHARED_EXPORTS" }
-
-   filter "system:Windows"
-      links { "Advapi32", "psapi", "ntdll", "rpcrt4" }
-
-   files { 
-      "lib/*.cpp",
-      "lib/logging/*.cpp", 
-      "lib/unittest/*.cpp" 
-   }
-
-   FilterPlatformSourceFiles()
+      removeincludedirs "*" 
+      includedirs "deps/mongoose" 
+                  
+      files "deps/mongoose/mongoose.c"
 
 
-project "orion-plugin"
-   kind "SharedLib"
+   project "jsoncpp"
+      kind "StaticLib"
 
-   dependson "orion"
+      removeincludedirs "*"
+      includedirs "deps/jsoncpp" 
+                  
+      files "deps/jsoncpp/jsoncpp.cpp"
 
-   defines { "ORION_SHARED_EXPORTS" }
+            
+   project "orion"
+      kind "SharedLib"
 
-   links "orion"
+      defines { "ORION_SHARED_EXPORTS" }
 
-   files { 
-      "lib/plugin/*.cpp" 
-   }
-   
-   FilterPlatformSourceFiles()
+      filter "system:Windows"
+         links { "Advapi32", "psapi", "ntdll", "rpcrt4" }
 
+      files { 
+         "lib/*.cpp",
+         "lib/logging/*.cpp", 
+         "lib/unittest/*.cpp" 
+      }
 
-project "orion-net"
-   kind "SharedLib"
-
-   dependson { "mongoose", "orion" }
-
-   defines { "ORION_SHARED_EXPORTS" }
-
-   links { "mongoose", "orion" }
-
-   filter "system:Windows"
-      links { "Advapi32", "ws2_32" }
-
-   files { 
-      "lib/net/**.cpp" 
-   }
-
-   FilterPlatformSourceFiles()
+      FilterPlatformSourceFiles()
 
 
-project "orion-ws"
-   kind "SharedLib"
+   project "orion-plugin"
+      kind "SharedLib"
 
-   dependson { "jsoncpp", "orion", "orion-net" }
+      dependson "orion"
 
-   defines { "ORION_SHARED_EXPORTS" }
+      defines { "ORION_SHARED_EXPORTS" }
 
-   links { "jsoncpp", "orion", "orion-net" }
+      links "orion"
 
-   filter "system:Windows"
-      links { "psapi", "rpcrt4" }
+      files { 
+         "lib/plugin/*.cpp" 
+      }
+      
+      FilterPlatformSourceFiles()
 
-   files { 
-      "lib/ws/**.cpp" 
-   }
 
-   FilterPlatformSourceFiles()
+   project "orion-net"
+      kind "SharedLib"
+
+      dependson { "mongoose", "orion" }
+
+      defines { "ORION_SHARED_EXPORTS" }
+
+      links { "mongoose", "orion" }
+
+      filter "system:Windows"
+         links { "Advapi32", "ws2_32" }
+
+      files { 
+         "lib/net/**.cpp" 
+      }
+
+      FilterPlatformSourceFiles()
+
+
+   project "orion-ws"
+      kind "SharedLib"
+
+      dependson { "jsoncpp", "orion", "orion-net" }
+
+      defines { "ORION_SHARED_EXPORTS" }
+
+      links { "jsoncpp", "orion", "orion-net" }
+
+      filter "system:Windows"
+         links { "psapi", "rpcrt4" }
+
+      files { 
+         "lib/ws/**.cpp" 
+      }
+
+      FilterPlatformSourceFiles()
 
 
 -- Unit tests
-project "test-orion"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   defines { "ORION_TEST_LOGGER" }
-
-   links "orion"
-
-   files {
-      "tests/test-encoding.cpp",
-      "tests/test-logger.cpp",
-      "tests/test-string.cpp",
-      "tests/test-units.cpp",
-      "tests/unittest/*.cpp",
-      "tests/test-main.cpp"
-   }
-
-
-project "test-orion-ws"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   files {
-      "tests/test-jsonrpc.cpp",
-      "tests/test-main.cpp"
-   }
-
-   links { "jsoncpp", "orion", "orion-net", "orion-ws" }
-
-
-project "test-orion-net"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   files {
-      "tests/test-net.cpp",
-      "tests/test-main.cpp"
-   }
-
-   links { "orion", "orion-net" }
+group "Tests"
+   include "tests/tests"
 
 
 -- Examples
-project "module-example"
-   kind "SharedLib"
-
-   dependson "orion"
-
-   defines { "ORION_SHARED_EXPORTS" }
-
-   includedirs { "examples" }
-
-   files { 
-      "examples/module-example-lib.cpp" 
-   }
-
-   links { "orion" }
-
-
-project "log-example"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   includedirs { "examples" }
-
-   files "examples/log-example.cpp"
-
-   links { "orion" }
-
-
-project "module-example"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   files "examples/module-example.cpp"
-
-   links { "orion" }
-
-
-project "net-example"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   files "examples/net-example.cpp"
-
-   links { "orion", "Iphlpapi" }
-
-
-project "signal-example"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   files "examples/signal-example.cpp"
-
-   links { "orion" }
-
-
-project "system-info"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   files "examples/system-info.cpp"
-
-   links { "orion" }
-
-   
-project "hello-server"
-   kind "ConsoleApp"
-
-   dependson { "orion", "orion-net" }
-
-   files "examples/hello-server.cpp"
-
-   links { "jsoncpp", "orion", "orion-net" }
-
-
-project "add-json-rpc-server"
-   kind "ConsoleApp"
-
-   dependson { "orion", "orion-net", "orion-ws" }
-
-   files "examples/add-json-rpc-server.cpp"
-
-   links { "jsoncpp", "orion", "orion-net", "orion-ws" }
+group "Examples"
+   if _OPTIONS.examples then
+      include "examples/examples"
+   end
