@@ -4,7 +4,6 @@
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
 
-#include <iostream>
 #include <orion/Units.h>
 #include <orion/TestUtils.h>
 
@@ -48,15 +47,4 @@ TEST(TestSI_IntDouble)
    Value<si::Megabyte, double> dm = 12345;
 
    EXPECT(m == dm);
-}
-
-//----------------------------------------------------------------------------
-// Main functions
-//----------------------------------------------------------------------------
-
-int main()
-{
-   int ret = run_all_tests(TestStdOutput::create(std::cout));
-
-   return ret;
 }

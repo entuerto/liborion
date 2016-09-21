@@ -1,5 +1,8 @@
-
-#include <iostream>
+//  test-jsonrpc.cpp
+//
+//  Created by Tomas Palazuelos on 2016-06-29.
+//  Copyright © 2016 Tomas Palazuelos. All rights reserved.
+//
 #include <orion/TestUtils.h>
 #include <orion/MemoryUtils.h>
 #include <orion/net/Request.h>
@@ -260,14 +263,6 @@ TEST(TestIdAsInt)
    EXPECT(is_response_result(json_result));
    EXPECT(has_valid_id(json_result));
 
-}
-
-//----------------------------------------------------------------------------
-// Main functions
-//----------------------------------------------------------------------------
-int main()
-{
-   return run_all_tests(TestStdOutput::create(std::cout));
 }
 
 /*

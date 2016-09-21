@@ -1,6 +1,8 @@
-
-#include <fstream>
-#include <iostream>
+//  test-logger.cpp
+//
+//  Created by Tomas Palazuelos on 2016-06-29.
+//  Copyright © 2016 Tomas Palazuelos. All rights reserved.
+//
 #include <orion/Logging.h>
 #include <orion/TestUtils.h>
 
@@ -120,9 +122,6 @@ TEST(TestLogRecordOutput)
    EXPECT(output_record.message() == "message");
 }
 
-//----------------------------------------------------------------------------
-// Main functions
-//----------------------------------------------------------------------------
 void setup_logger(LogRecord& record)
 {
    auto out_handler = LogRecordOutputHandler::create(record);
@@ -131,19 +130,4 @@ void setup_logger(LogRecord& record)
 
    logger.level(Level::NotSet);
    logger.output_handlers().push_back(std::move(out_handler));
-}
-
-int main()
-{
-   // Help with uncaught exceptions in g++
-   //std::set_terminate(__gnu_cxx::__verbose_terminate_handler);
-
-   setup_logger(output_record);
-
-   LOG_START();
-
-   int ret = run_all_tests(TestStdOutput::create(std::cout));
-
-   LOG_END();
-   return ret;
 }

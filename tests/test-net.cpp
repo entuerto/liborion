@@ -1,5 +1,8 @@
-
-#include <iostream>
+//  test-net.cpp
+//
+//  Created by Tomas Palazuelos on 2016-06-29.
+//  Copyright © 2016 Tomas Palazuelos. All rights reserved.
+//
 #include <orion/net/IP.h>
 #include <orion/TestUtils.h>
 
@@ -101,15 +104,4 @@ TEST(TestIPv6Move)
    ip = std::move(IPv6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}));
 
    EXPECT(ip == IPv6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}));
-}
-
-//----------------------------------------------------------------------------
-// Main functions
-//----------------------------------------------------------------------------
-
-int main()
-{
-   int ret = run_all_tests(TestStdOutput::create(std::cout));
-
-   return ret;
 }

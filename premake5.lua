@@ -142,72 +142,47 @@ project "orion-ws"
 
 
 -- Unit tests
-project "test-encoding"
+project "test-orion"
    kind "ConsoleApp"
 
    dependson "orion"
+
+   defines { "ORION_TEST_LOGGER" }
 
    links "orion"
 
-   files "tests/test-encoding.cpp"
-   
+   files {
+      "tests/test-encoding.cpp",
+      "tests/test-logger.cpp",
+      "tests/test-string.cpp",
+      "tests/test-units.cpp",
+      "tests/unittest/*.cpp",
+      "tests/test-main.cpp"
+   }
 
-project "test-string"
+
+project "test-orion-ws"
    kind "ConsoleApp"
 
    dependson "orion"
 
-   files "tests/test-string.cpp"
-
-   links "orion"
-
-
-project "test-units"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   files "tests/test-units.cpp"
-
-   links "orion"
-
-
-project "test-logger"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   files "tests/test-logger.cpp"
-
-   links "orion"
-
-
-project "test-unittest"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   files { "tests/test-unittest.cpp", "tests/unittest/*.cpp" }
-
-   links "orion"
-
-
-project "test-jsonrpc"
-   kind "ConsoleApp"
-
-   dependson "orion"
-
-   files "tests/test-jsonrpc.cpp"
+   files {
+      "tests/test-jsonrpc.cpp",
+      "tests/test-main.cpp"
+   }
 
    links { "jsoncpp", "orion", "orion-net", "orion-ws" }
 
 
-project "test-net"
+project "test-orion-net"
    kind "ConsoleApp"
 
    dependson "orion"
 
-   files "tests/test-net.cpp"
+   files {
+      "tests/test-net.cpp",
+      "tests/test-main.cpp"
+   }
 
    links { "orion", "orion-net" }
 

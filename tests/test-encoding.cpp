@@ -1,5 +1,8 @@
-
-#include <iostream>
+//  test-encoding.cpp
+//
+//  Created by Tomas Palazuelos on 2016-06-29.
+//  Copyright © 2016 Tomas Palazuelos. All rights reserved.
+//
 #include <orion/Encoding.h>
 #include <orion/TestUtils.h>
 
@@ -163,13 +166,3 @@ TEST(TestEncVarint64_uint64)
    //std::cout << (uint64_t(1 << 63) - 1) << "\n";
 }
 */
-//----------------------------------------------------------------------------
-// Main functions
-//----------------------------------------------------------------------------
-
-int main()
-{
-   int ret = run_all_tests(TestStdOutput::create(std::cout));
-
-   return ret;
-}

@@ -1,5 +1,8 @@
-
-#include <iostream>
+//  test-string.cpp
+//
+//  Created by Tomas Palazuelos on 2016-06-29.
+//  Copyright © 2016 Tomas Palazuelos. All rights reserved.
+//
 #include <orion/StringUtils.h>
 #include <orion/TestUtils.h>
 
@@ -70,15 +73,4 @@ TEST(TestTokenize)
    EXPECT(tokens[2] == "a");
    EXPECT(tokens[3] == "test");
    EXPECT(tokens[4] == "4");
-}
-
-//----------------------------------------------------------------------------
-// Main functions
-//----------------------------------------------------------------------------
-
-int main()
-{
-   int ret = run_all_tests(TestStdOutput::create(std::cout));
-
-   return ret;
 }

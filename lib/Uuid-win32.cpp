@@ -20,7 +20,7 @@
  */
 
 
-#include <orion/uuid.h>
+#include <orion/Uuid.h>
 
 #include <cstdint>
 #include <rpc.h>
