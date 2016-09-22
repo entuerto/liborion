@@ -25,7 +25,13 @@ workspace "liborion"
 
    SetupDefaultConfigurations()
 
-   includedirs { "include", "lib", "deps", "/Tools/boost_1_61_0" }
+   includedirs { 
+      "include", 
+      "lib", 
+      "deps", 
+      FindBoostHeader("boost/format.hpp") 
+   }
+
 
 group "Libraries"
    project "mongoose"

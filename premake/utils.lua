@@ -73,3 +73,17 @@ function FilterPlatformSourceFiles()
     
    filter {} -- clear filter!
 end
+
+function FindBoostHeader(hdr)
+   local envPath 
+   local boostPath = os.getenv("BOOST_PATH") or ""
+
+   -- assemble a search path, depending on the platform
+   if os.is("windows") then
+      envPath = os.getenv("PATH") or ""
+   else
+      envPath = "/include:/usr/include:/usr/local/include"
+   end
+
+   return os.pathsearch(hdr, envPath, boostPath)
+end
