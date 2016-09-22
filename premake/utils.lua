@@ -7,10 +7,15 @@
 local p = premake
 local api = p.api
 
+--
+-- MAJOR version when you make incompatible API changes,
+-- MINOR version when you add functionality in a backwards-compatible manner, and
+-- PATCH version when you make backwards-compatible bug fixes.
+--
 api.register {
    name  = "version",
    scope = "config",
-   kind  = "string",
+   kind  = "table",
    tokens = true,
 }
 
@@ -20,11 +25,38 @@ newoption
    description = "Compile the examples sources."
 }
 
--- MAJOR version when you make incompatible API changes,
--- MINOR version when you add functionality in a backwards-compatible manner, and
--- PATCH version when you make backwards-compatible bug fixes.
-function setVersion(major, minor, patch)
-   _version = {major, minor, patch}
+-- Set the default configuration for the workspace
+function SetupDefaultConfigurations()
+   -- We only use Debug and release
+   configurations { "Debug", "Release" }
+
+   filter "kind:SharedLib"
+      targetsuffix "-%{wks.version.major}.%{wks.version.minor}"
+
+   -- We now only set settings for the Debug configuration
+   filter { "configurations:Debug" }
+      defines { "DEBUG" }
+      -- We want debug symbols in our debug config
+      flags { "Symbols" }
+
+   filter { "configurations:Debug", "kind:*Lib" }
+      targetsuffix "-%{wks.version.major}.%{wks.version.minor}-d"
+
+   -- We now only set settings for Release
+   filter { "configurations:Release" }
+      defines { "NDEBUG" }
+      -- Release should be optimized
+      optimize "On"
+
+   filter "system:Windows"
+      buildoptions { "-fms-compatibility-version=19" }
+
+   -- Reset the filter for other settings
+   filter { }
+
+   -- Common Compiler flags
+   flags { "C++14","NoPCH" }
+   rtti "On"
 end
 
 -- exclude platform specific files from the project

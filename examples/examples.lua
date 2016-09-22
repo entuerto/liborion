@@ -7,8 +7,6 @@
 project "mod-example"
    kind "SharedLib"
 
-   targetsuffix "-0.1"
-
    dependson "orion"
 
    defines { "ORION_SHARED_EXPORTS" }

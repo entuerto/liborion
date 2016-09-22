@@ -8,8 +8,12 @@ require "premake/clangcl"
 require "premake/utils"
 
 workspace "liborion"
-   --setVersion(0, 1, 0)
-   version "0.1.0"
+   
+   version {
+      major = 0,
+      minor = 1,
+      patch = 0
+   }
 
    -- We set the location of the files Premake will generate
    location "build"
@@ -19,29 +23,7 @@ workspace "liborion"
    filter { "system:windows",  "action:gmake" }
       toolset "clangcl"
 
-   configurations { "Debug", "Release" }
-
-   -- We now only set settings for the Debug configuration
-   filter { "configurations:Debug" }
-      defines { "DEBUG" }
-      -- We want debug symbols in our debug config
-      flags { "Symbols" }
-
-   -- We now only set settings for Release
-   filter { "configurations:Release" }
-      defines { "NDEBUG" }
-      -- Release should be optimized
-      optimize "On"
-
-   filter "system:Windows"
-      buildoptions { "-fms-compatibility-version=19" }
-
-   -- Reset the filter for other settings
-   filter { }
-
-   -- Common Compiler flags
-   flags { "C++14","NoPCH" }
-   rtti "On"
+   SetupDefaultConfigurations()
 
    includedirs { "include", "lib", "deps", "/Tools/boost_1_61_0" }
 
