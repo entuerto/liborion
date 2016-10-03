@@ -29,7 +29,7 @@ int main()
 
    LOG_START();
 
-   int ret = run_all_tests(TestStdOutput::create(std::cout));
+   int ret = run_all_tests(TestStdOutput::create(std::cout, 1));
 
    LOG_END();
 

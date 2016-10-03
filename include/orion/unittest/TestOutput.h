@@ -20,6 +20,8 @@
 #ifndef ORION_UNITTEST_TESTOUTPUT_H
 #define ORION_UNITTEST_TESTOUTPUT_H
 
+#include <chrono>
+
 #include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
 #include <orion/unittest/TestResult.h>
@@ -36,8 +38,9 @@ class API_EXPORT TestOutput
 public:
    virtual ~TestOutput() = default;
 
+   virtual void write_header(const std::string& suite_name, int test_count) const =0;
    virtual void write(const TestResult* test_result) const =0;
-   virtual void write_summary(int failure_count, int failed_item_count, int test_count, double time_elapsed) const =0;
+   virtual void write_summary(int failure_count, int failed_item_count, int test_count, std::chrono::milliseconds time_elapsed) const =0;
 };
 
 } // namespace orion

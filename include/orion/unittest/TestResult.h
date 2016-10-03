@@ -21,6 +21,7 @@
 #ifndef ORION_UNITTEST_TESTRESULT_H
 #define ORION_UNITTEST_TESTRESULT_H
 
+#include <chrono>
 #include <memory>
 #include <string>
 
@@ -52,7 +53,7 @@ public:
    int failed_item_count() const;
    int passed_item_count() const;
 
-   double time_elapsed() const;
+   std::chrono::milliseconds time_elapsed() const;
 
    const std::vector<std::unique_ptr<TestResultItem>>& result_items() const;
 

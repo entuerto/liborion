@@ -10,6 +10,8 @@ using namespace orion;
 using namespace orion::net;
 using namespace orion::unittest;
 
+TEST_SUITE(OrionNet)
+{
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
@@ -105,3 +107,5 @@ TEST(TestIPv6Move)
 
    EXPECT(ip == IPv6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}));
 }
+
+} // TEST_SUITE(OrionNet)

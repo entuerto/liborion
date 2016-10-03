@@ -22,6 +22,8 @@
 #include <orion/unittest/Test.h>
 #include <orion/unittest/TestResultItem.h>
 
+#include <algorithm>
+
 namespace orion
 {
 namespace unittest
@@ -114,35 +116,59 @@ std::vector<std::unique_ptr<Test>>& Test::tests()
    return s_tests;
 }
 
+//---------------------------------------------------------------------------------------
+
+bool less_suite_name(const std::unique_ptr<Test>& t1, const std::unique_ptr<Test>& t2)
+{
+   return t1->suite_name() < t2->suite_name();
+}
+
+//---------------------------------------------------------------------------------------
+
 /*!
  */
 int run_all_tests(const std::unique_ptr<TestOutput>& output, const std::string& suite_name)
 {
-   //if (not Glib::thread_supported())
-   //   Glib::thread_init();
-
    int failure_count = 0;
    int failed_item_count = 0;
+
+   auto& all_tests = Test::tests();
+
+   std::stable_sort(all_tests.begin(), all_tests.end(), less_suite_name);
+
+   int test_count = 0;
+
+   if (suite_name.empty())
+   {
+      test_count = all_tests.size();
+   }
+   else
+   {
+      test_count = std::count_if(all_tests.begin(),
+                                 all_tests.end(), 
+                                 [&](const std::unique_ptr<Test>& t) {
+                                    return is_test_in_suite(t.get(), suite_name);
+                                 });
+   }
+   output->write_header(suite_name, test_count);
 
    Timer timer;
 
    timer.start();
 
-   auto& all_tests = Test::tests();
-
    for (auto&& test : all_tests)
    {
-      if (is_test_in_suite(test.get(), suite_name))
-      {
-         auto test_result = test->execute_test();
+      if (not is_test_in_suite(test.get(), suite_name))
+         continue;
+      
+      auto test_result = test->execute_test();
 
-         if (test_result->failed())
-         {
-            failure_count++;
-            failed_item_count += test_result->failed_item_count();
-         }
-         output->write(test_result);
+      if (test_result->failed())
+      {
+         failure_count++;
+         failed_item_count += test_result->failed_item_count();
       }
+      output->write(test_result);
    }
 
    timer.stop();

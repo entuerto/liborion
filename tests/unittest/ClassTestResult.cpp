@@ -3,7 +3,7 @@
 
 using namespace orion::unittest;
 
-namespace
+TEST_SUITE(OrionCore)
 {
 
 TEST(InitialValues)
@@ -60,4 +60,4 @@ TEST(TestResultItemFailureCreation)
    EXPECT(tri->line_number() == 88);
 }
 
-}
+} // TEST_SUITE(OrionCore)

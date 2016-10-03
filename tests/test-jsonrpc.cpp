@@ -105,6 +105,8 @@ bool has_valid_id(Json::Value& json_result)
           not (json_result[JSON_RPC_ID].isArray() or json_result[JSON_RPC_ID].isObject());
 }
 
+TEST_SUITE(OrionWebService)
+{
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
@@ -264,6 +266,8 @@ TEST(TestIdAsInt)
    EXPECT(has_valid_id(json_result));
 
 }
+
+} // TEST_SUITE(OrionWebService)
 
 /*
 rpc call with positional parameters:

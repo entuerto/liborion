@@ -38,8 +38,8 @@ public:
    void reset();
 
    // Get the elapsed time.
-   // @return The value in seconds.
-   double elapsed() const;
+   // @return The value in milliseconds.
+   std::chrono::milliseconds elapsed() const;
 
 private:
    std::chrono::time_point<std::chrono::system_clock> _time_point_start;

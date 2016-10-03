@@ -10,6 +10,8 @@ using namespace orion;
 using namespace orion::encoding;
 using namespace orion::unittest;
 
+TEST_SUITE(OrionCore)
+{
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
@@ -56,8 +58,8 @@ TEST(TestLittleEndian_put_uint16)
 }
 
 std::array<int64_t, 18> numbers64 = {
-   int64_t(-1 << 63),
-   (int64_t(-1 << 63) + 1),
+   -9223372036854775808ll, // int64_t(-1 << 63),
+   -9223372036854775807ll, // int64_t(-1 << 63) + 1,
    -1,
    0,
    1,
@@ -73,12 +75,12 @@ std::array<int64_t, 18> numbers64 = {
    255,
    256,
    257,
-   (int64_t(1 << 63) - 1),
+   9223372036854775807ll // int64_t(1 << 63) - 1,
 };
 
 std::array<int32_t, 18> numbers32 = {
-   (-1 << 31),
-   (-1 << 31) + 1,
+   -2147483648, // (-1 << 31),
+   -2147483647, // (-1 << 31) + 1,
    -1,
    0,
    1,
@@ -94,7 +96,7 @@ std::array<int32_t, 18> numbers32 = {
    255,
    256,
    257,
-   (1 << 31) - 1,
+   2147483647 // (1 << 31) - 1,
 };
 
 TEST(TestEncVarint32_uint32)
@@ -166,3 +168,4 @@ TEST(TestEncVarint64_uint64)
    //std::cout << (uint64_t(1 << 63) - 1) << "\n";
 }
 */
+}

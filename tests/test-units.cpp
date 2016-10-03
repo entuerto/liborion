@@ -10,6 +10,8 @@
 using namespace orion;
 using namespace orion::unittest;
 
+TEST_SUITE(OrionCore)
+{
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
@@ -48,3 +50,5 @@ TEST(TestSI_IntDouble)
 
    EXPECT(m == dm);
 }
+
+} // TEST_SUITE(OrionCore)

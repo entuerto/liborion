@@ -86,7 +86,7 @@ int TestResult::passed_item_count() const
 
 /*!
  */
-double TestResult::time_elapsed() const
+std::chrono::milliseconds TestResult::time_elapsed() const
 {
    return _timer.elapsed();
 }

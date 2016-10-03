@@ -42,6 +42,8 @@ private:
    LogRecord& _out_record;
 };
 
+TEST_SUITE(OrionCore)
+{
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
@@ -121,6 +123,8 @@ TEST(TestLogRecordOutput)
    EXPECT(output_record.function_name() == "function name");
    EXPECT(output_record.message() == "message");
 }
+
+} // TEST_SUITE(OrionCore)
 
 void setup_logger(LogRecord& record)
 {

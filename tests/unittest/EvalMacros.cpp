@@ -7,7 +7,7 @@
 
 using namespace orion::unittest;
 
-namespace
+TEST_SUITE(OrionCore)
 {
 
 TEST(CheckSuccessOnTrue)
@@ -183,4 +183,5 @@ TEST(CheckFailIfOnFalse)
 
    EXPECT(not failure);
 }
-}
+
+} // TEST_SUITE(OrionCore)

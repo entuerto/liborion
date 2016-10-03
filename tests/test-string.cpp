@@ -9,6 +9,8 @@
 using namespace orion;
 using namespace orion::unittest;
 
+TEST_SUITE(OrionCore)
+{
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
@@ -73,4 +75,6 @@ TEST(TestTokenize)
    EXPECT(tokens[2] == "a");
    EXPECT(tokens[3] == "test");
    EXPECT(tokens[4] == "4");
+}
+
 }

@@ -3,7 +3,7 @@
 
 using namespace orion::unittest;
 
-namespace
+TEST_SUITE(OrionCore)
 {
 
 TEST(PassingTestHasNoFailures)
@@ -87,4 +87,4 @@ TEST(TestHasSameNameAndSuiteNameAsTestResult)
    EXPECT(suite_name() == test_result->suite_name());
 }
 
-}
+} // TEST_SUITE(OrionCore)

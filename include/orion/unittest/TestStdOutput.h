@@ -42,16 +42,18 @@ public:
 
    virtual ~TestStdOutput();
 
+   virtual void write_header(const std::string& suite_name, int test_count) const override;
    virtual void write(const TestResult* test_result) const override;
-   virtual void write_summary(int failure_count, int failed_item_count, int test_count, double time_elapsed) const override;
+   virtual void write_summary(int failure_count, int failed_item_count, int test_count, std::chrono::milliseconds time_elapsed) const override;
 
-   static std::unique_ptr<TestOutput> create(std::ostream& stream);
+   static std::unique_ptr<TestOutput> create(std::ostream& stream, int report_level = 0);
 
 public:
-   TestStdOutput(std::ostream& stream);
+   TestStdOutput(std::ostream& stream, int report_level);
 
 private:
    std::ostream& _stream;
+   int _report_level;
 };
 
 } // namespace orion

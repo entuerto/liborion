@@ -48,10 +48,9 @@ void Timer::reset()
    start();
 }
 
-double Timer::elapsed() const
+std::chrono::milliseconds Timer::elapsed() const
 {
-   std::chrono::duration<double> elapsed_seconds = _time_point_end - _time_point_start;
-   return elapsed_seconds.count();
+   return std::chrono::duration_cast<std::chrono::milliseconds>(_time_point_end - _time_point_start);
 }
 
 }

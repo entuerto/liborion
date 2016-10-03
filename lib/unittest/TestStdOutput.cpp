@@ -19,19 +19,30 @@
 //
 #include <orion/unittest/TestStdOutput.h>
 
+#include <iomanip>
+
 #include <orion/unittest/Test.h>
 #include <orion/unittest/TestResultItem.h>
 
-#include <iomanip>
+#include <boost/format.hpp>
 
 namespace orion
 {
 namespace unittest
 {
+//---------------------------------------------------------------------------------------
 
-TestStdOutput::TestStdOutput(std::ostream& stream) :
+static std::string pluralize(int n, const std::string& s, const std::string& p)
+{
+   return (n > 1) ? p : s;
+}
+
+//---------------------------------------------------------------------------------------
+
+TestStdOutput::TestStdOutput(std::ostream& stream, int report_level) :
 	TestOutput(),
-   _stream(stream)
+   _stream(stream),
+   _report_level(report_level)
 {
 }
 
@@ -39,52 +50,76 @@ TestStdOutput::~TestStdOutput()
 {
 }
 
+void TestStdOutput::write_header(const std::string& suite_name, int test_count) const
+{
+   _stream << boost::format("Running %s test %s...") 
+                 % test_count 
+                 % pluralize(test_count, "case", "cases")
+           << "\n";
+}
+
 void TestStdOutput::write(const TestResult* test_result) const
 {
-   if (not test_result->failed())
+   if (_report_level == 0 and not test_result->failed())
       return;
 
-   _stream << "Test "
-           << test_result->name() << ": \n";
+   _stream << boost::format("\nTest %s: \n") % test_result->name();
 
-   for (auto&& item : test_result->result_items())
+   auto& items = test_result->result_items();
+
+   if (_report_level == 1)
+   {
+      _stream << boost::format("   %d test case out of %d passed\n")
+                    % test_result->passed_item_count()
+                    % items.size();
+              
+      if (test_result->failed_item_count() > 0)
+         _stream << boost::format("   %d test case out of %d failed\n")
+                       % test_result->failed_item_count()
+                       % items.size();
+
+      _stream << boost::format("   %d ms\n") % test_result->time_elapsed().count();
+
+      if (test_result->failed_item_count() > 0)
+         _stream << "\n";
+   }
+   
+   for (auto&& item : items)
    {
       if (item->result() == Result::Passed)
          continue;
 
-      _stream << "   "
-              << ((item->result() == Result::Passed) ? "Passed: " : "Failed: ")
-              << item->message()
-              << ", file " << item->file_name()
-              << ", line " << item->line_number()
-              << "\n";
+      _stream << boost::format("   Failed: %s, file %s, line %s\n")
+                    % item->message()
+                    % item->file_name()
+                    % item->line_number();
    }
-   
 }
 
-void TestStdOutput::write_summary(int failure_count, int failed_item_count, int test_count, double time_elapsed) const
+void TestStdOutput::write_summary(int failure_count, int failed_item_count, int test_count, std::chrono::milliseconds time_elapsed) const
 {
+   _stream << "\n";
+
    if (failure_count > 0)
    {
-      _stream << "FAILURE: " << failure_count
-              << " out of " << test_count
-              << " tests failed. (" << failed_item_count << " failures)\n";
+      _stream << boost::format("Failure: %d out of %d tests failed. (%d %s)\n") 
+                    % failure_count
+                    % test_count
+                    % failed_item_count 
+                    % pluralize(failed_item_count, "failure", "failures");
    }
    else
    {
-      _stream << "Success: "
-              << test_count
-              << " tests passed.\n";
+      _stream << boost::format("Success: %d tests passed.\n") % test_count;
    }
 
-   _stream << "Test time: "
-           << std::setprecision(2) << time_elapsed
-           << " seconds.\n";
+   _stream << "---\n"
+           << boost::format("Test time: %d ms.\n") % time_elapsed.count();
 }
 
-std::unique_ptr<TestOutput> TestStdOutput::create(std::ostream& stream)
+std::unique_ptr<TestOutput> TestStdOutput::create(std::ostream& stream, int report_level /* = 0 */)
 {
-   return std::make_unique<TestStdOutput>(stream);
+   return std::make_unique<TestStdOutput>(stream, report_level);
 }
 
 } // namespace orion
