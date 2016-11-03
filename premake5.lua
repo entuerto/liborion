@@ -6,6 +6,7 @@
 
 require "premake/clangcl"
 require "premake/utils"
+require "premake/gnumake"
 
 workspace "liborion"
    
@@ -20,7 +21,7 @@ workspace "liborion"
 
    language "C++"
 
-   filter { "system:windows",  "action:gmake" }
+   filter { "system:windows",  "action:gmake or gnumake" }
       toolset "clangcl"
 
    SetupDefaultConfigurations()
@@ -29,8 +30,9 @@ workspace "liborion"
       "include", 
       "lib", 
       "deps", 
-      FindBoostHeader("boost/format.hpp") 
    }
+
+   FindBoost()
 
 
 group "Libraries"
@@ -73,6 +75,22 @@ group "Libraries"
          "lib/unittest/*.cpp" 
       }
 
+      FilterPlatformSourceFiles()
+
+   
+   project "orion-fs"
+      kind "SharedLib"
+
+      dependson "orion"
+
+      defines { "ORION_SHARED_EXPORTS" }
+
+      links "orion"
+
+      files { 
+         "lib/fs/*.cpp" 
+      }
+      
       FilterPlatformSourceFiles()
 
 
