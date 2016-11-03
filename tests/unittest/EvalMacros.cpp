@@ -17,12 +17,12 @@ TEST(CheckSuccessOnTrue)
       auto r = TestResult::create("scope test result");
       TestResult* test_result = r.get();
 
-      EXPECT(true);
+      EXPECT_TRUE(true);
 
       failure = test_result->failed();
    }
 
-   EXPECT(not failure);
+   EXPECT_TRUE(not failure);
 }
 
 TEST(CheckFailureOnFalse)
@@ -32,12 +32,12 @@ TEST(CheckFailureOnFalse)
       auto r = TestResult::create("scope test result");
       TestResult* test_result = r.get();
 
-      EXPECT(false);
+      EXPECT_FALSE(false);
 
       failure = test_result->failed();
    }
 
-   EXPECT(failure);
+   EXPECT_FALSE(failure);
 }
 
 int throwing_function()
@@ -52,12 +52,12 @@ TEST(CheckFailureOnException)
       auto r = TestResult::create("scope test result");
       TestResult* test_result = r.get();
 
-      EXPECT(throwing_function() == 1);
+      EXPECT_EQ(throwing_function(), 1);
 
       failure = test_result->failed();
    }
 
-   EXPECT(failure);
+   EXPECT_TRUE(failure);
 }
 
 int side_effect = 0;
@@ -74,9 +74,9 @@ TEST(CheckEqualDoesNotHaveSideEffectsWhenPassing)
       auto r = TestResult::create("scope test result");
       TestResult* test_result = r.get();
 
-      EXPECT(1 == function_with_side_effects());
+      EXPECT_EQ(1, function_with_side_effects());
    }
-   EXPECT(1 == side_effect);
+   EXPECT_EQ(1, side_effect);
 }
 
 TEST(CheckCloseSuccessOnEqual)
@@ -91,7 +91,7 @@ TEST(CheckCloseSuccessOnEqual)
       failure = test_result->failed();
    }
 
-   EXPECT(not failure);
+   EXPECT_TRUE(not failure);
 }
 
 TEST(CheckCloseFailsOnNotEqual)
@@ -106,7 +106,7 @@ TEST(CheckCloseFailsOnNotEqual)
       failure = test_result->failed();
    }
 
-   EXPECT(failure);
+   EXPECT_TRUE(failure);
 }
 
 TEST(CheckCloseFailsOnException)
@@ -121,7 +121,7 @@ TEST(CheckCloseFailsOnException)
       failure = test_result->failed();
    }
 
-   EXPECT(failure);
+   EXPECT_TRUE(failure);
 }
 
 TEST(CheckExpectThrowOnSuccess)
@@ -136,7 +136,7 @@ TEST(CheckExpectThrowOnSuccess)
       failure = test_result->failed();
    }
 
-   EXPECT(not failure);
+   EXPECT_TRUE(not failure);
 }
 
 TEST(CheckExpectThrowOnFailure)
@@ -151,7 +151,7 @@ TEST(CheckExpectThrowOnFailure)
       failure = test_result->failed();
    }
 
-   EXPECT(failure);
+   EXPECT_TRUE(failure);
 }
 
 TEST(CheckFailIfOnTrue)
@@ -166,7 +166,7 @@ TEST(CheckFailIfOnTrue)
       failure = test_result->failed();
    }
 
-   EXPECT(failure);
+   EXPECT_TRUE(failure);
 }
 
 TEST(CheckFailIfOnFalse)
@@ -181,7 +181,7 @@ TEST(CheckFailIfOnFalse)
       failure = test_result->failed();
    }
 
-   EXPECT(not failure);
+   EXPECT_TRUE(not failure);
 }
 
 } // TEST_SUITE(OrionCore)

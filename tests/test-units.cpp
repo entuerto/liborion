@@ -19,7 +19,7 @@ TEST(TestSI_kilobytes)
 {
    Value<si::Kilobyte> k = 12345;
 
-   EXPECT(k != 12345);
+   EXPECT_NE(k, 12345);
 }
 
 TEST(TestSI_kiloMega)
@@ -27,20 +27,20 @@ TEST(TestSI_kiloMega)
    Value<si::Kilobyte> k = 12345;
    Value<si::Megabyte> m = 12345;
 
-   EXPECT(k != m);
+   EXPECT_NE(k, m);
 
    Value<si::Megabyte> cm = k;
 
    // m  = 12345 MB
    // cm = 12 MB
-   EXPECT(cm != m);
+   EXPECT_NE(cm, m);
 }
 
 TEST(TestSI_MegaLiteral)
 {
    Value<si::Megabyte> m = 12345;
 
-   EXPECT(m == 12345_mb);
+   EXPECT_EQ(m, 12345_mb);
 }
 
 TEST(TestSI_IntDouble)
@@ -48,7 +48,7 @@ TEST(TestSI_IntDouble)
    Value<si::Megabyte> m = 12345;
    Value<si::Megabyte, double> dm = 12345;
 
-   EXPECT(m == dm);
+   EXPECT_EQ(m, dm);
 }
 
 } // TEST_SUITE(OrionCore)

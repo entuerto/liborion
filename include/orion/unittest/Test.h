@@ -23,7 +23,7 @@
 
 #include <memory>
 #include <string>
-#include <vector>
+#include <unordered_map>
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/unittest/TestResult.h>
@@ -33,6 +33,11 @@ namespace orion
 {
 namespace unittest
 {
+// Forward declaration
+class Test;
+
+using Tests =std::unordered_multimap<std::string, std::unique_ptr<Test>>;
+
 //!
 /*!
  */
@@ -49,7 +54,7 @@ public:
 
    TestResult* execute_test();
 
-   static std::vector<std::unique_ptr<Test>>& tests();
+   static Tests& tests();
 
 protected:
    virtual void execute_test_impl(TestResult* test_result) const;
@@ -66,9 +71,9 @@ private:
 class API_EXPORT TestAddHelper
 {
 public:
-   TestAddHelper(std::vector<std::unique_ptr<Test>>& tests, Test* test)
+   TestAddHelper(Tests& tests, Test* test)
    {
-      tests.push_back(std::unique_ptr<Test>(test));
+      tests.emplace(std::make_pair(test->suite_name(), std::unique_ptr<Test>(test)));
    }
 };
 

@@ -25,9 +25,22 @@ namespace orion
 namespace unittest
 {
 
-TestResultItem::TestResultItem(Result result,const std::string& msg, const std::string& file_name, int line_number) :
+TestResultItem::TestResultItem(Result result, const std::string& msg, const std::string& file_name, int line_number) :
    _result(result),
    _msg(msg),
+   _file_name(file_name),
+   _line_number(line_number)
+{
+}
+
+TestResultItem::TestResultItem(Result result, const std::string& msg, 
+                                              const std::string& expected,
+                                              const std::string& got,
+                                              const std::string& file_name, int line_number) :
+   _result(result),
+   _msg(msg),
+   _expected(expected),
+   _got(got),
    _file_name(file_name),
    _line_number(line_number)
 {
@@ -45,6 +58,16 @@ Result TestResultItem::result() const
 std::string TestResultItem::message() const
 {
    return _msg;
+}
+
+std::string TestResultItem::expected() const
+{
+   return _expected;
+}
+
+std::string TestResultItem::got() const
+{
+   return _got;
 }
 
 std::string TestResultItem::file_name() const
@@ -69,6 +92,15 @@ std::unique_ptr<TestResultItem> TestResultItem::create_failure(const std::string
                                                                      int line_number)
 {
    return std::make_unique<TestResultItem>(Result::Failed, msg, file_name, line_number);
+}
+
+std::unique_ptr<TestResultItem> TestResultItem::create_failure(const std::string& msg,
+                                                               const std::string& expected, 
+                                                               const std::string& got, 
+                                                               const std::string& file_name, 
+                                                                     int line_number)
+{
+   return std::make_unique<TestResultItem>(Result::Failed, msg, expected, got, file_name, line_number);
 }
 
 } // namespace orion

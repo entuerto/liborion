@@ -21,7 +21,7 @@ TEST(TestBigEndian_to_uint16)
 
    uint16_t v16 = BigEndian::to_uint16(b);
 
-   EXPECT(v16 == 256);
+   EXPECT_EQ(v16, 256);
 }
 
 TEST(TestBigEndian_put_uint16)
@@ -33,7 +33,7 @@ TEST(TestBigEndian_put_uint16)
 
    BigEndian::put_uint16(v16, b);
 
-   EXPECT(b == result);
+   EXPECT_ARR_EQ(b, result);
 }
 
 TEST(TestLittleEndian_to_uint16)
@@ -42,7 +42,7 @@ TEST(TestLittleEndian_to_uint16)
 
    uint16_t v16 = LittleEndian::to_uint16(b);
 
-   EXPECT(v16 == 1);
+   EXPECT_EQ(v16, 1);
 }
 
 TEST(TestLittleEndian_put_uint16)
@@ -54,7 +54,7 @@ TEST(TestLittleEndian_put_uint16)
 
    LittleEndian::put_uint16(v16, b);
 
-   EXPECT(b == result);
+   EXPECT_ARR_EQ(b, result);
 }
 
 std::array<int64_t, 18> numbers64 = {
@@ -109,7 +109,7 @@ TEST(TestEncVarint32_uint32)
 
       uint32_t y = dec_varint(buf.data(), n);
 
-      EXPECT(x == y);
+      EXPECT_EQ(x, y);
    }
 }
 
@@ -123,7 +123,7 @@ TEST(TestEncVarint64_uint64)
 
       uint64_t y = dec_varint<uint64_t>(buf.data(), n);
  
-      EXPECT(x == y);
+      EXPECT_EQ(x, y);
    }
 
 }
@@ -138,7 +138,7 @@ TEST(TestEncVarint64_int64)
 
       int64_t y = dec_varint<int64_t>(buf.data(), n); 
 
-      EXPECT(x == y);
+      EXPECT_EQ(x, y);
    }
 
 }

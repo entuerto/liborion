@@ -49,6 +49,18 @@ public:
    virtual std::string to_string() const =0;
 };
 
+inline std::ostream& operator<<(std::ostream& o, const IP& ip) 
+{
+   o << ip;
+   return o;
+}
+
+inline std::ostream& operator<<(std::ostream& o, const IP* ip) 
+{
+   o << (ip == nullptr ? "nullptr" : ip->to_string());
+   return o;
+}
+
 class API_EXPORT IPv4 : public IP 
 {
 public:

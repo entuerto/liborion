@@ -11,10 +11,13 @@ project "test-orion"
 
    defines { "ORION_TEST_LOGGER" }
 
-   links "orion"
+   links { "orion", "orion-fs"}
+
+   UseBoostLibStatic("program_options")
 
    files {
       "test-encoding.cpp",
+      "test-filesystem.cpp",
       "test-logger.cpp",
       "test-string.cpp",
       "test-units.cpp",
@@ -35,6 +38,8 @@ project "test-orion-ws"
 
    links { "jsoncpp", "orion", "orion-net", "orion-ws" }
 
+   UseBoostLibStatic("program_options")
+
 
 project "test-orion-net"
    kind "ConsoleApp"
@@ -47,3 +52,5 @@ project "test-orion-net"
    }
 
    links { "orion", "orion-net" }
+
+   UseBoostLibStatic("program_options")

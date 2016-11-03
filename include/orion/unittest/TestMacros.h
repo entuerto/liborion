@@ -50,30 +50,68 @@
                                                      \
    void Test##Name::execute_test_impl(TestResult* test_result) const
 
+// Macros for testing equalities and inequalities.
+//
+//  EXPECT_EQ(v1, v2): Tests that v1 == v2
+//  EXPECT_NE(v1, v2): Tests that v1 != v2
+//  EXPECT_LT(v1, v2): Tests that v1 < v2
+//  EXPECT_LE(v1, v2): Tests that v1 <= v2
+//  EXPECT_GT(v1, v2): Tests that v1 > v2
+//  EXPECT_GE(v1, v2): Tests that v1 >= v2
 
-#define EXPECT(expression) \
+#define EXPECT_EQ(v1, v2) EXPECT_EVAL(Equals, v1, v2)
+#define EXPECT_NE(v1, v2) EXPECT_EVAL(NotEquals, v1, v2)
+#define EXPECT_LT(v1, v2) EXPECT_EVAL(Less, v1, v2)
+#define EXPECT_LE(v1, v2) EXPECT_EVAL(LessEquals, v1, v2)
+#define EXPECT_GT(v1, v2) EXPECT_EVAL(Greater, v1, v2)
+#define EXPECT_GE(v1, v2) EXPECT_EVAL(GreaterEquals, v1, v2)
+
+#define EXPECT_ARR_EQ(v1, v2) EXPECT_EVAL(Equals, v1, v2)
+
+#define EXPECT_TRUE(condition) \
 { \
    try \
    { \
-      evaluate(equals_true((expression)), test_result, \
-         TestResultItem::create_success("Expected " #expression, __FILE__, __LINE__), \
-         TestResultItem::create_failure("Expected " #expression, __FILE__, __LINE__)); \
+      evaluate_true((condition), #condition, test_result, __FILE__, __LINE__); \
    } \
    catch (...) \
    { \
-      auto item = TestResultItem::create_failure("Unhandled exception in EXPECT(" #expression ")", __FILE__, __LINE__);\
+      auto item = TestResultItem::create_failure("Unhandled exception", __FILE__, __LINE__);\
       test_result->on_failure(std::move(item)); \
    } \
 }
 
+#define EXPECT_FALSE(condition) \
+{ \
+   try \
+   { \
+      evaluate_false((condition), #condition, test_result, __FILE__, __LINE__); \
+   } \
+   catch (...) \
+   { \
+      auto item = TestResultItem::create_failure("Unhandled exception", __FILE__, __LINE__);\
+      test_result->on_failure(std::move(item)); \
+   } \
+}
+
+#define EXPECT_EVAL(P, v1, v2) \
+{ \
+   try \
+   { \
+      evaluate(P<decltype((v1)), decltype((v2))>{#v1, (v1), #v2, (v2)}, test_result, __FILE__, __LINE__); \
+   } \
+   catch (...) \
+   { \
+      auto item = TestResultItem::create_failure("Unhandled exception", __FILE__, __LINE__);\
+      test_result->on_failure(std::move(item)); \
+   } \
+}
 
 #define EXPECT_CLOSE(expected, actual, tolerance) \
 { \
    try \
    { \
-      evaluate(evaluate_close((expected), (actual), (tolerance)), test_result, \
-         TestResultItem::create_success("Expected " #expected " +/- " #tolerance " but was " #actual, __FILE__, __LINE__), \
-         TestResultItem::create_failure("Expected " #expected " +/- " #tolerance " but was " #actual, __FILE__, __LINE__)); \
+      evaluate_close((expected), (actual), (tolerance), test_result, __FILE__, __LINE__); \
    } \
    catch (...) \
    { \
@@ -106,9 +144,7 @@
 { \
    try \
    { \
-      evaluate(equals_false((expression)), test_result, \
-         TestResultItem::create_success(#expression, __FILE__, __LINE__), \
-         TestResultItem::create_failure(#expression, __FILE__, __LINE__)); \
+      evaluate_false((expression), #expression, test_result, __FILE__, __LINE__); \
    } \
    catch (...) \
    { \

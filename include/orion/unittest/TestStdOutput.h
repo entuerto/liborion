@@ -21,6 +21,7 @@
 #ifndef ORION_UNITTEST_TESTSTDOUTPUT_H
 #define ORION_UNITTEST_TESTSTDOUTPUT_H
 
+#include <map>
 #include <ostream>
 
 #include <orion/Orion-Stddefs.h>
@@ -30,6 +31,15 @@ namespace orion
 {
 namespace unittest
 {
+struct API_EXPORT ResultStats
+{
+   std::string name;
+   int count; 
+   int passed_item_count; 
+   int failed_item_count; 
+   std::chrono::milliseconds time_elapsed;
+};
+
 //!
 /*!
  */
@@ -42,18 +52,31 @@ public:
 
    virtual ~TestStdOutput();
 
-   virtual void write_header(const std::string& suite_name, int test_count) const override;
-   virtual void write(const TestResult* test_result) const override;
-   virtual void write_summary(int failure_count, int failed_item_count, int test_count, std::chrono::milliseconds time_elapsed) const override;
+   virtual void write_header(const std::string& suite_name, int test_count) override;
+   virtual void write(const TestResult* test_result) override;
+   virtual void write_summary(const TestOutputStats& stats) override;
 
-   static std::unique_ptr<TestOutput> create(std::ostream& stream, int report_level = 0);
+   static std::unique_ptr<TestOutput> create(std::ostream& stream, ReportLevel report_level = ReportLevel::Error);
 
 public:
-   TestStdOutput(std::ostream& stream, int report_level);
+   TestStdOutput(std::ostream& stream, ReportLevel report_level);
+
+private:
+   void accumulate_stats(const TestResult* test_result);
+ 
+   void ouput_short();
+   void ouput_detailed();
+
+   void write_test_suite(int indent, const ResultStats& r);
+
+   void write_test_case(int indent, const ResultStats& r);
 
 private:
    std::ostream& _stream;
-   int _report_level;
+   ReportLevel   _report_level;
+
+   std::map<std::string, ResultStats> _results_by_testsuite;
+   std::multimap<std::string, ResultStats> _results;
 };
 
 } // namespace orion

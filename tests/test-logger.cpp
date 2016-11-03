@@ -51,7 +51,7 @@ TEST(TestLogDefaultLevel)
 {
    Logger& logger = Logger::get_logger();
 
-   EXPECT(logger.level() == Level::NotSet);
+   EXPECT_EQ(logger.level(), Level::NotSet);
 }
 
 TEST(TestLogLevelChange)
@@ -60,7 +60,7 @@ TEST(TestLogLevelChange)
 
    logger.level(Level::Warning);
 
-   EXPECT(logger.level() == Level::Warning);
+   EXPECT_EQ(logger.level(), Level::Warning);
 }
 
 TEST(TestLogLevelOutput)
@@ -72,17 +72,17 @@ TEST(TestLogLevelOutput)
    output_record.level(Level::NotSet);
 
    LOG(Debug) << "Debug message";
-   EXPECT(output_record.level() == Level::NotSet);
+   EXPECT_EQ(output_record.level(), Level::NotSet);
 
    output_record.level(Level::NotSet);
 
    LOG(Warning) << "Warning message";
-   EXPECT(output_record.level() == Level::Warning);
+   EXPECT_EQ(output_record.level(), Level::Warning);
 
    output_record.level(Level::NotSet);
 
    LOG(Error) << "Error message";
-   EXPECT(output_record.level() == Level::Error);
+   EXPECT_EQ(output_record.level(), Level::Error);
 }
 
 TEST(TestLogErrorMessage)
@@ -93,8 +93,8 @@ TEST(TestLogErrorMessage)
 
    LOG(Error) << "Error message";
 
-   EXPECT(output_record.level() == Level::Error);
-   EXPECT(output_record.message() == "Error message");
+   EXPECT_EQ(output_record.level(), Level::Error);
+   EXPECT_EQ(output_record.message(), "Error message");
 }
 
 TEST(TestLogFailMessage)
@@ -107,8 +107,8 @@ TEST(TestLogFailMessage)
 
    LOG_IF_FAIL(Error, 1 == 0)
 
-   EXPECT(output_record.level() == Level::Error);
-   EXPECT(output_record.message() == "Condition failed ( 1 == 0 )");
+   EXPECT_EQ(output_record.level(), Level::Error);
+   EXPECT_EQ(output_record.message(), "Condition failed ( 1 == 0 )");
 }
 
 TEST(TestLogRecordOutput)
@@ -117,11 +117,11 @@ TEST(TestLogRecordOutput)
 
    logger += LogRecord(Level::Message, "FileName", 99, "function name") << "message";
 
-   EXPECT(output_record.level() == Level::Message);
-   EXPECT(output_record.file_name() == "FileName");
-   EXPECT(output_record.line() == 99);
-   EXPECT(output_record.function_name() == "function name");
-   EXPECT(output_record.message() == "message");
+   EXPECT_EQ(output_record.level(), Level::Message);
+   EXPECT_EQ(output_record.file_name(), "FileName");
+   EXPECT_EQ(output_record.line(), 99);
+   EXPECT_EQ(output_record.function_name(), "function name");
+   EXPECT_EQ(output_record.message(), "message");
 }
 
 } // TEST_SUITE(OrionCore)

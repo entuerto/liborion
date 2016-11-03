@@ -10,12 +10,12 @@ TEST(InitialValues)
 {
    auto tr = TestResult::create("toto", "toto_suite");
 
-   EXPECT(tr->name() == "toto");
-   EXPECT(tr->suite_name() == "toto_suite");
-   EXPECT(tr->passed());
+   EXPECT_EQ(tr->name(), "toto");
+   EXPECT_EQ(tr->suite_name(), "toto_suite");
+   EXPECT_TRUE(tr->passed());
    FAIL_IF(tr->failed());
-   EXPECT(tr->failed_item_count() == 0);
-   EXPECT(tr->passed_item_count() == 0);
+   EXPECT_EQ(tr->failed_item_count(), 0);
+   EXPECT_EQ(tr->passed_item_count(), 0);
 }
 
 TEST(NumberOfFailedItems)
@@ -26,7 +26,7 @@ TEST(NumberOfFailedItems)
    tr->on_failure(TestResultItem::create_failure("2"));
    tr->on_failure(TestResultItem::create_failure("3"));
 
-   EXPECT(tr->failed_item_count() == 3);
+   EXPECT_EQ(tr->failed_item_count(), 3);
 }
 
 TEST(NumberOfPassedItems)
@@ -37,27 +37,27 @@ TEST(NumberOfPassedItems)
    tr->on_success(TestResultItem::create_success("2"));
    tr->on_success(TestResultItem::create_success("3"));
 
-   EXPECT(tr->passed_item_count() == 3);
+   EXPECT_EQ(tr->passed_item_count(), 3);
 }
 
 TEST(TestResultItemSuccessCreation)
 {
    auto tri = TestResultItem::create_success("toto", "toto.txt", 99);
 
-   EXPECT(tri->result() == Result::Passed);
-   EXPECT(tri->message() == "toto");
-   EXPECT(tri->file_name() == "toto.txt");
-   EXPECT(tri->line_number() == 99);
+   EXPECT_EQ(tri->result(), Result::Passed);
+   EXPECT_EQ(tri->message(), "toto");
+   EXPECT_EQ(tri->file_name(), "toto.txt");
+   EXPECT_EQ(tri->line_number(), 99);
 }
 
 TEST(TestResultItemFailureCreation)
 {
    auto tri = TestResultItem::create_failure("tata", "tata.txt", 88);
 
-   EXPECT(tri->result() == Result::Failed);
-   EXPECT(tri->message() == "tata");
-   EXPECT(tri->file_name() == "tata.txt");
-   EXPECT(tri->line_number() == 88);
+   EXPECT_EQ(tri->result(), Result::Failed);
+   EXPECT_EQ(tri->message(), "tata");
+   EXPECT_EQ(tri->file_name(), "tata.txt");
+   EXPECT_EQ(tri->line_number(), 88);
 }
 
 } // TEST_SUITE(OrionCore)

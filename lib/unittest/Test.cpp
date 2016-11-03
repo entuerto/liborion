@@ -29,14 +29,6 @@ namespace orion
 namespace unittest
 {
 
-namespace
-{
-   bool is_test_in_suite(const Test* test , const std::string& suite_name)
-   {
-	   return suite_name.empty() or test->suite_name() == suite_name;
-   }
-}
-
 /*!
  */
 Test::Test(const std::string& name, const std::string& suite_name) :
@@ -109,9 +101,9 @@ TestResult* Test::execute_test()
 
 /*!
  */
-std::vector<std::unique_ptr<Test>>& Test::tests()
+Tests& Test::tests()
 {
-   static std::vector<std::unique_ptr<Test>> s_tests;
+   static Tests s_tests;
 
    return s_tests;
 }
@@ -129,53 +121,48 @@ bool less_suite_name(const std::unique_ptr<Test>& t1, const std::unique_ptr<Test
  */
 int run_all_tests(const std::unique_ptr<TestOutput>& output, const std::string& suite_name)
 {
-   int failure_count = 0;
-   int failed_item_count = 0;
+   TestOutputStats stats{};
 
    auto& all_tests = Test::tests();
 
-   std::stable_sort(all_tests.begin(), all_tests.end(), less_suite_name);
+   stats.count = suite_name.empty() ? all_tests.size() : 
+                                      all_tests.count(suite_name);
 
-   int test_count = 0;
+   output->write_header(suite_name, stats.count);
 
-   if (suite_name.empty())
-   {
-      test_count = all_tests.size();
-   }
-   else
-   {
-      test_count = std::count_if(all_tests.begin(),
-                                 all_tests.end(), 
-                                 [&](const std::unique_ptr<Test>& t) {
-                                    return is_test_in_suite(t.get(), suite_name);
-                                 });
-   }
-   output->write_header(suite_name, test_count);
+   auto range = suite_name.empty() ? std::make_pair(all_tests.begin(), all_tests.end()) :
+                                     all_tests.equal_range(suite_name);
 
    Timer timer;
 
    timer.start();
 
-   for (auto&& test : all_tests)
-   {
-      if (not is_test_in_suite(test.get(), suite_name))
-         continue;
-      
-      auto test_result = test->execute_test();
+   std::for_each(range.first, range.second, [&](const auto& test) 
+   { 
+      auto test_result = test.second->execute_test();
 
       if (test_result->failed())
       {
-         failure_count++;
-         failed_item_count += test_result->failed_item_count();
+         stats.failed_count++;
+         stats.failed_item_count += test_result->failed_item_count();
+      } 
+      else if (test_result->passed())
+      {
+         stats.passed_count++;
+         stats.passed_item_count += test_result->passed_item_count();
       }
+      stats.item_count += test_result->result_items().size();
+
       output->write(test_result);
-   }
+   });
 
    timer.stop();
 
-   output->write_summary(failure_count, failed_item_count, all_tests.size(), timer.elapsed());
+   stats.time_elapsed = timer.elapsed();
 
-   return failure_count;
+   output->write_summary(stats);
+
+   return stats.failed_item_count;
 }
 
 } // namespace orion

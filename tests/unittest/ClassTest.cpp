@@ -14,7 +14,7 @@ TEST(PassingTestHasNoFailures)
       PassingTest() : Test("passing") {}
       virtual void execute_test_impl(TestResult* test_result) const
       {
-         EXPECT(true);
+         EXPECT_TRUE(true);
       }
    };
 
@@ -34,7 +34,7 @@ TEST(FailingTestHasFailures)
       FailingTest() : Test("failing") {}
       virtual void execute_test_impl(TestResult* test_result) const
       {
-         EXPECT(false);
+         EXPECT_FALSE(false);
       }
    };
 
@@ -42,7 +42,7 @@ TEST(FailingTestHasFailures)
 
    TestResult* scope_test_result = failing_test.execute_test();
 
-   EXPECT(scope_test_result->failed());
+   EXPECT_FALSE(scope_test_result->failed());
 }
 
 
@@ -62,29 +62,29 @@ TEST(ThrowingTestsAreReportedAsFailures)
 
    TestResult* scope_test_result = crashing_test.execute_test();
 
-   EXPECT(scope_test_result->failed());
+   EXPECT_TRUE(scope_test_result->failed());
 }
 
 
 TEST(TestWithUnspecifiedSuiteGetsDefaultSuite)
 {
     Test test("test");
-    EXPECT(test.suite_name() != "");
-    EXPECT("DefaultSuite" == test.suite_name());
+    EXPECT_NE(test.suite_name(), "");
+    EXPECT_EQ("DefaultSuite", test.suite_name());
 }
 
 
 TEST(TestReflectsSpecifiedSuiteName)
 {
     Test test("test", "testSuite");
-    EXPECT(test.suite_name() != "");
-    EXPECT("testSuite" == test.suite_name());
+    EXPECT_NE(test.suite_name(), "");
+    EXPECT_EQ("testSuite", test.suite_name());
 }
 
 TEST(TestHasSameNameAndSuiteNameAsTestResult)
 {
-   EXPECT(name() == test_result->name());
-   EXPECT(suite_name() == test_result->suite_name());
+   EXPECT_EQ(name(), test_result->name());
+   EXPECT_EQ(suite_name(), test_result->suite_name());
 }
 
 } // TEST_SUITE(OrionCore)

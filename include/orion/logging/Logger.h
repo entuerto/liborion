@@ -141,6 +141,21 @@ private:
 
 API_EXPORT std::string level_as_text(Level level);
 
+inline std::ostream& operator<<(std::ostream& o, Level level) 
+{
+   o << level_as_text(level);
+   return o;
+}
+
 } // namespace logging
 } // namespace orion
+
+namespace std
+{
+   inline std::string to_string(orion::logging::Level level)
+   {
+      return orion::logging::level_as_text(level);
+   }
+}
+
 #endif // ORION_LOGGING_LOGGER_H

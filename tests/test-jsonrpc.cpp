@@ -117,7 +117,7 @@ TEST(TestRequest)
    auto mr = MockRequest::create(data);
 
    FAIL_IF(not mr);
-   EXPECT(mr->content() == data);
+   EXPECT_EQ(mr->content(), data);
 }
 
 TEST(TestInvalidJsonResponse)
@@ -130,13 +130,13 @@ TEST(TestInvalidJsonResponse)
    auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
-   EXPECT(response->code() == 200);
-   EXPECT(response->mimetype() == "application/json");
+   EXPECT_EQ(response->code(), 200);
+   EXPECT_EQ(response->mimetype(), "application/json");
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT(reader.parse(response->content(), json_result, false));
+   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
 }
 
 TEST(TestValidJsonResponse)
@@ -149,15 +149,15 @@ TEST(TestValidJsonResponse)
    auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
-   EXPECT(response->code() == 200);
-   EXPECT(response->mimetype() == "application/json");
+   EXPECT_EQ(response->code(), 200);
+   EXPECT_EQ(response->mimetype(), "application/json");
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT(reader.parse(response->content(), json_result, false));
+   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
 
-   EXPECT(is_jsonrpc_2(json_result));
+   EXPECT_TRUE(is_jsonrpc_2(json_result));
 }
 
 TEST(TestMethodNotFound)
@@ -172,20 +172,20 @@ TEST(TestMethodNotFound)
    auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
-   EXPECT(response->code() == 200);
-   EXPECT(response->mimetype() == "application/json");
+   EXPECT_EQ(response->code(), 200);
+   EXPECT_EQ(response->mimetype(), "application/json");
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT(reader.parse(response->content(), json_result, false));
+   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
 
-   EXPECT(is_jsonrpc_2(json_result));
-   EXPECT(is_response_error(json_result));
+   EXPECT_TRUE(is_jsonrpc_2(json_result));
+   EXPECT_TRUE(is_response_error(json_result));
 
    Json::Value error = json_result[JSON_RPC_RESPONSE_ERROR];
 
-   EXPECT(error["code"] == -32601);
+   EXPECT_EQ(error["code"], -32601);
 
 }
 
@@ -201,16 +201,16 @@ TEST(TestMethodFound)
    auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
-   EXPECT(response->code() == 200);
-   EXPECT(response->mimetype() == "application/json");
+   EXPECT_EQ(response->code(), 200);
+   EXPECT_EQ(response->mimetype(), "application/json");
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT(reader.parse(response->content(), json_result, false));
+   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
 
-   EXPECT(is_jsonrpc_2(json_result));
-   EXPECT(is_response_result(json_result));
+   EXPECT_TRUE(is_jsonrpc_2(json_result));
+   EXPECT_TRUE(is_response_result(json_result));
 
 
 }
@@ -227,17 +227,17 @@ TEST(TestIdAsString)
    auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
-   EXPECT(response->code() == 200);
-   EXPECT(response->mimetype() == "application/json");
+   EXPECT_EQ(response->code(), 200);
+   EXPECT_EQ(response->mimetype(), "application/json");
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT(reader.parse(response->content(), json_result, false));
+   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
 
-   EXPECT(is_jsonrpc_2(json_result));
-   EXPECT(is_response_result(json_result));
-   EXPECT(has_valid_id(json_result));
+   EXPECT_TRUE(is_jsonrpc_2(json_result));
+   EXPECT_TRUE(is_response_result(json_result));
+   EXPECT_TRUE(has_valid_id(json_result));
 
 }
 
@@ -253,17 +253,17 @@ TEST(TestIdAsInt)
    auto response = mrl.send_post_request(mr.get());
 
    FAIL_IF(not response);
-   EXPECT(response->code() == 200);
-   EXPECT(response->mimetype() == "application/json");
+   EXPECT_EQ(response->code(), 200);
+   EXPECT_EQ(response->mimetype(), "application/json");
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT(reader.parse(response->content(), json_result, false));
+   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
 
-   EXPECT(is_jsonrpc_2(json_result));
-   EXPECT(is_response_result(json_result));
-   EXPECT(has_valid_id(json_result));
+   EXPECT_TRUE(is_jsonrpc_2(json_result));
+   EXPECT_TRUE(is_response_result(json_result));
+   EXPECT_TRUE(has_valid_id(json_result));
 
 }
 

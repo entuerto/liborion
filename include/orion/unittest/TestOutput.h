@@ -21,6 +21,7 @@
 #define ORION_UNITTEST_TESTOUTPUT_H
 
 #include <chrono>
+#include <istream>
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
@@ -30,6 +31,31 @@ namespace orion
 {
 namespace unittest
 {
+enum class ReportLevel 
+{
+   Error    = 0,
+   Short    = 1,
+   Detailed = 2
+};
+
+API_EXPORT std::string to_string(ReportLevel rl);
+
+API_EXPORT std::istream& operator>> (std::istream& in, ReportLevel& report_level);
+API_EXPORT std::ostream& operator<< (std::ostream& out, ReportLevel report_level);
+
+struct API_EXPORT TestOutputStats
+{
+   int count; 
+   int passed_count; 
+   int failed_count;
+
+   int item_count;
+   int passed_item_count; 
+   int failed_item_count; 
+   
+   std::chrono::milliseconds time_elapsed;
+};
+
 //!
 /*!
  */
@@ -38,9 +64,9 @@ class API_EXPORT TestOutput
 public:
    virtual ~TestOutput() = default;
 
-   virtual void write_header(const std::string& suite_name, int test_count) const =0;
-   virtual void write(const TestResult* test_result) const =0;
-   virtual void write_summary(int failure_count, int failed_item_count, int test_count, std::chrono::milliseconds time_elapsed) const =0;
+   virtual void write_header(const std::string& suite_name, int test_count) =0;
+   virtual void write(const TestResult* test_result) =0;
+   virtual void write_summary(const TestOutputStats& stats) =0;
 };
 
 } // namespace orion

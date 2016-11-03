@@ -53,6 +53,10 @@ public:
 
    std::string message() const;
 
+   std::string expected() const;
+
+   std::string got() const;
+
    std::string file_name() const;
 
    int line_number() const;
@@ -65,15 +69,34 @@ public:
                                                          const std::string& file_name = "", 
                                                                int line_number = 0);
 
+   static std::unique_ptr<TestResultItem> create_failure(const std::string& msg,
+                                                         const std::string& expected, 
+                                                         const std::string& got, 
+                                                         const std::string& file_name = "", 
+                                                               int line_number = 0);
+
 public:
    TestResultItem(Result result, const std::string& msg, const std::string& file_name = "", int line_number = 0);
+   
+   TestResultItem(Result result, const std::string& msg, 
+                                 const std::string& expected,
+                                 const std::string& got, 
+                                 const std::string& file_name = "", int line_number = 0);
 
 private:
    Result _result;
    std::string _msg;
+   std::string _expected;
+   std::string _got;
    std::string _file_name;
    int _line_number;
 };
+
+inline std::ostream& operator<<(std::ostream& o, Result res) 
+{
+   o << (res == Result::Passed ? "Passed" : "Failed");
+   return o;
+}
 
 } // namespace orion
 } // namespace unittest
