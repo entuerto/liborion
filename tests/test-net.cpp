@@ -15,56 +15,56 @@ TEST_SUITE(OrionNet)
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(TestIPv4IsUnspecified)
+TEST(IPv4, IsUnspecified)
 {
    EXPECT_TRUE(IPv4::zero.is_unspecified());
    EXPECT_FALSE(IPv4(127, 0, 0, 1).is_unspecified()); 
 }
 
-TEST(TestIPv6IsUnspecified)
+TEST(IPv6, IsUnspecified)
 {
    EXPECT_TRUE(IPv6::unspecified.is_unspecified());
    EXPECT_FALSE(IPv6::interface_local_all_nodes.is_unspecified());
 }
 
-TEST(TestIPv4IsLoopback)
+TEST(IPv4, IsLoopback)
 {
    EXPECT_TRUE(IPv4(127, 0, 0, 1).is_loopback());
    EXPECT_TRUE(IPv4(127, 255, 255, 254).is_loopback());
    EXPECT_FALSE(IPv4(128, 1, 2, 3).is_loopback());
 }
 
-TEST(TestIPv6IsLoopback)
+TEST(IPv6, IsLoopback)
 {
    EXPECT_TRUE(IPv6::loopback.is_loopback());
    EXPECT_FALSE(IPv6::link_local_all_routers.is_loopback());
 }
 
-TEST(TestIPv4IsMulticast)
+TEST(IPv4, IsMulticast)
 {
    EXPECT_TRUE(IPv4(224, 0, 0, 0).is_multicast());
    EXPECT_TRUE(IPv4(239, 0, 0, 0).is_multicast());
    EXPECT_FALSE(IPv4(240, 0, 0, 0).is_multicast());
 }
 
-TEST(TestIPv6IsMulticast)
+TEST(IPv6, IsMulticast)
 {
    EXPECT_TRUE(IPv6::link_local_all_nodes.is_multicast());
    EXPECT_TRUE(IPv6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}).is_multicast());
    EXPECT_FALSE(IPv6(std::array<uint8_t, 16>{{0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}).is_multicast());
 }
 
-TEST(TestIPv4ToString)
+TEST(IPv4, ToString)
 {
    EXPECT_EQ(IPv4(127, 0, 0, 1).to_string(), "127.0.0.1");
 }
 
-TEST(TestIPv6ToString)
+TEST(IPv6, ToString)
 {
    EXPECT_EQ(IPv6::loopback.to_string(), "0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:1");
 }
 
-TEST(TestIPv4Copy)
+TEST(IPv4, Copy)
 {
    IPv4 ip(IPv4::broadcast);
 
@@ -75,7 +75,7 @@ TEST(TestIPv4Copy)
    EXPECT_EQ(ip, IPv4::all_systems);
 }
 
-TEST(TestIPv6Copy)
+TEST(IPv6, Copy)
 {
    IPv6 ip(IPv6::link_local_all_routers);
 
@@ -86,7 +86,7 @@ TEST(TestIPv6Copy)
    EXPECT_EQ(ip, IPv6::interface_local_all_nodes);
 }
 
-TEST(TestIPv4Move)
+TEST(IPv4, Move)
 {
    IPv4 ip(std::move(IPv4(255, 255, 255, 255)));
 
@@ -97,7 +97,7 @@ TEST(TestIPv4Move)
    EXPECT_EQ(ip, IPv4::all_systems);
 }
 
-TEST(TestIPv6Move)
+TEST(IPv6, Move)
 {
    IPv6 ip(std::move(IPv6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})));
 

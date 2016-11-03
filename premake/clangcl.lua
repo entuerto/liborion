@@ -22,6 +22,9 @@
 		return {}
 	end
 
+	function clangcl.getrunpathdirs(cfg, dirs)
+		return {}
+	end
 
 --
 -- Returns list of C compiler flags for a configuration.

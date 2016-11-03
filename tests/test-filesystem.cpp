@@ -15,7 +15,7 @@ TEST_SUITE(OrionFilesystem)
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(TestPath_Construction)
+TEST(Path, Construction)
 {
    Path p("/toto");
 
@@ -23,7 +23,7 @@ TEST(TestPath_Construction)
    EXPECT_EQ(p, "/toto");
 }
 
-TEST(TestPath_Join)
+TEST(Path, Join)
 {
    Path p("/toto");
 
@@ -40,7 +40,7 @@ TEST(TestPath_Join)
    EXPECT_EQ(p.normalize(), Path("first/second").normalize()); 
 }
 
-TEST(TestPath_Decomposition)
+TEST(Path, Decomposition)
 {
    Path p("/foo");
 

@@ -14,7 +14,7 @@ TEST_SUITE(OrionCore)
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(TestToLower)
+TEST(String, ToLower)
 {
    std::string str = "sdGWASgeWEF";
    std::string lower = to_lower(str);
@@ -23,7 +23,7 @@ TEST(TestToLower)
    EXPECT_EQ(lower, str);
 }
 
-TEST(TestToUpper)
+TEST(String, ToUpper)
 {
    std::string str = "sdGWASgeWEF";
    std::string lower = to_upper(str);
@@ -32,7 +32,7 @@ TEST(TestToUpper)
    EXPECT_EQ(lower, str);
 }
 
-TEST(TestEqualNoCase)
+TEST(String, EqualNoCase)
 {
    std::string str1 = "sdGWASgeWEF";
    std::string str2 = "SDGWASGEWEF";
@@ -41,28 +41,28 @@ TEST(TestEqualNoCase)
    EXPECT_TRUE(equals_no_case(str1, str2));
 }
 
-TEST(TestTrimLeft)
+TEST(String, TrimLeft)
 {
    std::string str1 = "   toto";
 
    EXPECT_EQ(trim_left(str1), "toto");
 }
 
-TEST(TestTrimRight)
+TEST(String, TrimRight)
 {
    std::string str1 = "toto   ";
 
    EXPECT_EQ(trim_right(str1), "toto");
 }
 
-TEST(TestTrim)
+TEST(String, Trim)
 {
    std::string str1 = "   toto   ";
 
    EXPECT_EQ(trim(str1), "toto");
 }
 
-TEST(TestTokenize)
+TEST(String, Tokenize)
 {
    std::string str1 = "This is a test; 4";
 

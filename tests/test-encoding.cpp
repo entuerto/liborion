@@ -15,7 +15,7 @@ TEST_SUITE(OrionCore)
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(TestBigEndian_to_uint16)
+TEST(BigEndian, to_uint16)
 {
    uint8_t b[] = {1, 0};
 
@@ -24,7 +24,7 @@ TEST(TestBigEndian_to_uint16)
    EXPECT_EQ(v16, 256);
 }
 
-TEST(TestBigEndian_put_uint16)
+TEST(BigEndian, put_uint16)
 {
    std::array<uint8_t, 2> b;
    std::array<uint8_t, 2> result{1, 0};
@@ -36,7 +36,7 @@ TEST(TestBigEndian_put_uint16)
    EXPECT_ARR_EQ(b, result);
 }
 
-TEST(TestLittleEndian_to_uint16)
+TEST(LittleEndian, to_uint16)
 {
    uint8_t b[] = {1, 0}; // 256
 
@@ -45,7 +45,7 @@ TEST(TestLittleEndian_to_uint16)
    EXPECT_EQ(v16, 1);
 }
 
-TEST(TestLittleEndian_put_uint16)
+TEST(LittleEndian, put_uint16)
 {
    std::array<uint8_t, 2> b;
    std::array<uint8_t, 2> result{0, 1};
@@ -99,7 +99,7 @@ std::array<int32_t, 18> numbers32 = {
    2147483647 // (1 << 31) - 1,
 };
 
-TEST(TestEncVarint32_uint32)
+TEST(EncVarint32, uint32)
 {
    std::array<uint8_t, 10> buf;
 
@@ -113,7 +113,7 @@ TEST(TestEncVarint32_uint32)
    }
 }
 
-TEST(TestEncVarint64_uint64)
+TEST(EncVarint64, uint64)
 {
    std::array<uint8_t, 12> buf;
 
@@ -128,7 +128,7 @@ TEST(TestEncVarint64_uint64)
 
 }
   
-TEST(TestEncVarint64_int64)
+TEST(EncVarint64, int64)
 {
    std::array<uint8_t, 12> buf;
 

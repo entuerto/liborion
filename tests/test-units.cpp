@@ -15,14 +15,14 @@ TEST_SUITE(OrionCore)
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(TestSI_kilobytes)
+TEST(UnitsSI, kilobytes)
 {
    Value<si::Kilobyte> k = 12345;
 
    EXPECT_NE(k, 12345);
 }
 
-TEST(TestSI_kiloMega)
+TEST(UnitsSI, kiloMega)
 {
    Value<si::Kilobyte> k = 12345;
    Value<si::Megabyte> m = 12345;
@@ -36,14 +36,14 @@ TEST(TestSI_kiloMega)
    EXPECT_NE(cm, m);
 }
 
-TEST(TestSI_MegaLiteral)
+TEST(UnitsSI, MegaLiteral)
 {
    Value<si::Megabyte> m = 12345;
 
    EXPECT_EQ(m, 12345_mb);
 }
 
-TEST(TestSI_IntDouble)
+TEST(UnitsSI, IntDouble)
 {
    Value<si::Megabyte> m = 12345;
    Value<si::Megabyte, double> dm = 12345;

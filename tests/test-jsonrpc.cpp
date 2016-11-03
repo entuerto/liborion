@@ -110,7 +110,7 @@ TEST_SUITE(OrionWebService)
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(TestRequest)
+TEST(Request, Creation)
 { 
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"subtract\", \"id\": 1}";
 
@@ -120,7 +120,7 @@ TEST(TestRequest)
    EXPECT_EQ(mr->content(), data);
 }
 
-TEST(TestInvalidJsonResponse)
+TEST(Invalid, JsonResponse)
 {
    std::string data = "toto";
 
@@ -139,7 +139,7 @@ TEST(TestInvalidJsonResponse)
    EXPECT_TRUE(reader.parse(response->content(), json_result, false));
 }
 
-TEST(TestValidJsonResponse)
+TEST(Valid, JsonResponse)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"subtract\", \"id\": \"1\"}";
 
@@ -160,7 +160,7 @@ TEST(TestValidJsonResponse)
    EXPECT_TRUE(is_jsonrpc_2(json_result));
 }
 
-TEST(TestMethodNotFound)
+TEST(Request, MethodNotFound)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"subtract\", \"id\": \"1\"}";
 
@@ -189,7 +189,7 @@ TEST(TestMethodNotFound)
 
 }
 
-TEST(TestMethodFound)
+TEST(Request, MethodFound)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"mock\", \"id\": \"1\"}";
 
@@ -215,7 +215,7 @@ TEST(TestMethodFound)
 
 }
 
-TEST(TestIdAsString)
+TEST(Id, AsString)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"mock\", \"id\": \"1\"}";
 
@@ -241,7 +241,7 @@ TEST(TestIdAsString)
 
 }
 
-TEST(TestIdAsInt)
+TEST(Id, AsInt)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"mock\", \"id\": 1}";
 

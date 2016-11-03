@@ -28,13 +28,52 @@ namespace orion
 {
 namespace unittest
 {
+//---------------------------------------------------------------------------------------
+
+SetUpTestCase::SetUpTestCase() : 
+   _func() 
+{
+}
+
+SetUpTestCase::SetUpTestCase(const std::function<void (Test* test)>& f) :
+   _func(f) 
+{
+}
+
+void SetUpTestCase::operator()(Test* test)
+{
+  if (_func)
+     _func(test);
+}
+
+//---------------------------------------------------------------------------------------
+
+TearDownTestCase::TearDownTestCase() : 
+   _func() 
+{
+}
+
+TearDownTestCase::TearDownTestCase(const std::function<void (Test* test)>& f) :
+   _func(f) 
+{
+}
+
+void TearDownTestCase::operator()(Test* test)
+{
+   if (_func)
+      _func(test);
+}
+
+//---------------------------------------------------------------------------------------
 
 /*!
  */
 Test::Test(const std::string& name, const std::string& suite_name) :
    _name(name),
    _suite_name(suite_name),
-   _test_result()
+   _test_result(),
+   _setup(),
+   _teardown()
 {
 }
 
@@ -63,6 +102,26 @@ TestResult* Test::test_result() const
    return _test_result.get();
 }
 
+void Test::set_option(SetUpTestCase&& f)
+{
+   _setup = std::move(f);
+}
+
+void Test::set_option(TearDownTestCase&& f)
+{
+   _teardown = std::move(f);
+}
+
+void Test::SetUp()
+{
+   _setup(this);
+}
+
+void Test::TearDown()
+{
+   _teardown(this);
+}
+
 /*!
  */
 void Test::execute_test_impl(TestResult* /* test_result */) const
@@ -78,7 +137,9 @@ TestResult* Test::execute_test()
    _test_result->on_start();
    try
    {
+      SetUp();
       execute_test_impl(_test_result.get());
+      TearDown();
    }
    catch (const std::exception& e)
    {

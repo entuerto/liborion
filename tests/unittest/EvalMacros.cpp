@@ -10,7 +10,7 @@ using namespace orion::unittest;
 TEST_SUITE(OrionCore)
 {
 
-TEST(CheckSuccessOnTrue)
+TEST(Unittest, CheckSuccessOnTrue)
 {
    bool failure = true;
    {
@@ -25,7 +25,7 @@ TEST(CheckSuccessOnTrue)
    EXPECT_TRUE(not failure);
 }
 
-TEST(CheckFailureOnFalse)
+TEST(Unittest, CheckFailureOnFalse)
 {
    bool failure = true;
    {
@@ -45,7 +45,7 @@ int throwing_function()
    THROW_EXCEPTION(orion::Exception, "Oh boy")
 }
 
-TEST(CheckFailureOnException)
+TEST(Unittest, CheckFailureOnException)
 {
    bool failure = false;
    {
@@ -67,7 +67,7 @@ int function_with_side_effects()
    return 1;
 }
 
-TEST(CheckEqualDoesNotHaveSideEffectsWhenPassing)
+TEST(Unittest, CheckEqualDoesNotHaveSideEffectsWhenPassing)
 {
    side_effect = 0;
    {
@@ -79,7 +79,7 @@ TEST(CheckEqualDoesNotHaveSideEffectsWhenPassing)
    EXPECT_EQ(1, side_effect);
 }
 
-TEST(CheckCloseSuccessOnEqual)
+TEST(Unittest, CheckCloseSuccessOnEqual)
 {
    bool failure = true;
    {
@@ -94,7 +94,7 @@ TEST(CheckCloseSuccessOnEqual)
    EXPECT_TRUE(not failure);
 }
 
-TEST(CheckCloseFailsOnNotEqual)
+TEST(Unittest, CheckCloseFailsOnNotEqual)
 {
    bool failure = false;
    {
@@ -109,7 +109,7 @@ TEST(CheckCloseFailsOnNotEqual)
    EXPECT_TRUE(failure);
 }
 
-TEST(CheckCloseFailsOnException)
+TEST(Unittest, CheckCloseFailsOnException)
 {
    bool failure = false;
    {
@@ -124,7 +124,7 @@ TEST(CheckCloseFailsOnException)
    EXPECT_TRUE(failure);
 }
 
-TEST(CheckExpectThrowOnSuccess)
+TEST(Unittest, CheckExpectThrowOnSuccess)
 {
    bool failure = true;
    {
@@ -139,7 +139,7 @@ TEST(CheckExpectThrowOnSuccess)
    EXPECT_TRUE(not failure);
 }
 
-TEST(CheckExpectThrowOnFailure)
+TEST(Unittest, CheckExpectThrowOnFailure)
 {
    bool failure = false;
    {
@@ -154,7 +154,7 @@ TEST(CheckExpectThrowOnFailure)
    EXPECT_TRUE(failure);
 }
 
-TEST(CheckFailIfOnTrue)
+TEST(Unittest, CheckFailIfOnTrue)
 {
    bool failure = false;
    {
@@ -169,7 +169,7 @@ TEST(CheckFailIfOnTrue)
    EXPECT_TRUE(failure);
 }
 
-TEST(CheckFailIfOnFalse)
+TEST(Unittest, CheckFailIfOnFalse)
 {
    bool failure = false;
    {

@@ -32,23 +32,26 @@
    namespace Suite##Name
 
 
-#define TEST(Name)  \
-   class Test##Name : public orion::unittest::Test  \
+#define TEST(TestName, UnitName, ...)  \
+   class Test##TestName##UnitName : public orion::unittest::Test  \
    { \
    public: \
-      Test##Name() : Test(#Name, UnitTestSuite::suite_name()) {}  \
+      Test##TestName##UnitName() : Test(#TestName "_" #UnitName, UnitTestSuite::suite_name()) \
+      {  \
+         set_options(this, __VA_ARGS__); \
+      }  \
    \
       static Test* create() \
       { \
-         return new  Test##Name; \
+         return new  Test##TestName##UnitName; \
       } \
    protected: \
         virtual void execute_test_impl(TestResult* test_result) const;  \
    }; \
    \
-   orion::unittest::TestAddHelper add_##Name(Test::tests(), Test##Name::create()); \
+   orion::unittest::TestAddHelper add_Test##TestName##UnitName(Test::tests(), Test##TestName##UnitName::create()); \
                                                      \
-   void Test##Name::execute_test_impl(TestResult* test_result) const
+   void Test##TestName##UnitName::execute_test_impl(TestResult* test_result) const
 
 // Macros for testing equalities and inequalities.
 //

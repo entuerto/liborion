@@ -21,6 +21,7 @@
 #ifndef ORION_UNITTEST_TEST_H
 #define ORION_UNITTEST_TEST_H
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -36,7 +37,35 @@ namespace unittest
 // Forward declaration
 class Test;
 
-using Tests =std::unordered_multimap<std::string, std::unique_ptr<Test>>;
+using Tests = std::unordered_multimap<std::string, std::unique_ptr<Test>>;
+
+class SetUpTestCase
+{
+public:
+   SetUpTestCase();
+   SetUpTestCase(const std::function<void (Test* test)>& f);
+
+   virtual ~SetUpTestCase() = default;
+
+   virtual void operator()(Test* test);
+
+private:
+   std::function<void(Test* test)> _func;
+};
+
+class TearDownTestCase
+{
+public:
+   TearDownTestCase();
+   TearDownTestCase(const std::function<void (Test* test)>& f);
+
+   virtual ~TearDownTestCase() = default;
+
+   virtual void operator()(Test* test);
+
+private:
+   std::function<void(Test* test)> _func;
+};
 
 //!
 /*!
@@ -52,6 +81,15 @@ public:
 
    TestResult* test_result() const;
 
+   // Sets up the test fixture.
+   virtual void SetUp();
+
+   // Tears down the test fixture.
+   virtual void TearDown();
+
+   void set_option(SetUpTestCase&& f);
+   void set_option(TearDownTestCase&& f);
+
    TestResult* execute_test();
 
    static Tests& tests();
@@ -63,7 +101,27 @@ private:
    std::string _name;
    std::string _suite_name;
    std::unique_ptr<TestResult> _test_result;
+
+   SetUpTestCase _setup;
+   TearDownTestCase _teardown;
 };
+
+inline void set_options(Test* /* test */)
+{
+}
+
+template <typename T>
+void set_options(Test* test, T&& t) 
+{
+   test->set_option(std::forward<decltype(t)>(t));
+}
+
+template <typename T, typename... Ts>
+void set_options(Test* test, T&& t, Ts&&... ts)
+{
+   set_options(test, std::forward<decltype(t)>(t));
+   set_options(test, std::forward<decltype(ts)>(ts)...);
+}
 
 //!
 /*!

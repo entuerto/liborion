@@ -6,7 +6,7 @@ using namespace orion::unittest;
 TEST_SUITE(OrionCore)
 {
 
-TEST(InitialValues)
+TEST(Unittest, InitialValues)
 {
    auto tr = TestResult::create("toto", "toto_suite");
 
@@ -18,7 +18,7 @@ TEST(InitialValues)
    EXPECT_EQ(tr->passed_item_count(), 0);
 }
 
-TEST(NumberOfFailedItems)
+TEST(Unittest, NumberOfFailedItems)
 {
    auto tr = TestResult::create("toto", "toto_suite");
 
@@ -29,7 +29,7 @@ TEST(NumberOfFailedItems)
    EXPECT_EQ(tr->failed_item_count(), 3);
 }
 
-TEST(NumberOfPassedItems)
+TEST(Unittest, NumberOfPassedItems)
 {
    auto tr = TestResult::create("toto", "toto_suite");
 
@@ -40,7 +40,7 @@ TEST(NumberOfPassedItems)
    EXPECT_EQ(tr->passed_item_count(), 3);
 }
 
-TEST(TestResultItemSuccessCreation)
+TEST(Unittest, TestResultItemSuccessCreation)
 {
    auto tri = TestResultItem::create_success("toto", "toto.txt", 99);
 
@@ -50,7 +50,7 @@ TEST(TestResultItemSuccessCreation)
    EXPECT_EQ(tri->line_number(), 99);
 }
 
-TEST(TestResultItemFailureCreation)
+TEST(Unittest, TestResultItemFailureCreation)
 {
    auto tri = TestResultItem::create_failure("tata", "tata.txt", 88);
 

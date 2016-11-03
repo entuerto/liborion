@@ -47,14 +47,14 @@ TEST_SUITE(OrionCore)
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(TestLogDefaultLevel)
+TEST(Log, DefaultLevel)
 {
    Logger& logger = Logger::get_logger();
 
    EXPECT_EQ(logger.level(), Level::NotSet);
 }
 
-TEST(TestLogLevelChange)
+TEST(Log, LevelChange)
 {
    Logger& logger = Logger::get_logger();
 
@@ -63,7 +63,7 @@ TEST(TestLogLevelChange)
    EXPECT_EQ(logger.level(), Level::Warning);
 }
 
-TEST(TestLogLevelOutput)
+TEST(Log, LevelOutput)
 {
    Logger& logger = Logger::get_logger();
 
@@ -85,7 +85,7 @@ TEST(TestLogLevelOutput)
    EXPECT_EQ(output_record.level(), Level::Error);
 }
 
-TEST(TestLogErrorMessage)
+TEST(Log, ErrorMessage)
 {
    Logger& logger = Logger::get_logger();
 
@@ -97,7 +97,7 @@ TEST(TestLogErrorMessage)
    EXPECT_EQ(output_record.message(), "Error message");
 }
 
-TEST(TestLogFailMessage)
+TEST(Log, FailMessage)
 {
    Logger& logger = Logger::get_logger();
 
@@ -111,7 +111,7 @@ TEST(TestLogFailMessage)
    EXPECT_EQ(output_record.message(), "Condition failed ( 1 == 0 )");
 }
 
-TEST(TestLogRecordOutput)
+TEST(Log, RecordOutput)
 {
    Logger& logger = Logger::get_logger();
 

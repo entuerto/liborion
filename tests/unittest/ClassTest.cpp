@@ -6,7 +6,7 @@ using namespace orion::unittest;
 TEST_SUITE(OrionCore)
 {
 
-TEST(PassingTestHasNoFailures)
+TEST(Unittest, PassingTestHasNoFailures)
 {
    class PassingTest : public Test
    {
@@ -26,7 +26,7 @@ TEST(PassingTestHasNoFailures)
 }
 
 
-TEST(FailingTestHasFailures)
+TEST(Unittest, FailingTestHasFailures)
 {
    class FailingTest : public Test
    {
@@ -46,7 +46,7 @@ TEST(FailingTestHasFailures)
 }
 
 
-TEST(ThrowingTestsAreReportedAsFailures)
+TEST(Unittest, ThrowingTestsAreReportedAsFailures)
 {
    class CrashingTest : public Test
    {
@@ -66,7 +66,7 @@ TEST(ThrowingTestsAreReportedAsFailures)
 }
 
 
-TEST(TestWithUnspecifiedSuiteGetsDefaultSuite)
+TEST(Unittest, WithUnspecifiedSuiteGetsDefaultSuite)
 {
     Test test("test");
     EXPECT_NE(test.suite_name(), "");
@@ -74,14 +74,14 @@ TEST(TestWithUnspecifiedSuiteGetsDefaultSuite)
 }
 
 
-TEST(TestReflectsSpecifiedSuiteName)
+TEST(Unittest, ReflectsSpecifiedSuiteName)
 {
     Test test("test", "testSuite");
     EXPECT_NE(test.suite_name(), "");
     EXPECT_EQ("testSuite", test.suite_name());
 }
 
-TEST(TestHasSameNameAndSuiteNameAsTestResult)
+TEST(Unittest, HasSameNameAndSuiteNameAsTestResult)
 {
    EXPECT_EQ(name(), test_result->name());
    EXPECT_EQ(suite_name(), test_result->suite_name());
