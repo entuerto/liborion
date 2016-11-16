@@ -60,6 +60,16 @@ group "Libraries"
                   
       files "deps/jsoncpp/jsoncpp.cpp"
 
+   project "http-parser"
+      kind "StaticLib"
+
+      language "C"
+
+      removeincludedirs "*"
+      includedirs "deps/http-parser" 
+                  
+      files "deps/http-parser/http_parser.c"
+
             
    project "orion"
       kind "SharedLib"
@@ -117,7 +127,7 @@ group "Libraries"
 
       defines { "ORION_SHARED_EXPORTS" }
 
-      links { "mongoose", "orion" }
+      links { "mongoose", "http-parser", "orion" }
 
       filter "system:Windows"
          links { "Advapi32", "ws2_32" }

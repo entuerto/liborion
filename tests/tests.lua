@@ -48,6 +48,7 @@ project "test-orion-net"
 
    files {
       "test-net.cpp",
+      "test-url.cpp",
       "test-main.cpp"
    }
 
