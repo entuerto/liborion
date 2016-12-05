@@ -25,7 +25,6 @@
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 #include <orion/net/IP.h>
 
 namespace orion
@@ -33,7 +32,7 @@ namespace orion
 namespace net
 {
 
-//! IPAddress represents the address of an IP end point.
+/// IPAddress represents the address of an IP end point.
 class API_EXPORT IPAddress 
 {
 public:
@@ -48,6 +47,8 @@ public:
 
    virtual std::string zone() const;
 
+   virtual std::string to_string() const;
+
 protected:
    IPAddress(IP* ip, const std::string& zone);
 
@@ -56,7 +57,7 @@ private:
    std::string _zone;
 };
 
-//! TcpAddress represents the address of a TCP end point. 
+/// TcpAddress represents the address of a TCP end point. 
 class API_EXPORT TcpAddress : public IPAddress 
 {
 public:
@@ -72,10 +73,12 @@ public:
 
    int port() const;
 
+   virtual std::string to_string() const override;
+
 public:
-   ///
+   /// Create a network end point address
    static std::unique_ptr<TcpAddress> create(const IP& ip, int port);
-   ///
+   /// Create a network end point address
    static std::unique_ptr<TcpAddress> create(const std::string& ip, int port);
 
 private:

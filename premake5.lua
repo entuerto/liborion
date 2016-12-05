@@ -123,9 +123,15 @@ group "Libraries"
    project "orion-net"
       kind "SharedLib"
 
-      dependson { "mongoose", "orion" }
+      dependson { "mongoose", "http-parser", "orion" }
 
-      defines { "ORION_SHARED_EXPORTS" }
+      defines { 
+         "ORION_SHARED_EXPORTS", 
+         "_WIN32_WINNT=0x0501",
+         "ASIO_STANDALONE"
+         --"BOOST_DATE_TIME_NO_LIB", 
+         --"BOOST_REGEX_NO_LIB" 
+      }
 
       links { "mongoose", "http-parser", "orion" }
 
@@ -135,6 +141,11 @@ group "Libraries"
       files { 
          "lib/net/**.cpp" 
       }
+
+      includedirs { "C:/Tools/pkgs/asio-1.10.8/include" }
+
+      filter { "system:windows", "files:**Mongoose**.*" }
+         flags { "ExcludeFromBuild"}
 
       FilterPlatformSourceFiles()
 

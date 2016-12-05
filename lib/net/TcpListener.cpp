@@ -23,20 +23,15 @@
 
 #include <orion/Logging.h>
 
-#include <winsock2.h>
-#include <ws2tcpip.h>
+using namespace orion::logging;
 
 namespace orion
 {
 namespace net
 {
-using namespace orion::logging;
-
 struct TcpListener::Impl 
 {
    std::unique_ptr<IPAddress> addr;
-
-   SOCKET sock;
 };
 
 TcpListener::TcpListener(TcpListener::Impl* impl):
@@ -68,19 +63,7 @@ IPAddress* TcpListener::addr() const
 
 std::unique_ptr<Listener> TcpListener::open_tcp4(const TcpAddress& addr) 
 {
-   DWORD  flags = 0x01;
-
-   SOCKET sock = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, flags);
-
-   if (sock == INVALID_SOCKET)
-      return nullptr;
-
-   auto imp = new TcpListener::Impl;
-
-   imp->sock = sock;
-   imp->addr = std::make_unique<TcpAddress>(addr);
-
-   return std::unique_ptr<Listener>(new TcpListener(imp));
+   return nullptr;
 }
 
 std::unique_ptr<Listener> TcpListener::open_tcp6(const TcpAddress& /* addr */) 

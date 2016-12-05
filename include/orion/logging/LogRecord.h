@@ -112,6 +112,9 @@ public:
    //! Log a character
    LogRecord& operator<<(char value);
 
+   //! Log std::error_code
+   LogRecord& operator<<(const std::error_code& ec);
+
    //! Log boost format
    LogRecord& operator<<(const boost::format& fmt);
 

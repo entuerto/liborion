@@ -505,8 +505,11 @@ std::string Url::href() const
    // 'http://user:pass@host.com:8080/p/a/t/h?query=string#hash'
    std::string out;
 
-   out += _protocol; 
-   out += "://";
+   if (not _protocol.empty())
+   {
+      out += _protocol; 
+      out += "://";
+   }
    if (not _userinfo.username.empty())
    { 
       out += priv::encode<priv::EncodeUserPasswordChar>(_userinfo.username); 

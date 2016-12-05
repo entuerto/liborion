@@ -267,6 +267,16 @@ LogRecord& LogRecord::operator<<(char value)
    return *this;
 }
 
+LogRecord& LogRecord::operator<<(const std::error_code& ec)
+{
+   auto fmt = boost::format("%s (%d): %s") 
+                 % ec.category().name()  
+                 % ec.value() 
+                 % ec.message();
+   _message += boost::str(fmt);
+   return *this;
+}
+
 LogRecord& LogRecord::operator<<(const boost::format& fmt)
 {
    _message += fmt.str();

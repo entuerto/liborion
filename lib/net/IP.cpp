@@ -45,6 +45,12 @@ IPv4::IPv4(uint8_t a, uint8_t b, uint8_t c, uint8_t d):
 {
 }
 
+IPv4::IPv4(const std::array<uint8_t, 4>& a):
+   _a(a)
+{
+
+}
+
 IPv4::IPv4(const IPv4& Other):
    _a(Other._a) 
 {

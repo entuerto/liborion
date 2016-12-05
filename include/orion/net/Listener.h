@@ -57,15 +57,14 @@ class API_EXPORT TcpListener : public Listener
 {
 public:
    NO_COPY(TcpListener)
-   NO_MOVE(TcpListener)
 
    ~TcpListener();
 
-   virtual std::unique_ptr<Connection> accept() override;
+   std::unique_ptr<Connection> accept() override;
 
-   virtual void close() override;
+   void close() override;
 
-   virtual IPAddress* addr() const override;
+   IPAddress* addr() const override;
 
    static std::unique_ptr<Listener> open_tcp4(const TcpAddress& addr);
    static std::unique_ptr<Listener> open_tcp6(const TcpAddress& addr);

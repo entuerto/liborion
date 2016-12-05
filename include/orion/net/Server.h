@@ -22,31 +22,26 @@
 #ifndef ORION_NET_SERVER_H
 #define ORION_NET_SERVER_H
 
+#include <system_error>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
-#include <orion/net/RequestListener.h>
-#include <orion/net/Response.h>
 
 namespace orion
 {
 namespace net 
 {
-//! Server interface declaration
+/// Server interface declaration
 class Server
 {
 public:
    virtual ~Server() = default;
 
-   virtual void start() =0;
-   virtual void stop() =0;
+   virtual void shutdown() =0;
 
    virtual bool is_running() const =0;
 
-   virtual void add_request_listener(std::unique_ptr<RequestListener>&& listener) =0;
-
-   virtual void send_response(const Response* response) =0;
+   virtual std::error_code listen_and_serve(const std::string& addr, int port) =0;
 };
 
 } // net

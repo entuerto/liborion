@@ -33,19 +33,19 @@ namespace orion
 namespace net
 {
 
-//! IPAddress represents the address of an IP end point.
+/// IPAddress represents the address of an IP end point.
 class API_EXPORT IP 
 {
 public:
    virtual ~IP() = default;
 
-   //! Reports whether ip is a loopback address.
+   /// Reports whether ip is a loopback address.
    virtual bool is_loopback() const =0;
-   //! Reports whether ip is a multicast address.
+   /// Reports whether ip is a multicast address.
    virtual bool is_multicast() const =0;
-   //! Reports whether ip is an unspecified address.
+   /// Reports whether ip is an unspecified address.
    virtual bool is_unspecified() const =0;
-   //! Returns the string form of the IP address
+   /// Returns the string form of the IP address
    virtual std::string to_string() const =0;
 };
 
@@ -57,7 +57,7 @@ inline std::ostream& operator<<(std::ostream& o, const IP& ip)
 
 inline std::ostream& operator<<(std::ostream& o, const IP* ip) 
 {
-   o << (ip == nullptr ? "nullptr" : ip->to_string());
+   o << (ip == nullptr ? "null" : ip->to_string());
    return o;
 }
 
@@ -66,6 +66,7 @@ class API_EXPORT IPv4 : public IP
 public:
    IPv4();
    IPv4(uint8_t a, uint8_t b, uint8_t c, uint8_t d);
+   IPv4(const std::array<uint8_t, 4>& a);
    IPv4(const IPv4& Other);
    IPv4(IPv4&& Other);
    virtual ~IPv4();
@@ -75,13 +76,13 @@ public:
 
    bool operator==(const IPv4& Rhs) const;
 
-   //! Reports whether ip is a loopback address.
+   /// Reports whether ip is a loopback address.
    virtual bool is_loopback() const override;
-   //! Reports whether ip is a multicast address.
+   /// Reports whether ip is a multicast address.
    virtual bool is_multicast() const override;
-   //! Reports whether ip is an unspecified address.
+   /// Reports whether ip is an unspecified address.
    virtual bool is_unspecified() const override;
-   //! Returns the string form of the IP address
+   /// Returns the string form of the IP address
    virtual std::string to_string() const override;
 
 public:
@@ -108,13 +109,13 @@ public:
 
    bool operator==(const IPv6& Rhs) const;
 
-   //! Reports whether ip is a loopback address.
+   /// Reports whether ip is a loopback address.
    virtual bool is_loopback() const override;
-   //! Reports whether ip is a multicast address.
+   /// Reports whether ip is a multicast address.
    virtual bool is_multicast() const override;
-   //! Reports whether ip is an unspecified address.
+   /// Reports whether ip is an unspecified address.
    virtual bool is_unspecified() const override;
-   //! Returns the string form of the IP address
+   /// Returns the string form of the IP address
    virtual std::string to_string() const override;
 
 public:

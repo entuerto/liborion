@@ -37,7 +37,7 @@ function SetupDefaultConfigurations()
    filter { "configurations:Debug" }
       defines { "DEBUG" }
       -- We want debug symbols in our debug config
-      --flags { "Symbols" }
+      -- flags { "Symbols" }
       symbols "On"
 
    filter { "configurations:Debug", "kind:*Lib" }

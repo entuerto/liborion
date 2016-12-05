@@ -33,7 +33,6 @@
 	clangcl.cflags = {
 		flags = {
 			FatalCompileWarnings = "/WX",
-			Symbols = "/Z7",
 			OmitDefaultLibrary = "/Zl",
 		},
 		floatingpoint = {
@@ -66,6 +65,9 @@
 		warnings = {
 			Extra = "/Wall",
 			Off = "/W0",
+		},
+		symbols = {
+			On = "/Z7"
 		}
 	}
 
@@ -207,7 +209,6 @@
 			NoIncrementalLink = "/INCREMENTAL:NO",
 			NoManifest = "/MANIFEST:NO",
 			OmitDefaultLibrary = "/NODEFAULTLIB",
-			Symbols = "/DEBUG",
 		},
 		kind = {
 			SharedLib = function(cfg)
@@ -217,6 +218,9 @@
 				end
 				return r
 			end
+		},
+		symbols = {
+			On = "/DEBUG"
 		}
 	}
 

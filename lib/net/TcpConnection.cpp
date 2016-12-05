@@ -1,23 +1,9 @@
-/*
- * TcpConnection.cpp
- *
- * Copyright 2013 tomas <tomasp@videotron.ca>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- */
+//
+// TcpConnection.cpp
+//
+//  Created by Tomas Palazuelos on 2016-11-07.
+//  Copyright © 2016 Tomas Palazuelos. All rights reserved.
+//
 
 #include <orion/net/Connection.h>
 
@@ -30,19 +16,16 @@ namespace net
 
 TcpConnection::TcpConnection():
    _local_addr(),
-   _remote_addr()
+   _remote_addr(),
+   _read_deadline(),
+   _write_deadline(),
+   _keep_alive(true),
+   _no_delay(true)
 {
-
 }
 
 TcpConnection::~TcpConnection()
 {
-
-}
-
-void TcpConnection::close() 
-{
-
 }
 
 IPAddress* TcpConnection::local_addr() const
@@ -53,6 +36,62 @@ IPAddress* TcpConnection::local_addr() const
 IPAddress* TcpConnection::remote_addr() const
 {
    return _remote_addr.get();
+}
+
+std::error_code TcpConnection::deadline(const std::chrono::seconds& sec)
+{
+   _read_deadline  = sec;
+   _write_deadline = sec;
+   return std::error_code();
+}
+
+std::chrono::seconds TcpConnection::deadline() const
+{
+   return _read_deadline;
+}
+
+std::error_code TcpConnection::read_deadline(const std::chrono::seconds& sec)
+{
+   _read_deadline  = sec;
+   return std::error_code();
+}
+
+std::chrono::seconds TcpConnection::read_deadline() const
+{
+   return _read_deadline;
+}
+
+std::error_code TcpConnection::write_deadline(const std::chrono::seconds& sec)
+{
+   _write_deadline = sec;
+   return std::error_code();
+}
+
+std::chrono::seconds TcpConnection::write_deadline() const
+{
+   return _write_deadline;
+}
+
+std::error_code TcpConnection::keep_alive(bool value)
+{
+   _keep_alive = value;
+   return std::error_code();
+}
+
+bool TcpConnection::keep_alive() const
+{
+   return _keep_alive;
+}
+
+std::error_code TcpConnection::no_delay(bool value)
+{
+   _no_delay = value;
+   return std::error_code();
+}
+
+bool TcpConnection::no_delay() const
+{
+   return _no_delay;
 }
 
 } // net

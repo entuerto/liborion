@@ -93,6 +93,11 @@ std::string IPAddress::zone() const
    return _zone;
 }
 
+std::string IPAddress::to_string() const
+{
+   return _ip->to_string();
+}
+
 //---------------------------------------------------------------------------------------
 // TcpAddress
 
@@ -138,6 +143,11 @@ TcpAddress& TcpAddress::operator=(TcpAddress&& Rhs)
 int TcpAddress::port() const
 {
    return _port;
+}
+
+std::string TcpAddress::to_string() const
+{
+   return IPAddress::to_string() + ":" + std::to_string(_port);
 }
 
 std::unique_ptr<TcpAddress> TcpAddress::create(const IP& ip, int port)
