@@ -1,5 +1,5 @@
 /*
- * RpcMethod.h
+ * JsonRpcError.h
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,35 +19,33 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_WS_RPCMETHOD_H
-#define ORION_WS_RPCMETHOD_H
-
-#include <string>
+#ifndef ORION_NET_RPC_JSONRPCERROR_H
+#define ORION_NET_RPC_JSONRPCERROR_H
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/net/rpc/Error.h>
+
 namespace orion
 {
-namespace ws
+namespace net
 {
-//! Abstract class to define RPC methods
-/*!
-   
- */
-class RpcMethod
+namespace rpc
 {
-public:
-   virtual ~RpcMethod() = default;
 
-   virtual std::string name() const =0;
-
-   virtual std::string description() const =0;
-
+enum class JsonErrc
+{
+   ParseError      = -32700,
+   InvalidRequest  = -32600,
+   MethodNotFound  = -32601,
+   InvalidParams   = -32602,
+   InternalError   = -32603,
+   ServerError     = -32000
 };
 
-} // ws
-} // orion
+API_EXPORT Error make_error(JsonErrc code) noexcept;
 
-#endif
-
-
+} // namespace rpc
+} // namespace net
+} // namespace orion
+#endif // ORION_NET_RPC_JSONRPCERROR_H

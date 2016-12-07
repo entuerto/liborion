@@ -24,8 +24,7 @@ Request::Request() :
    _version(),
    _header(),
    _should_keep_alive(false),
-   _upgrade(false),
-   _content_lenght(0)
+   _upgrade(false)
 {
 }
 
@@ -40,8 +39,7 @@ Request::Request(const std::string& method,
    _version(version),
    _header(header),
    _should_keep_alive(should_keep_alive),
-   _upgrade(upgrade),   
-   _content_lenght(0)
+   _upgrade(upgrade)
 {
 }
 
@@ -51,8 +49,7 @@ Request::Request(Request&& Other) :
    _version(std::move(Other._version)),
    _header(std::move(Other._header)),
    _should_keep_alive(std::move(Other._should_keep_alive)),
-   _upgrade(std::move(Other._upgrade)),
-   _content_lenght(std::move(Other._content_lenght))
+   _upgrade(std::move(Other._upgrade))
 {
 }
 
@@ -98,11 +95,6 @@ bool Request::upgrade() const
    return _upgrade;
 }
 
-std::size_t Request::content_lenght() const
-{
-   return _content_lenght;
-}
-
 Request& Request::operator=(Request&& Rhs)
 {
    _method  = std::move(Rhs._method);
@@ -111,7 +103,6 @@ Request& Request::operator=(Request&& Rhs)
    _header  = std::move(Rhs._header);
    _should_keep_alive  = std::move(Rhs._should_keep_alive);
    _upgrade            = std::move(Rhs._upgrade);
-   _content_lenght     = std::move(Rhs._content_lenght);
    return *this;   
 }
 

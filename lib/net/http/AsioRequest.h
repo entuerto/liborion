@@ -13,6 +13,8 @@
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/http/Request.h>
 
+#include <asio.hpp>
+
 namespace orion
 {
 namespace net
@@ -38,7 +40,10 @@ public:
 
    virtual std::string content() const override;
 
+   virtual std::streambuf* rdbuf() const override;
+
 private:
+   std::unique_ptr<asio::streambuf> _body_streambuf;
 };
 
 } // http

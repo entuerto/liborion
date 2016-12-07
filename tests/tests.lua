@@ -26,17 +26,21 @@ project "test-orion"
    }
 
 
-project "test-orion-ws"
+project "test-orion-rpc"
    kind "ConsoleApp"
 
-   dependson "orion"
+   dependson { 
+      "jsoncpp", 
+      "orion", 
+      "orion-net" 
+   }
 
    files {
       "test-jsonrpc.cpp",
       "test-main.cpp"
    }
 
-   links { "jsoncpp", "orion", "orion-net", "orion-ws" }
+   links { "jsoncpp", "orion", "orion-net" }
 
    UseBoostLibStatic("program_options")
 

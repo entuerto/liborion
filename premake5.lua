@@ -123,7 +123,12 @@ group "Libraries"
    project "orion-net"
       kind "SharedLib"
 
-      dependson { "mongoose", "http-parser", "orion" }
+      dependson { 
+         "jsoncpp", 
+         "mongoose", 
+         "http-parser", 
+         "orion" 
+      }
 
       defines { 
          "ORION_SHARED_EXPORTS", 
@@ -133,10 +138,15 @@ group "Libraries"
          --"BOOST_REGEX_NO_LIB" 
       }
 
-      links { "mongoose", "http-parser", "orion" }
+      links { 
+         "jsoncpp", 
+         "mongoose", 
+         "http-parser", 
+         "orion" 
+      }
 
       filter "system:Windows"
-         links { "Advapi32", "ws2_32" }
+         links { "Advapi32", "ws2_32", "psapi", "rpcrt4" }
 
       files { 
          "lib/net/**.cpp" 
@@ -146,25 +156,6 @@ group "Libraries"
 
       filter { "system:windows", "files:**Mongoose**.*" }
          flags { "ExcludeFromBuild"}
-
-      FilterPlatformSourceFiles()
-
-
-   project "orion-ws"
-      kind "SharedLib"
-
-      dependson { "jsoncpp", "orion", "orion-net" }
-
-      defines { "ORION_SHARED_EXPORTS" }
-
-      links { "jsoncpp", "orion", "orion-net" }
-
-      filter "system:Windows"
-         links { "psapi", "rpcrt4" }
-
-      files { 
-         "lib/ws/**.cpp" 
-      }
 
       FilterPlatformSourceFiles()
 

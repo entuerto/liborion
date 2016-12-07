@@ -187,6 +187,11 @@ int Parser::on_headers_complete()
 int Parser::on_body(const char* at, size_t length)
 {
    LOG_FUNCTION(Debug2, "Parser::on_body()")
+
+   std::ostream o(_request.rdbuf());
+
+   o << std::string(at, length);
+
    return 0;
 }
 

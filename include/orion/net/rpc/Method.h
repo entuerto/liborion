@@ -1,5 +1,5 @@
 /*
- * JsonRpcMethod.h
+ * RpcMethod.h
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,33 +19,46 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_WS_JSONRPCMETHOD_H
-#define ORION_WS_JSONRPCMETHOD_H
+#ifndef ORION_NET_RPC_METHOD_H
+#define ORION_NET_RPC_METHOD_H
 
-#include <memory>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/ws/RpcMethod.h>
 
 namespace orion
 {
-namespace ws
+namespace net
 {
-//! Abstract class to define JSON-RPC methods
-/*!
-   
- */
-class JsonRpcMethod : public RpcMethod
+namespace rpc
+{
+///
+/// Abstract class to define RPC methods
+///
+class API_EXPORT Method
 {
 public:
-   virtual ~JsonRpcMethod() = default;
+   Method(const std::string& name, const std::string& desc);
 
-   virtual std::unique_ptr<JsonRpcError> call(Json::Value& json_request, Json::Value& json_result) =0;
+   Method(const Method& rhs);
+   Method(Method&& rhs);
+
+   virtual ~Method() = default;
+
+   virtual std::string name() const;
+
+   virtual std::string description() const;
+
+   Method& operator=(const Method& rhs);
+   Method& operator=(Method&& rhs);
+
+private:
+   std::string _name;
+   std::string _description;
 };
 
-} // ws
-} // orion
+} // namespace rpc
+} // namespace net
+} // namespace orion
 
-#endif
-
+#endif // ORION_NET_RPC_METHOD_H

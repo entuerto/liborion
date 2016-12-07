@@ -85,7 +85,7 @@ std::string Response::header(const std::string& name) const
 
 void Response::header(const std::string& name, const std::string& value)
 {
-   _header.emplace(name, value);
+   _header[name] = value;
 }
 
 Response& Response::operator=(Response&& Rhs)

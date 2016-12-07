@@ -19,8 +19,8 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_WS_RPCERROR_H
-#define ORION_WS_RPCERROR_H
+#ifndef ORION_NET_RPC_ERROR_H
+#define ORION_NET_RPC_ERROR_H
 
 #include <memory>
 #include <string>
@@ -29,24 +29,30 @@
 
 namespace orion
 {
-namespace ws
+namespace net
+{
+namespace rpc
 {
 //! Abstract class to define RPC errors
 /*!
    
  */
-class API_EXPORT RpcError
+class API_EXPORT Error
 {
 public:
-   RpcError(int32_t code, const std::string& message, const std::string& data);
+   Error();
+   Error(int32_t code);
+   Error(int32_t code, const std::string& message, const std::string& data = "");
 
-   RpcError(const RpcError& Other);
-   RpcError(RpcError&& Other);
+   Error(const Error& Other);
+   Error(Error&& Other);
 
-   virtual ~RpcError();
+   virtual ~Error();
 
-   RpcError& operator=(const RpcError& Rhs);
-   RpcError& operator=(RpcError&& Rhs);
+   Error& operator=(const Error& Rhs);
+   Error& operator=(Error&& Rhs);
+
+   explicit operator bool() const;
 
    //! A Number that indicates the error type that occurred.
    virtual int32_t code() const;
@@ -57,18 +63,15 @@ public:
    //! A Primitive or Structured value that contains additional information about the error.
    virtual std::string data() const;
 
-public:
-   //! Create a RPC Error object
-   static std::unique_ptr<RpcError> create(int32_t code, const std::string& message, const std::string& data = "");
-
 private:
-  int32_t _code; 
-  std::string _message; 
-  std::string _data;
+   int32_t _code; 
+   std::string _message; 
+   std::string _data;
 };
 
-} // ws
-} // orion
+} // namespace rpc
+} // namespace net
+} // namespace orion
 
 #endif
 

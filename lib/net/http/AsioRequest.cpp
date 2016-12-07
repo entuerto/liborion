@@ -23,12 +23,14 @@ AsioRequest::AsioRequest(const std::string& method,
                          const Header& header,
                                bool should_keep_alive,
                                bool upgrade) :
-   Request(method, url, version, header, should_keep_alive, upgrade)
+   Request(method, url, version, header, should_keep_alive, upgrade),
+   _body_streambuf(std::make_unique<asio::streambuf>())
 {
 }
 
 AsioRequest::AsioRequest(AsioRequest&& Other) :
-   Request(std::move(Other))
+   Request(std::move(Other)),
+   _body_streambuf(std::move(Other._body_streambuf))
 {
 }
 
@@ -39,12 +41,20 @@ AsioRequest::~AsioRequest()
 AsioRequest& AsioRequest::operator=(AsioRequest&& Rhs)
 {
    Request::operator=(std::move(Rhs));
+
+   _body_streambuf   = std::move(Rhs._body_streambuf);
+
    return *this;   
 }
 
 std::string AsioRequest::content() const
 {
-   return "";
+   return asio::buffer_cast<const char*>(_body_streambuf->data());
+}
+
+std::streambuf* AsioRequest::rdbuf() const
+{
+   return _body_streambuf.get();  
 }
 
 } // http

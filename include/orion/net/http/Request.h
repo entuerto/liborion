@@ -9,6 +9,7 @@
 #define ORION_NET_HTTP_REQUEST_H
 
 #include <ostream>
+#include <streambuf>
 #include <string>
  
 #include <orion/Orion-Stddefs.h>
@@ -60,7 +61,7 @@ public:
 
    virtual std::string content() const =0;
 
-   virtual std::size_t content_lenght() const;
+   virtual std::streambuf* rdbuf() const =0;
 
    Request& operator=(Request&& Rhs);
   
@@ -73,7 +74,6 @@ protected:
    Header _header;
    bool _should_keep_alive;
    bool _upgrade;
-   std::size_t _content_lenght;
 };
 
 std::ostream& operator<<(std::ostream& o, const Request& r);

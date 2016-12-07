@@ -1,5 +1,5 @@
 /*
- * RpcError.cpp
+ * Error.cpp
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,39 +19,55 @@
  * MA 02110-1301, USA.
  */
 
-#include <orion/ws/RpcError.h>
+#include <orion/net/rpc/Error.h>
 
 namespace orion
 {
-namespace ws
+namespace net
+{
+namespace rpc
 {
 
-RpcError::RpcError(int32_t code, const std::string& message, const std::string& data) :
+Error::Error() :
+   _code(0),
+   _message(),
+   _data()
+{
+}
+
+Error::Error(int32_t code) :
+   _code(code),
+   _message(),
+   _data()
+{
+}
+
+Error::Error(int32_t code, const std::string& message, const std::string& data /* = "" */) :
    _code(code),
    _message(message),
    _data(data)
 {
 }
 
-RpcError::RpcError(const RpcError& Other) :
+Error::Error(const Error& Other) :
    _code(Other._code),
    _message(Other._message),
    _data(Other._data)
 {
 }
 
-RpcError::RpcError(RpcError&& Other) :
+Error::Error(Error&& Other) :
    _code(std::move(Other._code)),
    _message(std::move(Other._message)),
    _data(std::move(Other._data))
 {
 }
 
-RpcError::~RpcError()
+Error::~Error()
 {
 }
 
-RpcError& RpcError::operator=(const RpcError& Rhs)
+Error& Error::operator=(const Error& Rhs)
 {
    if (this == &Rhs)
       return *this;
@@ -63,7 +79,7 @@ RpcError& RpcError::operator=(const RpcError& Rhs)
    return *this;
 }
 
-RpcError& RpcError::operator=(RpcError&& Rhs)
+Error& Error::operator=(Error&& Rhs)
 {
    _code = std::move(Rhs._code);
    _message = std::move(Rhs._message);
@@ -72,30 +88,29 @@ RpcError& RpcError::operator=(RpcError&& Rhs)
    return *this;
 }
 
+Error::operator bool() const
+{
+   return _code != 0;
+}
+
 //! A Number that indicates the error type that occurred.
-int32_t RpcError::code() const
+int32_t Error::code() const
 {
    return _code;
 }
 
 //! A String providing a short description of the error.
-std::string RpcError::message() const
+std::string Error::message() const
 {
    return _message;
 }
 
 //! A Primitive or Structured value that contains additional information about the error.
-std::string RpcError::data() const
+std::string Error::data() const
 {
    return _data;
 }
 
-//! Create a RPC Error object
-std::unique_ptr<RpcError> RpcError::create(int32_t code, const std::string& message, const std::string& data)
-{
-   return std::make_unique<RpcError>(code, message, data);
-}
-
-} // ws
-} // orion
-
+} // namespace rpc
+} // namespace net
+} // namespace orion
