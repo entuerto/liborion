@@ -29,7 +29,7 @@ namespace rpc
 {
 
 RequestHandler::RequestHandler(const std::string& uri) :
-   http::RequestListener(uri),
+   http::RequestHandler(uri),
    _methods()
 {
 }

@@ -1,11 +1,11 @@
 //
-// RequestListener.cpp
+// RequestHandler.cpp
 //
 //  Created by Tomas Palazuelos on 2016-11-07.
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
 
-#include <orion/net/http/RequestListener.h>
+#include <orion/net/http/RequestHandler.h>
 
 #include <orion/net/http/Error.h>
 #include <orion/net/http/Utils.h>
@@ -17,21 +17,21 @@ namespace net
 namespace http
 {
 
-RequestListener::RequestListener(const std::string& uri) :
+RequestHandler::RequestHandler(const std::string& uri) :
    _uri(uri)
 {
 }
 
-RequestListener::~RequestListener() 
+RequestHandler::~RequestHandler() 
 {
 }
 
-std::string RequestListener::uri() const
+std::string RequestHandler::uri() const
 {
    return _uri;
 }
 
-std::error_code RequestListener::on_process_request(const Request& request, Response& response)
+std::error_code RequestHandler::on_request(const Request& request, Response& response)
 {
    if (request.method() == Method::Get)
       return on_get(request, response);
@@ -45,22 +45,22 @@ std::error_code RequestListener::on_process_request(const Request& request, Resp
    return make_error_code(errc::BadRequest); 
 }
 
-std::error_code RequestListener::on_get(const Request& /* request */, Response& /* response */)
+std::error_code RequestHandler::on_get(const Request& /* request */, Response& /* response */)
 {
    return make_error_code(errc::NotImplemented);
 }
 
-std::error_code RequestListener::on_post(const Request& /* request */, Response& /* response */)
+std::error_code RequestHandler::on_post(const Request& /* request */, Response& /* response */)
 {
    return make_error_code(errc::NotImplemented);
 }
 
-std::error_code RequestListener::on_put(const Request& /* request */, Response& /* response */) 
+std::error_code RequestHandler::on_put(const Request& /* request */, Response& /* response */) 
 {
    return make_error_code(errc::NotImplemented);
 }
 
-std::error_code RequestListener::on_delete(const Request& /* request */, Response& /* response */)
+std::error_code RequestHandler::on_delete(const Request& /* request */, Response& /* response */)
 {
    return make_error_code(errc::NotImplemented);
 }

@@ -162,7 +162,7 @@ int main ()
    rl->register_method(JsonMethod{"answer", "", Echo::answer}); 
 
 
-   server->add_request_listener(std::move(rl));
+   server->add_handler(std::move(rl));
 
    std::cout << "Server listening on port: 9080\n";
 

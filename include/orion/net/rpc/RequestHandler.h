@@ -27,7 +27,7 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/http/RequestListener.h>
+#include <orion/net/http/RequestHandler.h>
 #include <orion/net/rpc/Method.h>
 
 namespace orion
@@ -43,7 +43,7 @@ using Methods = std::map<std::string, std::shared_ptr<Method>>;
 /// Using the RpcRequestListener class, you can create a simple RPC protocol handler that 
 /// responds to RPC requests. 
 ///
-class API_EXPORT RequestHandler : public http::RequestListener
+class API_EXPORT RequestHandler : public http::RequestHandler
 {
 public:
    NO_COPY(RequestHandler)

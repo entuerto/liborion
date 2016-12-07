@@ -40,10 +40,10 @@ IPAddress* convert(const asio::ip::tcp::endpoint& ep)
 
 //---------------------------------------------------------------------------------------
 
-AsioServerConnection::AsioServerConnection(asio::io_service& io_service, const Listeners& RequestListeners) :
+AsioServerConnection::AsioServerConnection(asio::io_service& io_service, const Handlers& RequestHandlers) :
    TcpConnection(),
    _socket(io_service),
-   _RequestListeners(RequestListeners),
+   _RequestHandlers(RequestHandlers),
    _request(),
    _response(StatusCode::OK),
    _parser(_request),
@@ -187,13 +187,13 @@ void AsioServerConnection::do_handler()
 
    LOG(Debug2) << _request;
 
-   auto it = _RequestListeners.find(_request.url().pathname());
+   auto it = _RequestHandlers.find(_request.url().pathname());
    
-   if (it != _RequestListeners.end())
+   if (it != _RequestHandlers.end())
    {
       auto&& rl = it->second;
    
-      auto ec = rl->on_process_request(_request, _response);
+      auto ec = rl->on_request(_request, _response);
       if (ec)
       {
          LOG(Error) << ec;

@@ -13,7 +13,7 @@
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/Server.h>
-#include <orion/net/http/RequestListener.h>
+#include <orion/net/http/RequestHandler.h>
 
 namespace orion
 {
@@ -35,7 +35,7 @@ public:
 
    virtual int port() const;
 
-   virtual void add_request_listener(std::unique_ptr<RequestListener>&& listener);
+   virtual void add_handler(std::unique_ptr<RequestHandler>&& h);
 
    bool is_running() const override;
    
@@ -47,7 +47,7 @@ protected:
 
    int _port;
    bool _is_running;
-   Listeners _RequestListeners;
+   Handlers _RequestHandlers;
 };
 
 } // http

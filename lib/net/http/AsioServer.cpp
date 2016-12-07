@@ -95,7 +95,7 @@ std::error_code AsioServer::listen_and_serve(const std::string& addr, int port)
 
 void AsioServer::do_accept(asio::ip::tcp::acceptor& acceptor)
 {
-   auto conn = std::make_shared<AsioServerConnection>(_io_service, _RequestListeners);
+   auto conn = std::make_shared<AsioServerConnection>(_io_service, _RequestHandlers);
 
    acceptor.async_accept(conn->socket(),
       [this, &acceptor, conn](std::error_code ec)

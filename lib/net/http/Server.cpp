@@ -18,7 +18,7 @@ namespace http
 Server::Server() :
    _port(-1),
    _is_running(false),
-   _RequestListeners()
+   _RequestHandlers()
 {
 }
 
@@ -31,9 +31,9 @@ int Server::port() const
    return _port;
 }
 
-void Server::add_request_listener(std::unique_ptr<RequestListener>&& listener)
+void Server::add_handler(std::unique_ptr<RequestHandler>&& h)
 {
-   _RequestListeners.insert(std::make_pair(listener->uri(), std::move(listener)));
+   _RequestHandlers.insert(std::make_pair(h->uri(), std::move(h)));
 }
 
 bool Server::is_running() const

@@ -33,18 +33,18 @@ using namespace orion::net;
 using namespace orion::net::http;
 
 
-class HelloRequestListener : public http::RequestListener
+class HelloRequestHandler : public http::RequestHandler
 {
 public:
-   HelloRequestListener() : http::RequestListener("/")
+   HelloRequestHandler() : http::RequestHandler("/")
    {
    }
 
-   virtual ~HelloRequestListener() = default;
+   virtual ~HelloRequestHandler() = default;
 
-   static std::unique_ptr<http::RequestListener> create()
+   static std::unique_ptr<http::RequestHandler> create()
    {
-      return std::make_unique<HelloRequestListener>();
+      return std::make_unique<HelloRequestHandler>();
    }
    
 protected:
@@ -58,18 +58,18 @@ protected:
    }
 };
 
-class WorldRequestListener : public http::RequestListener
+class WorldRequestHandler : public http::RequestHandler
 {
 public:
-   WorldRequestListener() : http::RequestListener("/")
+   WorldRequestHandler() : http::RequestHandler("/")
    {
    }
 
-   virtual ~WorldRequestListener() = default;
+   virtual ~WorldRequestHandler() = default;
 
-   static std::unique_ptr<http::RequestListener> create()
+   static std::unique_ptr<http::RequestHandler> create()
    {
-      return std::make_unique<WorldRequestListener>();
+      return std::make_unique<WorldRequestHandler>();
    }
    
 protected:
@@ -112,8 +112,8 @@ int main ()
       return EXIT_FAILURE; 
    }
 
-   server->add_request_listener(WorldRequestListener::create());
-   server->add_request_listener(HelloRequestListener::create());
+   server->add_handler(WorldRequestHandler::create());
+   server->add_handler(HelloRequestHandler::create());
 
    std::cout << "Server listening on port: 9080\n";
 

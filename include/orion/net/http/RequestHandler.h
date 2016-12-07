@@ -1,12 +1,12 @@
 //
-// RequestListener.h
+// RequestHandler.h
 //
 //  Created by Tomas Palazuelos on 2016-11-07.
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
 
-#ifndef ORION_NET_HTTP_REQUESTLISTENER_H
-#define ORION_NET_HTTP_REQUESTLISTENER_H
+#ifndef ORION_NET_HTTP_REQUESTHANDLER_H
+#define ORION_NET_HTTP_REQUESTHANDLER_H
 
 #include <orion/Orion-Stddefs.h>
 
@@ -19,27 +19,27 @@ namespace net
 {
 namespace http
 {
-class RequestListener;
+class RequestHandler;
 
-using Listeners = std::map<std::string, std::shared_ptr<RequestListener>>;
+using Handlers = std::map<std::string, std::shared_ptr<RequestHandler>>;
 
 //! Provides a simple, programmatically controlled HTTP protocol listener.
 /*!
-   Using the RequestListener class, you can create a simple HTTP protocol listener that 
-   responds to HTTP requests. The listener is active for the lifetime of the RequestListener
+   Using the RequestHandler class, you can create a simple HTTP protocol listener that 
+   responds to HTTP requests. The listener is active for the lifetime of the RequestHandler
    object and runs within your application.
  */
-class API_EXPORT RequestListener
+class API_EXPORT RequestHandler
 {
 public:
-   virtual ~RequestListener();
+   virtual ~RequestHandler();
 
    std::string uri() const;
 
-   virtual std::error_code on_process_request(const Request& request, Response& response);
+   virtual std::error_code on_request(const Request& request, Response& response);
 
 protected:
-   RequestListener(const std::string& uri);
+   RequestHandler(const std::string& uri);
 
    virtual std::error_code on_get(const Request& request, Response& response);
 
@@ -57,4 +57,4 @@ private:
 } // net
 } // orion
 
-#endif
+#endif // ORION_NET_HTTP_REQUESTHANDLER_H

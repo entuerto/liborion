@@ -13,7 +13,7 @@
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/Connection.h>
-#include <orion/net/http/RequestListener.h>
+#include <orion/net/http/RequestHandler.h>
 #include <orion/net/http/Utils.h>
 
 #include <net/http/AsioResponse.h>
@@ -35,7 +35,7 @@ class AsioServerConnection :
 public:
    NO_COPY(AsioServerConnection)
    
-   AsioServerConnection(asio::io_service& io_service, const Listeners& RequestListeners);
+   AsioServerConnection(asio::io_service& io_service, const Handlers& RequestHandlers);
    virtual ~AsioServerConnection();
 
    virtual void close() override;
@@ -67,7 +67,7 @@ private:
    asio::ip::tcp::socket _socket;
 
    /// Request handlers
-   Listeners _RequestListeners;
+   Handlers _RequestHandlers;
 
    AsioRequest _request;
    AsioResponse _response;
