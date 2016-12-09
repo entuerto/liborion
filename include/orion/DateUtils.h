@@ -20,29 +20,55 @@
 #ifndef ORION_DATE_UTILS_H
 #define ORION_DATE_UTILS_H
 
+#include <chrono>
+#include <iomanip>
+#include <sstream>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
-/*!
-   Returns the current date representation for current locale.
-   \param date  a string to hold the return value.
- */
-API_EXPORT void get_current_date(std::string& date);
 
-/*!
-   Returns the current time representation for current locale.
-   \param time  a string to hold the return value.
- */
-API_EXPORT void get_current_time(std::string& time);
+template<typename CharT, typename Clock>
+std::basic_string<CharT> to_basic_string(const std::chrono::time_point<Clock>& tp, const CharT* fmt)
+{
+	auto t = Clock::to_time_t(tp);
 
-/*!
-   Returns the current date and time representation for current locale.
-   \param datetime  a string to hold the return value.
- */
-API_EXPORT void get_current_datetime(std::string& datetime);
+	std::tm tm{0};
+
+    localtime_s(&tm, &t);
+
+    std::basic_stringstream<CharT> ostr;
+
+	ostr << std::put_time(&tm, fmt);
+
+	return ostr.str();
+}
+
+template <typename Clock>
+std::string to_string(const std::chrono::time_point<Clock>& tp, const char* fmt) 
+{
+   return to_basic_string<char>(tp, fmt);
+}
+
+template <typename Clock>
+std::string to_wstring(const std::chrono::time_point<Clock>& tp, const wchar_t* fmt) 
+{
+   return to_basic_string<wchar_t>(tp, fmt);
+}
+
+template <typename Clock>
+std::string to_u16string(const std::chrono::time_point<Clock>& tp, const char16_t* fmt) 
+{
+   return to_basic_string<char16_t>(tp, fmt);
+}
+
+template <typename Clock>
+std::string to_u32string(const std::chrono::time_point<Clock>& tp, const char32_t* fmt) 
+{
+   return to_basic_string<char32_t>(tp, fmt);
+}
 
 } // namespace orion
 

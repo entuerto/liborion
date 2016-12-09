@@ -81,9 +81,9 @@ std::string LogEndRecord::time_stamp() const
  */
 std::string LogEndRecord::message() const
 {
-   std::string date_time;
-   get_current_datetime(date_time);
-   return "\nLog End Time - " + date_time;
+   auto now = std::chrono::system_clock::now();
+
+   return "\nLog End Time - " + to_string(now, "%c");
 }
 
 /*!

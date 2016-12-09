@@ -55,6 +55,8 @@ group "Libraries"
    project "jsoncpp"
       kind "StaticLib"
 
+      defines "_CRT_SECURE_NO_WARNINGS"
+
       removeincludedirs "*"
       includedirs "deps/jsoncpp" 
                   
@@ -77,7 +79,13 @@ group "Libraries"
       defines { "ORION_SHARED_EXPORTS" }
 
       filter "system:Windows"
-         links { "Advapi32", "psapi", "ntdll", "rpcrt4" }
+         links { 
+            "mincore", 
+            "Advapi32", 
+            "psapi", 
+            "ntdll", 
+            "rpcrt4" 
+         }
 
       files { 
          "lib/*.cpp",

@@ -79,7 +79,9 @@ public:
    /// Create a network end point address
    static std::unique_ptr<TcpAddress> create(const IP& ip, int port);
    /// Create a network end point address
-   static std::unique_ptr<TcpAddress> create(const std::string& ip, int port);
+   static std::unique_ptr<TcpAddress> create_v4(const std::string& ip, int port);
+   /// Create a network end point address
+   static std::unique_ptr<TcpAddress> create_v6(const std::string& ip, int port);
 
 private:
    int _port;

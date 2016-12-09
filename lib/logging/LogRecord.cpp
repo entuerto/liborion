@@ -37,7 +37,7 @@ LogRecord::LogRecord() :
    _line(-1),
    _function_name()
 {
-   get_current_time(_time_stamp);
+   _time_stamp = to_string(std::chrono::system_clock::now(), "%X");
 }
 
 /*!
@@ -51,7 +51,7 @@ LogRecord::LogRecord(Level level, const std::string& msg) :
    _line(-1),
    _function_name()
 {
-   get_current_time(_time_stamp);
+   _time_stamp = to_string(std::chrono::system_clock::now(), "%X");
 }
 
 /*!
@@ -68,7 +68,7 @@ LogRecord::LogRecord(      Level level,
    _line(line),
    _function_name(function)
 {
-   get_current_time(_time_stamp);
+   _time_stamp = to_string(std::chrono::system_clock::now(), "%X");
 }
 
 /*!
@@ -86,7 +86,7 @@ LogRecord::LogRecord(      Level level,
    _line(line),
    _function_name(function)
 {
-   get_current_time(_time_stamp);
+   _time_stamp = to_string(std::chrono::system_clock::now(), "%X");
 }
 /*
    Copy constructor
