@@ -35,13 +35,13 @@ uint64_t BigEndian::to_uint64(uint8_t* b)
           uint64_t(b[0]) << 56;
 }
 
-void BigEndian::put_uint16(uint16_t v, std::array<uint8_t, 2>& b)
+void BigEndian::put_uint16(uint16_t v, uint8_t* b)
 {
    b[0] = uint8_t(v >> 8);
    b[1] = uint8_t(v);
 }
 
-void BigEndian::put_uint32(uint32_t v, std::array<uint8_t, 4>& b)
+void BigEndian::put_uint32(uint32_t v, uint8_t* b)
 {
    b[0] = uint8_t(v >> 24);
    b[1] = uint8_t(v >> 16);
@@ -49,7 +49,7 @@ void BigEndian::put_uint32(uint32_t v, std::array<uint8_t, 4>& b)
    b[3] = uint8_t(v);
 }
 
-void BigEndian::put_uint64(uint64_t v, std::array<uint8_t, 8>& b)
+void BigEndian::put_uint64(uint64_t v, uint8_t* b)
 {
    b[0] = uint8_t(v >> 56);
    b[1] = uint8_t(v >> 48);
@@ -85,13 +85,13 @@ uint64_t LittleEndian::to_uint64(uint8_t* b)
           uint64_t(b[7]) << 56;
 }
 
-void LittleEndian::put_uint16(uint16_t v, std::array<uint8_t, 2>& b)
+void LittleEndian::put_uint16(uint16_t v, uint8_t* b)
 {
    b[0] = uint8_t(v);
    b[1] = uint8_t(v >> 8);
 }
 
-void LittleEndian::put_uint32(uint32_t v, std::array<uint8_t, 4>& b)
+void LittleEndian::put_uint32(uint32_t v, uint8_t* b)
 {
    b[0] = uint8_t(v);
    b[1] = uint8_t(v >>  8);
@@ -99,7 +99,7 @@ void LittleEndian::put_uint32(uint32_t v, std::array<uint8_t, 4>& b)
    b[3] = uint8_t(v >> 24);
 }
 
-void LittleEndian::put_uint64(uint64_t v, std::array<uint8_t, 8>& b)
+void LittleEndian::put_uint64(uint64_t v, uint8_t* b)
 {
    b[0] = uint8_t(v >>  8);
    b[1] = uint8_t(v >> 16);

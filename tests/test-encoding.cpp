@@ -31,7 +31,7 @@ TEST(BigEndian, put_uint16)
 
    uint16_t v16 = 256;
 
-   BigEndian::put_uint16(v16, b);
+   BigEndian::put_uint16(v16, b.data());
 
    EXPECT_ARR_EQ(b, result);
 }
@@ -52,7 +52,7 @@ TEST(LittleEndian, put_uint16)
 
    uint16_t v16 = 256;
 
-   LittleEndian::put_uint16(v16, b);
+   LittleEndian::put_uint16(v16, b.data());
 
    EXPECT_ARR_EQ(b, result);
 }
