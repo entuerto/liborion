@@ -162,8 +162,8 @@ group "Libraries"
 
       includedirs { "C:/Tools/pkgs/asio-1.10.8/include" }
 
-      filter { "system:windows", "files:**Mongoose**.*" }
-         flags { "ExcludeFromBuild"}
+      --filter { "system:windows", "files:**Mongoose**.*" }
+      --   flags { "ExcludeFromBuild"}
 
       FilterPlatformSourceFiles()
 

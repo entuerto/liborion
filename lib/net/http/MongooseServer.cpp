@@ -1,5 +1,5 @@
 /*
- * MongooseHttpServer.cpp
+ * MongooseServer.cpp
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,25 +19,26 @@
  * MA 02110-1301, USA.
  */
 
-#include <net/impl/MongooseHttpServer.h>
+#include <net/http/MongooseServer.h>
 
 #include <cstring>
 #include <iostream>
 #include <utility>
 
+#include <orion/Logging.h>
+
+#include <net/http/MongooseServerConnection.h>
+
 #include <boost/format.hpp>
 
-#include <orion/Logging.h>
-#include <orion/StringUtils.h>
-#include <net/impl/MongooseRequest.h>
+using namespace orion::logging;
 
 namespace orion
 {
 namespace net
 {
-namespace mongoose
+namespace http
 {
-using namespace orion::logging;
 
 static void request_handler(struct mg_connection* nc, int event, void* ev_data)
 {
@@ -58,12 +59,10 @@ static void request_handler(struct mg_connection* nc, int event, void* ev_data)
       }
       case MG_EV_HTTP_REQUEST:
       {
-         MongooseHttpServer* server = static_cast<MongooseHttpServer*>(mgr->user_data);
+         MongooseServer* server = static_cast<MongooseServer*>(mgr->user_data);
 
-         std::unique_ptr<Request>  request = MongooseRequest::create(nc, hm);
-         std::unique_ptr<Response> response = server->process_request(request.get());
+         server->serve(nc, hm);
 
-         server->send_response(response.get(), nc);
          break;
       }
       case MG_EV_CLOSE:
@@ -76,27 +75,27 @@ static void request_handler(struct mg_connection* nc, int event, void* ev_data)
    }
 }
 
-MongooseHttpServer::MongooseHttpServer(int port) :
-   HttpServer(port),
-   _is_running(false),
+MongooseServer::MongooseServer() :
+   Server(),
    _mgr()
 {
    mg_mgr_init(&_mgr, this);
 }
 
-MongooseHttpServer::~MongooseHttpServer()
+MongooseServer::~MongooseServer()
 {
-   stop();
-
    mg_mgr_free(&_mgr);
 }
 
-void MongooseHttpServer::start()
+void MongooseServer::shutdown()
 {
-   LOG(Debug) << "listening port: " 
-              << _port;
+}
 
-   struct mg_connection* nc = mg_bind(&_mgr, to_string(port()).c_str(), request_handler);
+std::error_code MongooseServer::listen_and_serve(const std::string& addr, int port)
+{
+   _port = port;
+
+   struct mg_connection* nc = mg_bind(&_mgr, std::to_string(port).c_str(), request_handler);
 
    mg_set_protocol_http_websocket(nc);
 
@@ -106,42 +105,19 @@ void MongooseHttpServer::start()
    {
       mg_mgr_poll(&_mgr, 1000);
    }
-   
+   return std::error_code();
 }
 
-void MongooseHttpServer::stop()
+std::error_code MongooseServer::serve(struct mg_connection* connection, struct http_message* hm)
 {
-   if (not _is_running)
-      return;
+   std::unique_ptr<MongooseServerConnection> conn = std::make_unique<MongooseServerConnection>(connection, hm, _RequestHandlers);
 
-   _is_running = false;
+   conn->accept();
+
+   return std::error_code();
 }
 
-bool MongooseHttpServer::is_running() const
-{
-   return _is_running;
-}
-
-void MongooseHttpServer::send_response(const Response* /* response */)
-{
-   
-}
-
-void MongooseHttpServer::send_response(const Response* response, struct mg_connection* connection)
-{
-   std::string buffer = response->to_string();
-
-   LOG(Debug) << buffer;
-
-   mg_send(connection, buffer.c_str(), buffer.size());
-}
-
-std::unique_ptr<Server> MongooseHttpServer::create(int port)
-{
-   return std::make_unique<MongooseHttpServer>(port); 
-}
-
-} // mongoose
+} // http
 } // net
 } // orion
 

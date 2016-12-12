@@ -1,5 +1,5 @@
 /*
- * MongooseHttpServer.h
+ * MongooseServer.h
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,45 +19,41 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_NET_MONGOOSEHTTPSERVER_H
-#define ORION_NET_MONGOOSEHTTPSERVER_H
+#ifndef ORION_NET_MONGOOSESERVER_H
+#define ORION_NET_MONGOOSESERVER_H
 
 #include <string>
-#include <orion/net/HttpServer.h>
+
+#include <orion/net/http/Server.h>
+
 #include <mongoose/mongoose.h>
 
 namespace orion
 {
 namespace net
 {
-namespace mongoose
+namespace http
 {
 
-class MongooseHttpServer : public HttpServer
+class MongooseServer : public Server
 {
 public:
-   MongooseHttpServer(int port);
-   virtual ~MongooseHttpServer();
+   NO_COPY(MongooseServer)
 
-   virtual void start();
-   virtual void stop();
+   MongooseServer();
+   virtual ~MongooseServer();
 
-   virtual bool is_running() const;
+   void shutdown() override;
 
-   virtual void send_response(const Response* response);
-   virtual void send_response(const Response* response, struct mg_connection* connection);
+   std::error_code listen_and_serve(const std::string& addr, int port) override;
 
-   static std::unique_ptr<Server> create(int port);
-
-protected:
-   std::string make_port_list();
+   std::error_code serve(struct mg_connection* connection, struct http_message* hm);
 
 private:
-   bool _is_running;
    struct mg_mgr _mgr; 
 };
 
-} // mongoose
+} // http
 } // net
 } // orion
 #endif 

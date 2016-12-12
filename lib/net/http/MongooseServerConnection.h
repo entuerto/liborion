@@ -19,63 +19,64 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_NET_MONGOOSEREQUEST_H
-#define ORION_NET_MONGOOSEREQUEST_H
+#ifndef ORION_NET_MONGOOSESERVERCONNECTION_H
+#define ORION_NET_MONGOOSESERVERCONNECTION_H
 
 #include <memory>
 #include <string>
 
-#include <orion/net/Request.h>
+#include <orion/Orion-Stddefs.h>
+
+#include <orion/net/tcp/Connection.h>
+#include <orion/net/http/RequestHandler.h>
+#include <orion/net/http/Utils.h>
+
+#include <net/http/MongooseRequest.h>
+#include <net/http/MongooseResponse.h>
+
 #include <mongoose/mongoose.h>
 
 namespace orion
 {
 namespace net
 {
-namespace mongoose
+namespace http
 {
 
-class MongooseRequest : public Request
+class MongooseServerConnection : public tcp::Connection
 {
 public:
-   MongooseRequest(struct mg_connection* connection, struct http_message* hm);
-
-   virtual ~MongooseRequest();
-
-   //! "GET", "POST", etc
-   virtual std::string method() const override; 
-
-   //! URL-decoded URI
-   virtual std::string uri() const override;
-
-   //! E.g. "1.0", "1.1"
-   virtual std::string http_version() const override;   
+   NO_COPY(MongooseServerConnection)
    
-   //! URL part after '?', not including '?', or NULL
-   virtual std::string query_string() const override;   
+   MongooseServerConnection(struct mg_connection* connection, 
+   	                        struct http_message*  hm, 
+   	                        const Handlers& RequestHandlers);
 
-   //! Authenticated user, or NULL if no auth used
-   virtual std::string remote_user() const override;    
-   
-   virtual bool is_authenticated()  const override;
+   virtual ~MongooseServerConnection();
 
-   virtual bool is_secure_connection() const override;
+   virtual void close() override;
 
-   virtual std::string header(const std::string& name) const override;
-
-   static std::unique_ptr<Request> create(struct mg_connection* connection, struct http_message* hm);
+   void accept();
 
 private:
-   void read_data(struct http_message* hm);
+   void do_read();
+   void do_handler();
+   void do_write();
 
    struct mg_connection* _connection;
    struct http_message* _hm;
+
+   /// Request handlers
+   Handlers _RequestHandlers;
+
+   MongooseRequest  _request;
+   MongooseResponse _response;
    
 };
 
-} // mongoose
+} // http
 } // net
 } // orion
 
-#endif
+#endif // ORION_NET_MONGOOSESERVERCONNECTION_H
 
