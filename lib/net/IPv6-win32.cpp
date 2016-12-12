@@ -1,5 +1,5 @@
 /*
- * IPAddress.h
+ * IPv6-win32.cpp
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,48 +19,48 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_NET_IPADDRESS_H
-#define ORION_NET_IPADDRESS_H
-
-#include <string>
-
-#include <orion/Orion-Stddefs.h>
-#include <orion/net/IP.h>
-#include <orion/net/IPv4.h>
 #include <orion/net/IPv6.h>
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+#include <algorithm>
+
+#include <orion/StringUtils.h>
 
 namespace orion
 {
 namespace net
 {
 
-/// IPAddress represents the address of an IP end point.
-class API_EXPORT IPAddress 
+IPv6 IPv6::parse(const std::string& s)
 {
-public:
-   IPAddress(const IPv4& ip, int port);
-   IPAddress(const IPv6& ip, int port, const std::string& zone = "");
-   IPAddress(const IPAddress& Other);
-   IPAddress(IPAddress&& Other);
-   virtual ~IPAddress();
+   union
+   {
+      sockaddr base;
+      sockaddr_in6 v6;
+   } address;
 
-   IPAddress& operator=(const IPAddress& Rhs);
-   IPAddress& operator=(IPAddress&& Rhs);
+   int address_length = sizeof(address);
 
-   virtual IP* ip() const;
+   auto ipw = utf8_to_wstring(s);
 
-   virtual int port() const;
+   address.v6.sin6_family = AF_INET6;
 
-   virtual std::string zone() const;
+   int rc = WSAStringToAddressW(const_cast<wchar_t*>(ipw.data()), AF_INET6, 0, &address.base, &address_length);
+   if (rc == 0)
+   {
+      IPv6 ip;
 
-   virtual std::string to_string() const;
+      auto s = std::begin(address.v6.sin6_addr.s6_bytes);
+      auto e = std::end(address.v6.sin6_addr.s6_bytes);
+      
+      std::copy(s, e, std::begin(ip._a.b));
+      return ip;
+   }
 
-private:
-   std::unique_ptr<IP> _ip;
-   std::string _zone;
-   int _port;
-};
+   return IPv6();
+}
 
 } // net
 } // orion
-#endif 

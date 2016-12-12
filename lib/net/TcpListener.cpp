@@ -61,12 +61,12 @@ IPAddress* TcpListener::addr() const
    return _impl->addr.get();
 }
 
-std::unique_ptr<Listener> TcpListener::open_tcp4(const TcpAddress& addr) 
+std::unique_ptr<Listener> TcpListener::open_tcp4(const IPAddress& addr) 
 {
    return nullptr;
 }
 
-std::unique_ptr<Listener> TcpListener::open_tcp6(const TcpAddress& /* addr */) 
+std::unique_ptr<Listener> TcpListener::open_tcp6(const IPAddress& /* addr */) 
 {
    return nullptr;
 }

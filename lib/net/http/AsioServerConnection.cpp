@@ -7,6 +7,8 @@
 #include <net/http/AsioServerConnection.h>
 
 #include <orion/Logging.h>
+#include <orion/net/IPv4.h>
+#include <orion/net/IPv6.h>
 
 using namespace orion::logging;
 using namespace std::chrono_literals;
@@ -26,13 +28,13 @@ IPAddress* convert(const asio::ip::tcp::endpoint& ep)
    if (addr.is_v4())
    {
       auto addr_v4 = addr.to_v4();
-      return new TcpAddress(new IPv4(addr_v4.to_bytes()), port);
+      return new IPAddress(IPv4(addr_v4.to_bytes()), port);
    }
 
    if (addr.is_v6())
    {
       auto addr_v6 = addr.to_v6();
-      return new TcpAddress(new IPv6(addr_v6.to_bytes()), port);
+      return new IPAddress(IPv6(addr_v6.to_bytes()), port);
    }
 
    return nullptr;

@@ -66,8 +66,8 @@ public:
 
    IPAddress* addr() const override;
 
-   static std::unique_ptr<Listener> open_tcp4(const TcpAddress& addr);
-   static std::unique_ptr<Listener> open_tcp6(const TcpAddress& addr);
+   static std::unique_ptr<Listener> open_tcp4(const IPAddress& addr);
+   static std::unique_ptr<Listener> open_tcp6(const IPAddress& addr);
 
 private:
 	struct Impl;

@@ -4,6 +4,9 @@
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
 #include <orion/net/IP.h>
+#include <orion/net/IPv4.h>
+#include <orion/net/IPv6.h>
+#include <orion/net/IPAddress.h>
 #include <orion/TestUtils.h>
 
 using namespace orion;
@@ -18,7 +21,7 @@ TEST_SUITE(OrionNet)
 TEST(IPv4, IsUnspecified)
 {
    EXPECT_TRUE(IPv4::zero.is_unspecified());
-   EXPECT_FALSE(IPv4(127, 0, 0, 1).is_unspecified()); 
+   EXPECT_FALSE(IPv4(127, 0, 0, 1).is_unspecified());
 }
 
 TEST(IPv6, IsUnspecified)
@@ -106,6 +109,21 @@ TEST(IPv6, Move)
    ip = std::move(IPv6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}));
 
    EXPECT_EQ(ip, IPv6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}));
+}
+
+TEST(TcpAddress, IPv6)
+{
+   IPAddress addr(IPv6::parse("2001:db8::123:12:1"), 22);
+
+   auto ip = IPv6{0x20, 0x1, 0xd, 0xb8, 0, 0, 0, 0, 0, 0, 0x1, 0x23, 0, 0x12, 0, 0x1};
+
+   FAIL_IF(addr.ip() == nullptr)
+
+   if (addr.ip() != nullptr)
+   {
+      auto ip6 = dynamic_cast<IPv6*>(addr.ip());
+      EXPECT_EQ(ip, *ip6);
+   }
 }
 
 } // TEST_SUITE(OrionNet)
