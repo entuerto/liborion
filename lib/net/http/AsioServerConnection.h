@@ -12,7 +12,7 @@
 #include <asio.hpp>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/net/Connection.h>
+#include <orion/net/tcp/Connection.h>
 #include <orion/net/http/RequestHandler.h>
 #include <orion/net/http/Utils.h>
 
@@ -29,7 +29,7 @@ namespace http
 
 ///  
 class AsioServerConnection : 
-   public TcpConnection,
+   public tcp::Connection,
    public std::enable_shared_from_this<AsioServerConnection> 
 {
 public:

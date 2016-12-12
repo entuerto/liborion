@@ -1,5 +1,5 @@
 /*
- * Listener.h
+ * Listener.cpp
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,42 +19,39 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_NET_LISTENER_H
-#define ORION_NET_LISTENER_H
+#include <orion/net/tcp/Listener.h>
 
-#include <orion/Orion-Stddefs.h>
-#include <orion/net/Connection.h> 
-#include <orion/net/IPAddress.h> 
+#include <orion/Logging.h>
+
+using namespace orion::logging;
 
 namespace orion
 {
 namespace net
 {
-
-//! This class provides a generic network listener
-/*!
-   A Listener is a generic network listener for stream-oriented protocols.
- */
-class API_EXPORT Listener 
+namespace tcp
 {
-public:
-   Listener(const IPAddress& addr);
-   virtual ~Listener();
 
-   // Accept waits for and returns the next connection to the listener.
-   virtual std::unique_ptr<Connection> accept() =0;
+Listener::Listener(const IPAddress& addr):
+   net::Listener(addr)
+{
 
-   // Close closes the listener.
-   // Any blocked Accept operations will be unblocked and return errors.
-   virtual void close() =0;
+}
 
-   // Addr returns the listener's network address.
-   virtual IPAddress* addr() const;
+Listener::~Listener() 
+{
+}
 
-protected:
-   std::unique_ptr<IPAddress> _addr;
-};
+std::unique_ptr<Connection> Listener::accept() 
+{
+   return nullptr;
+}
 
+void Listener::close() 
+{
+
+}
+
+} // tcp
 } // net
 } // orion
-#endif 

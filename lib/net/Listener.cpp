@@ -1,5 +1,5 @@
 /*
- * TcpListener.cpp
+ * Listener.cpp
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -21,56 +21,24 @@
 
 #include <orion/net/Listener.h>
 
-#include <orion/Logging.h>
-
-using namespace orion::logging;
-
 namespace orion
 {
 namespace net
 {
-struct TcpListener::Impl 
-{
-   std::unique_ptr<IPAddress> addr;
-};
 
-TcpListener::TcpListener(TcpListener::Impl* impl):
-   Listener(),
-   _impl(impl)
+Listener::Listener(const IPAddress& addr):
+   _addr(std::make_unique<IPAddress>(addr))
 {
-
 }
 
-TcpListener::~TcpListener() 
+Listener::~Listener() 
 {
-
 }
 
-std::unique_ptr<Connection> TcpListener::accept() 
+IPAddress* Listener::addr() const 
 {
-   return nullptr;
+   return _addr.get();
 }
 
-void TcpListener::close() 
-{
-
-}
-
-IPAddress* TcpListener::addr() const 
-{
-   return _impl->addr.get();
-}
-
-std::unique_ptr<Listener> TcpListener::open_tcp4(const IPAddress& addr) 
-{
-   return nullptr;
-}
-
-std::unique_ptr<Listener> TcpListener::open_tcp6(const IPAddress& /* addr */) 
-{
-   return nullptr;
-}
-
-
-} // ws
+} // net
 } // orion

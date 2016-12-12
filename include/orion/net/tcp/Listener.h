@@ -19,42 +19,41 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_NET_LISTENER_H
-#define ORION_NET_LISTENER_H
+#ifndef ORION_NET_TCP_LISTENER_H
+#define ORION_NET_TCP_LISTENER_H
 
 #include <orion/Orion-Stddefs.h>
+
 #include <orion/net/Connection.h> 
 #include <orion/net/IPAddress.h> 
+#include <orion/net/Listener.h> 
 
 namespace orion
 {
 namespace net
 {
-
-//! This class provides a generic network listener
-/*!
-   A Listener is a generic network listener for stream-oriented protocols.
- */
-class API_EXPORT Listener 
+namespace tcp
+{
+///
+/// Listener is a TCP network listener. 
+///
+class API_EXPORT Listener : public net::Listener 
 {
 public:
+   NO_COPY(Listener)
+
    Listener(const IPAddress& addr);
-   virtual ~Listener();
+   ~Listener();
 
-   // Accept waits for and returns the next connection to the listener.
-   virtual std::unique_ptr<Connection> accept() =0;
+   std::unique_ptr<Connection> accept() override;
 
-   // Close closes the listener.
-   // Any blocked Accept operations will be unblocked and return errors.
-   virtual void close() =0;
+   void close() override;
 
-   // Addr returns the listener's network address.
-   virtual IPAddress* addr() const;
-
-protected:
-   std::unique_ptr<IPAddress> _addr;
+private:
+   
 };
 
+} // tcp
 } // net
 } // orion
-#endif 
+#endif // ORION_NET_TCP_LISTENER_H

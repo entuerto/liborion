@@ -43,7 +43,7 @@ IPAddress* convert(const asio::ip::tcp::endpoint& ep)
 //---------------------------------------------------------------------------------------
 
 AsioServerConnection::AsioServerConnection(asio::io_service& io_service, const Handlers& RequestHandlers) :
-   TcpConnection(),
+   tcp::Connection(),
    _socket(io_service),
    _RequestHandlers(RequestHandlers),
    _request(),
@@ -91,7 +91,7 @@ void AsioServerConnection::accept()
    if (Logger::get_logger().is_enabled(Level::Debug))
       dump_socket_options();
 
-   //start_read_timer();
+   start_read_timer();
 
    do_read();
 }
