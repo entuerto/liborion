@@ -31,25 +31,25 @@ Request::Request() :
 Request::Request(const std::string& method, 
                  const Url& url, 
                  const Version& version, 
-                 const Header& header,
-                       bool should_keep_alive,
-                       bool upgrade) :
+                 const Header& header) :
    _method(method),
    _url(url),
    _version(version),
    _header(header),
-   _should_keep_alive(should_keep_alive),
-   _upgrade(upgrade)
+   _should_keep_alive(false),
+   _upgrade(false)
 {
 }
 
-Request::Request(Request&& Other) :
-   _method(std::move(Other._method)),
-   _url(std::move(Other._url)),
-   _version(std::move(Other._version)),
-   _header(std::move(Other._header)),
-   _should_keep_alive(std::move(Other._should_keep_alive)),
-   _upgrade(std::move(Other._upgrade))
+Request::Request(Request&& rhs) :
+   _method(std::move(rhs._method)),
+   _url(std::move(rhs._url)),
+   _version(std::move(rhs._version)),
+   _header(std::move(rhs._header)),
+   _should_keep_alive(std::move(rhs._should_keep_alive)),
+   _upgrade(std::move(rhs._upgrade)),
+   _header_streambuf(std::move(rhs._header_streambuf)),
+   _body_streambuf(std::move(rhs._body_streambuf)) 
 {
 }
 
@@ -63,16 +63,31 @@ std::string Request::method() const
    return _method;
 }
 
-   //! URL-decoded URI
+void Request::method(const std::string& m)
+{
+   _method = m;
+}
+
+//! URL-decoded URI
 Url Request::url() const
 {
    return _url;
+}
+
+void Request::url(const Url& u)
+{
+   _url = u;
 }
 
 //! E.g. "1.0", "1.1"
 Version Request::http_version() const
 {
    return _version;
+}
+
+void Request::http_version(const Version& v)
+{
+   _version = v;
 }
 
 std::string Request::header(const std::string& name) const
@@ -85,9 +100,24 @@ std::string Request::header(const std::string& name) const
    return "";
 }
 
+void Request::header(const std::string& name, const std::string& value)
+{
+   _header[name] = value;
+}
+
+void Request::header(const Header& header)
+{
+   _header = header;
+}
+
 bool Request::should_keep_alive() const
 {
    return _should_keep_alive;
+}
+
+void Request::should_keep_alive(bool value)
+{
+   _should_keep_alive = value;
 }
 
 bool Request::upgrade() const
@@ -95,14 +125,27 @@ bool Request::upgrade() const
    return _upgrade;
 }
 
-Request& Request::operator=(Request&& Rhs)
+void Request::upgrade(bool value)
 {
-   _method  = std::move(Rhs._method);
-   _url     = std::move(Rhs._url);
-   _version = std::move(Rhs._version);
-   _header  = std::move(Rhs._header);
-   _should_keep_alive  = std::move(Rhs._should_keep_alive);
-   _upgrade            = std::move(Rhs._upgrade);
+   _upgrade = value;
+}
+
+std::streambuf* Request::rdbuf() const
+{
+   return _body_streambuf.get();
+}
+
+Request& Request::operator=(Request&& rhs)
+{
+   _method  = std::move(rhs._method);
+   _url     = std::move(rhs._url);
+   _version = std::move(rhs._version);
+   _header  = std::move(rhs._header);
+   _should_keep_alive  = std::move(rhs._should_keep_alive);
+   _upgrade            = std::move(rhs._upgrade);
+
+   _header_streambuf = std::move(rhs._header_streambuf);
+   _body_streambuf   = std::move(rhs._body_streambuf); 
    return *this;   
 }
 

@@ -60,9 +60,11 @@ std::error_code JsonRequestHandler::on_post(const http::Request& request, http::
    Json::Value  json_response;
    Json::Value  json_result;
 
-   auto content = request.content();
+   std::ostringstream ostr;
 
-   if (reader.parse(content, json_request, false))
+   ostr << request.rdbuf();
+
+   if (reader.parse(ostr.str(), json_request, false))
    {
       if (json_request.isArray())
       {

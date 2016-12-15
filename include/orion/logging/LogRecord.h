@@ -118,6 +118,9 @@ public:
    //! Log boost format
    LogRecord& operator<<(const boost::format& fmt);
 
+   /// Log stream buffer
+   LogRecord& operator<<(std::streambuf* buf);
+
    static std::unique_ptr<LogRecord> create();
 
    static std::unique_ptr<LogRecord> create(Level level, const std::string& msg);

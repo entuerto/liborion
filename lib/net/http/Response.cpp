@@ -19,11 +19,19 @@ namespace net
 namespace http
 {
 
+Response::Response() :
+   _status_code(StatusCode::OK),
+   _version({1, 1}),
+   _header()
+{
+}
+
 Response::Response(StatusCode code) :
    _status_code(code),
    _version({1, 1}),
    _header()
 {
+/*
    if (_status_code >= StatusCode::BadRequest)
    {
       header("Connection", "close");
@@ -31,36 +39,50 @@ Response::Response(StatusCode code) :
    }
    else
       header("Content-Type", "text/plain; charset=utf-8");
+*/
 }
 
-Response::Response(StatusCode code, const Version& version) :
+Response::Response(StatusCode code, const Version& version, const Header& header) :
    _status_code(code),
    _version(version),
-   _header()
+   _header(header)
 {
-   if (_status_code >= StatusCode::BadRequest)
-   {
-      header("Connection", "close");
-      header("X-Content-Type-Options", "nosniff");
-   }
-   else
-      header("Content-Type", "text/plain; charset=utf-8");
 }
 
-Response::Response(Response&& Other) :
-   _status_code(std::move(Other._status_code)),
-   _version(std::move(Other._version)),
-   _header(std::move(Other._header))
+Response::Response(Response&& rhs) :
+   _status_code(std::move(rhs._status_code)),
+   _version(std::move(rhs._version)),
+   _header(std::move(rhs._header)),
+   _header_streambuf(std::move(rhs._header_streambuf)),
+   _body_streambuf(std::move(rhs._body_streambuf))   
 {
 }
 
 Response::~Response()
 {
 }
- 
+
+
+Response& Response::operator=(Response&& rhs)
+{
+   _status_code = std::move(rhs._status_code);
+   _version     = std::move(rhs._version);
+   _header      = std::move(rhs._header);
+   
+   _header_streambuf = std::move(rhs._header_streambuf);
+   _body_streambuf   = std::move(rhs._body_streambuf);
+
+   return *this;
+}
+
 StatusCode Response::status_code() const
 {
    return _status_code;
+}
+
+void Response::status_code(StatusCode sc)
+{
+   _status_code = sc;
 }
 
 std::string Response::status() const
@@ -71,6 +93,11 @@ std::string Response::status() const
 Version Response::http_version() const
 {
    return _version;
+}
+
+void Response::http_version(const Version& v)
+{
+   _version = v;
 }
 
 std::string Response::header(const std::string& name) const
@@ -88,23 +115,18 @@ void Response::header(const std::string& name, const std::string& value)
    _header[name] = value;
 }
 
-Response& Response::operator=(Response&& Rhs)
+void Response::header(const Header& header)
 {
-   _status_code = std::move(Rhs._status_code);
-   _version     = std::move(Rhs._version);
-   _header      = std::move(Rhs._header);
-   return *this;
+   _header = header;
 }
 
-std::string Response::content() const
+std::streambuf* Response::rdbuf() const
 {
-   return "null";
+   return _body_streambuf.get();
 }
 
 const logging::LogRecord& operator<<(const logging::LogRecord& rec, const Response& r)
 {
-   static const int w = 18;
-
    std::ostringstream o;
 
    auto v = r._version;
@@ -120,9 +142,8 @@ const logging::LogRecord& operator<<(const logging::LogRecord& rec, const Respon
 
    for (const auto& item : r._header)
    {
-      o << std::setw(w) 
-        << item.first
-        << " : "
+      o << item.first
+        << ": "
         << item.second
         << "\n";
    }

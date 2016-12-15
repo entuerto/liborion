@@ -26,14 +26,12 @@ class MongooseResponse : public Response
 {
 public:
    MongooseResponse(StatusCode code);
-   MongooseResponse(StatusCode code, const Version& version);
+   MongooseResponse(StatusCode code, const Version& version, const Header& header);
    MongooseResponse(MongooseResponse&& Other);
 
    virtual ~MongooseResponse();
 
    MongooseResponse& operator=(MongooseResponse&& Rhs);
-
-   virtual std::string content() const override;
 
    virtual std::streambuf* rdbuf() const override;
 

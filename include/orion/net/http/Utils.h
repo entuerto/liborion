@@ -8,7 +8,9 @@
 #ifndef ORION_NET_HTTP_UTILS_H
 #define ORION_NET_HTTP_UTILS_H
 
+#include <chrono>
 #include <map>
+#include <vector>
 #include <string>
  
 #include <orion/Orion-Stddefs.h>
@@ -169,18 +171,54 @@ static const std::map<StatusCode, std::string> StatusText
 
 struct Method final
 {
-   constexpr static const char* Get     = "GET";
-   constexpr static const char* Head    = "HEAD";
-   constexpr static const char* Post    = "POST";
-   constexpr static const char* Put     = "PUT";
-   constexpr static const char* Patch   = "PATCH"; // RFC 5789
-   constexpr static const char* Delete  = "DELETE";
-   constexpr static const char* Connect = "CONNECT";
-   constexpr static const char* Options = "OPTIONS";
-   constexpr static const char* Trace   = "TRACE";
+   /// Transfer a current representation of the target resource.
+   constexpr static const char* Get     = "GET";    
+   /// Same as GET, but only transfer the status line and header section.
+   constexpr static const char* Head    = "HEAD";   
+   /// Perform resource-specific processing on the request payload.
+   constexpr static const char* Post    = "POST";   
+   /// Replace all current representations of the target resource with the request payload.
+   constexpr static const char* Put     = "PUT";   
+   /// RFC 5789 
+   constexpr static const char* Patch   = "PATCH"; 
+   /// Remove all current representations of the target resource.
+   constexpr static const char* Delete  = "DELETE"; 
+   /// Establish a tunnel to the server identified by the target resource.
+   constexpr static const char* Connect = "CONNECT"; 
+   /// Describe the communication options for the target resource.
+   constexpr static const char* Options = "OPTIONS"; 
+   /// Perform a message loop-back test along the path to the target resource.
+   constexpr static const char* Trace   = "TRACE";   
 };
 
 const char crlf[] = { '\r', '\n', '\0' };
+
+
+struct Parameter 
+{
+   std::string key;
+   std::string value;
+};
+
+class Parameters 
+{
+public:
+   Parameters() = default;
+   Parameters(const std::initializer_list<Parameter>& p) :
+      _params(p) {}
+
+   void add(const Parameter& p)
+   {
+      _params.push_back(p);
+   }
+
+   std::vector<Parameter> _params;
+};
+
+struct Timeout 
+{
+   std::chrono::milliseconds ms;
+};
 
 } // http
 } // net

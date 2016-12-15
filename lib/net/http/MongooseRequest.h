@@ -34,8 +34,6 @@ public:
 
    MongooseRequest& operator=(MongooseRequest&& Rhs);
 
-   virtual std::string content() const override;
-
    virtual std::streambuf* rdbuf() const override;
 
 private:

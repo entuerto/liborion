@@ -29,8 +29,8 @@ MongooseResponse::MongooseResponse(StatusCode code) :
 {
 }
 
-MongooseResponse::MongooseResponse(StatusCode code, const Version& version) :
-   Response(code, version),
+MongooseResponse::MongooseResponse(StatusCode code, const Version& version, const Header& header) :
+   Response(code, version, header),
    _header_streambuf(std::make_unique<std::stringbuf>()),
    _body_streambuf(std::make_unique<std::stringbuf>())
 {
@@ -55,11 +55,6 @@ MongooseResponse& MongooseResponse::operator=(MongooseResponse&& Rhs)
    _body_streambuf   = std::move(Rhs._body_streambuf);
 
    return *this;   
-}
-
-std::string MongooseResponse::content() const
-{
-   return _body_streambuf->str();
 }
 
 std::streambuf* MongooseResponse::rdbuf() const

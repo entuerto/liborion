@@ -444,6 +444,11 @@ void Url::userinfo(const UserInfo& value)
    _userinfo = value;
 }
 
+std::string Url::host() const
+{
+   return _hostname + ":" + std::to_string(port());
+}
+
 std::string Url::hostname() const
 {
    return _hostname;
@@ -463,6 +468,27 @@ int Url::port() const
 void Url::port(int value)
 {
    _port = value;
+}
+
+std::string Url::path() const
+{
+   std::string out;
+
+   out += priv::encode<priv::EncodePathChar>(_pathname); 
+   if (not _query.empty())
+   {
+      out += "?"; 
+      for (const auto& item : _query)
+      {
+         out += priv::encode<priv::EncodeQueryChar>(item.first);
+         out += "="; 
+         out += priv::encode<priv::EncodeQueryChar>(item.second);
+         out += "&";
+      }
+      out.erase(--out.end());
+   } 
+
+   return out;
 }
 
 std::string Url::pathname() const

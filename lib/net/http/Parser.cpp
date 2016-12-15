@@ -7,6 +7,7 @@
 #include <net/http/Parser.h>
 
 #include <iostream>
+#include <iomanip>
 
 #include <orion/Logging.h>
 
@@ -70,14 +71,15 @@ int cb_chunk_complete(http_parser* p)
 }
 //---------------------------------------------------------------------------------------
 
-Parser::Parser(AsioRequest& request) :
+Parser::Parser() :
    _settings(),
    _parser(),
    _url(),
    _status(),
    _cur_field(),
    _header(),
-   _request(request),
+   _streambuf(nullptr),
+   _headers_complete(false),
    _message_complete(false)
 {
    http_parser_settings_init(&_settings);
@@ -94,13 +96,15 @@ Parser::Parser(AsioRequest& request) :
       cb_chunk_header,
       cb_chunk_complete
    };
-
-   http_parser_init(&_parser, HTTP_REQUEST);
-   _parser.data = this;
 }
 
 Parser::~Parser()
 {
+}
+
+bool Parser::headers_complete() const
+{
+   return _headers_complete;
 }
 
 bool Parser::message_complete() const
@@ -108,8 +112,13 @@ bool Parser::message_complete() const
    return _message_complete;
 }
 
-std::error_code Parser::parse(const char* data, std::size_t length)
+std::error_code Parser::parse(AsioRequest& request, const char* data, std::size_t length)
 {
+   http_parser_init(&_parser, HTTP_REQUEST);
+   _parser.data = this;
+
+   _streambuf = request.rdbuf();
+   
    int nparsed = http_parser_execute(&_parser, &_settings, data, length);
 
    if (_parser.upgrade) 
@@ -120,6 +129,45 @@ std::error_code Parser::parse(const char* data, std::size_t length)
    {
    /* Handle error. Usually just close the connection. */
    }
+
+   if (_headers_complete)
+   {
+      request.method(http_method_str(static_cast<http_method>(_parser.method)));
+      request.http_version(Version{_parser.http_major, _parser.http_minor});
+      request.url(_url);
+      request.header(_header);
+      request.should_keep_alive(http_should_keep_alive(&_parser) == 1);
+      request.upgrade(_parser.upgrade == 1);
+   }
+
+   return std::error_code();
+}
+
+std::error_code Parser::parse(AsioResponse& response, const char* data, std::size_t length)
+{
+   http_parser_init(&_parser, HTTP_RESPONSE);
+   _parser.data = this;
+
+   _streambuf = response.rdbuf();
+
+   int nparsed = http_parser_execute(&_parser, &_settings, data, length);
+
+   if (_parser.upgrade) 
+   {
+   /* handle new protocol */
+   } 
+   else if (nparsed != length) 
+   {
+   /* Handle error. Usually just close the connection. */
+   }
+
+   if (_headers_complete)
+   {
+      response.status_code(static_cast<StatusCode>(_parser.status_code));
+      response.http_version(Version{_parser.http_major, _parser.http_minor});
+      response.header(_header);
+   }
+
    return std::error_code();
 }
 
@@ -131,6 +179,7 @@ int Parser::on_message_begin()
    _status.clear();
    _cur_field.clear();
    _header.clear();
+   _headers_complete = false;
    _message_complete = false;
    return 0;
 }
@@ -174,12 +223,7 @@ int Parser::on_headers_complete()
 {
    LOG_FUNCTION(Debug2, "Parser::on_headers_complete()")
 
-   _request = AsioRequest(http_method_str(static_cast<http_method>(_parser.method)), 
-                          _url, 
-                          Version{_parser.http_major, _parser.http_minor}, 
-                          _header,
-                          http_should_keep_alive(&_parser) == 1,
-                          _parser.upgrade == 1);
+   _headers_complete = true;
 
    return 0;
 }
@@ -188,7 +232,7 @@ int Parser::on_body(const char* at, size_t length)
 {
    LOG_FUNCTION(Debug2, "Parser::on_body()")
 
-   std::ostream o(_request.rdbuf());
+   std::ostream o(_streambuf);
 
    o << std::string(at, length);
 

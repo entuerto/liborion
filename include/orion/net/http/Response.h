@@ -31,38 +31,43 @@ class API_EXPORT Response
 public:
    NO_COPY(Response);
 
+   Response();
    Response(StatusCode code);
-   Response(StatusCode code, const Version& version);
-   Response(Response&& Other);
+   Response(StatusCode code, const Version& version, const Header& header);
+   Response(Response&& rhs);
    virtual ~Response();
 
+   Response& operator=(Response&& rhs);
+
    virtual StatusCode status_code() const;
+   virtual void status_code(StatusCode sc);
 
    virtual std::string status() const;
 
    //! E.g. "1.0", "1.1"
    virtual Version http_version() const;
+   virtual void http_version(const Version& v);
 
    virtual std::string header(const std::string& name) const;
 
    virtual void header(const std::string& name, const std::string& value);
+   virtual void header(const Header& header);
 
-   virtual std::string content() const;
+   virtual std::streambuf* rdbuf() const;
 
-   virtual std::streambuf* rdbuf() const =0;
-
-   Response& operator=(Response&& Rhs);
-
-   friend const logging::LogRecord& operator<<(const logging::LogRecord& rec, const Response& r);
+   friend API_EXPORT const logging::LogRecord& operator<<(const logging::LogRecord& rec, const Response& r);
 
 protected:
    StatusCode _status_code;
    Version _version;
    Header _header;
 
+   std::unique_ptr<std::streambuf> _header_streambuf;
+   std::unique_ptr<std::streambuf> _body_streambuf;
+
 };
 
-const logging::LogRecord& operator<<(const logging::LogRecord& rec, const Response& r);
+API_EXPORT const logging::LogRecord& operator<<(const logging::LogRecord& rec, const Response& r);
 } // http
 } // net
 } // orion

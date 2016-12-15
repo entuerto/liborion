@@ -48,7 +48,7 @@ AsioServerConnection::AsioServerConnection(asio::io_service& io_service, const H
    _RequestHandlers(RequestHandlers),
    _request(),
    _response(StatusCode::OK),
-   _parser(_request),
+   _parser(),
    _read_deadline(io_service),
    _write_deadline(io_service)
 {
@@ -56,7 +56,6 @@ AsioServerConnection::AsioServerConnection(asio::io_service& io_service, const H
 
 AsioServerConnection::~AsioServerConnection()
 {
-   LOG(Debug) << "AsioServerConnection::~AsioServerConnection()";
    close();
 }
 
@@ -134,10 +133,10 @@ void AsioServerConnection::do_read()
             return;
          }
 
-         LOG(Debug) << "AsioServerConnection::do_read() " 
-                    << int(bytes_transferred);
+         LOG(Debug2) << "AsioServerConnection::do_read() " 
+                     << int(bytes_transferred);
 
-         ec = _parser.parse(_in_buffer.data(), bytes_transferred);
+         ec = _parser.parse(_request, _in_buffer.data(), bytes_transferred);
          if (ec)
          {
             LOG(Error) << ec;
@@ -171,10 +170,10 @@ void AsioServerConnection::do_write()
          }
          std::size_t bytes_to_write = _response.size();
 
-         LOG(Debug) << "AsioServerConnection::do_write() "
-                    << int(bytes_to_write)
-                    << " "
-                    << int(bytes_written);
+         LOG(Debug2) << "AsioServerConnection::do_write() "
+                     << int(bytes_to_write)
+                     << " "
+                     << int(bytes_written);
          
          //if (bytes_to_write == bytes_written)
          //   return;

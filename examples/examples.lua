@@ -78,6 +78,16 @@ project "hello-server"
    links { "jsoncpp", "orion", "orion-net" }
 
 
+project "hello-client"
+   kind "ConsoleApp"
+
+   dependson { "orion", "orion-net" }
+
+   files "hello-client.cpp"
+
+   links { "jsoncpp", "orion", "orion-net" }
+
+
 project "add-json-rpc-server"
    kind "ConsoleApp"
 

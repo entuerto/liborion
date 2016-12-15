@@ -63,11 +63,6 @@ MongooseRequest& MongooseRequest::operator=(MongooseRequest&& Rhs)
    return *this;   
 }
 
-std::string MongooseRequest::content() const
-{
-   return _body_streambuf->str();
-}
-
 std::streambuf* MongooseRequest::rdbuf() const
 {
    return _body_streambuf.get();  

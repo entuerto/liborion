@@ -15,22 +15,22 @@ namespace http
 AsioRequest::AsioRequest() :
    Request()
 {
+   _header_streambuf = std::make_unique<asio::streambuf>();
+   _body_streambuf   = std::make_unique<asio::streambuf>();
 }
 
 AsioRequest::AsioRequest(const std::string& method, 
                          const Url& url, 
                          const Version& version, 
-                         const Header& header,
-                               bool should_keep_alive,
-                               bool upgrade) :
-   Request(method, url, version, header, should_keep_alive, upgrade),
-   _body_streambuf(std::make_unique<asio::streambuf>())
+                         const Header& header) :
+   Request(method, url, version, header)
 {
+   _header_streambuf = std::make_unique<asio::streambuf>();
+   _body_streambuf   = std::make_unique<asio::streambuf>();
 }
 
-AsioRequest::AsioRequest(AsioRequest&& Other) :
-   Request(std::move(Other)),
-   _body_streambuf(std::move(Other._body_streambuf))
+AsioRequest::AsioRequest(AsioRequest&& rhs) :
+   Request(std::move(rhs))
 {
 }
 
@@ -38,23 +38,64 @@ AsioRequest::~AsioRequest()
 {
 }
 
-AsioRequest& AsioRequest::operator=(AsioRequest&& Rhs)
+AsioRequest& AsioRequest::operator=(AsioRequest&& rhs)
 {
-   Request::operator=(std::move(Rhs));
-
-   _body_streambuf   = std::move(Rhs._body_streambuf);
+   Request::operator=(std::move(rhs));
 
    return *this;   
 }
 
-std::string AsioRequest::content() const
+void AsioRequest::build_header_buffer()
 {
-   return asio::buffer_cast<const char*>(_body_streambuf->data());
+   auto u = url();
+
+   header("Host", u.host());
+
+   std::size_t body_size = static_cast<asio::streambuf*>(_body_streambuf.get())->size();
+
+   if (body_size != 0)
+      header("Content-Length", std::to_string(body_size));
+
+   std::ostream o(_header_streambuf.get());
+
+   auto v = http_version();
+
+   // request-line = method SP request-target SP HTTP-version CRLF
+   auto request_line = boost::format("%s %s HTTP/%d.%d") 
+                          % method()
+                          % u.path()
+                          % v.major 
+                          % v.minor;
+
+   o << boost::str(request_line)
+     << crlf;  
+
+   for (const auto& item : _header)
+   {
+      o << item.first
+        << ": "
+        << item.second
+        << crlf;
+   } 
+
+   o << crlf;
 }
 
-std::streambuf* AsioRequest::rdbuf() const
+std::vector<asio::const_buffer> AsioRequest::buffers()
 {
-   return _body_streambuf.get();  
+   build_header_buffer();
+
+   std::vector<asio::const_buffer> b;
+   b.push_back(static_cast<asio::streambuf*>(_header_streambuf.get())->data());
+   b.push_back(static_cast<asio::streambuf*>(_body_streambuf.get())->data());
+
+   return b;
+}
+
+std::size_t AsioRequest::size() const
+{
+   return static_cast<asio::streambuf*>(_header_streambuf.get())->size() + 
+          static_cast<asio::streambuf*>(_body_streambuf.get())->size();
 }
 
 } // http

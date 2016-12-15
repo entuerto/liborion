@@ -65,6 +65,11 @@ public:
    UserInfo userinfo() const;
    void userinfo(const UserInfo& value);
 
+   ///  Lower-cased host name portion of the host component with the port included.
+   ///
+   /// Emple: host.com:80
+   std::string host() const;
+
    /// Lower-cased host name portion of the host component without the port included.
    ///
    /// Example: 'host.com' 
@@ -76,6 +81,9 @@ public:
    /// Example: '8080' 
    int port() const;
    void port(int value);
+
+   /// Consists of the entire path section of the URL and the search section. 
+   std::string path() const;
 
    /// Consists of the entire path section of the URL. This is everything following 
    /// the host (including the port) and before the start of the query or hash components, 

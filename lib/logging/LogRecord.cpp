@@ -283,6 +283,17 @@ LogRecord& LogRecord::operator<<(const boost::format& fmt)
    return *this;
 }
 
+LogRecord& LogRecord::operator<<(std::streambuf* buf)
+{
+   std::ostringstream ostr;
+
+   ostr << buf;
+
+   _message += ostr.str();
+
+   return *this;
+}
+
 std::unique_ptr<LogRecord> LogRecord::create()
 {
    return std::make_unique<LogRecord>();

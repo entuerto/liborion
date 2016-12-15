@@ -13,6 +13,7 @@
 #include <orion/net/http/Utils.h>
 
 #include <net/http/AsioRequest.h>
+#include <net/http/AsioResponse.h>
 
 #include <http-parser/http_parser.h>
 
@@ -28,12 +29,14 @@ class Parser
 public:
    NO_COPY(Parser)
 
-   Parser(AsioRequest& request);
+   Parser();
    ~Parser();
 
+   bool headers_complete() const;
    bool message_complete() const;
 
-   std::error_code parse(const char* data, std::size_t length);
+   std::error_code parse(AsioRequest& request, const char* data, std::size_t length);
+   std::error_code parse(AsioResponse& response, const char* data, std::size_t length);
 
    int on_message_begin();
    int on_url(const char* at, size_t length);
@@ -55,8 +58,9 @@ private:
    std::string _cur_field;
    Header _header;
 
-   AsioRequest& _request;
+   std::streambuf* _streambuf;
 
+   bool _headers_complete;
    bool _message_complete;
 };
 

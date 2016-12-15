@@ -38,34 +38,38 @@ public:
    Request(const std::string& method, 
            const Url& url, 
            const Version& version, 
-           const Header& header,
-                 bool should_keep_alive = false,
-                 bool upgrade = false);
+           const Header& header);
    Request(Request&& Other);
    virtual ~Request();
 
+   Request& operator=(Request&& Rhs);
+
    //! "GET", "POST", etc
    virtual std::string method() const; 
+   virtual void method(const std::string& m); 
 
    //! URL-decoded URI
    virtual Url url() const;
+   virtual void url(const Url& u);
 
    //! E.g. "1.0", "1.1"
-   virtual Version http_version() const;   
+   virtual Version http_version() const; 
+   virtual void http_version(const Version& v);  
    
    virtual std::string header(const std::string& name) const;
 
+   virtual void header(const std::string& name, const std::string& value);
+   virtual void header(const Header& header);
+
    virtual bool should_keep_alive() const;
+   virtual void should_keep_alive(bool value);
 
    virtual bool upgrade() const;
+   virtual void upgrade(bool value);
 
-   virtual std::string content() const =0;
-
-   virtual std::streambuf* rdbuf() const =0;
-
-   Request& operator=(Request&& Rhs);
+   virtual std::streambuf* rdbuf() const;
   
-   friend std::ostream& operator<<(std::ostream& o, const Request& r);
+   friend API_EXPORT std::ostream& operator<<(std::ostream& o, const Request& r);
 
 protected:
    std::string _method;
@@ -74,11 +78,14 @@ protected:
    Header _header;
    bool _should_keep_alive;
    bool _upgrade;
+
+   std::unique_ptr<std::streambuf> _header_streambuf;
+   std::unique_ptr<std::streambuf> _body_streambuf;
 };
 
-std::ostream& operator<<(std::ostream& o, const Request& r);
+API_EXPORT std::ostream& operator<<(std::ostream& o, const Request& r);
 
-const orion::logging::LogRecord& operator<<(const orion::logging::LogRecord& rec, const Request& r);
+API_EXPORT const orion::logging::LogRecord& operator<<(const orion::logging::LogRecord& rec, const Request& r);
 
 } // http
 } // net

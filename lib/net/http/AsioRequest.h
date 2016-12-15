@@ -29,21 +29,20 @@ public:
    AsioRequest(const std::string& method, 
                const Url& url, 
                const Version& version, 
-               const Header& header,
-                     bool should_keep_alive = false,
-                     bool upgrade = false);
-   AsioRequest(AsioRequest&& Other);
+               const Header& header);
+   AsioRequest(AsioRequest&& rhs);
 
    virtual ~AsioRequest();
 
-   AsioRequest& operator=(AsioRequest&& Rhs);
+   AsioRequest& operator=(AsioRequest&& rhs);
 
-   virtual std::string content() const override;
+   std::vector<asio::const_buffer> buffers();
 
-   virtual std::streambuf* rdbuf() const override;
+   std::size_t size() const;
 
 private:
-   std::unique_ptr<asio::streambuf> _body_streambuf;
+   void build_header_buffer();
+
 };
 
 } // http
