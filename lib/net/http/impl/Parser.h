@@ -12,8 +12,8 @@
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/http/Utils.h>
 
-#include <net/http/AsioRequest.h>
-#include <net/http/AsioResponse.h>
+#include <net/http/impl/AsioRequest.h>
+#include <net/http/impl/AsioResponse.h>
 
 #include <http-parser/http_parser.h>
 

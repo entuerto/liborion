@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <net/http/MongooseServerConnection.h>
+#include <net/http/impl/MongooseServerConnection.h>
 
 #include <cstdlib>
 #include <orion/Logging.h>

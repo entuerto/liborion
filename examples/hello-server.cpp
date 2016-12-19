@@ -50,6 +50,9 @@ public:
 protected:
    virtual std::error_code on_get(const Request& request, Response& response)
    {
+      response.header("Content-Type", "text/plain; charset=utf-8");
+      response.header("Connection", "close");
+
       std::ostream o(response.rdbuf());
 
       o << "Hello there";
@@ -75,6 +78,9 @@ public:
 protected:
    virtual std::error_code on_get(const Request& request, Response& response)
    {
+      response.header("Content-Type", "text/plain; charset=utf-8");
+      response.header("Connection", "close");
+      
       std::ostream o(response.rdbuf());
 
       o << "World turns round";

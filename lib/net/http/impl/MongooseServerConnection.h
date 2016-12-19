@@ -31,8 +31,8 @@
 #include <orion/net/http/RequestHandler.h>
 #include <orion/net/http/Utils.h>
 
-#include <net/http/MongooseRequest.h>
-#include <net/http/MongooseResponse.h>
+#include <net/http/impl/MongooseRequest.h>
+#include <net/http/impl/MongooseResponse.h>
 
 #include <mongoose/mongoose.h>
 

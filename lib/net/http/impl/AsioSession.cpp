@@ -8,9 +8,9 @@
 
 #include <iostream>
 
-#include <net/http/AsioRequest.h>
-#include <net/http/AsioResponse.h>
-#include <net/http/Parser.h>
+#include <net/http/impl/AsioRequest.h>
+#include <net/http/impl/AsioResponse.h>
+#include <net/http/impl/Parser.h>
 
 #include <asio.hpp>
 
@@ -43,12 +43,8 @@ Response Session::operator()(const std::string& m)
    req.header("Accept", "*/*");
    req.header("Connection", "close");
 
-   auto b = req.buffers();
-
-   std::cout << asio::buffer_cast<const char*>(b[0]);
-
    // Send the request.
-   asio::write(socket, b);
+   asio::write(socket, req.buffers());
 
    // Read the response status line. The response streambuf will automatically
    // grow to accommodate the entire line. The growth may be limited by passing

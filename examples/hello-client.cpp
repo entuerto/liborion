@@ -33,14 +33,11 @@ int main ()
 
    LOG_START();
 
-   auto r = http::get(Url{"http://127.0.0.1:9080/"});
-
-   r.wait();
+   auto r = http::Post(Url{"http://127.0.0.1:9080/"}); 
 
    try
    {
-      std::cout << "Server response:"
-                << "\n";  
+      LOG_WRITE() << "Server response:";
    
       auto response =  r.get();
    
@@ -49,11 +46,11 @@ int main ()
    }
    catch (const std::future_error& e)
    {
-      LOG_EXCEPTION(e);
+      LOG(Error) << e.code();
    }
    catch (const std::system_error& e)
    {
-      LOG_EXCEPTION(e);
+      LOG(Error) << e.code();
    }
 
    LOG_END();

@@ -4,7 +4,7 @@
 //  Created by Tomas Palazuelos on 2016-11-07.
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
-#include <net/http/AsioServerConnection.h>
+#include <net/http/impl/AsioServerConnection.h>
 
 #include <orion/Logging.h>
 #include <orion/net/IPv4.h>
@@ -200,10 +200,14 @@ void AsioServerConnection::do_handler()
          LOG(Error) << ec;
 
          _response = AsioResponse(static_cast<StatusCode>(ec.value()));
+         _response.header("Connection", "close");
+         _response.header("X-Content-Type-Options", "nosniff");
       }
       return;
    }
    _response = AsioResponse(StatusCode::BadRequest);
+   _response.header("Connection", "close");
+   _response.header("X-Content-Type-Options", "nosniff");
 }
 
 void AsioServerConnection::on_read_timeout(const asio::error_code& e)

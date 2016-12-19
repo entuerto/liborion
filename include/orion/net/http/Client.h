@@ -20,59 +20,34 @@ namespace net
 namespace http
 {
 
-namespace priv 
+
+struct call
 {
+   std::string method;
 
-template <typename T>
-void set_option(Session& session, T&& t) 
-{
-   session.set_option(std::forward<T>(t));
-}
+   template <typename... Ts>
+   std::future<Response> operator()(Ts&&... ts) 
+   {
+      Session session(std::forward<Ts>(ts)...);
 
-template <typename T, typename... Ts>
-void set_option(Session& session, T&& t, Ts&&... ts) 
-{
-   set_option(session, std::forward<Ts>(t));
-   set_option(session, std::forward<Ts>(ts)...);
-}
+      std::packaged_task<Response(Session&)> task([&](Session& s) {
+         return s(method); 
+      });
 
-} // namespace priv
+      std::future<Response> result = task.get_future();
+    
+      task(session);
 
-// Get method
-template <typename... Ts>
-std::future<Response> get(Ts&&... ts) 
-{
-   Session session;
-   priv::set_option(session, std::forward<Ts>(ts)...);
+      return result;
+   }
+};
 
-   std::packaged_task<Response(Session&)> task([](Session& s) {
-      return s(Method::Get); 
-   });
+call Get{Method::Get};
+call Post{Method::Post};
+call Put{Method::Put};
+call Patch{Method::Patch};
+call Delete{Method::Delete};
 
-   std::future<Response> result = task.get_future();
- 
-   task(session);
-
-   return result;
-}
-
-// Post methods
-template <typename... Ts>
-std::future<Response> post(Ts&&... ts) 
-{
-   Session session;
-   priv::set_option(session, std::forward<Ts>(ts)...);
-
-   std::packaged_task<Response(Session&)> task([](Session& s) {
-      return s(Method::Post); 
-   });
-
-   std::future<Response> result = task.get_future();
- 
-   task(session);
-
-   return result;
-}
 
 } // namespace http
 } // namespace net

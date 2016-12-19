@@ -5,12 +5,12 @@
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
 
-#include <net/http/AsioServer.h>
+#include <net/http/impl/AsioServer.h>
 
 #include <future>
 
 #include <orion/Logging.h>
-#include <net/http/AsioServerConnection.h>
+#include <net/http/impl/AsioServerConnection.h>
 
 using namespace orion::logging;
 

@@ -16,9 +16,9 @@
 #include <orion/net/http/RequestHandler.h>
 #include <orion/net/http/Utils.h>
 
-#include <net/http/AsioResponse.h>
-#include <net/http/AsioRequest.h>
-#include <net/http/Parser.h>
+#include <net/http/impl/AsioResponse.h>
+#include <net/http/impl/AsioRequest.h>
+#include <net/http/impl/Parser.h>
 
 namespace orion
 {

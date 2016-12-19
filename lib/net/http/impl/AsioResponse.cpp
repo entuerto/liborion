@@ -4,7 +4,7 @@
 //  Created by Tomas Palazuelos on 2016-11-07.
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
-#include <net/http/AsioResponse.h>
+#include <net/http/impl/AsioResponse.h>
 
 #include <sstream>
 
