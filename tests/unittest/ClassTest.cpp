@@ -1,90 +1,57 @@
 
 #include <orion/TestUtils.h>
 
+using namespace std::string_literals;
+
 using namespace orion::unittest;
 
-TEST_SUITE(OrionCore)
+TestSuite(OrionCore)
 {
 
-TEST(Unittest, PassingTestHasNoFailures)
+void passing_test_has_no_failures(Test& t)
 {
-   class PassingTest : public Test
-   {
-   public:
-      PassingTest() : Test("passing") {}
-      virtual void execute_test_impl(TestResult* test_result) const
-      {
-         EXPECT_TRUE(true);
-      }
-   };
+   Test passing_test("passing", Suite("testSuite"), [](Test& ft) { 
+      ft.assert<true>(true); 
+   });
 
-   PassingTest passing_test;
+   auto scope_test_result = passing_test.execute_test();
 
-   TestResult* scope_test_result = passing_test.execute_test();
-
-   FAIL_IF(scope_test_result->failed());
+   t.assert<true>(scope_test_result.passed(), _src_loc);
 }
 
 
-TEST(Unittest, FailingTestHasFailures)
+void failing_test_has_failures(Test& t)
 {
-   class FailingTest : public Test
-   {
-   public:
-      FailingTest() : Test("failing") {}
-      virtual void execute_test_impl(TestResult* test_result) const
-      {
-         EXPECT_FALSE(false);
-      }
-   };
+   Test failing_test("failing", Suite("testSuite"), [](Test& ft) { 
+      ft.assert<false>(false); 
+   });
 
-   FailingTest failing_test;
+   auto scope_test_result = failing_test.execute_test();
 
-   TestResult* scope_test_result = failing_test.execute_test();
-
-   EXPECT_FALSE(scope_test_result->failed());
+   t.assert<false>(scope_test_result.failed(), _src_loc);
 }
 
 
-TEST(Unittest, ThrowingTestsAreReportedAsFailures)
+void throwing_tests_are_reported_as_failures(Test& t)
 {
-   class CrashingTest : public Test
-   {
-   public:
-      CrashingTest() : Test("throwing") {}
-      virtual void execute_test_impl(TestResult* /* test_result */) const
-      {
-         throw "Blah";
-      }
-   };
+   Test crashing_test("throwing", Suite("testSuite"), [](Test&) { 
+      throw std::logic_error("Oh boy"); 
+   });
 
-   CrashingTest crashing_test;
+   auto scope_test_result = crashing_test.execute_test();
 
-   TestResult* scope_test_result = crashing_test.execute_test();
-
-   EXPECT_TRUE(scope_test_result->failed());
+   t.assert<true>(scope_test_result.failed(), _src_loc);
 }
 
-
-TEST(Unittest, WithUnspecifiedSuiteGetsDefaultSuite)
+void has_same_name_and_suite_name_as_test_result(Test& t)
 {
-    Test test("test");
-    EXPECT_NE(test.suite_name(), "");
-    EXPECT_EQ("DefaultSuite", test.suite_name());
+   auto test_result = t.test_result();
+
+   t.assert<std::equal_to<>>(t.name(), test_result.name(), _src_loc);
 }
 
-
-TEST(Unittest, ReflectsSpecifiedSuiteName)
-{
-    Test test("test", "testSuite");
-    EXPECT_NE(test.suite_name(), "");
-    EXPECT_EQ("testSuite", test.suite_name());
-}
-
-TEST(Unittest, HasSameNameAndSuiteNameAsTestResult)
-{
-   EXPECT_EQ(name(), test_result->name());
-   EXPECT_EQ(suite_name(), test_result->suite_name());
-}
-
-} // TEST_SUITE(OrionCore)
+RegisterTestCase(OrionCore, passing_test_has_no_failures);
+RegisterTestCase(OrionCore, failing_test_has_failures);
+RegisterTestCase(OrionCore, throwing_tests_are_reported_as_failures);
+RegisterTestCase(OrionCore, has_same_name_and_suite_name_as_test_result);
+} // TestSuite(OrionCore)

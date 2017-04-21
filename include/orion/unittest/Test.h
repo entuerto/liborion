@@ -1,32 +1,19 @@
 // Test.h
 //
-// Copyright 2010 tomas <tomasp@videotron.ca>
+// Copyright 2017 The liborion Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 //
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-// MA 02110-1301, USA.
-//
-
 #ifndef ORION_UNITTEST_TEST_H
 #define ORION_UNITTEST_TEST_H
 
 #include <functional>
-#include <memory>
 #include <string>
-#include <unordered_map>
+
+#include <iostream>
 
 #include <orion/Orion-Stddefs.h>
+#include <orion/unittest/TestOptions.h>
 #include <orion/unittest/TestResult.h>
 #include <orion/unittest/TestOutput.h>
 
@@ -37,110 +24,177 @@ namespace unittest
 // Forward declaration
 class Test;
 
-using Tests = std::unordered_multimap<std::string, std::unique_ptr<Test>>;
+using TestCaseFunc = std::function<void (Test&)>;
 
-class SetUpTestCase
-{
-public:
-   SetUpTestCase();
-   SetUpTestCase(const std::function<void (Test* test)>& f);
+//---------------------------------------------------------------------------------------
 
-   virtual ~SetUpTestCase() = default;
-
-   virtual void operator()(Test* test);
-
-private:
-   std::function<void(Test* test)> _func;
-};
-
-class TearDownTestCase
-{
-public:
-   TearDownTestCase();
-   TearDownTestCase(const std::function<void (Test* test)>& f);
-
-   virtual ~TearDownTestCase() = default;
-
-   virtual void operator()(Test* test);
-
-private:
-   std::function<void(Test* test)> _func;
-};
-
-//!
-/*!
- */
+///
+///
+///
 class API_EXPORT Test 
 {
 public:
-   Test(const std::string& name, const std::string& suite_name = "DefaultSuite");
+   //NO_COPY(Test)
+
+   Test(const std::string& name, const Suite& suite);
+   Test(const std::string& name, const Suite& suite, TestCaseFunc&& f);
    virtual ~Test();
 
    std::string name() const;
-   std::string suite_name() const;
+   std::string label() const;
+   std::string description() const;
 
-   TestResult* test_result() const;
+   bool enabled() const;
+
+   std::string disabled_reason() const;
+
+   const TestResult& test_result() const;
 
    // Sets up the test fixture.
-   virtual void SetUp();
+   void setup();
 
    // Tears down the test fixture.
-   virtual void TearDown();
+   void teardown();
 
-   void set_option(SetUpTestCase&& f);
-   void set_option(TearDownTestCase&& f);
+   TestCaseFunc& case_func();
 
-   TestResult* execute_test();
+   TestResult& execute_test();
 
-   static Tests& tests();
+   void set_option(option::Label opt);
+   void set_option(option::Description opt);
+   void set_option(option::SetupFunc opt);
+   void set_option(option::TeardownFunc opt);
+   void set_option(option::Enabled opt);
+   void set_option(option::Disabled opt);
+
+   template<class Func, typename T, typename... Args>
+   bool assert(const T& expected, const T& actual, Args... args);
+
+   template<bool ExpectedValue, typename... Args>
+   bool assert(const bool value, Args... args);
+
+   template<typename ExpectedException, typename Func, typename... Args>
+   bool assert_throw(Func f, Args... args);
+
+   template<typename... Args>
+   void fail(Args... args);
+
+   template<typename... Args>
+   void fail_if(const bool value, Args... args);
 
 protected:
-   virtual void execute_test_impl(TestResult* test_result) const;
+   virtual void do_execute_test() const;
 
 private:
    std::string _name;
-   std::string _suite_name;
-   std::unique_ptr<TestResult> _test_result;
+   std::string _label;
+   std::string _description;
 
-   SetUpTestCase _setup;
-   TearDownTestCase _teardown;
+   bool _is_enabled;
+   std::string _disabled_reason;
+
+   TestResult  _test_result;
+
+   std::function<void ()> _setup_func;
+   std::function<void ()> _teardown_func;
+
+   TestCaseFunc _func;
 };
 
-inline void set_options(Test* /* test */)
+template<class Func, typename T, typename... Args>
+bool Test::assert(const T& expected, const T& actual, Args... args)
 {
-}
+   Func cmp;
 
-template <typename T>
-void set_options(Test* test, T&& t) 
-{
-   test->set_option(std::forward<decltype(t)>(t));
-}
-
-template <typename T, typename... Ts>
-void set_options(Test* test, T&& t, Ts&&... ts)
-{
-   set_options(test, std::forward<decltype(t)>(t));
-   set_options(test, std::forward<decltype(ts)>(ts)...);
-}
-
-//!
-/*!
- */
-class API_EXPORT TestAddHelper
-{
-public:
-   TestAddHelper(Tests& tests, Test* test)
+   if (cmp(expected, actual))
    {
-      tests.emplace(std::make_pair(test->suite_name(), std::unique_ptr<Test>(test)));
+      _test_result.log_success();
+      return true;
    }
-};
 
-//!
-API_EXPORT int run_all_tests(const std::unique_ptr<TestOutput>& output, const std::string& suite_name = "");
+   _test_result.log_failure(expected, actual, args...);
 
-namespace UnitTestSuite
+   return false; 
+}
+
+template<bool ExpectedValue, typename... Args>
+bool Test::assert(const bool value, Args... args)
 {
-   API_EXPORT inline const char* suite_name() { return "DefaultSuite"; }
+   if (value == ExpectedValue)
+   {
+      _test_result.log_success();
+      return true;
+   }
+
+   _test_result.log_failure(ExpectedValue, value, args...);
+
+   return false; 
+}
+
+template<typename ExpectedException, typename Func, typename... Args>
+bool Test::assert_throw(Func f, Args... args)
+{
+   try 
+   { 
+      f(); 
+   } 
+   catch (const ExpectedException&) 
+   { 
+      _test_result.log_success();
+      return true; 
+   }
+   catch (const std::exception& e)
+   { 
+      _test_result.log_exception(e, "An unexpected exception was thrown: ", args...);
+      return false;
+   }
+   catch (...) 
+   {
+      _test_result.log_exception(std::current_exception(), "An unexpected, unknown exception was thrown: ", args...);
+      return false;
+   }
+   // Not thrown
+   fail("The exception was not thrown: ", type_name<ExpectedException>(), args...);
+   return false; 
+}
+
+template<typename... Args>
+void Test::fail(Args... args)
+{
+   _test_result.log_failure(args...);
+}
+
+template<typename... Args>
+void Test::fail_if(const bool value, Args... args)
+{
+   if (not value)
+   {
+      _test_result.log_success();
+      return;
+   }
+
+   _test_result.log_failure(false, value, args...);
+
+   return; 
+}
+
+//---------------------------------------------------------------------------------------
+
+inline void set_options(Test& /* test */) {}
+
+template <typename O>
+void set_options(Test& test, O&& opt) 
+{
+   std::cout << "*** void set_options(Test& test, T&& t) ***\n";
+
+   test.set_option(std::forward<decltype(opt)>(opt));
+}
+
+template <typename O, typename... Opts>
+void set_options(Test& test, O&& opt, Opts&&... opts)
+{
+   set_options(test, std::forward<decltype(opt)>(opt));
+   set_options(test, std::forward<decltype(opts)>(opts)...);
 }
 
 } // namespace orion

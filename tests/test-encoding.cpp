@@ -10,21 +10,21 @@ using namespace orion;
 using namespace orion::encoding;
 using namespace orion::unittest;
 
-TEST_SUITE(OrionCore)
+TestSuite(OrionCore)
 {
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(BigEndian, to_uint16)
+void BigEndian_to_uint16(Test& t)
 {
    uint8_t b[] = {1, 0};
 
    uint16_t v16 = BigEndian::to_uint16(b);
 
-   EXPECT_EQ(v16, 256);
+   t.assert<std::equal_to<>>(uint16_t(256), v16, _src_loc);
 }
 
-TEST(BigEndian, put_uint16)
+void BigEndian_put_uint16(Test& t)
 {
    std::array<uint8_t, 2> b;
    std::array<uint8_t, 2> result{1, 0};
@@ -33,19 +33,19 @@ TEST(BigEndian, put_uint16)
 
    BigEndian::put_uint16(v16, b.data());
 
-   EXPECT_ARR_EQ(b, result);
+   t.assert<std::equal_to<>>(result, b, _src_loc);
 }
 
-TEST(LittleEndian, to_uint16)
+void LittleEndian_to_uint16(Test& t)
 {
-   uint8_t b[] = {1, 0}; // 256
+   uint8_t b[] = {1, 0}; 
 
    uint16_t v16 = LittleEndian::to_uint16(b);
 
-   EXPECT_EQ(v16, 1);
+   t.assert<std::equal_to<>>(uint16_t(1), v16, _src_loc);
 }
 
-TEST(LittleEndian, put_uint16)
+void LittleEndian_put_uint16(Test& t)
 {
    std::array<uint8_t, 2> b;
    std::array<uint8_t, 2> result{0, 1};
@@ -54,7 +54,7 @@ TEST(LittleEndian, put_uint16)
 
    LittleEndian::put_uint16(v16, b.data());
 
-   EXPECT_ARR_EQ(b, result);
+   t.assert<std::equal_to<>>(result, b, _src_loc);
 }
 
 std::array<int64_t, 18> numbers64 = {
@@ -99,7 +99,7 @@ std::array<int32_t, 18> numbers32 = {
    2147483647 // (1 << 31) - 1,
 };
 
-TEST(EncVarint32, uint32)
+void EncVarint32_uint32(Test& t)
 {
    std::array<uint8_t, 10> buf;
 
@@ -109,11 +109,11 @@ TEST(EncVarint32, uint32)
 
       uint32_t y = dec_varint(buf.data(), n);
 
-      EXPECT_EQ(x, y);
+      t.assert<std::equal_to<>>(x, y, _src_loc);
    }
 }
 
-TEST(EncVarint64, uint64)
+void EncVarint64_uint64(Test& t)
 {
    std::array<uint8_t, 12> buf;
 
@@ -123,12 +123,12 @@ TEST(EncVarint64, uint64)
 
       uint64_t y = dec_varint<uint64_t>(buf.data(), n);
  
-      EXPECT_EQ(x, y);
+      t.assert<std::equal_to<>>(x, y, _src_loc);
    }
 
 }
   
-TEST(EncVarint64, int64)
+void EncVarint64_int64(Test& t)
 {
    std::array<uint8_t, 12> buf;
 
@@ -138,7 +138,7 @@ TEST(EncVarint64, int64)
 
       int64_t y = dec_varint<int64_t>(buf.data(), n); 
 
-      EXPECT_EQ(x, y);
+      t.assert<std::equal_to<>>(x, y, _src_loc);
    }
 
 }
@@ -168,4 +168,13 @@ TEST(TestEncVarint64_uint64)
    //std::cout << (uint64_t(1 << 63) - 1) << "\n";
 }
 */
+
+RegisterTestCase(OrionCore, BigEndian_to_uint16);
+RegisterTestCase(OrionCore, BigEndian_put_uint16);
+RegisterTestCase(OrionCore, LittleEndian_to_uint16);
+RegisterTestCase(OrionCore, LittleEndian_put_uint16);
+RegisterTestCase(OrionCore, EncVarint32_uint32);
+RegisterTestCase(OrionCore, EncVarint64_uint64);
+RegisterTestCase(OrionCore, EncVarint64_int64);
+
 }

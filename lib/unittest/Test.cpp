@@ -1,87 +1,57 @@
 // Test.cpp
 //
-// Copyright 2010 tomas <tomasp@videotron.ca>
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-// MA 02110-1301, USA.
-//
+// Copyright 2017 The liborion Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
-#include <orion/Timer.h>
 #include <orion/unittest/Test.h>
-#include <orion/unittest/TestResultItem.h>
 
 #include <algorithm>
+#include <exception>
+#include <map>
+
+#include <orion/unittest/TestSuite.h>
 
 namespace orion
 {
 namespace unittest
 {
-//---------------------------------------------------------------------------------------
 
-SetUpTestCase::SetUpTestCase() : 
-   _func() 
-{
-}
-
-SetUpTestCase::SetUpTestCase(const std::function<void (Test* test)>& f) :
-   _func(f) 
-{
-}
-
-void SetUpTestCase::operator()(Test* test)
-{
-  if (_func)
-     _func(test);
-}
-
-//---------------------------------------------------------------------------------------
-
-TearDownTestCase::TearDownTestCase() : 
-   _func() 
-{
-}
-
-TearDownTestCase::TearDownTestCase(const std::function<void (Test* test)>& f) :
-   _func(f) 
-{
-}
-
-void TearDownTestCase::operator()(Test* test)
-{
-   if (_func)
-      _func(test);
-}
+using namespace orion::unittest::option;
 
 //---------------------------------------------------------------------------------------
 
 /*!
  */
-Test::Test(const std::string& name, const std::string& suite_name) :
+Test::Test(const std::string& name, const Suite& suite) :
    _name(name),
-   _suite_name(suite_name),
-   _test_result(),
-   _setup(),
-   _teardown()
+   _label(name),
+   _description(),
+   _is_enabled(true),
+   _disabled_reason(),
+   _test_result(name, suite.name()),
+   _setup_func(),
+   _teardown_func(),
+   _func()
+{
+}
+
+Test::Test(const std::string& name, const Suite& suite, TestCaseFunc&& f) :
+   _name(name),
+   _label(name),
+   _description(),
+   _is_enabled(true),
+   _disabled_reason(),
+   _test_result(name, suite.name()),
+   _setup_func(),
+   _teardown_func(),
+   _func(std::move(f))
 {
 }
 
 /*!
  */
-Test::~Test()
-{
-}
+Test::~Test() = default;
 
 /*!
  */
@@ -90,140 +60,115 @@ std::string Test::name() const
    return _name;
 }
 
+std::string Test::label() const
+{
+   return _label;
+}
+
+std::string Test::description() const
+{
+   return _description;
+}
+
+const TestResult& Test::test_result() const
+{
+   return _test_result;
+}
+
+void Test::set_option(Label opt)
+{
+   _label = opt.text;
+}
+
+void Test::set_option(Description opt)
+{
+   _description = opt.text;
+}
+
+void Test::set_option(SetupFunc opt)
+{
+   _setup_func = std::move(opt.func);
+}
+
+void Test::set_option(TeardownFunc opt)
+{
+   _teardown_func = std::move(opt.func);
+}
+
+void Test::set_option(Enabled opt)
+{
+   _is_enabled = true;
+}
+
+void Test::set_option(Disabled opt)
+{
+   _is_enabled = false;
+   _disabled_reason = std::move(opt.reason);
+}
+
+bool Test::enabled() const
+{
+   return _is_enabled;
+}
+
+std::string Test::disabled_reason() const
+{
+   return _disabled_reason;
+}
+
+void Test::setup()
+{
+   if (_setup_func)
+      _setup_func();
+}
+
+void Test::teardown()
+{
+   if (_teardown_func)
+      _teardown_func();
+}
+
+TestCaseFunc& Test::case_func()
+{
+   return _func;
+}
+
 /*!
  */
-std::string Test::suite_name() const
+void Test::do_execute_test() const
 {
-   return _suite_name;
-}
-
-TestResult* Test::test_result() const
-{
-   return _test_result.get();
-}
-
-void Test::set_option(SetUpTestCase&& f)
-{
-   _setup = std::move(f);
-}
-
-void Test::set_option(TearDownTestCase&& f)
-{
-   _teardown = std::move(f);
-}
-
-void Test::SetUp()
-{
-   _setup(this);
-}
-
-void Test::TearDown()
-{
-   _teardown(this);
+   if (_func)
+      _func(*const_cast<Test*>(this));
 }
 
 /*!
  */
-void Test::execute_test_impl(TestResult* /* test_result */) const
+TestResult& Test::execute_test()
 {
-}
+   if (not enabled())
+   {
+      _test_result.log_skipped(_disabled_reason);
+      return _test_result;
+   }
 
-/*!
- */
-TestResult* Test::execute_test()
-{
-   _test_result = TestResult::create(name(), suite_name());
-
-   _test_result->on_start();
+   _test_result.on_start();
    try
    {
-      SetUp();
-      execute_test_impl(_test_result.get());
-      TearDown();
+      setup();
+      do_execute_test();
+      teardown();
    }
    catch (const std::exception& e)
    {
-      std::string msg("Unhandled exception: ");
-
-      msg += e.what();
-
-      auto item = TestResultItem::create_failure(msg, __FILE__, __LINE__); 
-      _test_result->on_failure(std::move(item));
+      _test_result.log_exception(e, "An unexpected exception was thrown: ", _src_loc);
    }
    catch (...)
    {
-      auto item = TestResultItem::create_failure("Unhandled exception: Crash!",__FILE__, __LINE__);
-      _test_result->on_failure(std::move(item));
+      _test_result.log_exception(std::current_exception(), "An unexpected, unknown exception was thrown: ", _src_loc);
    }
-   _test_result->on_end();
+   _test_result.on_end();
 
-   return _test_result.get();
-}
-
-/*!
- */
-Tests& Test::tests()
-{
-   static Tests s_tests;
-
-   return s_tests;
-}
-
-//---------------------------------------------------------------------------------------
-
-bool less_suite_name(const std::unique_ptr<Test>& t1, const std::unique_ptr<Test>& t2)
-{
-   return t1->suite_name() < t2->suite_name();
-}
-
-//---------------------------------------------------------------------------------------
-
-/*!
- */
-int run_all_tests(const std::unique_ptr<TestOutput>& output, const std::string& suite_name)
-{
-   TestOutputStats stats{};
-
-   auto& all_tests = Test::tests();
-
-   stats.count = suite_name.empty() ? all_tests.size() : 
-                                      all_tests.count(suite_name);
-
-   output->write_header(suite_name, stats.count);
-
-   auto range = suite_name.empty() ? std::make_pair(all_tests.begin(), all_tests.end()) :
-                                     all_tests.equal_range(suite_name);
-
-   Timer timer;
-
-   timer.start();
-
-   std::for_each(range.first, range.second, [&](const auto& test) 
-   { 
-      auto test_result = test.second->execute_test();
-
-      if (test_result->failed())
-      {
-         stats.failed_count++;
-         stats.failed_item_count += test_result->failed_item_count();
-      } 
-      else if (test_result->passed())
-      {
-         stats.passed_count++;
-         stats.passed_item_count += test_result->passed_item_count();
-      }
-      stats.item_count += test_result->result_items().size();
-
-      output->write(test_result);
-   });
-
-   timer.stop();
-
-   stats.time_elapsed = timer.elapsed();
-
-   output->write_summary(stats);
-
-   return stats.failed_item_count;
+   return _test_result;
 }
 
 } // namespace orion

@@ -10,255 +10,283 @@ using namespace orion;
 using namespace orion::net;
 using namespace orion::unittest;
 
-TEST_SUITE(OrionNet)
+using namespace std::string_literals;
+
+TestSuite(OrionNet)
 {
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(Url, Basic)
+void url_basic(Test& t)
 {
    Url u("http://foo.com/path");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "foo.com");
-   EXPECT_EQ(u.pathname(), "/path");
-   EXPECT_EQ(u.port(), 80);
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "foo.com"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/path"s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 80, _src_loc);
 }
 
-TEST(Url, SimpleWithPort)
+void url_simple_with_port(Test& t)
 {
    Url u("http://foo.com:22/path");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "foo.com");
-   EXPECT_EQ(u.pathname(), "/path");
-   EXPECT_EQ(u.port(), 22);
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "foo.com"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/path"s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 22, _src_loc);
 }
 
-TEST(Url, SimpleUsername)
+void url_simple_username(Test& t)
 {
    Url u("http://toto@foo.com/path");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "foo.com");
-   EXPECT_EQ(u.pathname(), "/path");
-   EXPECT_EQ(u.userinfo().username, "toto");
-   EXPECT_EQ(u.userinfo().password, "");
-   EXPECT_EQ(u.port(), 80);
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "foo.com"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/path"s, _src_loc);
+   t.assert<std::equal_to<>>(u.userinfo().username, "toto"s, _src_loc);
+   t.assert<std::equal_to<>>(u.userinfo().password, ""s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 80, _src_loc);
 }
 
-TEST(Url, SimpleUserInfo)
+void url_simple_user_info(Test& t)
 {
    Url u("http://toto:tata@foo.com/path");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "foo.com");
-   EXPECT_EQ(u.pathname(), "/path");
-   EXPECT_EQ(u.userinfo().username, "toto");
-   EXPECT_EQ(u.userinfo().password, "tata");
-   EXPECT_EQ(u.port(), 80);
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "foo.com"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/path"s, _src_loc);
+   t.assert<std::equal_to<>>(u.userinfo().username, "toto"s, _src_loc);
+   t.assert<std::equal_to<>>(u.userinfo().password, "tata"s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 80, _src_loc);
 }
 
-TEST(Url, SimpleWithQuery)
+void url_simple_with_query(Test& t)
 {
    Url u("http://www.google.com/?q=go+language");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "www.google.com");
-   EXPECT_EQ(u.pathname(), "/");
-   EXPECT_EQ(u.query("q"), "go language");
-   EXPECT_EQ(u.port(), 80);
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "www.google.com"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
+   t.assert<std::equal_to<>>(u.query("q"), "go language"s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 80, _src_loc);
 }
 
-TEST(Url, SimpleWithQueryNoEquals)
+void url_simple_with_query_no_equals(Test& t)
 {
    Url u("http://www.google.com/?q");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "www.google.com");
-   EXPECT_EQ(u.pathname(), "/");
-   EXPECT_EQ(u.query("q"), "");
-   EXPECT_EQ(u.port(), 80);
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "www.google.com"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
+   t.assert<std::equal_to<>>(u.query("q"), ""s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 80, _src_loc);
 }
 
-TEST(Url, SimpleWithMultipleQuery)
+void url_simple_with_multiple_query(Test& t)
 {
    Url u("http://www.google.com/?q=go+language&foo=bar");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "www.google.com");
-   EXPECT_EQ(u.pathname(), "/");
-   EXPECT_EQ(u.query("q"), "go language");
-   EXPECT_EQ(u.query("foo"), "bar");
-   EXPECT_EQ(u.port(), 80);
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "www.google.com"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
+   t.assert<std::equal_to<>>(u.query("q"), "go language"s, _src_loc);
+   t.assert<std::equal_to<>>(u.query("foo"), "bar"s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 80, _src_loc);
 }
 
-TEST(Url, SimpleWithFragment)
+void url_simple_with_fragment(Test& t)
 {
    Url u("https://www.google.com/#foo");
 
-   EXPECT_EQ(u.protocol(), "https");
-   EXPECT_EQ(u.hostname(), "www.google.com");
-   EXPECT_EQ(u.pathname(), "/");
-   EXPECT_EQ(u.hash(), "#foo");
-   EXPECT_EQ(u.port(), 443);
+   t.assert<std::equal_to<>>(u.protocol(), "https"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "www.google.com"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hash(), "#foo"s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 443, _src_loc);
 }
 
-TEST(Url, SimpleWithQueryAndFragment)
+void url_simple_with_query_and_fragment(Test& t)
 {
    Url u("http://www.google.com/?q=go+language#foo");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "www.google.com");
-   EXPECT_EQ(u.pathname(), "/");
-   EXPECT_EQ(u.query("q"), "go language");
-   EXPECT_EQ(u.hash(), "#foo");
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "www.google.com"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
+   t.assert<std::equal_to<>>(u.query("q"), "go language"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hash(), "#foo"s, _src_loc);
 }
 
-TEST(Url, PathWithHexEscaping)
+void url_path_with_hex_escaping(Test& t)
 {
    Url u("http://www.google.com/file%20one%26two");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "www.google.com");
-   EXPECT_EQ(u.pathname(), "/file one&two");
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "www.google.com"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/file one&two"s, _src_loc);
 }
 
-TEST(Url, EscapeSequenceInUsername)
+void url_escape_sequence_in_username(Test& t)
 {
    Url u("ftp://john%20doe@www.google.com/");
 
-   EXPECT_EQ(u.protocol(), "ftp");
-   EXPECT_EQ(u.hostname(), "www.google.com");
-   EXPECT_EQ(u.userinfo().username, "john doe");
-   EXPECT_EQ(u.pathname(), "/");
+   t.assert<std::equal_to<>>(u.protocol(), "ftp"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "www.google.com"s, _src_loc);
+   t.assert<std::equal_to<>>(u.userinfo().username, "john doe"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
 }
 
-TEST(Url, HostIPv4AddressInRFC3986)
+void url_host_ipv4_address_in_rfc3986(Test& t)
 {
    Url u("http://192.168.0.1/");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "192.168.0.1");
-   EXPECT_EQ(u.pathname(), "/");
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "192.168.0.1"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
 }
 
-TEST(Url, HostAndPortIPv4AddressInRFC3986)
+void url_host_and_port_ipv4_address_in_rfc3986(Test& t)
 {
    Url u("http://192.168.0.1:8080/");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "192.168.0.1");
-   EXPECT_EQ(u.pathname(), "/");
-   EXPECT_EQ(u.port(), 8080);
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "192.168.0.1"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 8080, _src_loc);
 }
 
-TEST(Url, HostIPv6AddressInRFC3986)
+void url_host_ipv6_address_in_rfc3986(Test& t)
 {
    Url u("http://[fe80::1]/");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "fe80::1");
-   EXPECT_EQ(u.pathname(), "/");
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "fe80::1"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
 }
 
-TEST(Url, HostAndPortIPv6AddressInRFC3986)
+void url_host_and_port_ipv6_address_in_rfc3986(Test& t)
 {
    Url u("http://[fe80::1]:8080/");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "fe80::1");
-   EXPECT_EQ(u.pathname(), "/");
-   EXPECT_EQ(u.port(), 8080);
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "fe80::1"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 8080, _src_loc);
 }
 
-TEST(Url, HostIPv6AddressWithZoneIdentifierInRFC6874)
+void url_host_ipv6_address_with_zone_identifier_in_rfc6874(Test& t)
 {
    Url u("http://[fe80::1%25en0]/");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "fe80::1%en0");
-   EXPECT_EQ(u.pathname(), "/");
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "fe80::1%en0"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
 }
 
-TEST(Url, HostAndPortIPv6AddressWithZoneIdentifierInRFC6874)
+void url_host_and_port_ipv6_address_with_zone_identifier_in_rfc6874(Test& t)
 {
    Url u("http://[fe80::1%25en0]:8080/");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "fe80::1%en0");
-   EXPECT_EQ(u.pathname(), "/");
-   EXPECT_EQ(u.port(), 8080);
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "fe80::1%en0"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 8080, _src_loc);
 }
 
-TEST(Url, HostIPv6AddressWithZoneIdentifierInRFC6874PercentEncoded)
+void url_host_ipv6_address_with_zone_identifier_in_rfc6874_percent_encoded(Test& t)
 {
    Url u("http://[fe80::1%25%65%6e%301-._~]/");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "fe80::1%en01-._~");
-   EXPECT_EQ(u.pathname(), "/");
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "fe80::1%en01-._~"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
 }
 
-TEST(Url, HostAndPortIPv6AddressWithZoneIdentifierInRFC6874ercentEncoded)
+void url_host_and_port_ipv6_address_with_zone_identifier_in_rfc6874_percent_encoded(Test& t)
 {
    Url u("http://[fe80::1%25%65%6e%301-._~]:8080/");
 
-   EXPECT_EQ(u.protocol(), "http");
-   EXPECT_EQ(u.hostname(), "fe80::1%en01-._~");
-   EXPECT_EQ(u.pathname(), "/");
-   EXPECT_EQ(u.port(), 8080);
+   t.assert<std::equal_to<>>(u.protocol(), "http"s, _src_loc);
+   t.assert<std::equal_to<>>(u.hostname(), "fe80::1%en01-._~"s, _src_loc);
+   t.assert<std::equal_to<>>(u.pathname(), "/"s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 8080, _src_loc);
 }
 
-TEST(Url, HrefSimple)
+void url_href_simple(Test& t)
 {
    Url u("http://www.google.com/");
 
-   EXPECT_EQ(u.href(), "http://www.google.com/");  
+   t.assert<std::equal_to<>>(u.href(), "http://www.google.com/"s, _src_loc);  
 }
 
-TEST(Url, HrefSimpleWithPort)
+void url_href_simple_with_port(Test& t)
 {
    Url u("http://www.google.com:80/");
 
-   EXPECT_EQ(u.href(), "http://www.google.com:80/");  
+   t.assert<std::equal_to<>>(u.href(), "http://www.google.com:80/"s, _src_loc);  
 }
 
-TEST(Url, HrefSimpleUsername)
+void url_href_simple_username(Test& t)
 {
    Url u("http://user:pass@www.google.com/");
 
-   EXPECT_EQ(u.href(), "http://user:pass@www.google.com/");  
+   t.assert<std::equal_to<>>(u.href(), "http://user:pass@www.google.com/"s, _src_loc);  
 }
 
-TEST(Url, HrefSimpleWithQuery)
+void url_href_simple_with_query(Test& t)
 {
    Url u("http://www.google.com/?q=go+language");
 
-   EXPECT_EQ(u.href(), "http://www.google.com/?q=go+language");
+   t.assert<std::equal_to<>>(u.href(), "http://www.google.com/?q=go+language"s, _src_loc);
 }
 
-TEST(Url, HrefPathWithHexEscaping)
+void url_href_path_with_hex_escaping(Test& t)
 {
    Url u("http://www.google.com/file%20one&two");
 
-   EXPECT_EQ(u.href(), "http://www.google.com/file%20one&two");
+   t.assert<std::equal_to<>>(u.href(), "http://www.google.com/file%20one&two"s, _src_loc);
 }
 
-TEST(Url, HrefEscapeSequenceInUsername)
+void url_href_escape_sequence_in_username(Test& t)
 {
    Url u("ftp://john%20doe@www.google.com/");
 
-   EXPECT_EQ(u.href(), "ftp://john%20doe@www.google.com/");
-   EXPECT_EQ(u.port(), 21);
+   t.assert<std::equal_to<>>(u.href(), "ftp://john%20doe@www.google.com/"s, _src_loc);
+   t.assert<std::equal_to<>>(u.port(), 21, _src_loc);
 }
 
-TEST(Url, HrefEscapeSequenceIngragment1)
+void url_href_escape_sequence_in_argument1(Test& t)
 {
    Url u("http://www.google.com/?q=go+language#foo%26bar");
 
-   EXPECT_EQ(u.hash(), "#foo&bar");
-   EXPECT_EQ(u.href(), "http://www.google.com/?q=go+language#foo&bar");
+   t.assert<std::equal_to<>>(u.hash(), "#foo&bar"s, _src_loc);
+   t.assert<std::equal_to<>>(u.href(), "http://www.google.com/?q=go+language#foo&bar"s, _src_loc);
 }
 
+RegisterTestCase(OrionNet, url_basic);
+RegisterTestCase(OrionNet, url_simple_with_port);
+RegisterTestCase(OrionNet, url_simple_username);
+RegisterTestCase(OrionNet, url_simple_user_info);
+RegisterTestCase(OrionNet, url_simple_with_query);
+RegisterTestCase(OrionNet, url_simple_with_query_no_equals);
+RegisterTestCase(OrionNet, url_simple_with_multiple_query);
+RegisterTestCase(OrionNet, url_simple_with_fragment);
+RegisterTestCase(OrionNet, url_simple_with_query_and_fragment);
+RegisterTestCase(OrionNet, url_path_with_hex_escaping);
+RegisterTestCase(OrionNet, url_escape_sequence_in_username);
+RegisterTestCase(OrionNet, url_host_ipv4_address_in_rfc3986);
+RegisterTestCase(OrionNet, url_host_and_port_ipv4_address_in_rfc3986);
+RegisterTestCase(OrionNet, url_host_ipv6_address_in_rfc3986);
+RegisterTestCase(OrionNet, url_host_and_port_ipv6_address_in_rfc3986);
+RegisterTestCase(OrionNet, url_host_ipv6_address_with_zone_identifier_in_rfc6874);
+RegisterTestCase(OrionNet, url_host_and_port_ipv6_address_with_zone_identifier_in_rfc6874);
+RegisterTestCase(OrionNet, url_host_ipv6_address_with_zone_identifier_in_rfc6874_percent_encoded);
+RegisterTestCase(OrionNet, url_host_and_port_ipv6_address_with_zone_identifier_in_rfc6874_percent_encoded);
+RegisterTestCase(OrionNet, url_href_simple);
+RegisterTestCase(OrionNet, url_href_simple_with_port);
+RegisterTestCase(OrionNet, url_href_simple_username);
+RegisterTestCase(OrionNet, url_href_simple_with_query);
+RegisterTestCase(OrionNet, url_href_path_with_hex_escaping);
+RegisterTestCase(OrionNet, url_href_escape_sequence_in_username);
+RegisterTestCase(OrionNet, url_href_escape_sequence_in_argument1);
 }

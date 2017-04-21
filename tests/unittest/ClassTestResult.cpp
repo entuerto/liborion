@@ -1,63 +1,48 @@
 
 #include <orion/TestUtils.h>
 
+using namespace std::string_literals;
+
 using namespace orion::unittest;
 
-TEST_SUITE(OrionCore)
+TestSuite(OrionCore)
 {
 
-TEST(Unittest, InitialValues)
+void initial_values(Test& t)
 {
-   auto tr = TestResult::create("toto", "toto_suite");
+   auto tr = TestResult("toto", "toto_suite");
 
-   EXPECT_EQ(tr->name(), "toto");
-   EXPECT_EQ(tr->suite_name(), "toto_suite");
-   EXPECT_TRUE(tr->passed());
-   FAIL_IF(tr->failed());
-   EXPECT_EQ(tr->failed_item_count(), 0);
-   EXPECT_EQ(tr->passed_item_count(), 0);
+   t.assert<std::equal_to<>>("toto"s, tr.name(), _src_loc);
+   t.assert<std::equal_to<>>("toto_suite"s, tr.suite_name(), _src_loc);
+   t.assert<true>(tr.passed(), _src_loc);
+   t.assert<false>(tr.failed(), _src_loc);
+   t.assert<std::equal_to<>>(0, tr.failed_item_count(), _src_loc);
+   t.assert<std::equal_to<>>(0, tr.passed_item_count(), _src_loc);
 }
 
-TEST(Unittest, NumberOfFailedItems)
+void number_of_failed_items(Test& t)
 {
-   auto tr = TestResult::create("toto", "toto_suite");
+   auto tr = TestResult("toto", "toto_suite");
 
-   tr->on_failure(TestResultItem::create_failure("1"));
-   tr->on_failure(TestResultItem::create_failure("2"));
-   tr->on_failure(TestResultItem::create_failure("3"));
+   tr.log_failure("1");
+   tr.log_failure("2");
+   tr.log_failure("3");
 
-   EXPECT_EQ(tr->failed_item_count(), 3);
+   t.assert<std::equal_to<>>(3, tr.failed_item_count(), _src_loc);
 }
 
-TEST(Unittest, NumberOfPassedItems)
+void number_of_passed_items(Test& t)
 {
-   auto tr = TestResult::create("toto", "toto_suite");
+   auto tr = TestResult("toto", "toto_suite");
 
-   tr->on_success(TestResultItem::create_success("1"));
-   tr->on_success(TestResultItem::create_success("2"));
-   tr->on_success(TestResultItem::create_success("3"));
+   tr.log_success("1");
+   tr.log_success("2");
+   tr.log_success("3");
 
-   EXPECT_EQ(tr->passed_item_count(), 3);
+   t.assert<std::equal_to<>>(3, tr.passed_item_count(), _src_loc);
 }
 
-TEST(Unittest, TestResultItemSuccessCreation)
-{
-   auto tri = TestResultItem::create_success("toto", "toto.txt", 99);
-
-   EXPECT_EQ(tri->result(), Result::Passed);
-   EXPECT_EQ(tri->message(), "toto");
-   EXPECT_EQ(tri->file_name(), "toto.txt");
-   EXPECT_EQ(tri->line_number(), 99);
-}
-
-TEST(Unittest, TestResultItemFailureCreation)
-{
-   auto tri = TestResultItem::create_failure("tata", "tata.txt", 88);
-
-   EXPECT_EQ(tri->result(), Result::Failed);
-   EXPECT_EQ(tri->message(), "tata");
-   EXPECT_EQ(tri->file_name(), "tata.txt");
-   EXPECT_EQ(tri->line_number(), 88);
-}
-
-} // TEST_SUITE(OrionCore)
+RegisterTestCase(OrionCore, initial_values);
+RegisterTestCase(OrionCore, number_of_failed_items);
+RegisterTestCase(OrionCore, number_of_passed_items);
+} 

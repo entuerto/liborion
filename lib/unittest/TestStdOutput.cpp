@@ -1,28 +1,16 @@
 // TestStdOutput.cpp
 //
-// Copyright 2010 tomas <tomasp@videotron.ca>
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-// MA 02110-1301, USA.
-//
+// Copyright 2017 The liborion Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+// 
 #include <orion/unittest/TestStdOutput.h>
 
 #include <iomanip>
 
+#include <orion/StringUtils.h>
 #include <orion/unittest/Test.h>
-#include <orion/unittest/TestResultItem.h>
+#include <orion/unittest/TestSuite.h>
 
 #include <boost/format.hpp>
 
@@ -32,66 +20,120 @@ namespace orion
 {
 namespace unittest
 {
-//---------------------------------------------------------------------------------------
-
-static std::string plural(int n, const std::string& s, const std::string& p)
-{
-   return (n > 1) ? p : s;
-}
 
 //---------------------------------------------------------------------------------------
 
-TestStdOutput::TestStdOutput(std::ostream& stream, ReportLevel report_level) :
-	TestOutput(),
+StdOutput::StdOutput(std::ostream& stream, ReportLevel report_level /* = Error */) :
+	Output(),
    _stream(stream),
    _report_level(report_level),
-   _results_by_testsuite(),
-   _results()
+   _indent(3)
 {
 }
 
-TestStdOutput::~TestStdOutput()
+StdOutput::~StdOutput()
 {
 }
 
-void TestStdOutput::write_header(const std::string& suite_name, int test_count) 
+void StdOutput::write_header(int test_count) 
 {
    _stream << "\n"
-           << boost::format("Running %s test %s...\n") 
+           << boost::format("Running %d test %s...\n") 
                  % test_count 
                  % plural(test_count, "case", "cases")
            << "\n";
 }
 
-void TestStdOutput::write(const TestResult* test_result) 
+void StdOutput::write_suite_header(const Suite& /* suite */) 
 {
-   accumulate_stats(test_result);
+}
 
-   if (not test_result->failed())
+void StdOutput::write(const TestResult& test_result) 
+{
+   if (not test_result.failed())
       return;
 
-   auto& items = test_result->result_items();
+   auto& items = test_result.result_items();
    
    for (auto&& item : items)
    {
-      if (item->result() == Result::Passed)
+      if (item.result == Result::Passed)
          continue;
 
-      _stream << boost::format("Failed: file %s, line %s\n")
-                    % item->file_name()
-                    % item->line_number();
-      _stream << boost::format("   Expected: %s\n")
-                    % item->expected();
-      _stream << boost::format("   Actual:   %s\n")
-                    % item->got();
+      if (item.result == Result::Skipped)
+      {
+         _stream << std::setw(_indent) << ""
+                 << boost::format("Skipped: %s\n")
+                    % item.msg;
+         continue;
+      }
+      
+      _stream << std::setw(_indent) << ""
+              << boost::format("Failed: file %s, line %s\n")
+                    % item.src_loc.file_name
+                    % item.src_loc.line_number;
+
+      if (not item.msg.empty())
+      {
+         _stream << std::setw(_indent) << ""
+                 << boost::format("   Message:  %s\n")
+                       % item.msg;
+      }
+
+      if (item.result == Result::Exception)
+         continue;
+      
+      _stream << std::setw(_indent) << ""
+              << boost::format("   Expected: %s\n")
+                    % item.expected;
+
+      _stream << std::setw(_indent) << ""
+              << boost::format("   Actual:   %s\n")
+                    % item.actual;
    }
 }
 
-void TestStdOutput::write_summary(const TestOutputStats& stats) 
+void StdOutput::write_suite_summary(const Suite& suite) 
 {
-   ouput_short();
-   ouput_detailed();
+   if (_report_level == ReportLevel::Error)
+      return;
 
+   _stream << "\n"
+           << boost::format("Test Suite %s: \n") % suite.name();
+
+   auto s = suite.stats();
+
+   _stream << boost::format("%4d %s out of %d passed\n")
+                  % s.passed_count
+                  % plural(s.passed_count, "Test", "Tests")
+                  % s.count;
+
+   if (s.failed_item_count > 0)
+      _stream << boost::format("%4d %s out of %d failed\n")
+                     % s.failed_count
+                     % plural(s.failed_count, "Test", "Tests")
+                     % s.count;
+
+   if (s.skipped_count > 0)
+      _stream << boost::format("%4d %s out of %d skipped\n")
+                     % s.skipped_count
+                     % plural(s.skipped_count, "Test", "Tests")
+                     % s.count;
+
+   _stream << boost::format("%4d ms") % s.time_elapsed.count()
+           << "\n";
+
+   if (_report_level != ReportLevel::Detailed)
+      return;
+
+   for (const auto& test : suite.test_cases())
+   {
+      write_test_case(3, test);
+   }
+}
+
+void StdOutput::write_summary(const OutputStats& stats) 
+{
    _stream << "\n";
 
    if (stats.failed_item_count > 0)
@@ -107,136 +149,72 @@ void TestStdOutput::write_summary(const TestOutputStats& stats)
 
    _stream << "---\n";
 
-   _stream << boost::format("%4d test out of %d passed\n")
+   _stream << boost::format("%4d Tests out of %d passed\n")
                  % stats.passed_count
                  % stats.count;
-   _stream << boost::format("%4d test out of %d failed\n")
+
+   _stream << boost::format("%4d Tests out of %d failed\n")
                  % stats.failed_count
                  % stats.count;
-   _stream << boost::format("%4d test cases out of %d passed\n")
+
+   _stream << boost::format("%4d Tests out of %d skipped\n")
+                 % stats.skipped_count
+                 % stats.count;
+
+   _stream << boost::format("%4d Test assertations out of %d passed\n")
                  % stats.passed_item_count
                  % stats.item_count;   
-   _stream << boost::format("%4d test cases out of %d failed\n")
+
+   _stream << boost::format("%4d Test assertations out of %d failed\n")
                  % stats.failed_item_count
                  % stats.item_count;
+
+   _stream << boost::format("%4d Test assertations out of %d skipped\n")
+                 % stats.skipped_item_count
+                 % stats.item_count;
+
    _stream << "---\n"
            << boost::format("Test time: %d ms.\n\n") % stats.time_elapsed.count();
 }
 
-void TestStdOutput::accumulate_stats(const TestResult* test_result)
+void StdOutput::write_test_case(int indent, const Test& test) 
 {
-   if (test_result == nullptr)
-      return;
+   auto& r = test.test_result();
 
-   const auto& items = test_result->result_items();
-
-   // By Test
-   _results.insert({test_result->suite_name(), ResultStats{
-      test_result->name(),
-      items.size(), 
-      test_result->passed_item_count(),
-      test_result->failed_item_count(),
-      test_result->time_elapsed()
-   }});
-
-   // By Test suite
-   auto r = _results_by_testsuite.find(test_result->suite_name());
-   if (r != _results_by_testsuite.end()) 
+   if (not test.enabled())
    {
-      r->second.count += items.size(); 
-      r->second.passed_item_count += test_result->passed_item_count();
-      r->second.failed_item_count += test_result->failed_item_count();
-      r->second.time_elapsed      += test_result->time_elapsed();
-   }
-   else
-   {
-      _results_by_testsuite[test_result->suite_name()] = ResultStats{
-         test_result->suite_name(),
-         items.size(), 
-         test_result->passed_item_count(),
-         test_result->failed_item_count(),
-         test_result->time_elapsed()
-      };
-   }
-}
+      _stream << "\n"
+              << std::setw(indent) << ""
+              << boost::format("Test %s: \n") % test.label();
 
-void TestStdOutput::write_test_suite(int indent, const ResultStats& r) 
-{
-   _stream << "\n"
-           << std::setw(indent) << ""
-           << boost::format("Test Suite %s: \n") % r.name;
-
-   _stream << std::setw(indent) << ""
-           << boost::format("   %d test case out of %d passed\n")
-              % r.passed_item_count
-              % r.count;
-
-   if (r.failed_item_count > 0)
       _stream << std::setw(indent) << "" 
-              << boost::format("   %d test case out of %d failed\n")
-                    % r.failed_item_count
-                    % r.count;
+              << boost::format("   Skipped: %s\n")
+                    % test.disabled_reason();
+      return;
+   }
 
-   _stream << std::setw(indent) << ""
-           << boost::format("   %d ms") % r.time_elapsed.count()
-           << "\n";
-}
+   int count = r.passed_item_count() + r.failed_item_count();
 
-void TestStdOutput::write_test_case(int indent, const ResultStats& r) 
-{
    _stream << "\n"
            << std::setw(indent) << ""
-           << boost::format("Test %s: \n") % r.name;
+           << boost::format("Test %s: \n") % test.label();
 
    _stream << std::setw(indent) << "" 
-           << boost::format("   %d test case out of %d passed\n")
-              % r.passed_item_count
-              % r.count;
+           << boost::format("%4d assertations out of %d passed\n")
+              % r.passed_item_count()
+              % count;
 
-   if (r.failed_item_count > 0)
+   if (r.failed_item_count() > 0)
       _stream << std::setw(indent) << ""
-              << boost::format("   %d test case out of %d failed\n")
-                    % r.failed_item_count
-                    % r.count;
+              << boost::format("%4d assertations out of %d failed\n")
+                    % r.failed_item_count()
+                    % count;
 
    _stream << std::setw(indent) << ""
-           << boost::format("   %d ms") % r.time_elapsed.count()
+           << boost::format("%4d ms") % r.time_elapsed().count()
            << "\n";
 }
 
-void TestStdOutput::ouput_short() 
-{
-   if (_report_level != ReportLevel::Short or _results_by_testsuite.empty())
-      return;
-
-   for (const auto& result : _results_by_testsuite)
-   {
-      write_test_suite(0, result.second);
-   }
-}
-
-void TestStdOutput::ouput_detailed() 
-{
-   if (_report_level != ReportLevel::Detailed or _results.empty())
-      return;
-
-   for (const auto& result : _results_by_testsuite)
-   {
-      write_test_suite(0, result.second);
-
-      auto r = _results.equal_range(result.first);
-
-      for (auto i = r.first; i != r.second; ++i)
-      {
-         write_test_case(3, i->second);
-      }
-   }
-}
-
-std::unique_ptr<TestOutput> TestStdOutput::create(std::ostream& stream, ReportLevel report_level /* = Error */)
-{
-   return std::make_unique<TestStdOutput>(stream, report_level);
-}
 
 } // namespace orion
 } // namespace unittest

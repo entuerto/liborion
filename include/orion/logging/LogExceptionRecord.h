@@ -20,7 +20,6 @@
 #ifndef ORION_LOGGING_LOGEXCEPTIONRECORD_H
 #define ORION_LOGGING_LOGEXCEPTIONRECORD_H
 
-#include <cstdint>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>

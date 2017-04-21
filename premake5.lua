@@ -94,6 +94,8 @@ group "Libraries"
       }
 
       FilterPlatformSourceFiles()
+      
+      UseBoostLibShared("program_options")
 
    
    project "orion-fs"

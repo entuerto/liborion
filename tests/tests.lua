@@ -13,18 +13,17 @@ project "test-orion"
 
    links { "orion", "orion-fs"}
 
-   UseBoostLibStatic("program_options")
-
    files {
       "test-encoding.cpp",
-      "test-filesystem.cpp",
+   --   "test-filesystem.cpp",
       "test-logger.cpp",
       "test-string.cpp",
       "test-units.cpp",
       "unittest/*.cpp",
       "test-main.cpp"
    }
-
+   
+   UseBoostLibShared("program_options")
 
 project "test-orion-rpc"
    kind "ConsoleApp"

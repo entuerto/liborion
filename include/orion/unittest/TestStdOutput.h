@@ -1,23 +1,9 @@
 // TestStdOutput.h
 //
-// Copyright 2010 tomas <tomasp@videotron.ca>
+// Copyright 2017 The liborion Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 //
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-// MA 02110-1301, USA.
-//
-
 #ifndef ORION_UNITTEST_TESTSTDOUTPUT_H
 #define ORION_UNITTEST_TESTSTDOUTPUT_H
 
@@ -31,52 +17,41 @@ namespace orion
 {
 namespace unittest
 {
-struct API_EXPORT ResultStats
-{
-   std::string name;
-   int count; 
-   int passed_item_count; 
-   int failed_item_count; 
-   std::chrono::milliseconds time_elapsed;
-};
-
-//!
-/*!
- */
-class API_EXPORT TestStdOutput :
-   public TestOutput
+class Test;
+///
+///
+///
+class API_EXPORT StdOutput : public Output
 {
 public:
-   NO_COPY(TestStdOutput)
-   NO_MOVE(TestStdOutput)
+   NO_COPY(StdOutput)
+   NO_MOVE(StdOutput)
 
-   virtual ~TestStdOutput();
+   StdOutput(std::ostream& stream, ReportLevel report_level = ReportLevel::Error);
+   virtual ~StdOutput();
 
-   virtual void write_header(const std::string& suite_name, int test_count) override;
-   virtual void write(const TestResult* test_result) override;
-   virtual void write_summary(const TestOutputStats& stats) override;
+   /// Global test report header
+   void write_header(int test_count) override;
 
-   static std::unique_ptr<TestOutput> create(std::ostream& stream, ReportLevel report_level = ReportLevel::Error);
+   /// Test suite header
+   void write_suite_header(const Suite& suite) override;
 
-public:
-   TestStdOutput(std::ostream& stream, ReportLevel report_level);
+   /// Test results information
+   void write(const TestResult& test_result) override;
+
+   /// Summary of the test suite
+   void write_suite_summary(const Suite& suite) override;
+
+   /// Summary of all tests
+   void write_summary(const OutputStats& stats) override;
 
 private:
-   void accumulate_stats(const TestResult* test_result);
- 
-   void ouput_short();
-   void ouput_detailed();
-
-   void write_test_suite(int indent, const ResultStats& r);
-
-   void write_test_case(int indent, const ResultStats& r);
+   void write_test_case(int indent, const Test& test);
 
 private:
    std::ostream& _stream;
    ReportLevel   _report_level;
-
-   std::map<std::string, ResultStats> _results_by_testsuite;
-   std::multimap<std::string, ResultStats> _results;
+   int _indent;
 };
 
 } // namespace orion

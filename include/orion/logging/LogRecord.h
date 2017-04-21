@@ -20,8 +20,6 @@
 #ifndef ORION_LOGGING_LOGRECORD_H
 #define ORION_LOGGING_LOGRECORD_H
 
-#include <cstdint>
-
 #include <boost/format.hpp>
 
 #include <orion/Orion-Stddefs.h>
