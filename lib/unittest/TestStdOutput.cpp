@@ -193,7 +193,7 @@ void StdOutput::write_test_case(int indent, const Test& test)
       return;
    }
 
-   int count = r.passed_item_count() + r.failed_item_count();
+   std::size_t count = r.passed_item_count() + r.failed_item_count();
 
    _stream << "\n"
            << std::setw(indent) << ""

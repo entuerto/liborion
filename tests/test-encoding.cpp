@@ -58,7 +58,7 @@ void LittleEndian_put_uint16(Test& t)
 }
 
 std::array<int64_t, 18> numbers64 = {
-   -9223372036854775808ll, // int64_t(-1 << 63),
+   static_cast<int64_t>(-9223372036854775808ll), // int64_t(-1 << 63),
    -9223372036854775807ll, // int64_t(-1 << 63) + 1,
    -1,
    0,

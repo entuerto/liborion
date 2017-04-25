@@ -54,6 +54,7 @@ std::string get_cpu_model()
 
 std::vector<CpuInfo> get_cpu_info()
 {
+    return std::vector<CpuInfo>();
 }
 
 std::string get_os_version()

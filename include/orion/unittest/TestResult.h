@@ -66,10 +66,10 @@ public:
    bool passed() const;
    bool failed() const;
 
-   int item_count() const;
-   int failed_item_count() const;
-   int passed_item_count() const;
-   int skipped_item_count() const;
+   std::size_t item_count() const;
+   std::size_t failed_item_count() const;
+   std::size_t passed_item_count() const;
+   std::size_t skipped_item_count() const;
 
    std::chrono::milliseconds time_elapsed() const;
 
@@ -101,9 +101,9 @@ private:
    std::string _name;
    std::string _suite_name;
    
-   int _failed_item_count;
-   int _passed_item_count;
-   int _skipped_item_count;
+   std::size_t _failed_item_count;
+   std::size_t _passed_item_count;
+   std::size_t _skipped_item_count;
 
    std::chrono::time_point<std::chrono::steady_clock> _time_point_start;
    std::chrono::time_point<std::chrono::steady_clock> _time_point_end;

@@ -114,6 +114,22 @@ constexpr void get_all_values(Function&& f, std::tuple<Args...>& t)
    return get_all_impl(std::forward<Function>(f), t, std::make_index_sequence<std::tuple_size<std::tuple<Args...>>::value>{});
 }
 
+//---------------------------------------------------------------------------------------
+   
+template <class T, std::size_t N>
+std::ostream& operator<<(std::ostream& o, const std::array<T, N>& arr)
+{
+   o << "[ "
+   << std::setbase(16)
+   << std::showbase;
+      
+   for (const auto& b : arr)
+      o << static_cast<uint64_t>(b) << " ";
+      
+   o << "]";
+   return o;
+}
+   
 //-------------------------------------------------------------------------------------------------
 
 inline void write_to_stream(std::ostream& stream) {}
@@ -174,22 +190,6 @@ inline std::string type_name(std::exception_ptr eptr)
    {}
    
    return typeid(eptr).name();
-}
-
-//---------------------------------------------------------------------------------------
-
-template <class T, std::size_t N>
-std::ostream& operator<<(std::ostream& o, const std::array<T, N>& arr)
-{
-   o << "[ "
-     << std::setbase(16)
-     << std::showbase;
-
-   for (const auto& b : arr)
-      o << static_cast<uint64_t>(b) << " ";
-
-   o << "]";
-   return o;
 }
 
 } // namespace orion

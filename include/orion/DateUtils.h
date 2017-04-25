@@ -21,6 +21,7 @@
 #define ORION_DATE_UTILS_H
 
 #include <chrono>
+#include <ctime>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -37,9 +38,9 @@ std::basic_string<CharT> to_basic_string(const std::chrono::time_point<Clock>& t
 
 	std::tm tm{0};
 
-    localtime_s(&tm, &t);
+   tm = *std::localtime(&t);
 
-    std::basic_stringstream<CharT> ostr;
+   std::basic_stringstream<CharT> ostr;
 
 	ostr << std::put_time(&tm, fmt);
 
