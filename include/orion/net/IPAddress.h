@@ -25,18 +25,21 @@
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 #include <orion/net/IP.h>
+#include <orion/net/IPv4.h>
+#include <orion/net/IPv6.h>
 
 namespace orion
 {
 namespace net
 {
 
-//! IPAddress represents the address of an IP end point.
+/// IPAddress represents the address of an IP end point.
 class API_EXPORT IPAddress 
 {
 public:
+   IPAddress(const IPv4& ip, int port);
+   IPAddress(const IPv6& ip, int port, const std::string& zone = "");
    IPAddress(const IPAddress& Other);
    IPAddress(IPAddress&& Other);
    virtual ~IPAddress();
@@ -46,39 +49,15 @@ public:
 
    virtual IP* ip() const;
 
+   virtual int port() const;
+
    virtual std::string zone() const;
 
-protected:
-   IPAddress(IP* ip, const std::string& zone);
+   virtual std::string to_string() const;
 
 private:
    std::unique_ptr<IP> _ip;
    std::string _zone;
-};
-
-//! TcpAddress represents the address of a TCP end point. 
-class API_EXPORT TcpAddress : public IPAddress 
-{
-public:
-   TcpAddress(IP* ip, int port, const std::string& zone = "");
-
-   TcpAddress(const TcpAddress& Other);
-   TcpAddress(TcpAddress&& Other);
-
-   ~TcpAddress();
-
-   TcpAddress& operator=(const TcpAddress& Rhs);
-   TcpAddress& operator=(TcpAddress&& Rhs);
-
-   int port() const;
-
-public:
-   ///
-   static std::unique_ptr<TcpAddress> create(const IP& ip, int port);
-   ///
-   static std::unique_ptr<TcpAddress> create(const std::string& ip, int port);
-
-private:
    int _port;
 };
 

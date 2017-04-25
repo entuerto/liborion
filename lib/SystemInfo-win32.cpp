@@ -46,6 +46,8 @@ LARGE_INTEGER IdleTime;
 
 #include <orion/StringUtils.h>
 
+#include <boost/format.hpp>
+
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 namespace orion
@@ -103,21 +105,19 @@ std::string get_cpu_model()
    RegQueryValueExW(hKey, valueToFind, nullptr, &type, (LPBYTE)&value, &length);
    RegCloseKey(hKey);
 
-   std::string cpuName = wstring_to_utf8(value);
+   std::string cpuName = wstring_to_utf8(value); 
 
    SYSTEM_INFO sysinfo;
    ZeroMemory(&sysinfo, sizeof(SYSTEM_INFO));
    GetSystemInfo(&sysinfo);
 
    const uint64_t cpuThreadCount = sysinfo.dwNumberOfProcessors;
-   std::string cpuInfo = cpuName + " (" + std::to_string(cpuThreadCount);
 
-   if (cpuThreadCount == 1)
-      cpuInfo.append(" thread)");
-   else
-      cpuInfo.append(" threads)");
+   auto f = (cpuThreadCount == 1) ?
+               boost::format("%s (%d thread)") % cpuName % cpuThreadCount:
+               boost::format("%s (%d threads)") % cpuName % cpuThreadCount;
 
-   return cpuInfo;
+   return boost::str(f);
 }
 
 std::vector<CpuInfo> get_cpu_info()
@@ -156,9 +156,10 @@ std::vector<CpuInfo> get_cpu_info()
       WCHAR key_name[128];
       HKEY processor_key;
 
-      int len = _snwprintf(key_name,
-                           ARRAY_SIZE(key_name),
-                           L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\%d", i);
+      int len = _snwprintf_s(key_name,
+                             sizeof(key_name),
+                             ARRAY_SIZE(key_name),
+                             L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\%d", i);
 
       DWORD ret = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key_name, 0, KEY_QUERY_VALUE, &processor_key);
 
@@ -239,70 +240,38 @@ std::vector<CpuInfo> get_cpu_info()
 
 std::string get_os_version()
 {
-   OSVERSIONINFOEXW osvi;
+   DWORD size = GetFileVersionInfoSizeW(L"C:\\windows\\System32\\version.dll", nullptr);
+   if (size == 0)
+      return "Microsoft Windows (Unkown version)";
 
-   ZeroMemory(&osvi, sizeof(OSVERSIONINFOEXW));
+   std::unique_ptr<BYTE> data(new BYTE[size]);
 
-   // Try calling GetVersionEx using the OSVERSIONINFOEX structure.
-   // If that fails, try using the OSVERSIONINFO structure.
-   osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
-
-   bool os_version_info_ex = GetVersionExW((OSVERSIONINFOW*) &osvi);
-
-   if (not os_version_info_ex) 
+   if (not GetFileVersionInfoW(L"C:\\windows\\System32\\version.dll", 0, size, data.get()))
    {
-      osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
-      if (not GetVersionExW((OSVERSIONINFOW*) &osvi))
-         return "";
+      return "Microsoft Windows (Unkown version)";
+   }
+ 
+   VS_FIXEDFILEINFO* file_info = nullptr;
+   UINT len = 0;
+
+   if (not VerQueryValue(data.get(), TEXT("\\"), (LPVOID*)&file_info, &len))
+   {
+      return "Microsoft Windows (Unkown version)";
    }
 
-   if (osvi.dwMajorVersion    == 5 and 
-       osvi.dwMinorVersion    == 1 and
-       osvi.wServicePackMajor == 2 and
-       osvi.wServicePackMinor == 0)
-      return "Microsoft Windows XP, Service Pack 2";
+   if (len == 0)
+   {
+      return "Microsoft Windows (Unkown version)";
+   }
 
-   if (osvi.dwMajorVersion    == 5 and 
-       osvi.dwMinorVersion    == 1 and
-       osvi.wServicePackMajor == 3 and
-       osvi.wServicePackMinor == 0)
-      return "Microsoft Windows XP, Service Pack 3";
+   int major  = HIWORD(file_info->dwProductVersionMS);
+   int minor  = LOWORD(file_info->dwProductVersionMS);
+   int hotfix = HIWORD(file_info->dwProductVersionLS);
+   int other  = LOWORD(file_info->dwProductVersionLS);
 
-   if (osvi.dwMajorVersion    == 6 and 
-       osvi.dwMinorVersion    == 0 and
-       osvi.wServicePackMajor == 1 and
-       osvi.wServicePackMinor == 0)
-      return "Microsoft Windows Vista, Service Pack 1";
+   auto f = boost::format("Microsoft Windows %d.%d.%d.%d") % major % minor % hotfix % other;
 
-   if (osvi.dwMajorVersion    == 6 and 
-       osvi.dwMinorVersion    == 0 and
-       osvi.wServicePackMajor == 2 and
-       osvi.wServicePackMinor == 0)
-      return "Microsoft Windows Vista, Service Pack 2";
-
-   if (osvi.dwMajorVersion    == 6 and 
-       osvi.dwMinorVersion    == 0)
-      return "Microsoft Windows Vista";
-
-   if (osvi.dwMajorVersion    == 6 and 
-       osvi.dwMinorVersion    == 1 and
-       osvi.wServicePackMajor == 1 and
-       osvi.wServicePackMinor == 0)
-      return "Microsoft Windows 7, Service Pack 1";
-
-   if (osvi.dwMajorVersion    == 6 and 
-       osvi.dwMinorVersion    == 1)
-      return "Microsoft Windows 7";
-
-   if (osvi.dwMajorVersion    == 6 and 
-       osvi.dwMinorVersion    == 2)
-      return "Microsoft Windows 8";
-
-   if (osvi.dwMajorVersion    == 6 and 
-       osvi.dwMinorVersion    == 3)
-      return "Microsoft Windows 8.1";
-
-   return "Microsoft Windows";
+   return boost::str(f);
 }
 
 std::string get_host_name()

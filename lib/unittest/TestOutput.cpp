@@ -1,33 +1,20 @@
 // TestOutput.cpp
 //
-// Copyright 2016 tomas <tomasp@videotron.ca>
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-// MA 02110-1301, USA.
-//
+// Copyright 2017 The liborion Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+// 
 #include <orion/unittest/TestOutput.h>
 
 #include <stdexcept>
 
-#include <orion/ErrorMacros.h>
 #include <orion/StringUtils.h>
 
 namespace orion
 {
 namespace unittest
 {
+
 std::string to_string(ReportLevel rl)
 {
    switch(rl)
@@ -63,7 +50,7 @@ std::istream& operator>> (std::istream &in, ReportLevel& report_level)
    }
    else
    {
-      THROW_STDEXCEPTION(std::runtime_error, "Invalid Report level");
+      throw std::runtime_error("Invalid Report level");
    }
 
    return in;
@@ -73,6 +60,23 @@ std::ostream& operator<< (std::ostream& out, ReportLevel report_level)
 {
    out << to_string(report_level);
    return out;
+}
+
+OutputStats& operator+= (OutputStats& lhs, const OutputStats& rhs)
+{
+   lhs.count += rhs.count; 
+   lhs.passed_count  += rhs.passed_count; 
+   lhs.failed_count  += rhs.failed_count;
+   lhs.skipped_count += rhs.skipped_count;
+
+   lhs.item_count += rhs.item_count;
+   lhs.passed_item_count += rhs.passed_item_count; 
+   lhs.failed_item_count += rhs.failed_item_count; 
+   lhs.skipped_item_count += rhs.skipped_item_count; 
+   
+   lhs.time_elapsed += rhs.time_elapsed;
+
+   return lhs;
 }
 
 } // namespace orion

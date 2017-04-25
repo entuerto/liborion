@@ -81,9 +81,9 @@ std::string LogStartRecord::time_stamp() const
  */
 std::string LogStartRecord::message() const
 {
-   std::string start_time;
-   get_current_datetime(start_time);
-   return "\nLog Start Time - " + start_time + "\n";
+   auto now = std::chrono::system_clock::now();
+
+   return "\nLog Start Time - " + to_string(now, "%c");
 }
 
 /*!

@@ -23,7 +23,6 @@
 #define ORION_NET_LISTENER_H
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 #include <orion/net/Connection.h> 
 #include <orion/net/IPAddress.h> 
 
@@ -39,7 +38,8 @@ namespace net
 class API_EXPORT Listener 
 {
 public:
-   virtual ~Listener() = default;
+   Listener(const IPAddress& addr);
+   virtual ~Listener();
 
    // Accept waits for and returns the next connection to the listener.
    virtual std::unique_ptr<Connection> accept() =0;
@@ -49,32 +49,10 @@ public:
    virtual void close() =0;
 
    // Addr returns the listener's network address.
-   virtual IPAddress* addr() const  =0;
-};
+   virtual IPAddress* addr() const;
 
-//! TCPListener is a TCP network listener. 
-class API_EXPORT TcpListener : public Listener 
-{
-public:
-   NO_COPY(TcpListener)
-   NO_MOVE(TcpListener)
-
-   ~TcpListener();
-
-   virtual std::unique_ptr<Connection> accept() override;
-
-   virtual void close() override;
-
-   virtual IPAddress* addr() const override;
-
-   static std::unique_ptr<Listener> open_tcp4(const TcpAddress& addr);
-   static std::unique_ptr<Listener> open_tcp6(const TcpAddress& addr);
-
-private:
-	struct Impl;
-   std::unique_ptr<Impl> _impl;
-
-   TcpListener(Impl* impl);
+protected:
+   std::unique_ptr<IPAddress> _addr;
 };
 
 } // net

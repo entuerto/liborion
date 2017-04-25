@@ -23,83 +23,69 @@
 
 #include <orion/Logging.h>
 #include <orion/net/Server.h>
-#include <orion/net/HttpServer.h>
-#include <orion/net/Response.h>
+#include <orion/net/http/Server.h>
+#include <orion/net/http/Request.h>
+#include <orion/net/http/Response.h>
 
 using namespace orion;
 using namespace orion::logging;
 using namespace orion::net;
+using namespace orion::net::http;
 
 
-class HelloRequestListener : public RequestListener
+class HelloRequestHandler : public http::RequestHandler
 {
 public:
-   HelloRequestListener() : RequestListener("/")
+   HelloRequestHandler() : http::RequestHandler("/")
    {
    }
 
-   virtual ~HelloRequestListener() = default;
+   virtual ~HelloRequestHandler() = default;
 
-   static std::unique_ptr<RequestListener> create()
+   static std::unique_ptr<http::RequestHandler> create()
    {
-      return std::make_unique<HelloRequestListener>();
+      return std::make_unique<HelloRequestHandler>();
    }
    
 protected:
-   virtual std::unique_ptr<Response> on_get(const Request* /* request */)
+   virtual std::error_code on_get(const Request& request, Response& response)
    {
-      return Response::create("Hello");
-   }
+      response.header("Content-Type", "text/plain; charset=utf-8");
+      response.header("Connection", "close");
 
-   virtual std::unique_ptr<Response> on_post(const Request* /* request */)
-   {
-      return Response::create_400();
-   }
+      std::ostream o(response.rdbuf());
 
-   virtual std::unique_ptr<Response> on_put(const Request* /* request */) 
-   {
-      return Response::create_400();
-   }
+      o << "Hello there";
 
-   virtual std::unique_ptr<Response> on_delete(const Request* /* request */)
-   {
-      return Response::create_400();
+      return std::error_code();
    }
 };
 
-class WorldRequestListener : public RequestListener
+class WorldRequestHandler : public http::RequestHandler
 {
 public:
-   WorldRequestListener() : RequestListener("/")
+   WorldRequestHandler() : http::RequestHandler("/")
    {
    }
 
-   virtual ~WorldRequestListener() = default;
+   virtual ~WorldRequestHandler() = default;
 
-   static std::unique_ptr<RequestListener> create()
+   static std::unique_ptr<http::RequestHandler> create()
    {
-      return std::make_unique<WorldRequestListener>();
+      return std::make_unique<WorldRequestHandler>();
    }
    
 protected:
-   virtual std::unique_ptr<Response> on_get(const Request* /* request */)
+   virtual std::error_code on_get(const Request& request, Response& response)
    {
-      return Response::create("World");
-   }
+      response.header("Content-Type", "text/plain; charset=utf-8");
+      response.header("Connection", "close");
+      
+      std::ostream o(response.rdbuf());
 
-   virtual std::unique_ptr<Response> on_post(const Request* /* request */)
-   {
-      return Response::create_400();
-   }
+      o << "World turns round";
 
-   virtual std::unique_ptr<Response> on_put(const Request* /* request */) 
-   {
-      return Response::create_400();
-   }
-
-   virtual std::unique_ptr<Response> on_delete(const Request* /* request */)
-   {
-      return Response::create_400();
+      return std::error_code();
    }
 };
 
@@ -107,6 +93,8 @@ void setup_logger(std::fstream& file_stream)
 {
    auto cout_handler = StreamOutputHandler::create(std::cout);
    auto file_handler = StreamOutputHandler::create(file_stream);
+
+   file_handler->set_formatter(MultilineFormatter::create());
 
    Logger& logger = Logger::get_logger();
 
@@ -122,14 +110,30 @@ int main ()
 
    LOG_START();
 
-   auto server = HttpServer::create(9080);
+   auto server = http::Server::create();
 
-   server->add_request_listener(WorldRequestListener::create());
-   server->add_request_listener(HelloRequestListener::create());
+   if (server == nullptr)
+   {
+      LOG(Info) << "Server error...";  
+      return EXIT_FAILURE; 
+   }
 
-   LOG(Info) << "Server starting...";
+   server->add_handler(WorldRequestHandler::create());
+   server->add_handler(HelloRequestHandler::create());
 
-   server->start();
+   std::cout << "Server listening on port: 9080\n";
+
+   try
+   {
+      std::error_code ec = server->listen_and_serve("", 9080);
+
+      if (ec)
+         LOG(Error) << ec;
+   }
+   catch (const std::exception& e)
+   {
+      LOG_EXCEPTION(e);
+   }
 
    LOG_END();
    return EXIT_SUCCESS;

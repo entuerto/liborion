@@ -1,48 +1,64 @@
 // TestResult.h
 //
-// Copyright 2010 tomas <tomasp@videotron.ca>
+// Copyright 2017 The liborion Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 //
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-// MA 02110-1301, USA.
-//
-
 #ifndef ORION_UNITTEST_TESTRESULT_H
 #define ORION_UNITTEST_TESTRESULT_H
 
 #include <chrono>
-#include <memory>
 #include <string>
+#include <vector>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/Timer.h>
-#include <orion/unittest/TestResultItem.h>
+#include <orion/Utils.h>
 
 namespace orion
 {
 namespace unittest
 {
+//---------------------------------------------------------------------------------------
+
+#define _src_loc SourceLocation{__FILE__, __LINE__}
+
+struct SourceLocation
+{
+   std::string file_name;
+   int line_number;
+};
+
+//---------------------------------------------------------------------------------------
+
+enum class Result
+{
+   Passed,
+   Failed,
+   Exception,
+   Skipped
+};
+
+//---------------------------------------------------------------------------------------
+
+struct API_EXPORT ResultItem
+{
+   Result result;
+
+   std::string msg;
+   std::string expected;
+   std::string actual;
+
+   SourceLocation src_loc;
+};
+
 //!
 /*!
  */
 class API_EXPORT TestResult 
 {
 public:
-   NO_COPY(TestResult)
-   NO_MOVE(TestResult)
-   
-   ~TestResult();
+   TestResult(const std::string& name, const std::string& suite_name);
+   ~TestResult() = default;
 
    std::string name() const;
    std::string suite_name() const;
@@ -50,32 +66,185 @@ public:
    bool passed() const;
    bool failed() const;
 
-   int failed_item_count() const;
-   int passed_item_count() const;
+   std::size_t item_count() const;
+   std::size_t failed_item_count() const;
+   std::size_t passed_item_count() const;
+   std::size_t skipped_item_count() const;
 
    std::chrono::milliseconds time_elapsed() const;
 
-   const std::vector<std::unique_ptr<TestResultItem>>& result_items() const;
+   const std::vector<ResultItem>& result_items() const;
 
    void on_start();
-   void on_failure(std::unique_ptr<TestResultItem> item);
-   void on_success(std::unique_ptr<TestResultItem> item);
    void on_end();
 
-   static std::unique_ptr<TestResult> create(const std::string& name, const std::string& suite_name = "DefaultSuite");
 
-public:
-   TestResult(const std::string& name, const std::string& suite_name);
+   template<typename... Args>
+   void log_success(Args... args);
+
+   template<typename T, typename... Args>
+   void log_failure(const T& expected, const T& actual, Args... args);
+
+   template<typename... Args>
+   void log_failure(Args... args);
+
+   template<typename E, typename... Args>
+   void log_exception(const E& e, Args... args);
+
+   template<typename... Args>
+   void log_exception(std::exception_ptr eptr, Args... args);
+
+   template<typename... Args>
+   void log_skipped(Args... args);
 
 private:
    std::string _name;
    std::string _suite_name;
-   int _failed_item_count;
-   int _passed_item_count;
-   Timer _timer;
+   
+   std::size_t _failed_item_count;
+   std::size_t _passed_item_count;
+   std::size_t _skipped_item_count;
 
-   std::vector<std::unique_ptr<TestResultItem>> _result_items;
+   std::chrono::time_point<std::chrono::steady_clock> _time_point_start;
+   std::chrono::time_point<std::chrono::steady_clock> _time_point_end;
+
+   std::vector<ResultItem> _result_items;
 };
+
+struct StringConcat
+{
+   std::string& text;
+
+   template<typename T>
+   void operator()(T) {  }
+
+   void operator()(const char* v)        { text += v; }
+   void operator()(const std::string& v) { text += v; }
+};
+
+template<typename... Args>
+void TestResult::log_success(Args... args)
+{
+   ++_passed_item_count;
+
+   auto t = std::make_tuple(args...);
+
+   std::string msg;
+
+   get_all_values(StringConcat{msg}, t);
+
+   _result_items.push_back(ResultItem{
+      Result::Passed,
+      msg,
+      "",
+      "",
+      get_value<SourceLocation>(t, SourceLocation{})
+   });
+}
+
+template<typename T, typename... Args>
+void TestResult::log_failure(const T& expected, const T& actual, Args... args)
+{
+   ++_failed_item_count;
+
+   auto t = std::make_tuple(args...);
+
+   std::string msg;
+
+   get_all_values(StringConcat{msg}, t);
+
+   _result_items.push_back(ResultItem{
+      Result::Failed,
+      msg,
+      get_as_string(expected),
+      get_as_string(actual),
+      get_value<SourceLocation>(t, SourceLocation{})
+   });
+}
+
+template<typename... Args>
+void TestResult::log_failure(Args... args)
+{
+   ++_failed_item_count;
+
+   auto t = std::make_tuple(args...);
+
+   std::string msg;
+
+   get_all_values(StringConcat{msg}, t);
+
+   _result_items.push_back(ResultItem{
+      Result::Failed,
+      msg,
+      "",
+      "",
+      get_value<SourceLocation>(t, SourceLocation{})
+   });
+}
+
+template<typename E, typename... Args>
+void TestResult::log_exception(const E& e, Args... args)
+{
+   ++_failed_item_count;
+
+   auto t = std::make_tuple(args...);
+
+   std::string msg;
+
+   get_all_values(StringConcat{msg}, t);
+
+   msg += type_name(e) + " (" + e.what() + ") ";
+
+   _result_items.push_back(ResultItem{
+      Result::Exception,
+      msg,
+      "",
+      "",
+      get_value<SourceLocation>(t, SourceLocation{})
+   });
+}
+
+template<typename... Args>
+void TestResult::log_exception(std::exception_ptr eptr, Args... args)
+{
+   ++_failed_item_count;
+
+   auto t = std::make_tuple(args...);
+
+   std::string msg;
+
+   get_all_values(StringConcat{msg}, t);
+
+   msg += type_name(eptr);
+   
+   _result_items.push_back(ResultItem{
+      Result::Exception,
+      msg,
+      "",
+      "",
+      get_value<SourceLocation>(t, SourceLocation{})
+   });
+}
+
+template<typename... Args>
+void TestResult::log_skipped(Args... args)
+{
+   ++_skipped_item_count;
+
+   auto t = std::make_tuple(args...);
+
+   std::string msg;
+
+   get_all_values(StringConcat{msg}, t);
+
+   _result_items.push_back(ResultItem{
+      Result::Skipped,
+      msg,
+      "",
+      "",
+      get_value<SourceLocation>(t, SourceLocation{})
+   });
+}
 
 } // namespace orion
 } // namespace unittest

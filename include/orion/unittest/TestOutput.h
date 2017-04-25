@@ -1,36 +1,27 @@
 // TestOutput.h
 //
-// Copyright 2010 tomas <tomasp@videotron.ca>
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-// MA 02110-1301, USA.
+// Copyright 2017 The liborion Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 //
 #ifndef ORION_UNITTEST_TESTOUTPUT_H
 #define ORION_UNITTEST_TESTOUTPUT_H
 
 #include <chrono>
 #include <istream>
+#include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
-#include <orion/unittest/TestResult.h>
 
 namespace orion
 {
 namespace unittest
 {
+class Suite;
+class TestResult;
+
+//---------------------------------------------------------------------------------------
+
 enum class ReportLevel 
 {
    Error    = 0,
@@ -38,35 +29,52 @@ enum class ReportLevel
    Detailed = 2
 };
 
-API_EXPORT std::string to_string(ReportLevel rl);
+std::string to_string(ReportLevel rl);
 
-API_EXPORT std::istream& operator>> (std::istream& in, ReportLevel& report_level);
-API_EXPORT std::ostream& operator<< (std::ostream& out, ReportLevel report_level);
+std::istream& operator>> (std::istream& in, ReportLevel& report_level);
+std::ostream& operator<< (std::ostream& out, ReportLevel report_level);
 
-struct API_EXPORT TestOutputStats
+//---------------------------------------------------------------------------------------
+
+struct OutputStats
 {
-   int count; 
-   int passed_count; 
-   int failed_count;
+   std::size_t count;
+   std::size_t passed_count;
+   std::size_t failed_count;
+   std::size_t skipped_count;
 
-   int item_count;
-   int passed_item_count; 
-   int failed_item_count; 
+   std::size_t item_count;
+   std::size_t passed_item_count;
+   std::size_t failed_item_count;
+   std::size_t skipped_item_count; 
    
    std::chrono::milliseconds time_elapsed;
 };
 
+OutputStats& operator+= (OutputStats& lhs, const OutputStats& rhs);
+
 //!
 /*!
  */
-class API_EXPORT TestOutput
+class Output
 {
 public:
-   virtual ~TestOutput() = default;
+   virtual ~Output() = default;
 
-   virtual void write_header(const std::string& suite_name, int test_count) =0;
-   virtual void write(const TestResult* test_result) =0;
-   virtual void write_summary(const TestOutputStats& stats) =0;
+   /// Global test report header
+   virtual void write_header(int test_count) =0;
+
+   /// Test suite header
+   virtual void write_suite_header(const Suite& suite) =0;
+
+   /// Test results information
+   virtual void write(const TestResult& test_result) =0;
+
+   /// Summary of the test suite
+   virtual void write_suite_summary(const Suite& suite) =0;
+
+   /// Summary of all tests
+   virtual void write_summary(const OutputStats& stats) =0;
 };
 
 } // namespace orion

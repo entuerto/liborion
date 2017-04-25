@@ -20,8 +20,6 @@
 #ifndef ORION_LOGGING_LOGRECORD_H
 #define ORION_LOGGING_LOGRECORD_H
 
-#include <cstdint>
-
 #include <boost/format.hpp>
 
 #include <orion/Orion-Stddefs.h>
@@ -112,8 +110,14 @@ public:
    //! Log a character
    LogRecord& operator<<(char value);
 
+   //! Log std::error_code
+   LogRecord& operator<<(const std::error_code& ec);
+
    //! Log boost format
    LogRecord& operator<<(const boost::format& fmt);
+
+   /// Log stream buffer
+   LogRecord& operator<<(std::streambuf* buf);
 
    static std::unique_ptr<LogRecord> create();
 

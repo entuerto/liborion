@@ -10,96 +10,111 @@ using namespace orion;
 using namespace orion::fs;
 using namespace orion::unittest;
 
-TEST_SUITE(OrionFilesystem)
+TestSuite(OrionFilesystem)
 {
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(Path, Construction)
+void path_construction(Test& t)
 {
    Path p("/toto");
 
-   EXPECT_EQ(p.compare("/toto"), 0);
-   EXPECT_EQ(p, "/toto");
+   t.assert<std::equal_to<>>(0, p.compare("/toto"), _src_loc);
+   t.assert<std::equal_to<>>("/toto", p, _src_loc);
 }
 
-TEST(Path, Join)
+void path_join(Test& t)
 {
    Path p("/toto");
 
    p /= "tata";
-   EXPECT_EQ(p.normalize(), Path("/toto/tata").normalize());
+   t.assert<std::equal_to<>>(Path("/toto/tata").normalize(), p.normalize(), _src_loc);
 
    p /= "/titi";
-   EXPECT_EQ(p.normalize(), Path("/toto/tata/titi").normalize());
+   t.assert<std::equal_to<>>(Path("/toto/tata/titi").normalize(), p.normalize(), _src_loc);
 
    p = Path("first");
-   EXPECT_EQ(p.normalize(), Path("first").normalize());
+   t.assert<std::equal_to<>>(Path("first").normalize(), p.normalize(), _src_loc);
 
    p /= "second";
-   EXPECT_EQ(p.normalize(), Path("first/second").normalize()); 
+   t.assert<std::equal_to<>>(Path("first/second").normalize(), p.normalize(), _src_loc);
 }
 
-TEST(Path, Decomposition)
+void path_decomposition(Test& t)
 {
    Path p("/foo");
 
-   EXPECT_EQ(p.root_path(), "/");
-   EXPECT_EQ(p.root_name(), "");
-   EXPECT_EQ(p.root_directory(), "/");
-   EXPECT_EQ(p.relative_path(), "foo");
-   EXPECT_EQ(p.parent_path(), "/");
-   //EXPECT(p.filename() == "foo");
-   //EXPECT(p.stem() == "foo");
-   //EXPECT(p.extension() == "");
+   t.assert<std::equal_to<>>("/", p.root_path(), _src_loc);
+   t.assert<std::equal_to<>>("", p.root_name(), _src_loc);
+   t.assert<std::equal_to<>>("/", p.root_directory(), _src_loc);
+   t.assert<std::equal_to<>>("foo", p.relative_path(), _src_loc);
+   t.assert<std::equal_to<>>("/", p.parent_path(), _src_loc);
+   //t.assert<std::equal_to<>>("foo", p.filename(), _src_loc);
+   //t.assert<std::equal_to<>>("foo", p.stem(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.extension(), _src_loc);
 
    p = Path("c:");
-   EXPECT_EQ(p.root_path(), "c:");
-   EXPECT_EQ(p.root_name(), "c:");
-   EXPECT_EQ(p.root_directory(), "");
-   EXPECT_EQ(p.relative_path(), "");
-   //EXPECT(p.parent_path() == "");
-   //EXPECT(p.filename() == "c:");
+   t.assert<std::equal_to<>>("c:", p.root_path(), _src_loc);
+   t.assert<std::equal_to<>>("c:", p.root_name(), _src_loc);
+   t.assert<std::equal_to<>>("", p.root_directory(), _src_loc);
+   t.assert<std::equal_to<>>("", p.relative_path(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.parent_path(), _src_loc);
+   //t.assert<std::equal_to<>>("c:", p.filename(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.stem(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.extension(), _src_loc);
 
    p = Path("c:/");
-   EXPECT_EQ(p.root_path(), "c:/");
-   EXPECT_EQ(p.root_name(), "c:");
-   EXPECT_EQ(p.root_directory(), "/");
-   EXPECT_EQ(p.relative_path(), "");
-   //EXPECT(p.parent_path() == "c:");
-   //EXPECT(p.filename() == "/");
-
+   t.assert<std::equal_to<>>("c:/", p.root_path(), _src_loc);
+   t.assert<std::equal_to<>>("c:", p.root_name(), _src_loc);
+   t.assert<std::equal_to<>>("", p.root_directory(), _src_loc);
+   t.assert<std::equal_to<>>("", p.relative_path(), _src_loc);
+   //t.assert<std::equal_to<>>("c:", p.parent_path(), _src_loc);
+   //t.assert<std::equal_to<>>("/", p.filename(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.stem(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.extension(), _src_loc);
+   
    p = Path("\\\\net\\\\\\foo");
-   EXPECT_EQ(p.root_path(), "\\\\net\\");
-   EXPECT_EQ(p.root_name(), "\\\\net");
-   EXPECT_EQ(p.root_directory(), "\\");
-   EXPECT_EQ(p.relative_path(), "foo");
-   //EXPECT(p.parent_path() == "\\\\net\\");
-   //EXPECT(p.filename() == "foo");
+   t.assert<std::equal_to<>>("\\\\net\\", p.root_path(), _src_loc);
+   t.assert<std::equal_to<>>("\\\\net", p.root_name(), _src_loc);
+   t.assert<std::equal_to<>>("\\", p.root_directory(), _src_loc);
+   t.assert<std::equal_to<>>("foo", p.relative_path(), _src_loc);
+   //t.assert<std::equal_to<>>("\\\\net\\", p.parent_path(), _src_loc);
+   //t.assert<std::equal_to<>>("foo", p.filename(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.stem(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.extension(), _src_loc);
 
    p = Path("//net/foo");
-   EXPECT_EQ(p.root_path(), "//net/");
-   EXPECT_EQ(p.root_name(), "//net");
-   EXPECT_EQ(p.root_directory(), "/");
-   EXPECT_EQ(p.relative_path(), "foo");
-   //EXPECT(p.parent_path() == "//net/");
-   //EXPECT(p.filename() == "foo");
+   t.assert<std::equal_to<>>("//net/", p.root_path(), _src_loc);
+   t.assert<std::equal_to<>>("//net", p.root_name(), _src_loc);
+   t.assert<std::equal_to<>>("/", p.root_directory(), _src_loc);
+   t.assert<std::equal_to<>>("foo", p.relative_path(), _src_loc);
+   //t.assert<std::equal_to<>>("//net/", p.parent_path(), _src_loc);
+   //t.assert<std::equal_to<>>("foo", p.filename(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.stem(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.extension(), _src_loc);
 
    p = Path("//net");
-   EXPECT_EQ(p.root_path(), "//net");
-   EXPECT_EQ(p.root_name(), "//net");
-   EXPECT_EQ(p.root_directory(), "");
-   EXPECT_EQ(p.relative_path(), "");
-   //EXPECT(p.parent_path() == "//net/");
-   //EXPECT(p.filename() == "//net");
+   t.assert<std::equal_to<>>("//net", p.root_path(), _src_loc);
+   t.assert<std::equal_to<>>("//net", p.root_name(), _src_loc);
+   t.assert<std::equal_to<>>("", p.root_directory(), _src_loc);
+   t.assert<std::equal_to<>>("", p.relative_path(), _src_loc);
+   //t.assert<std::equal_to<>>("//net/", p.parent_path(), _src_loc);
+   //t.assert<std::equal_to<>>("//net", p.filename(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.stem(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.extension(), _src_loc);
 
    p = Path("//net/");
-   EXPECT_EQ(p.root_path(), "//net/");
-   EXPECT_EQ(p.root_name(), "//net");
-   EXPECT_EQ(p.root_directory(), "/");
-   EXPECT_EQ(p.relative_path(), "");
-   //EXPECT(p.parent_path() == "//net");
-   //EXPECT(p.filename() == "/");
+   t.assert<std::equal_to<>>("//net/", p.root_path(), _src_loc);
+   t.assert<std::equal_to<>>("//net", p.root_name(), _src_loc);
+   t.assert<std::equal_to<>>("/", p.root_directory(), _src_loc);
+   t.assert<std::equal_to<>>("", p.relative_path(), _src_loc);
+   //t.assert<std::equal_to<>>("//net", p.parent_path(), _src_loc);
+   //t.assert<std::equal_to<>>("/", p.filename(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.stem(), _src_loc);
+   //t.assert<std::equal_to<>>("", p.extension(), _src_loc);
 }
 
+RegisterTestCase(OrionFilesystem, path_construction);
+RegisterTestCase(OrionFilesystem, path_join);
+RegisterTestCase(OrionFilesystem, path_decomposition);
 }

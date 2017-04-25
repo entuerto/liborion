@@ -6,81 +6,51 @@
 #include <orion/Exception.h>
 
 using namespace orion::unittest;
+using namespace orion::unittest::option;
 
-TEST_SUITE(OrionCore)
+TestSuite(OrionCore)
 {
 
-TEST(Unittest, CheckSuccessOnTrue)
+int calc_throwing_function()
 {
-   bool failure = true;
-   {
-      auto r = TestResult::create("scope test result");
-      TestResult* test_result = r.get();
-
-      EXPECT_TRUE(true);
-
-      failure = test_result->failed();
-   }
-
-   EXPECT_TRUE(not failure);
+   throw std::logic_error("Oh boy");
 }
 
-TEST(Unittest, CheckFailureOnFalse)
+void throwing_function()
 {
-   bool failure = true;
-   {
-      auto r = TestResult::create("scope test result");
-      TestResult* test_result = r.get();
-
-      EXPECT_FALSE(false);
-
-      failure = test_result->failed();
-   }
-
-   EXPECT_FALSE(failure);
+   throw std::logic_error("Oh boy");
 }
 
-int throwing_function()
+void check_success_on_true(Test& t)
 {
-   THROW_EXCEPTION(orion::Exception, "Oh boy")
+   Test scope_test("scope test", Suite("testSuite"), [](Test& st) { 
+      st.assert<true>(true); 
+   });
+
+   t.assert<true>(scope_test.test_result().passed(), _src_loc);
 }
 
-TEST(Unittest, CheckFailureOnException)
+void check_failure_on_false(Test& t)
 {
-   bool failure = false;
-   {
-      auto r = TestResult::create("scope test result");
-      TestResult* test_result = r.get();
+   Test scope_test("scope test", Suite("testSuite"), [](Test& st) { 
+      st.assert<false>(false); 
+   });
 
-      EXPECT_EQ(throwing_function(), 1);
-
-      failure = test_result->failed();
-   }
-
-   EXPECT_TRUE(failure);
+   t.assert<false>(scope_test.test_result().failed(), _src_loc);
 }
 
-int side_effect = 0;
-int function_with_side_effects()
+void check_function_failure_on_exception(Test& t)
 {
-   ++side_effect;
-   return 1;
+   Test scope_test("scope test", Suite("testSuite"), [](Test& st) { 
+      st.assert<std::equal_to<>>(calc_throwing_function(), 1); 
+   });
+
+   t.assert<true>(scope_test.test_result().failed(), _src_loc);
 }
 
-TEST(Unittest, CheckEqualDoesNotHaveSideEffectsWhenPassing)
+void check_close_success_on_equal(Test& t)
 {
-   side_effect = 0;
-   {
-      auto r = TestResult::create("scope test result");
-      TestResult* test_result = r.get();
-
-      EXPECT_EQ(1, function_with_side_effects());
-   }
-   EXPECT_EQ(1, side_effect);
-}
-
-TEST(Unittest, CheckCloseSuccessOnEqual)
-{
+/*
    bool failure = true;
    {
       auto r = TestResult::create("scope test result");
@@ -92,10 +62,13 @@ TEST(Unittest, CheckCloseSuccessOnEqual)
    }
 
    EXPECT_TRUE(not failure);
+*/
+   t.fail("Not implemented");
 }
 
-TEST(Unittest, CheckCloseFailsOnNotEqual)
+void check_close_fails_on_not_equal(Test& t)
 {
+/*
    bool failure = false;
    {
       auto r = TestResult::create("scope test result");
@@ -107,81 +80,53 @@ TEST(Unittest, CheckCloseFailsOnNotEqual)
    }
 
    EXPECT_TRUE(failure);
+*/
+   t.fail("Not implemented");
 }
 
-TEST(Unittest, CheckCloseFailsOnException)
+void check_not_expected_exception(Test& t)
 {
-   bool failure = false;
-   {
-      auto r = TestResult::create("scope test result");
-      TestResult* test_result = r.get();
+   Test scope_test("throwing", Suite("testSuite"), [](Test& st) { 
+      st.assert_throw<std::domain_error>(throwing_function); 
+   });
 
-      EXPECT_CLOSE((float)throwing_function(), 1.0001f, 0.1f);
-
-      failure = test_result->failed();
-   }
-
-   EXPECT_TRUE(failure);
+   t.assert<true>(scope_test.test_result().failed(), _src_loc);
 }
 
-TEST(Unittest, CheckExpectThrowOnSuccess)
+void check_expected_exception(Test& t)
 {
-   bool failure = true;
-   {
-      auto r = TestResult::create("scope test result");
-      TestResult* test_result = r.get();
+   Test scope_test("throwing", Suite("testSuite"), [](Test& st) { 
+      st.assert_throw<std::logic_error>(throwing_function); 
+   });
 
-      EXPECT_THROW(throwing_function(), orion::Exception);
-
-      failure = test_result->failed();
-   }
-
-   EXPECT_TRUE(not failure);
+   t.assert<true>(scope_test.test_result().passed(), _src_loc);
 }
 
-TEST(Unittest, CheckExpectThrowOnFailure)
+void check_test_result_log_success(Test& t)
 {
-   bool failure = false;
-   {
-      auto r = TestResult::create("scope test result");
-      TestResult* test_result = r.get();
+   auto test_result = TestResult("scope test result", "suite");
 
-      EXPECT_THROW(throwing_function(), std::logic_error);
+   test_result.log_success();
 
-      failure = test_result->failed();
-   }
-
-   EXPECT_TRUE(failure);
+   t.assert<false>(test_result.failed(), _src_loc);
 }
 
-TEST(Unittest, CheckFailIfOnTrue)
+void check_test_result_log_failure(Test& t)
 {
-   bool failure = false;
-   {
-      auto r = TestResult::create("scope test result");
-      TestResult* test_result = r.get();
+   auto test_result = TestResult("scope test result", "suite");
 
-      FAIL_IF(true);
+   test_result.log_failure();
 
-      failure = test_result->failed();
-   }
-
-   EXPECT_TRUE(failure);
+   t.assert<true>(test_result.failed(), _src_loc);
 }
 
-TEST(Unittest, CheckFailIfOnFalse)
-{
-   bool failure = false;
-   {
-      auto r = TestResult::create("scope test result");
-      TestResult* test_result = r.get();
-
-      FAIL_IF(false);
-
-      failure = test_result->failed();
-   }
-
-   EXPECT_TRUE(not failure);
-}
-
-} // TEST_SUITE(OrionCore)
+RegisterTestCase(OrionCore, check_success_on_true);
+RegisterTestCase(OrionCore, check_failure_on_false);
+RegisterTestCase(OrionCore, check_function_failure_on_exception);
+RegisterTestCase(OrionCore, check_close_success_on_equal, Disabled{"Not implemented"});
+RegisterTestCase(OrionCore, check_close_fails_on_not_equal, Disabled{"Not implemented"});
+RegisterTestCase(OrionCore, check_not_expected_exception);
+RegisterTestCase(OrionCore, check_expected_exception);
+RegisterTestCase(OrionCore, check_test_result_log_success);
+RegisterTestCase(OrionCore, check_test_result_log_failure);
+} 

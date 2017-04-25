@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <array>
+
 #include <orion/Orion-Stddefs.h>
 
 namespace orion
@@ -24,9 +25,9 @@ struct API_EXPORT BigEndian
    static uint32_t to_uint32(uint8_t* b);
    static uint64_t to_uint64(uint8_t* b);
 
-   static void put_uint16(uint16_t v, std::array<uint8_t, 2>& b);
-   static void put_uint32(uint32_t v, std::array<uint8_t, 4>& b);
-   static void put_uint64(uint64_t v, std::array<uint8_t, 8>& b);
+   static void put_uint16(uint16_t v, uint8_t* b);
+   static void put_uint32(uint32_t v, uint8_t* b);
+   static void put_uint64(uint64_t v, uint8_t* b);
 };
 
 //---------------------------------------------------------------------------------------
@@ -37,9 +38,9 @@ struct API_EXPORT LittleEndian
    static uint32_t to_uint32(uint8_t* b);
    static uint64_t to_uint64(uint8_t* b);
 
-   static void put_uint16(uint16_t v, std::array<uint8_t, 2>& b);
-   static void put_uint32(uint32_t v, std::array<uint8_t, 4>& b);
-   static void put_uint64(uint64_t v, std::array<uint8_t, 8>& b);
+   static void put_uint16(uint16_t v, uint8_t* b);
+   static void put_uint32(uint32_t v, uint8_t* b);
+   static void put_uint64(uint64_t v, uint8_t* b);
 };
 
 // __llvm__

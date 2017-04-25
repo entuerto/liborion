@@ -63,6 +63,11 @@ API_EXPORT uint32_t compute_hash(const std::string& text);
 // Speperate a string into different tokens
 API_EXPORT void tokenize(const std::string& input, std::vector<std::string>& tokens, const std::string& delimiters);
 
+inline std::string plural(std::size_t n, const std::string& s, const std::string& p)
+{
+   return (n > 1) ? p : s;
+}
+
 //! Converts an ostream-able type to a std::string
 template<typename T>
 inline std::string to_string(const T& x)

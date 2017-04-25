@@ -42,28 +42,28 @@ private:
    LogRecord& _out_record;
 };
 
-TEST_SUITE(OrionCore)
+TestSuite(OrionCore)
 {
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(Log, DefaultLevel)
+void log_default_level(Test& t)
 {
    Logger& logger = Logger::get_logger();
 
-   EXPECT_EQ(logger.level(), Level::NotSet);
+   t.assert<std::equal_to<>>(Level::NotSet, logger.level(), _src_loc);
 }
 
-TEST(Log, LevelChange)
+void log_level_change(Test& t)
 {
    Logger& logger = Logger::get_logger();
 
    logger.level(Level::Warning);
 
-   EXPECT_EQ(logger.level(), Level::Warning);
+   t.assert<std::equal_to<>>(Level::Warning, logger.level(), _src_loc);
 }
 
-TEST(Log, LevelOutput)
+void log_level_output(Test& t)
 {
    Logger& logger = Logger::get_logger();
 
@@ -72,20 +72,20 @@ TEST(Log, LevelOutput)
    output_record.level(Level::NotSet);
 
    LOG(Debug) << "Debug message";
-   EXPECT_EQ(output_record.level(), Level::NotSet);
+   t.assert<std::equal_to<>>(Level::NotSet, output_record.level(), _src_loc);
 
    output_record.level(Level::NotSet);
 
    LOG(Warning) << "Warning message";
-   EXPECT_EQ(output_record.level(), Level::Warning);
+   t.assert<std::equal_to<>>(Level::Warning, output_record.level(), _src_loc);
 
    output_record.level(Level::NotSet);
 
    LOG(Error) << "Error message";
-   EXPECT_EQ(output_record.level(), Level::Error);
+   t.assert<std::equal_to<>>(Level::Error, output_record.level(), _src_loc);
 }
 
-TEST(Log, ErrorMessage)
+void log_error_message(Test& t)
 {
    Logger& logger = Logger::get_logger();
 
@@ -93,11 +93,11 @@ TEST(Log, ErrorMessage)
 
    LOG(Error) << "Error message";
 
-   EXPECT_EQ(output_record.level(), Level::Error);
-   EXPECT_EQ(output_record.message(), "Error message");
+   t.assert<std::equal_to<>>(Level::Error, output_record.level(), _src_loc);
+   t.assert<std::equal_to<>>(std::string{"Error message"}, output_record.message(), _src_loc);
 }
 
-TEST(Log, FailMessage)
+void log_fail_message(Test& t)
 {
    Logger& logger = Logger::get_logger();
 
@@ -107,23 +107,29 @@ TEST(Log, FailMessage)
 
    LOG_IF_FAIL(Error, 1 == 0)
 
-   EXPECT_EQ(output_record.level(), Level::Error);
-   EXPECT_EQ(output_record.message(), "Condition failed ( 1 == 0 )");
+   t.assert<std::equal_to<>>(Level::Error, output_record.level(), _src_loc);
+   t.assert<std::equal_to<>>(std::string{"Condition failed ( 1 == 0 )"}, output_record.message(), _src_loc);
 }
 
-TEST(Log, RecordOutput)
+void log_record_output(Test& t)
 {
    Logger& logger = Logger::get_logger();
 
    logger += LogRecord(Level::Message, "FileName", 99, "function name") << "message";
 
-   EXPECT_EQ(output_record.level(), Level::Message);
-   EXPECT_EQ(output_record.file_name(), "FileName");
-   EXPECT_EQ(output_record.line(), 99);
-   EXPECT_EQ(output_record.function_name(), "function name");
-   EXPECT_EQ(output_record.message(), "message");
+   t.assert<std::equal_to<>>(Level::Message, output_record.level(), _src_loc);
+   t.assert<std::equal_to<>>(std::string{"FileName"}, output_record.file_name(), _src_loc);
+   t.assert<std::equal_to<>>(99, output_record.line(), _src_loc);
+   t.assert<std::equal_to<>>(std::string{"function name"}, output_record.function_name(), _src_loc);
+   t.assert<std::equal_to<>>(std::string{"message"}, output_record.message(), _src_loc);
 }
 
+RegisterTestCase(OrionCore, log_default_level);
+RegisterTestCase(OrionCore, log_level_change);
+RegisterTestCase(OrionCore, log_level_output);
+RegisterTestCase(OrionCore, log_error_message);
+RegisterTestCase(OrionCore, log_fail_message);
+RegisterTestCase(OrionCore, log_record_output);
 } // TEST_SUITE(OrionCore)
 
 void setup_logger(LogRecord& record)

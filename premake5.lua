@@ -55,10 +55,22 @@ group "Libraries"
    project "jsoncpp"
       kind "StaticLib"
 
+      defines "_CRT_SECURE_NO_WARNINGS"
+
       removeincludedirs "*"
       includedirs "deps/jsoncpp" 
                   
       files "deps/jsoncpp/jsoncpp.cpp"
+
+   project "http-parser"
+      kind "StaticLib"
+
+      language "C"
+
+      removeincludedirs "*"
+      includedirs "deps/http-parser" 
+                  
+      files "deps/http-parser/http_parser.c"
 
             
    project "orion"
@@ -67,7 +79,13 @@ group "Libraries"
       defines { "ORION_SHARED_EXPORTS" }
 
       filter "system:Windows"
-         links { "Advapi32", "psapi", "ntdll", "rpcrt4" }
+         links { 
+            "mincore", 
+            "Advapi32", 
+            "psapi", 
+            "ntdll", 
+            "rpcrt4" 
+         }
 
       files { 
          "lib/*.cpp",
@@ -76,6 +94,8 @@ group "Libraries"
       }
 
       FilterPlatformSourceFiles()
+      
+      UseBoostLibShared("program_options")
 
    
    project "orion-fs"
@@ -113,37 +133,39 @@ group "Libraries"
    project "orion-net"
       kind "SharedLib"
 
-      dependson { "mongoose", "orion" }
+      dependson { 
+         "jsoncpp", 
+         "mongoose", 
+         "http-parser", 
+         "orion" 
+      }
 
-      defines { "ORION_SHARED_EXPORTS" }
+      defines { 
+         "ORION_SHARED_EXPORTS", 
+         "_WIN32_WINNT=0x0501",
+         "ASIO_STANDALONE"
+         --"BOOST_DATE_TIME_NO_LIB", 
+         --"BOOST_REGEX_NO_LIB" 
+      }
 
-      links { "mongoose", "orion" }
+      links { 
+         "jsoncpp", 
+         "mongoose", 
+         "http-parser", 
+         "orion" 
+      }
 
       filter "system:Windows"
-         links { "Advapi32", "ws2_32" }
+         links { "Advapi32", "ws2_32", "psapi", "rpcrt4" }
 
       files { 
          "lib/net/**.cpp" 
       }
 
-      FilterPlatformSourceFiles()
+      includedirs { "C:/Tools/pkgs/asio-1.10.8/include" }
 
-
-   project "orion-ws"
-      kind "SharedLib"
-
-      dependson { "jsoncpp", "orion", "orion-net" }
-
-      defines { "ORION_SHARED_EXPORTS" }
-
-      links { "jsoncpp", "orion", "orion-net" }
-
-      filter "system:Windows"
-         links { "psapi", "rpcrt4" }
-
-      files { 
-         "lib/ws/**.cpp" 
-      }
+      --filter { "system:windows", "files:**Mongoose**.*" }
+      --   flags { "ExcludeFromBuild"}
 
       FilterPlatformSourceFiles()
 

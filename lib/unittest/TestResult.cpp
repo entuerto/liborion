@@ -1,23 +1,9 @@
-//      TestResult.cpp
+// TestResult.cpp
 //
-//      Copyright 2010 tomas <tomasp@videotron.ca>
-//
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
-//      (at your option) any later version.
-//
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
-//
-//      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-//      MA 02110-1301, USA.
-//
-
+// Copyright 2017 The liborion Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+// 
 #include <orion/unittest/TestResult.h>
 #include <orion/unittest/Test.h>
 
@@ -31,14 +17,10 @@ TestResult::TestResult(const std::string& name, const std::string& suite_name) :
    _suite_name(suite_name),
    _failed_item_count(0),
    _passed_item_count(0),
-   _timer(),
+   _skipped_item_count(0),
+   _time_point_start(),
+   _time_point_end(),
    _result_items()
-{
-
-}
-
-
-TestResult::~TestResult()
 {
 }
 
@@ -70,30 +52,42 @@ bool TestResult::failed() const
    return _failed_item_count > 0;
 }
 
+size_t TestResult::item_count() const
+{
+   return _result_items.size();
+}
+
 /*!
  */
-int TestResult::failed_item_count() const
+std::size_t TestResult::failed_item_count() const
 {
    return _failed_item_count;
 }
 
 /*!
  */
-int TestResult::passed_item_count() const
+std::size_t TestResult::passed_item_count() const
 {
    return _passed_item_count;
 }
 
 /*!
  */
-std::chrono::milliseconds TestResult::time_elapsed() const
+std::size_t TestResult::skipped_item_count() const
 {
-   return _timer.elapsed();
+   return _skipped_item_count;
 }
 
 /*!
  */
-const std::vector<std::unique_ptr<TestResultItem>>& TestResult::result_items() const
+std::chrono::milliseconds TestResult::time_elapsed() const
+{
+   return std::chrono::duration_cast<std::chrono::milliseconds>(_time_point_end - _time_point_start);
+}
+
+/*!
+ */
+const std::vector<ResultItem>& TestResult::result_items() const
 {
    return _result_items;
 }
@@ -102,43 +96,14 @@ const std::vector<std::unique_ptr<TestResultItem>>& TestResult::result_items() c
  */
 void TestResult::on_start()
 {
-   _timer.start();
-}
-
-/*!
- */
-void TestResult::on_failure(std::unique_ptr<TestResultItem> item)
-{
-   if (item->result() != Result::Failed)
-      return;
-
-   ++_failed_item_count;
-   _result_items.push_back(std::move(item));
-}
-
-/*!
- */
-void TestResult::on_success(std::unique_ptr<TestResultItem> item)
-{
-   if (item->result() != Result::Passed)
-      return;
-
-   ++_passed_item_count;
-   _result_items.push_back(std::move(item));
+   _time_point_start = std::chrono::steady_clock::now();
 }
 
 /*!
  */
 void TestResult::on_end()
 {
-   _timer.stop();
-}
-
-/*!
- */
-std::unique_ptr<TestResult> TestResult::create(const std::string& name, const std::string& suite_name)
-{
-   return std::make_unique<TestResult>(name, suite_name);
+   _time_point_end = std::chrono::steady_clock::now();
 }
 
 } // namespace orion

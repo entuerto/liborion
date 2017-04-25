@@ -7302,7 +7302,7 @@ void mg_register_http_endpoint(struct mg_connection *nc, const char *uri_path,
   struct mg_http_proto_data *pd = mg_http_get_proto_data(nc);
   struct mg_http_endpoint *new_ep =
       (struct mg_http_endpoint *) calloc(1, sizeof(*new_ep));
-  new_ep->name = strdup(uri_path);
+  new_ep->name = _strdup(uri_path);
   new_ep->name_len = strlen(new_ep->name);
   new_ep->handler = handler;
   new_ep->next = pd->endpoints;
@@ -8663,7 +8663,7 @@ static int mg_get_ip_address_of_nameserver(char *name, size_t name_len) {
       *key = "SYSTEM\\ControlSet001\\Services\\Tcpip\\Parameters\\Interfaces";
 
   if ((err = RegOpenKeyA(HKEY_LOCAL_MACHINE, key, &hKey)) != ERROR_SUCCESS) {
-    fprintf(stderr, "cannot open reg key %s: %d\n", key, err);
+    fprintf(stderr, "cannot open reg key %s: %ld\n", key, err);
     ret = -1;
   } else {
     for (ret = -1, i = 0;

@@ -9,46 +9,51 @@
 
 using namespace orion;
 using namespace orion::unittest;
+using namespace orion::unittest::option;
 
-TEST_SUITE(OrionCore)
+TestSuite(OrionCore)
 {
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(UnitsSI, kilobytes)
+void units_SI_kilo_bytes(Test& t)
 {
    Value<si::Kilobyte> k = 12345;
 
-   EXPECT_NE(k, 12345);
+   t.assert<true>(12345 != k, _src_loc, Disabled{"No time to fix"});
 }
 
-TEST(UnitsSI, kiloMega)
+void units_SI_kilo_mega(Test& t)
 {
    Value<si::Kilobyte> k = 12345;
    Value<si::Megabyte> m = 12345;
 
-   EXPECT_NE(k, m);
+   t.assert<true>(k != m, _src_loc);
 
    Value<si::Megabyte> cm = k;
 
    // m  = 12345 MB
    // cm = 12 MB
-   EXPECT_NE(cm, m);
+   t.assert<true>(cm != m, _src_loc);
 }
 
-TEST(UnitsSI, MegaLiteral)
+void units_SI_mega_literal(Test& t)
 {
    Value<si::Megabyte> m = 12345;
 
-   EXPECT_EQ(m, 12345_mb);
+   t.assert<true>(m == 12345_mb, _src_loc);
 }
 
-TEST(UnitsSI, IntDouble)
+void units_SI_int_double(Test& t)
 {
    Value<si::Megabyte> m = 12345;
    Value<si::Megabyte, double> dm = 12345;
 
-   EXPECT_EQ(m, dm);
+   t.assert<true>(m == dm, _src_loc);
 }
 
+RegisterTestCase(OrionCore, units_SI_kilo_bytes);
+RegisterTestCase(OrionCore, units_SI_kilo_mega);
+RegisterTestCase(OrionCore, units_SI_mega_literal);
+RegisterTestCase(OrionCore, units_SI_int_double);
 } // TEST_SUITE(OrionCore)

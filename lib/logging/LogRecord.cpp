@@ -37,7 +37,7 @@ LogRecord::LogRecord() :
    _line(-1),
    _function_name()
 {
-   get_current_time(_time_stamp);
+   _time_stamp = to_string(std::chrono::system_clock::now(), "%X");
 }
 
 /*!
@@ -51,7 +51,7 @@ LogRecord::LogRecord(Level level, const std::string& msg) :
    _line(-1),
    _function_name()
 {
-   get_current_time(_time_stamp);
+   _time_stamp = to_string(std::chrono::system_clock::now(), "%X");
 }
 
 /*!
@@ -68,7 +68,7 @@ LogRecord::LogRecord(      Level level,
    _line(line),
    _function_name(function)
 {
-   get_current_time(_time_stamp);
+   _time_stamp = to_string(std::chrono::system_clock::now(), "%X");
 }
 
 /*!
@@ -86,7 +86,7 @@ LogRecord::LogRecord(      Level level,
    _line(line),
    _function_name(function)
 {
-   get_current_time(_time_stamp);
+   _time_stamp = to_string(std::chrono::system_clock::now(), "%X");
 }
 /*
    Copy constructor
@@ -267,9 +267,30 @@ LogRecord& LogRecord::operator<<(char value)
    return *this;
 }
 
+LogRecord& LogRecord::operator<<(const std::error_code& ec)
+{
+   auto fmt = boost::format("%s (%d): %s") 
+                 % ec.category().name()  
+                 % ec.value() 
+                 % ec.message();
+   _message += boost::str(fmt);
+   return *this;
+}
+
 LogRecord& LogRecord::operator<<(const boost::format& fmt)
 {
    _message += fmt.str();
+   return *this;
+}
+
+LogRecord& LogRecord::operator<<(std::streambuf* buf)
+{
+   std::ostringstream ostr;
+
+   ostr << buf;
+
+   _message += ostr.str();
+
    return *this;
 }
 

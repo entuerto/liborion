@@ -3,20 +3,25 @@
 //  Created by Tomas Palazuelos on 2016-06-29.
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
+#include <sstream>
+
 #include <orion/TestUtils.h>
-#include <orion/MemoryUtils.h>
-#include <orion/net/Request.h>
-#include <orion/net/Response.h>
-#include <orion/ws/JsonRpcError.h>
-#include <orion/ws/JsonRpcMethod.h>
-#include <orion/ws/JsonRpcRequestListener.h>
+#include <orion/net/http/Request.h>
+#include <orion/net/http/Response.h>
+#include <orion/net/http/Utils.h>
+#include <orion/net/rpc/JsonError.h>
+#include <orion/net/rpc/JsonMethod.h>
+#include <orion/net/rpc/JsonRequestHandler.h>
 
 #include <jsoncpp/json/json.h>
 
 using namespace orion;
 using namespace orion::net;
-using namespace orion::ws;
+using namespace orion::net::http;
+using namespace orion::net::rpc;
 using namespace orion::unittest;
+
+using namespace std::string_literals;
 
 #define JSON_RPC_METHODNAME      "method"
 #define JSON_RPC_LABEL           "jsonrpc"
@@ -29,56 +34,66 @@ using namespace orion::unittest;
 //----------------------------------------------------------------------------
 // Mock classes
 //----------------------------------------------------------------------------
-class MockRequest : public Request
+class MockRequest : public http::Request
 {
 public:
-   MockRequest(const std::string& data) : Request() { _data = data; }
+   MockRequest(const std::string& data) : 
+      http::Request("POST", Url(), http::Version{1, 1}, http::Header()) 
+      { _data = data; }
+
    virtual ~MockRequest() = default;
 
-   virtual std::string method() const        { return "POST"; }
-   virtual std::string uri() const           { return "";}
-   virtual std::string http_version() const  { return "1.1"; }
-   virtual std::string query_string() const  { return ""; }   
-   virtual std::string remote_user() const   { return ""; }    
-   virtual bool is_authenticated()  const    { return false; }
-   virtual bool is_secure_connection() const { return false; }
+   virtual std::string content() const override { return _data; }
 
-   static std::unique_ptr<Request> create(const std::string& data)
-   {
-      return std::make_unique<MockRequest>(data);
-   }
+   virtual std::streambuf* rdbuf() const override { return nullptr; }
 
+private:
+   std::string _data;
 };
 
-class MockMethod : public JsonRpcMethod
+class MockResponse : public http::Response
 {
 public:
-   MockMethod() : JsonRpcMethod() {}
+   MockResponse() : 
+      http::Response(StatusCode::OK)
+      {}
+
+   virtual ~MockResponse() = default;
+
+   virtual std::string content() const override { return _buf.str(); }
+
+   virtual std::streambuf* rdbuf() const override 
+   { 
+      return const_cast<std::streambuf*>(dynamic_cast<const std::streambuf*>(&_buf)); 
+   }
+
+private:
+   std::stringbuf _buf;
+};
+
+class MockMethod : public JsonMethod
+{
+public:
+   MockMethod() : 
+      JsonMethod("mock", "Mock method for tests.") {}
+
    virtual ~MockMethod() = default;
 
-   virtual std::string name() const        { return "mock"; }
-   virtual std::string description() const { return "Mock method for tests."; }
-
-   virtual std::unique_ptr<JsonRpcError> call(Json::Value& json_request, Json::Value& json_result)
+   virtual Error operator()(Json::Value& json_request, Json::Value& json_result) override
    {
-      return nullptr;
-   }
-
-   static std::unique_ptr<RpcMethod> create()
-   {
-      return std::make_unique<MockMethod>();
+      return Error();
    }
 };
 
-class MockJsonRpcRequestListener : public JsonRpcRequestListener
+class MockJsonRequestHandler : public JsonRequestHandler
 {
 public:
-   MockJsonRpcRequestListener() : JsonRpcRequestListener("") {}
-   virtual ~MockJsonRpcRequestListener() = default;
+   MockJsonRequestHandler() : JsonRequestHandler("") {}
+   virtual ~MockJsonRequestHandler() = default;
 
-   std::unique_ptr<Response> send_post_request(const Request* request)
+   std::error_code send_post_request(const http::Request& request, http::Response& response)
    {
-      return on_post(request);
+      return on_post(request, response);
    }
 
 };
@@ -105,168 +120,186 @@ bool has_valid_id(Json::Value& json_result)
           not (json_result[JSON_RPC_ID].isArray() or json_result[JSON_RPC_ID].isObject());
 }
 
-TEST_SUITE(OrionWebService)
+TestSuite(OrionWebService)
 {
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-TEST(Request, Creation)
+void request_creation(Test& t)
 { 
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"subtract\", \"id\": 1}";
 
-   auto mr = MockRequest::create(data);
+   auto mr = std::make_unique<MockRequest>(data);
 
-   FAIL_IF(not mr);
-   EXPECT_EQ(mr->content(), data);
+   t.fail_if(not mr, _src_loc);
+
+   t.assert<std::equal_to<>>(mr->content(), data, _src_loc);
 }
 
-TEST(Invalid, JsonResponse)
+void invalid_json_response(Test& t)
 {
    std::string data = "toto";
 
-   auto mr = MockRequest::create(data);
+   MockRequest  request(data);
+   MockResponse response;
 
-   MockJsonRpcRequestListener mrl;
-   auto response = mrl.send_post_request(mr.get());
+   MockJsonRequestHandler mrl;
+   auto err = mrl.send_post_request(request, response);
 
-   FAIL_IF(not response);
-   EXPECT_EQ(response->code(), 200);
-   EXPECT_EQ(response->mimetype(), "application/json");
+   t.fail_if(err.value() != 0, _src_loc);
+
+   t.assert<std::equal_to<>>(StatusCode::OK, response.status_code(), _src_loc);
+   t.assert<std::equal_to<>>("application/json"s, response.header("Content-Type"), _src_loc);
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
+   t.assert<true>(reader.parse(response.content(), json_result, false), _src_loc);
 }
 
-TEST(Valid, JsonResponse)
+void valid_json_response(Test& t)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"subtract\", \"id\": \"1\"}";
 
-   auto mr = MockRequest::create(data);
+   MockRequest  request(data);
+   MockResponse response;
 
-   MockJsonRpcRequestListener mrl;
-   auto response = mrl.send_post_request(mr.get());
+   MockJsonRequestHandler mrl;
+   auto err = mrl.send_post_request(request, response);
 
-   FAIL_IF(not response);
-   EXPECT_EQ(response->code(), 200);
-   EXPECT_EQ(response->mimetype(), "application/json");
+   t.fail_if(err.value() != 0, _src_loc);
+
+   t.assert<std::equal_to<>>(StatusCode::OK, response.status_code(), _src_loc);
+   t.assert<std::equal_to<>>("application/json"s, response.header("Content-Type"), _src_loc);
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
+   t.assert<true>(reader.parse(response.content(), json_result, false), _src_loc);
 
-   EXPECT_TRUE(is_jsonrpc_2(json_result));
+   t.assert<true>(is_jsonrpc_2(json_result), _src_loc);
 }
 
-TEST(Request, MethodNotFound)
+void request_method_not_found(Test& t)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"subtract\", \"id\": \"1\"}";
 
-   auto mr = MockRequest::create(data);
+   MockRequest  request(data);
+   MockResponse response;
 
-   MockJsonRpcRequestListener mrl;
+   MockJsonRequestHandler mrl;
 
-   mrl.register_method("mock", MockMethod::create());
-   auto response = mrl.send_post_request(mr.get());
+   mrl.register_method(MockMethod());
+   auto err = mrl.send_post_request(request, response);
 
-   FAIL_IF(not response);
-   EXPECT_EQ(response->code(), 200);
-   EXPECT_EQ(response->mimetype(), "application/json");
+   t.fail_if(err.value() != 0, _src_loc);
+
+   t.assert<std::equal_to<>>(StatusCode::OK, response.status_code(), _src_loc);
+   t.assert<std::equal_to<>>("application/json"s, response.header("Content-Type"), _src_loc);
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
+   t.assert<true>(reader.parse(response.content(), json_result, false), _src_loc);
 
-   EXPECT_TRUE(is_jsonrpc_2(json_result));
-   EXPECT_TRUE(is_response_error(json_result));
+   t.assert<true>(is_jsonrpc_2(json_result), _src_loc);
+   t.assert<true>(is_response_error(json_result), _src_loc);
 
    Json::Value error = json_result[JSON_RPC_RESPONSE_ERROR];
 
-   EXPECT_EQ(error["code"], -32601);
+   t.assert<std::equal_to<>>(error["code"], -32601, _src_loc); // JsonErrc::MethodNotFound
 
 }
 
-TEST(Request, MethodFound)
+void request_method_found(Test& t)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"mock\", \"id\": \"1\"}";
 
-   auto mr = MockRequest::create(data);
+   MockRequest  request(data);
+   MockResponse response;
 
-   MockJsonRpcRequestListener mrl;
+   MockJsonRequestHandler mrl;
 
-   mrl.register_method("mock", MockMethod::create());
-   auto response = mrl.send_post_request(mr.get());
+   mrl.register_method(MockMethod());
+   auto err = mrl.send_post_request(request, response);
 
-   FAIL_IF(not response);
-   EXPECT_EQ(response->code(), 200);
-   EXPECT_EQ(response->mimetype(), "application/json");
+   t.fail_if(err.value() != 0, _src_loc);
+
+   t.assert<std::equal_to<>>(StatusCode::OK, response.status_code(), _src_loc);
+   t.assert<std::equal_to<>>("application/json"s, response.header("Content-Type"), _src_loc);
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
+   t.assert<true>(reader.parse(response.content(), json_result, false), _src_loc);
 
-   EXPECT_TRUE(is_jsonrpc_2(json_result));
-   EXPECT_TRUE(is_response_result(json_result));
-
+   t.assert<true>(is_jsonrpc_2(json_result), _src_loc);
+   t.assert<true>(is_response_result(json_result), _src_loc);
 
 }
 
-TEST(Id, AsString)
+void id_as_string(Test& t)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"mock\", \"id\": \"1\"}";
 
-   auto mr = MockRequest::create(data);
+   MockRequest  request(data);
+   MockResponse response;
 
-   MockJsonRpcRequestListener mrl;
+   MockJsonRequestHandler mrl;
 
-   mrl.register_method("mock", MockMethod::create());
-   auto response = mrl.send_post_request(mr.get());
+   mrl.register_method(MockMethod());
+   auto err = mrl.send_post_request(request, response);
 
-   FAIL_IF(not response);
-   EXPECT_EQ(response->code(), 200);
-   EXPECT_EQ(response->mimetype(), "application/json");
+   t.fail_if(err.value() != 0, _src_loc);
+
+   t.assert<std::equal_to<>>(StatusCode::OK, response.status_code(), _src_loc);
+   t.assert<std::equal_to<>>("application/json"s, response.header("Content-Type"), _src_loc);
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
+   t.assert<true>(reader.parse(response.content(), json_result, false), _src_loc);
 
-   EXPECT_TRUE(is_jsonrpc_2(json_result));
-   EXPECT_TRUE(is_response_result(json_result));
-   EXPECT_TRUE(has_valid_id(json_result));
+   t.assert<true>(is_jsonrpc_2(json_result), _src_loc);
+   t.assert<true>(is_response_result(json_result), _src_loc);
+   t.assert<true>(has_valid_id(json_result), _src_loc);
 
 }
 
-TEST(Id, AsInt)
+void id_as_int(Test& t)
 {
    std::string data = "{\"jsonrpc\": \"2.0\", \"method\": \"mock\", \"id\": 1}";
 
-   auto mr = MockRequest::create(data);
+   MockRequest  request(data);
+   MockResponse response;
 
-   MockJsonRpcRequestListener mrl;
+   MockJsonRequestHandler mrl;
 
-   mrl.register_method("mock", MockMethod::create());
-   auto response = mrl.send_post_request(mr.get());
+   mrl.register_method(MockMethod());
+   auto err = mrl.send_post_request(request, response);
 
-   FAIL_IF(not response);
-   EXPECT_EQ(response->code(), 200);
-   EXPECT_EQ(response->mimetype(), "application/json");
+   t.fail_if(err.value() != 0, _src_loc);
+
+   t.assert<std::equal_to<>>(StatusCode::OK, response.status_code(), _src_loc);
+   t.assert<std::equal_to<>>("application/json"s, response.header("Content-Type"), _src_loc);
 
    Json::Reader reader;
    Json::Value  json_result;
 
-   EXPECT_TRUE(reader.parse(response->content(), json_result, false));
+   t.assert<true>(reader.parse(response.content(), json_result, false), _src_loc);
 
-   EXPECT_TRUE(is_jsonrpc_2(json_result));
-   EXPECT_TRUE(is_response_result(json_result));
-   EXPECT_TRUE(has_valid_id(json_result));
-
+   t.assert<true>(is_jsonrpc_2(json_result), _src_loc);
+   t.assert<true>(is_response_result(json_result), _src_loc);
+   t.assert<true>(has_valid_id(json_result), _src_loc);
 }
 
+RegisterTestCase(OrionWebService, request_creation);
+RegisterTestCase(OrionWebService, invalid_json_response);
+RegisterTestCase(OrionWebService, valid_json_response);
+RegisterTestCase(OrionWebService, request_method_not_found);
+RegisterTestCase(OrionWebService, request_method_found);
+RegisterTestCase(OrionWebService, id_as_string);
+RegisterTestCase(OrionWebService, id_as_int);
 } // TEST_SUITE(OrionWebService)
 
 /*

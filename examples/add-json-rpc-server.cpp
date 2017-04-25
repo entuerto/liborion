@@ -23,47 +23,38 @@
 
 #include <orion/Logging.h>
 #include <orion/net/Server.h>
-#include <orion/net/HttpServer.h>
-#include <orion/ws/JsonRpcRequestListener.h>
-#include <orion/ws/JsonRpcMethod.h>
-#include <orion/ws/JsonRpcMethodWrapper.h>
+#include <orion/net/http/Server.h>
+#include <orion/net/rpc/JsonRequestHandler.h>
+#include <orion/net/rpc/JsonMethod.h>
 
 #include <jsoncpp/json/json.h>
 
 using namespace orion;
 using namespace orion::logging;
 using namespace orion::net;
-using namespace orion::ws;
+using namespace orion::net::http;
+using namespace orion::net::rpc;
 
 //-----------------------------------------------------------------------------------
 // Creating a json-rpc method
 //-----------------------------------------------------------------------------------
-class AddMethod : public JsonRpcMethod
+class AddMethod : public JsonMethod
 {
 public:
-   AddMethod() : JsonRpcMethod()
+   AddMethod() : 
+      JsonMethod("add", "Add to numbers together.")
    {
    }
 
    virtual ~AddMethod() = default;
 
-   virtual std::string name() const
-   {
-      return "add";
-   }
-
-   virtual std::string description() const
-   {
-      return "Add to numbers together.";
-   }
-
-   virtual std::unique_ptr<JsonRpcError> call(Json::Value& json_request, Json::Value& json_result)
+   virtual Error operator()(Json::Value& json_request, Json::Value& json_result) override
    {
       int param1 = 0;
       int param2 = 0;
 
       if (not json_request.isMember("params"))
-         return JsonRpcError::create_invalid_params("Must specify two parameters.");
+         return make_error(JsonErrc::InvalidParams); //("Must specify two parameters.");
 
       Json::Value params = json_request["params"];
 
@@ -78,26 +69,26 @@ public:
          param2 = params["a2"].asInt();
       }
 
-      json_result = param1 + param2;
-      return nullptr;
-   }
+      LOG(Debug) << "Add " 
+                 << param1 
+                 << ", "
+                 << param2;
 
-   static std::unique_ptr<RpcMethod> create()
-   {
-      return std::make_unique<AddMethod>();
+      json_result = param1 + param2;
+      return Error();
    }
 };
 
 //-----------------------------------------------------------------------------------
 // Free function example
 //-----------------------------------------------------------------------------------
-std::unique_ptr<JsonRpcError> substract(Json::Value& json_request, Json::Value& json_result)
+Error substract(Json::Value& json_request, Json::Value& json_result)
 {
     int param1 = 0;
     int param2 = 0;
 
     if (not json_request.isMember("params"))
-       return JsonRpcError::create_invalid_params("Must specify two parameters.");
+       return make_error(JsonErrc::InvalidParams); //("Must specify two parameters.");
 
     Json::Value params = json_request["params"];
 
@@ -113,7 +104,7 @@ std::unique_ptr<JsonRpcError> substract(Json::Value& json_request, Json::Value& 
     }
 
     json_result = param1 - param2;
-    return nullptr;
+    return Error();
 }
 
 //-----------------------------------------------------------------------------------
@@ -123,31 +114,17 @@ class Echo
 {
 public:
 
-   static std::unique_ptr<JsonRpcError> answer(Json::Value& /* json_request */, Json::Value& json_result)
+   static Error answer(Json::Value& /* json_request */, Json::Value& json_result)
    {
       json_result = "Hello World!";
-      return nullptr;
+      return Error();
    }
 };
 
 //-----------------------------------------------------------------------------------
 // Shutdown example
 //-----------------------------------------------------------------------------------
-struct ShutdownServer
-{
-   static std::unique_ptr<JsonRpcError> quit(Json::Value& /* json_request */, Json::Value& json_result)
-   {
-      ShutdownServer::server->stop();
 
-      json_result = "Stopping server";
-      
-      return nullptr;
-   }
-
-   static std::unique_ptr<Server> server;
-};
-
-std::unique_ptr<Server> ShutdownServer::server;
 
 //-----------------------------------------------------------------------------------
 // Setup the logger options
@@ -156,6 +133,8 @@ void setup_logger(std::fstream& file_stream)
 {
    auto cout_handler = StreamOutputHandler::create(std::cout);
    auto file_handler = StreamOutputHandler::create(file_stream);
+
+   file_handler->set_formatter(MultilineFormatter::create());
 
    Logger& logger = Logger::get_logger();
 
@@ -174,21 +153,30 @@ int main ()
 
    LOG_START();
 
-   ShutdownServer::server = HttpServer::create(9090);
+   auto server = http::Server::create();
 
-   auto rl = JsonRpcRequestListener::create("/");
+   auto rl = std::make_unique<JsonRequestHandler>("/");
 
-   rl->register_method("add", AddMethod::create()); 
-   rl->register_method("substract", JsonRpcMethodWrapper::create(substract, "substract", "Substract two numbers")); 
-   rl->register_method("answer", JsonRpcMethodWrapper::create(Echo::answer, "answer")); 
+   rl->register_method(AddMethod()); 
+   rl->register_method(JsonMethod{"substract", "", substract}); 
+   rl->register_method(JsonMethod{"answer", "", Echo::answer}); 
 
-   rl->register_method("shutdown", JsonRpcMethodWrapper::create(ShutdownServer::quit, "shutdown")); 
 
-   ShutdownServer::server->add_request_listener(std::move(rl));
+   server->add_handler(std::move(rl));
 
-   LOG(Info) << "Server starting...";
+   std::cout << "Server listening on port: 9080\n";
 
-   ShutdownServer::server->start();
+   try
+   {
+      std::error_code ec = server->listen_and_serve("", 9080);
+
+      if (ec)
+         LOG(Error) << ec;
+   }
+   catch (const std::exception& e)
+   {
+      LOG_EXCEPTION(e);
+   }
 
    LOG_END();
    return EXIT_SUCCESS;

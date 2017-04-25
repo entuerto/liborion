@@ -20,7 +20,6 @@
 #ifndef ORION_LOGGING_MULTILINEFORMATTER_H
 #define ORION_LOGGING_MULTILINEFORMATTER_H
 
-#include <cstdint>
 #include <memory>
 #include <string>
 

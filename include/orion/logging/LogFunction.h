@@ -20,8 +20,6 @@
 #ifndef ORION_LOGGING_LOGFUNCTION_H
 #define ORION_LOGGING_LOGFUNCTION_H
 
-#include <cstdint>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/logging/Logger.h>
 

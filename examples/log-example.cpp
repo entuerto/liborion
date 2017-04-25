@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <module-example-lib.h>
+#include "module-example-lib.h"
 
 #include <iostream>
 #include <orion/Logging.h>

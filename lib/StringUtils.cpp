@@ -157,7 +157,7 @@ uint32_t compute_hash(const std::string& text)
    uint32_t s2 = checksum >> 16;
 
    int off = 0;
-   int len = text.size();
+   std::size_t len = text.size();
    const uint8_t* buf = (const uint8_t*)text.data();
 
    while (len > 0) {

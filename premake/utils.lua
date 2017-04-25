@@ -37,7 +37,7 @@ function SetupDefaultConfigurations()
    filter { "configurations:Debug" }
       defines { "DEBUG" }
       -- We want debug symbols in our debug config
-      --flags { "Symbols" }
+      -- flags { "Symbols" }
       symbols "On"
 
    filter { "configurations:Debug", "kind:*Lib" }
@@ -122,13 +122,18 @@ function UseBoostLibShared(name)
       end   
    end
 
+   -- BOOST_ALL_DYN_LINK
+   -- BOOST_PROGRAM_OPTIONS_DYN_LINK
+
    --print("Found Debug: " .. dbgLibName)
    --print("Found Release: " .. relLibName)
 
    filter { "configurations:Debug" }
+      defines { "BOOST_LIB_DIAGNOSTIC", "BOOST_ALL_NO_LIB", "BOOST_ALL_DYN_LINK" }
       links { dbgLibName }
 
    filter { "configurations:Release" }
+      defines { "BOOST_LIB_DIAGNOSTIC", "BOOST_ALL_NO_LIB", "BOOST_ALL_DYN_LINK" }
       links { relLibName }
 
    filter {}
