@@ -11,6 +11,7 @@
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
+#include <orion/Utils.h>
 #include <orion/unittest/TestOptions.h>
 #include <orion/unittest/TestResult.h>
 #include <orion/unittest/TestOutput.h>

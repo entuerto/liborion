@@ -36,7 +36,7 @@ public:
 
    const std::vector<Test>& test_cases() const;
 
-   int test_count() const;
+   std::size_t test_count() const;
 
    /// Sets up the test suite.
    void setup();

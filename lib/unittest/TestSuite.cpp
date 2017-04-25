@@ -39,7 +39,7 @@ const std::vector<Test>& Suite::test_cases() const
    return _test_cases;
 }
 
-int Suite::test_count() const
+std::size_t Suite::test_count() const
 {
    return _test_cases.size();
 }

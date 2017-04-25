@@ -71,7 +71,7 @@ void string_tokenize(Test& t)
    std::vector<std::string> tokens;
    tokenize(str1, tokens, " ;");
 
-   t.assert<std::equal_to<>>(5ull, tokens.size(), _src_loc);
+   t.assert<std::equal_to<>>(std::size_t(5), tokens.size(), _src_loc);
    t.assert<std::equal_to<>>("This"s, tokens[0], _src_loc);
    t.assert<std::equal_to<>>("is"s,   tokens[1], _src_loc);
    t.assert<std::equal_to<>>("a"s,    tokens[2], _src_loc);

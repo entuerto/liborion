@@ -23,6 +23,6 @@ namespace Suite##Name \
 
 
 #define RegisterTestCase(SuiteName, TestFunc, ...) \
-orion::unittest::RegisterTestHelper _##TestFunc(current_test_suite(), #TestFunc, TestFunc, __VA_ARGS__)
+orion::unittest::RegisterTestHelper _##TestFunc(current_test_suite(), #TestFunc, TestFunc, ##__VA_ARGS__)
 
 #endif /* ORION_UNITTEST_TESTMACROS_H */

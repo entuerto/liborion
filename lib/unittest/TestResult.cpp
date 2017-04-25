@@ -52,28 +52,28 @@ bool TestResult::failed() const
    return _failed_item_count > 0;
 }
 
-int TestResult::item_count() const
+size_t TestResult::item_count() const
 {
    return _result_items.size();
 }
 
 /*!
  */
-int TestResult::failed_item_count() const
+std::size_t TestResult::failed_item_count() const
 {
    return _failed_item_count;
 }
 
 /*!
  */
-int TestResult::passed_item_count() const
+std::size_t TestResult::passed_item_count() const
 {
    return _passed_item_count;
 }
 
 /*!
  */
-int TestResult::skipped_item_count() const
+std::size_t TestResult::skipped_item_count() const
 {
    return _skipped_item_count;
 }

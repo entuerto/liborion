@@ -38,15 +38,15 @@ std::ostream& operator<< (std::ostream& out, ReportLevel report_level);
 
 struct OutputStats
 {
-   int count; 
-   int passed_count; 
-   int failed_count;
-   int skipped_count;
+   std::size_t count;
+   std::size_t passed_count;
+   std::size_t failed_count;
+   std::size_t skipped_count;
 
-   int item_count;
-   int passed_item_count; 
-   int failed_item_count; 
-   int skipped_item_count; 
+   std::size_t item_count;
+   std::size_t passed_item_count;
+   std::size_t failed_item_count;
+   std::size_t skipped_item_count; 
    
    std::chrono::milliseconds time_elapsed;
 };
