@@ -13,7 +13,7 @@
 #include <string>
  
 #include <orion/Orion-Stddefs.h>
-#include <orion/logging/LogRecord.h>
+#include <orion/log/Record.h>
 #include <orion/net/IPAddress.h>
 #include <orion/net/Url.h>
 #include <orion/net/http/Utils.h>
@@ -85,7 +85,7 @@ protected:
 
 API_EXPORT std::ostream& operator<<(std::ostream& o, const Request& r);
 
-API_EXPORT const orion::logging::LogRecord& operator<<(const orion::logging::LogRecord& rec, const Request& r);
+API_EXPORT const orion::log::Record& operator<<(const orion::log::Record& rec, const Request& r);
 
 } // http
 } // net

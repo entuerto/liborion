@@ -182,14 +182,14 @@ std::ostream& operator<<(std::ostream& o, const Request& r)
    return o;
 }
 
-const orion::logging::LogRecord& operator<<(const orion::logging::LogRecord& rec, const Request& r)
+const orion::log::Record& operator<<(const orion::log::Record& rec, const Request& r)
 {
    std::ostringstream outs;
 
    outs << "\n"
         << r;
 
-   const_cast<orion::logging::LogRecord&>(rec).message(outs.str());
+   const_cast<orion::log::Record&>(rec).message(outs.str());
 
    return rec; 
 }

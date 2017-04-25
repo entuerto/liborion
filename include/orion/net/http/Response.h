@@ -13,7 +13,7 @@
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/logging/LogRecord.h>
+#include <orion/log/Record.h>
 #include <orion/net/http/Utils.h>
 
 namespace orion
@@ -55,7 +55,7 @@ public:
 
    virtual std::streambuf* rdbuf() const;
 
-   friend API_EXPORT const logging::LogRecord& operator<<(const logging::LogRecord& rec, const Response& r);
+   friend API_EXPORT const log::Record& operator<<(const log::Record& rec, const Response& r);
 
 protected:
    StatusCode _status_code;
@@ -67,7 +67,7 @@ protected:
 
 };
 
-API_EXPORT const logging::LogRecord& operator<<(const logging::LogRecord& rec, const Response& r);
+API_EXPORT const log::Record& operator<<(const log::Record& rec, const Response& r);
 } // http
 } // net
 } // orion

@@ -125,7 +125,7 @@ std::streambuf* Response::rdbuf() const
    return _body_streambuf.get();
 }
 
-const logging::LogRecord& operator<<(const logging::LogRecord& rec, const Response& r)
+const log::Record& operator<<(const log::Record& rec, const Response& r)
 {
    std::ostringstream o;
 
@@ -150,7 +150,7 @@ const logging::LogRecord& operator<<(const logging::LogRecord& rec, const Respon
 
    o << "\n";
 
-   const_cast<logging::LogRecord&>(rec).message(o.str());
+   const_cast<log::Record&>(rec).message(o.str());
 
    return rec; 
 }

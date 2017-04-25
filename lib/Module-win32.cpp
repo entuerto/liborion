@@ -20,14 +20,16 @@
 #include <orion/Module.h>
 
 #include <windows.h>
+
 #include <orion/ErrorMacros.h>
+#include <orion/Log.h>
 #include <orion/ModuleException.h>
-#include <orion/Logging.h>
+#include <orion/SourceLocation.h>
 #include <orion/StringUtils.h>
 
 namespace orion
 {
-using namespace orion::logging;
+using namespace orion::log;
 
 struct Module::Private
 {

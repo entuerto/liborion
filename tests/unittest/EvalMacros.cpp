@@ -5,6 +5,7 @@
 #include <orion/ErrorMacros.h>
 #include <orion/Exception.h>
 
+using namespace orion;
 using namespace orion::unittest;
 using namespace orion::unittest::option;
 

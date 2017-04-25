@@ -8,12 +8,12 @@
 
 #include <sstream>
 
-#include <orion/Logging.h>
+#include <orion/Log.h>
 #include <orion/net/http/Utils.h>
 
 #include <boost/format.hpp>
 
-using namespace orion::logging;
+using namespace orion::log;
 
 namespace orion
 {

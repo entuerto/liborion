@@ -1,5 +1,5 @@
 /*
- * log-outputhandlers.cpp
+ * Log.h
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -17,39 +17,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
+ *
  */
+#ifndef ORION_LOG_H
+#define ORION_LOG_H
 
-#include <orion/logging/OutputHandler.h>
-#include <orion/logging/OnelineFormatter.h>
+#include <orion/log/Formatter.h>
+#include <orion/log/Function.h>
+#include <orion/log/Record.h>
+#include <orion/log/Level.h>
+#include <orion/log/Logger.h>
+#include <orion/log/MultilineFormatter.h>
+#include <orion/log/OnelineFormatter.h>
+#include <orion/log/OnelineWithSourceInfoFormatter.h>
+#include <orion/log/OutputHandler.h>
+#include <orion/log/StreamOutputHandler.h>
+#include <orion/log/Macros.h>
 
-namespace orion
-{
-namespace logging
-{
-//--------------------------------------------------------------------------
-// Class OutputHandler
-
-OutputHandler::OutputHandler() :
-   _formatter(OnelineFormatter::create())
-{
-}
-
-OutputHandler::~OutputHandler()
-{
-}
-
-IFormatter* OutputHandler::formatter() const
-{
-   return _formatter.get();
-}
-
-///
-/// the output handler takes ownership of the formatter.
-/// @param formatter  Formatter for the output
-void OutputHandler::set_formatter(std::unique_ptr<IFormatter>&& formatter)
-{
-   _formatter = std::move(formatter);
-}
-
-} // namespace logging
-} // namespace orion
+#endif

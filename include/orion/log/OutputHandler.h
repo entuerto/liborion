@@ -1,5 +1,5 @@
 /*
- * log-outputhandlers.h
+ * OutputHandler.h
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,20 +19,20 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_LOGGING_OUTPUTHANDLER_H
-#define ORION_LOGGING_OUTPUTHANDLER_H
+#ifndef ORION_LOG_OUTPUTHANDLER_H
+#define ORION_LOG_OUTPUTHANDLER_H
 
 #include <memory>
 #include <vector>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/logging/IFormatter.h>
+#include <orion/log/Formatter.h>
 
 namespace orion
 {
-namespace logging
+namespace log
 {
-class LogRecord;
+class Record;
 
 //--------------------------------------------------------------------------
 // Class OutputHandler
@@ -51,13 +51,13 @@ public:
    virtual ~OutputHandler();
 
    //! Gets the formatter of the output handler
-   IFormatter* formatter() const;
+   Formatter* formatter() const;
 
    //! Sets the formatter of the output handler. 
-   void set_formatter(std::unique_ptr<IFormatter>&& formatter);
+   void set_formatter(std::unique_ptr<Formatter>&& formatter);
 
    //! Writes a log record
-   virtual void write(const LogRecord& log_record) =0;
+   virtual void write(const Record& record) =0;
 
    //! Flushes the stream
    virtual void flush() =0;
@@ -66,11 +66,11 @@ public:
    virtual void close() =0;
 
 private:
-   std::unique_ptr<IFormatter> _formatter;
+   std::unique_ptr<Formatter> _formatter;
 
 };
 
-} // namespace logging
+} // namespace log
 } // namespace orion
 
-#endif /* ORION_LOGGING_OUTPUTHANDLER_H */
+#endif /* ORION_LOG_OUTPUTHANDLER_H */

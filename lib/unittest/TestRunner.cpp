@@ -11,9 +11,9 @@
 #include <orion/unittest/TestOutput.h>
 #include <orion/unittest/TestStdOutput.h>
 
-#include <boost/program_options.hpp>
+//#include <boost/program_options.hpp>
 
-namespace opts = boost::program_options;
+//namespace opts = boost::program_options;
 
 namespace orion
 {

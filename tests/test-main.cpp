@@ -5,17 +5,17 @@
 //
 #include <iostream>
 
-#include <orion/Logging.h>
+#include <orion/Log.h>
 #include <orion/TestUtils.h>
 
 using namespace orion;
-using namespace orion::logging;
+using namespace orion::log;
 using namespace orion::unittest;
 
 #ifdef ORION_TEST_LOGGER
-extern LogRecord output_record;
+extern Record output_record;
 
-extern void setup_logger(LogRecord& record);
+extern void setup_logger(Record& record);
 #endif
 
 //----------------------------------------------------------------------------
@@ -28,11 +28,11 @@ int main(int argc, char* argv[])
    setup_logger(output_record);
 #endif
 
-   LOG_START();
+   log::start();
 
    auto ret = Runner::runner().run(argc, argv);
 
-   LOG_END();
+   log::shutdown();
 
    return ret ? EXIT_SUCCESS : EXIT_FAILURE;
 }

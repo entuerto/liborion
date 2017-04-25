@@ -3,6 +3,7 @@
 
 using namespace std::string_literals;
 
+using namespace orion;
 using namespace orion::unittest;
 
 TestSuite(OrionCore)

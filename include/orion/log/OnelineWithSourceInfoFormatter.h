@@ -1,4 +1,4 @@
-// OnelineFormatter.h
+// OnelineWithSourceInfoFormatter.h
 //
 // Copyright 2013 tomas <tomasp@videotron.ca>
 //
@@ -17,39 +17,34 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#ifndef ORION_LOGGING_ONELINEFORMATTER_H
-#define ORION_LOGGING_ONELINEFORMATTER_H
+#ifndef ORION_LOG_ONELINEWITHSOURCEINFOFORMATTER_H
+#define ORION_LOG_ONELINEWITHSOURCEINFOFORMATTER_H
 
-#include <memory>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/logging/IFormatter.h>
+#include <orion/log/Formatter.h>
 
 namespace orion
 {
-namespace logging
+namespace log
 {
-class LogRecord;
+class Record;
 
 //! One line log formatter
 /*!
-    Formats the log record on a single line.
+    Formats the log record on a single line with source line
+    information.
  */
-class API_EXPORT OnelineFormatter : public IFormatter
+class API_EXPORT OnelineWithSourceInfoFormatter : public Formatter
 {
 public:
-   NO_COPY(OnelineFormatter)
-   NO_MOVE(OnelineFormatter)
-   
-   OnelineFormatter();
-   virtual ~OnelineFormatter();
+   OnelineWithSourceInfoFormatter();
+   virtual ~OnelineWithSourceInfoFormatter();
 
-   virtual std::string format(const LogRecord& log_record);
-
-   static std::unique_ptr<IFormatter> create();
+   virtual std::string format(const Record& record);
 };
 
-} // namespace logging
+} // namespace log
 } // namespace orion
-#endif /* ORION_LOGGING_ONELINEFORMATTER_H */
+#endif /* ORION_LOG_ONELINEWITHSOURCEINFOFORMATTER_H */

@@ -5,6 +5,7 @@
 --
 
 require "premake/clangcl"
+require "premake/boost"
 require "premake/utils"
 require "premake/gnumake"
 
@@ -32,7 +33,7 @@ workspace "liborion"
       "deps", 
    }
 
-   FindBoost()
+   FindBoost(1.64)
 
 
 group "Libraries"
@@ -89,7 +90,7 @@ group "Libraries"
 
       files { 
          "lib/*.cpp",
-         "lib/logging/*.cpp", 
+         "lib/log/*.cpp", 
          "lib/unittest/*.cpp" 
       }
 

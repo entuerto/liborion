@@ -1,4 +1,4 @@
-// Log-Formatters.h
+// OnelineFormatter.h
 //
 // Copyright 2013 tomas <tomasp@videotron.ca>
 //
@@ -17,35 +17,33 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#ifndef ORION_LOGGING_IFORMATTER_H
-#define ORION_LOGGING_IFORMATTER_H
+#ifndef ORION_LOG_ONELINEFORMATTER_H
+#define ORION_LOG_ONELINEFORMATTER_H
 
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
+#include <orion/log/Formatter.h>
 
 namespace orion
 {
-namespace logging
+namespace log
 {
-class LogRecord;
+class Record;
 
-//! A Formatter is used to convert a LogRecord to text.
+//! One line log formatter
 /*!
-   A Formatter class is responsible for converting a LogRecord to
-   a readable form that will be interpreted by either a human or
-   an external system.
+    Formats the log record on a single line.
  */
-class API_EXPORT IFormatter 
+class API_EXPORT OnelineFormatter : public Formatter
 {
 public:
-   virtual ~IFormatter() = default;
+   OnelineFormatter();
+   virtual ~OnelineFormatter();
 
-   //! Formats the LogRecord into a reable form
-   virtual std::string format(const LogRecord& log_record) =0;
-
+   virtual std::string format(const Record& record);
 };
 
-} // namespace logging
+} // namespace log
 } // namespace orion
-#endif /* ORION_LOGGING_IFORMATTER_H */
+#endif /* ORION_LOG_ONELINEFORMATTER_H */

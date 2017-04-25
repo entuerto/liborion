@@ -19,13 +19,8 @@
 
 #include <orion/Module.h>
 
-#include <orion/ErrorMacros.h>
-#include <orion/Logging.h>
-
 namespace orion
 {
-using namespace orion::logging;
-
 /*!
 */
 std::unique_ptr<Module> Module::create()

@@ -23,10 +23,7 @@
 
 #include <cstdio>
 
-#include <orion/Logging.h>
 #include <orion/StringUtils.h>
-
-using namespace orion::logging;
 
 namespace orion
 {

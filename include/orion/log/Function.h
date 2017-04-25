@@ -1,4 +1,4 @@
-// LogFunction.h
+// Function.h
 //
 // Copyright 2013 tomas <tomasp@videotron.ca>
 //
@@ -17,28 +17,32 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#ifndef ORION_LOGGING_LOGFUNCTION_H
-#define ORION_LOGGING_LOGFUNCTION_H
+#ifndef ORION_LOG_FUNCTION_H
+#define ORION_LOG_FUNCTION_H
+
+#include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/logging/Logger.h>
+
+#include <orion/SourceLocation.h>
+#include <orion/log/Level.h>
 
 namespace orion
 {
-namespace logging
+namespace log
 {
-//! A LogFunction represents an function being logged.
+//! A Function represents an function being logged.
 /*!
  */
-class API_EXPORT LogFunction 
+class API_EXPORT Function 
 {
 public:
-   LogFunction(      Level level,
-               const std::string& function_name,
-               const std::string& file,
-               int32_t line);
+   Function(Level level, const SourceLocation& src_loc);
+   
+   Function(const Function& rhs);
+   Function(Function&& rhs);
 
-   virtual ~LogFunction();
+   virtual ~Function();
 
    //! Returns the level of the log record
    virtual Level level() const;
@@ -47,24 +51,21 @@ public:
    virtual void level(Level level);
 
    //! Returns the function name recorded
-   virtual std::string function_name() const;
+   virtual std::string name() const;
 
    //! Records a function name
-   virtual void function_name(const std::string& function);
+   virtual void name(const std::string& value);
 
-protected:
-   LogFunction(const LogFunction& rhs);
-   LogFunction(LogFunction&& rhs);
-   LogFunction& operator=(const LogFunction& rhs);
-   LogFunction& operator=(LogFunction&& rhs);
+   Function& operator=(const Function& rhs);
+   Function& operator=(Function&& rhs);
 
 private:
    Level _level;
-   std::string   _function_name;
+   std::string _name;
 
 };
 
-} // namespace logging
+} // namespace log
 } // namespace orion
 
-#endif /* ORION_LOGGING_LOGFUNCTION_H */
+#endif /* ORION_LOG_FUNCTION_H */

@@ -25,13 +25,13 @@
 #include <iostream>
 #include <utility>
 
-#include <orion/Logging.h>
+#include <orion/Log.h>
 
 #include <net/http/impl/MongooseServerConnection.h>
 
 #include <boost/format.hpp>
 
-using namespace orion::logging;
+using namespace orion::log;
 
 namespace orion
 {

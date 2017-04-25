@@ -12,21 +12,13 @@
 #include <vector>
 
 #include <orion/Orion-Stddefs.h>
+#include <orion/SourceLocation.h>
 #include <orion/Utils.h>
 
 namespace orion
 {
 namespace unittest
 {
-//---------------------------------------------------------------------------------------
-
-#define _src_loc SourceLocation{__FILE__, __LINE__}
-
-struct SourceLocation
-{
-   std::string file_name;
-   int line_number;
-};
 
 //---------------------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-// OnelineWithSourceInfoFormatter.h
+// StartRecord.h
 //
 // Copyright 2013 tomas <tomasp@videotron.ca>
 //
@@ -17,40 +17,41 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#ifndef ORION_LOGGING_ONELINEWITHSOURCEINFOFORMATTER_H
-#define ORION_LOGGING_ONELINEWITHSOURCEINFOFORMATTER_H
 
-#include <memory>
+#ifndef ORION_LOG_STARTRECORD_H
+#define ORION_LOG_STARTRECORD_H
+
 #include <string>
 
-#include <orion/Orion-Stddefs.h>
-#include <orion/logging/IFormatter.h>
+#include <orion/log/Record.h>
 
 namespace orion
 {
-namespace logging
+namespace log
 {
-class LogRecord;
-
-//! One line log formatter
+//! First Record sent when logging
 /*!
-    Formats the log record on a single line with source line
-    information.
+    This Record tells the user that the logging
+    process is about to start.
  */
-class API_EXPORT OnelineWithSourceInfoFormatter : public IFormatter
+class StartRecord : public Record
 {
 public:
-   NO_COPY(OnelineWithSourceInfoFormatter)
-   NO_MOVE(OnelineWithSourceInfoFormatter)
-   
-   OnelineWithSourceInfoFormatter();
-   virtual ~OnelineWithSourceInfoFormatter();
+   StartRecord();
 
-   virtual std::string format(const LogRecord& log_record);
+   StartRecord(const StartRecord& rhs);
+   StartRecord(StartRecord&& rhs);
 
-   static std::unique_ptr<IFormatter> create();
+   virtual ~StartRecord();
+
+   virtual std::string message() const override;
+
+   StartRecord& operator=(const StartRecord& rhs);
+   StartRecord& operator=(StartRecord&& rhs);
+
 };
 
-} // namespace logging
+} // namespace log
 } // namespace orion
-#endif /* ORION_LOGGING_ONELINEWITHSOURCEINFOFORMATTER_H */
+
+#endif /* ORION_LOG_STARTRECORD_H */

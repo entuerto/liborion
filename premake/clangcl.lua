@@ -30,20 +30,33 @@
 -- Returns list of C compiler flags for a configuration.
 --
 
-	clangcl.cflags = {
+	clangcl.shared = {
 		flags = {
 			FatalCompileWarnings = "/WX",
 			OmitDefaultLibrary = "/Zl",
+			StaticRuntime  = function(cfg) return iif(config.isDebugBuild(cfg), "/MTd", "/MT") end,
+			_StaticRuntime = function(cfg) return iif(config.isDebugBuild(cfg), "/MDd", "/MD") end
 		},
 		floatingpoint = {
 			Fast = "/fp:fast",
 			Strict = "/fp:strict",
+		},
+		floatingpointexceptions = {
+			On  = "/fp:except",
+			Off = "/fp:except-",
+		},
+		functionlevellinking = {
+			On = "/Gy",
+			Off = "/Gy-",
 		},
 		callingconvention = {
 			Cdecl = "/Gd",
 			FastCall = "/Gr",
 			StdCall = "/Gz",
 			VectorCall = "/Gv",
+		},
+		intrinsics = {
+			On = "/Oi",
 		},
 		optimize = {
 			Off = "/Od",
@@ -66,22 +79,22 @@
 			Extra = "/Wall",
 			Off = "/W0",
 		},
+		stringpooling = {
+			On = "/GF",
+			Off = "/GF-",
+		},
 		symbols = {
 			On = "/Z7"
 		}
 	}
 
+	clangcl.cflags = {
+	}
+
 	function clangcl.getcflags(cfg)
-		local flags = config.mapFlags(cfg, clangcl.cflags)
-
-		flags = table.join(flags, clangcl.getwarnings(cfg))
-
-		local runtime = iif(cfg.flags.StaticRuntime, "/MT", "/MD")
-		if config.isDebugBuild(cfg) then
-			runtime = runtime .. "d"
-		end
-		table.insert(flags, runtime)
-
+		local shared = config.mapFlags(cfg, clangcl.shared)
+		local cflags = config.mapFlags(cfg, clangcl.cflags)
+		local flags = table.join(shared, cflags, clangcl.getwarnings(cfg))
 		return flags
 	end
 
@@ -115,7 +128,9 @@
 	}
 
 	function clangcl.getcxxflags(cfg)
-		local flags = config.mapFlags(cfg, clangcl.cxxflags)
+		local shared = config.mapFlags(cfg, clangcl.shared)
+		local cxxflags = config.mapFlags(cfg, clangcl.cxxflags)
+		local flags = table.join(shared, cxxflags, clangcl.getwarnings(cfg))
 		return flags
 	end
 
@@ -148,6 +163,11 @@
 		for _, define in ipairs(defines) do
 			table.insert(result, '/D"' .. define .. '"')
 		end
+
+		if cfg and cfg.exceptionhandling == p.OFF then
+			table.insert(result, "/D_HAS_EXCEPTIONS=0")
+		end
+		
 		return result
 	end
 
@@ -284,13 +304,25 @@
 --
 
 	function clangcl.getlinks(cfg)
-		local links = config.getlinks(cfg, "system", "fullpath")
-		for i = 1, #links do
-			-- Add extension if required
-			if not clangcl.getLibraryExtensions()[links[i]:match("[^.]+$")] then
-				links[i] = path.appendextension(links[i], ".lib")
-			end
+		local links = {}
+
+		-- If we need sibling projects to be listed explicitly, grab them first
+		if not systemonly then
+			links = config.getlinks(cfg, "siblings", "fullpath")
 		end
+
+		-- Then the system libraries, which come undecorated
+		local system = config.getlinks(cfg, "system", "fullpath")
+		for i = 1, #system do
+			-- Add extension if required
+			local link = system[i]
+			if not p.tools.clangcl.getLibraryExtensions()[link:match("[^.]+$")] then
+				link = path.appendextension(link, ".lib")
+			end
+
+			table.insert(links, link)
+		end
+
 		return links
 	end
 

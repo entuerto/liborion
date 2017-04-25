@@ -10,8 +10,6 @@
 #include <functional>
 #include <string>
 
-#include <iostream>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/unittest/TestOptions.h>
 #include <orion/unittest/TestResult.h>
@@ -185,8 +183,6 @@ inline void set_options(Test& /* test */) {}
 template <typename O>
 void set_options(Test& test, O&& opt) 
 {
-   std::cout << "*** void set_options(Test& test, T&& t) ***\n";
-
    test.set_option(std::forward<decltype(opt)>(opt));
 }
 

@@ -17,46 +17,38 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#ifndef ORION_LOGGING_MULTILINEFORMATTER_H
-#define ORION_LOGGING_MULTILINEFORMATTER_H
+#ifndef ORION_LOG_MULTILINEFORMATTER_H
+#define ORION_LOG_MULTILINEFORMATTER_H
 
-#include <memory>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/logging/IFormatter.h>
+#include <orion/SourceLocation.h>
+#include <orion/log/Formatter.h>
 
 namespace orion
 {
-namespace logging
+namespace log
 {
-class LogRecord;
+class Record;
 
 //! Multi line formatter
 /*!
     Formats the information on more than one line.
  */
-class API_EXPORT MultilineFormatter : public IFormatter
+class API_EXPORT MultilineFormatter : public Formatter
 {
 public:
-   NO_COPY(MultilineFormatter)
-   NO_MOVE(MultilineFormatter)
-   
    MultilineFormatter();
    virtual ~MultilineFormatter();
 
-   virtual std::string format(const LogRecord& log_record);
-
-   static std::unique_ptr<IFormatter> create();
+   virtual std::string format(const Record& record);
 
 private:
-   std::string format_source_info(const std::string& prefix,
-                                  const std::string& file,
-                                             int32_t line,
-                                  const std::string& function);
+   std::string format_source_info(const std::string& prefix, const SourceLocation& src_loc);
 
 };
 
-} // namespace logging
+} // namespace log
 } // namespace orion
-#endif /* ORION_LOGGING_MULTILINEFORMATTER_H */
+#endif /* ORION_LOG_MULTILINEFORMATTER_H */

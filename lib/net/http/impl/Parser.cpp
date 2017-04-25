@@ -9,9 +9,9 @@
 #include <iostream>
 #include <iomanip>
 
-#include <orion/Logging.h>
+#include <orion/Log.h>
 
-using namespace orion::logging;
+using namespace orion::log;
 
 namespace orion
 {

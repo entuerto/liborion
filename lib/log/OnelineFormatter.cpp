@@ -17,22 +17,18 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <orion/logging/OnelineFormatter.h>
+#include <orion/log/OnelineFormatter.h>
 
 #include <sstream> 
 
-#include <orion/logging/Logger.h>
-#include <orion/logging/LogRecord.h>
-#include <orion/logging/LogExceptionRecord.h>
+#include <orion/log/Logger.h>
+#include <orion/log/Record.h>
 
 namespace orion
 {
-namespace logging
+namespace log
 {
-namespace 
-{
-static std::ostringstream stream;
-}
+
 //--------------------------------------------------------------------------
 // Class OnelineFormatter
 
@@ -44,36 +40,32 @@ OnelineFormatter::~OnelineFormatter()
 {
 }
 
-std::string OnelineFormatter::format(const LogRecord& log_record)
+std::string OnelineFormatter::format(const Record& record)
 {
-   if (log_record.level() == Level::NotSet)
-      return log_record.message();
+   if (record.level() == Level::NotSet)
+      return record.message();
 
    std::string scope;
 
-   for (uint32_t i = 0; i < Logger::get_logger().scope_depth(); i++)
+   auto& l = Logger::get_logger();
+
+   for (uint32_t i = 0; i < l.scope_depth(); i++)
    {
       scope += " |";
    }
 
-   stream.clear();
-   stream.str("");
+   std::ostringstream stream;
 
    stream << "|" 
-          << level_as_text(log_record.level())
+          << to_string(record.level())
           << "|"
-          << log_record.time_stamp()
+          << record.time_stamp()
           << "|"
           << scope
-          << log_record.message();
+          << record.message();
 
    return stream.str();
 }
 
-std::unique_ptr<IFormatter> OnelineFormatter::create()
-{
-   return std::make_unique<OnelineFormatter>();
-}
-
-} // namespace logging
+} // namespace log
 } // namespace orion

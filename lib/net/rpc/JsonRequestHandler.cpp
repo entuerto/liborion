@@ -22,7 +22,7 @@
 
 #include <jsoncpp/json/json.h>
 
-#include <orion/Logging.h>
+#include <orion/Log.h>
 #include <orion/ErrorMacros.h>
 
 #define JSON_RPC_METHODNAME      "method"
@@ -33,7 +33,7 @@
 #define JSON_RPC_RESPONSE_RESULT "result"
 #define JSON_RPC_VERSION         "2.0"
 
-using namespace orion::logging;
+using namespace orion::log;
 
 namespace orion
 {
@@ -129,7 +129,7 @@ Error JsonRequestHandler::process_method(Json::Value& json_request, Json::Value&
    }
    catch (const std::exception& e)
    {
-      LOG_EXCEPTION(e);
+      log::exception(e);
 
       return make_error(JsonErrc::MethodNotFound);
    }

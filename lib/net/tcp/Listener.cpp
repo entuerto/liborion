@@ -21,10 +21,6 @@
 
 #include <orion/net/tcp/Listener.h>
 
-#include <orion/Logging.h>
-
-using namespace orion::logging;
-
 namespace orion
 {
 namespace net

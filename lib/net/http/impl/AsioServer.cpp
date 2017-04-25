@@ -9,10 +9,10 @@
 
 #include <future>
 
-#include <orion/Logging.h>
+#include <orion/Log.h>
 #include <net/http/impl/AsioServerConnection.h>
 
-using namespace orion::logging;
+using namespace orion::log;
 
 namespace orion
 {

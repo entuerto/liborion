@@ -22,11 +22,11 @@
 #include <net/http/impl/MongooseServerConnection.h>
 
 #include <cstdlib>
-#include <orion/Logging.h>
+#include <orion/Log.h>
 #include <orion/StringUtils.h>
 #include <orion/net/IPAddress.h>
 
-using namespace orion::logging;
+using namespace orion::log;
 
 namespace orion
 {

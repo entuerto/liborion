@@ -6,11 +6,11 @@
 //
 #include <net/http/impl/AsioServerConnection.h>
 
-#include <orion/Logging.h>
+#include <orion/Log.h>
 #include <orion/net/IPv4.h>
 #include <orion/net/IPv6.h>
 
-using namespace orion::logging;
+using namespace orion::log;
 using namespace std::chrono_literals;
 
 namespace orion
@@ -236,45 +236,43 @@ void AsioServerConnection::on_write_timeout(const asio::error_code& e)
 
 void AsioServerConnection::dump_socket_options()
 {
-   LOG_WRITE() << "Socket options:";
+   log::write("Socket options:");
 
    asio::ip::tcp::socket::keep_alive keep_alive_option;
    _socket.get_option(keep_alive_option);
 
-   LOG_WRITE() << "   keep alive          : " 
-               << (keep_alive_option.value() ? "true" : "false");
+   log::write("   keep alive          : ",
+              (keep_alive_option.value() ? "true" : "false"));
 
    asio::ip::tcp::no_delay no_delay_option;
    _socket.get_option(no_delay_option);
 
-   LOG_WRITE() << "   no delay            : " 
-               << (no_delay_option.value() ? "true" : "false");
+   log::write("   no delay            : ",
+              (no_delay_option.value() ? "true" : "false"));
 
    asio::socket_base::linger linger_option;
    _socket.get_option(linger_option);
 
-   LOG_WRITE() << "   linger              : " 
-               << (linger_option.enabled() ? "true" : "false")
-               << ", timeout: "
-               << linger_option.timeout();
+   log::write("   linger              : ",
+              (linger_option.enabled() ? "true" : "false"),
+              ", timeout: ",
+              linger_option.timeout());
 
    asio::socket_base::reuse_address reuse_address_option;
    _socket.get_option(reuse_address_option);
    
-   LOG_WRITE() << "   reuse address       : " 
-               << (reuse_address_option.value() ? "true" : "false");
+   log::write("   reuse address       : ", 
+              (reuse_address_option.value() ? "true" : "false"));
 
    asio::socket_base::receive_buffer_size recv_buf_size_option;
    _socket.get_option(recv_buf_size_option);
 
-   LOG_WRITE() << "   receive buffer size : " 
-               << recv_buf_size_option.value();
+   log::write("   receive buffer size : ", recv_buf_size_option.value());
 
    asio::socket_base::send_buffer_size send_buf_size_option;
    _socket.get_option(send_buf_size_option);
 
-   LOG_WRITE() << "   send buffer size    : " 
-               << send_buf_size_option.value();
+   log::write("   send buffer size    : ", send_buf_size_option.value());
 }
 
 } // http

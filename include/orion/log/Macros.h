@@ -1,4 +1,4 @@
-// LogMacros.h
+// Macros.h
 //
 // Copyright 2013 tomas <tomasp@videotron.ca>
 //
@@ -18,23 +18,18 @@
 // MA 02110-1301, USA.
 //
 
-#ifndef ORION_LOGGING_LOGMACROS_H
-#define ORION_LOGGING_LOGMACROS_H
+#ifndef ORION_LOG_MACROS_H
+#define ORION_LOG_MACROS_H
 
 #ifndef LOG
 #define LOG(lvl) \
-if (orion::logging::Logger::get_logger().is_enabled(orion::logging::Level::lvl)) \
-   orion::logging::Logger::get_logger() += LogRecord(orion::logging::Level::lvl, __FILE__, __LINE__, __FUNCTION__)
-#endif
-
-#ifndef LOG_EXCEPTION
-#define LOG_EXCEPTION(except) \
-orion::logging::Logger::get_logger() += LogExceptionRecord(except, __FILE__, __LINE__, __FUNCTION__)
+if (orion::log::Logger::get_logger().is_enabled(orion::log::Level::lvl)) \
+   orion::log::Logger::get_logger() += orion::log::Record(orion::log::Level::lvl, "", _src_loc)
 #endif
 
 #ifndef LOG_FUNCTION
 #define LOG_FUNCTION(lvl, func_name) \
-orion::logging::LogFunction log_func(orion::logging::Level::lvl, func_name, __FILE__, __LINE__);
+orion::log::Function log_func(orion::log::Level::lvl, orion::SourceLocation{__FILE__, __LINE__, func_name});
 #endif
 
 #ifndef LOG_IF_FAIL
@@ -49,19 +44,4 @@ orion::logging::LogFunction log_func(orion::logging::Level::lvl, func_name, __FI
 }
 #endif
 
-#ifndef LOG_WRITE
-#define LOG_WRITE() \
-orion::logging::Logger::get_logger() += LogRecord()
-#endif
-
-#ifndef LOG_START
-#define LOG_START(func) \
-orion::logging::Logger::get_logger().start(func);
-#endif
-
-#ifndef LOG_END
-#define LOG_END() \
-orion::logging::Logger::get_logger().shutdown();
-#endif
-
-#endif /* ORION_LOGGING_LOGMACROS_H */
+#endif /* ORION_LOG_MACROS_H */

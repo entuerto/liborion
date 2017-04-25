@@ -3,43 +3,38 @@
 //  Created by Tomas Palazuelos on 2016-06-29.
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
-#include <orion/Logging.h>
+#include <orion/Log.h>
 #include <orion/TestUtils.h>
 
 using namespace orion;
-using namespace orion::logging;
+using namespace orion::log;
 using namespace orion::unittest;
 
-LogRecord output_record;
+Record output_record;
 
 //----------------------------------------------------------------------------
 // Test log classes
 //----------------------------------------------------------------------------
-class LogRecordOutputHandler : public OutputHandler
+class RecordOutputHandler : public OutputHandler
 {
 public:
-   NO_COPY(LogRecordOutputHandler)
-   NO_MOVE(LogRecordOutputHandler)
+   NO_COPY(RecordOutputHandler)
+   NO_MOVE(RecordOutputHandler)
    
-   LogRecordOutputHandler(LogRecord& record) : _out_record(record) {}
-   virtual ~LogRecordOutputHandler() {}
+   RecordOutputHandler(Record& record) : _out_record(record) {}
+   virtual ~RecordOutputHandler() {}
 
-   virtual void write(const LogRecord& log_record)
+   virtual void write(const Record& record) override
    {
-      _out_record = log_record;
+      _out_record = record;
    }
 
-   virtual void flush() {}
+   virtual void flush() override {}
 
-   virtual void close() {}
-
-   static std::unique_ptr<OutputHandler> create(LogRecord& record)
-   {
-      return std::make_unique<LogRecordOutputHandler>(record);
-   }
+   virtual void close() override {}
 
 private:
-   LogRecord& _out_record;
+   Record& _out_record;
 };
 
 TestSuite(OrionCore)
@@ -115,12 +110,14 @@ void log_record_output(Test& t)
 {
    Logger& logger = Logger::get_logger();
 
-   logger += LogRecord(Level::Message, "FileName", 99, "function name") << "message";
+   logger += Record(Level::Message, "", SourceLocation{"FileName", 99, "function name"}) << "message";
+
+   auto sl = output_record.source_location();
 
    t.assert<std::equal_to<>>(Level::Message, output_record.level(), _src_loc);
-   t.assert<std::equal_to<>>(std::string{"FileName"}, output_record.file_name(), _src_loc);
-   t.assert<std::equal_to<>>(99, output_record.line(), _src_loc);
-   t.assert<std::equal_to<>>(std::string{"function name"}, output_record.function_name(), _src_loc);
+   t.assert<std::equal_to<>>(std::string{"FileName"}, sl.file_name, _src_loc);
+   t.assert<std::equal_to<>>(99, sl.line_number, _src_loc);
+   t.assert<std::equal_to<>>(std::string{"function name"}, sl.function_name, _src_loc);
    t.assert<std::equal_to<>>(std::string{"message"}, output_record.message(), _src_loc);
 }
 
@@ -132,12 +129,12 @@ RegisterTestCase(OrionCore, log_fail_message);
 RegisterTestCase(OrionCore, log_record_output);
 } // TEST_SUITE(OrionCore)
 
-void setup_logger(LogRecord& record)
+void setup_logger(Record& record)
 {
-   auto out_handler = LogRecordOutputHandler::create(record);
+   auto out_handler = std::make_unique<RecordOutputHandler>(record);
 
    Logger& logger = Logger::get_logger();
 
    logger.level(Level::NotSet);
-   logger.output_handlers().push_back(std::move(out_handler));
+   logger.add_output_handler(std::move(out_handler));
 }

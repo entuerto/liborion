@@ -20,30 +20,32 @@
 #include "module-example-lib.h"
 
 #include <iostream>
-#include <orion/Logging.h>
+#include <orion/Log.h>
 
 using namespace orion;
-using namespace orion::logging;
+using namespace orion::log;
 
 void function_a()
 {
    LOG_FUNCTION(Debug, "function_a()");
 
 
-   LOG(Warning) << "Test warning output from function A";
+   LOG(Warning) << "MACRO: Test warning output from function A";
+
+   log::warning("FUNC: Test warning output from function A");
 }
 
 void setup_logger()
 {
-   auto cout_handler = StreamOutputHandler::create(std::cout);
+   auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
 
-   //cout_handler->set_formatter(MultilineFormatter::create());
-   //cout_handler->set_formatter(OnelineWithSourceInfoFormatter::create());
+   //cout_handler->set_formatter(std::make_unique<MultilineFormatter>());
+   cout_handler->set_formatter(std::make_unique<OnelineWithSourceInfoFormatter>());
 
    Logger& logger = Logger::get_logger();
 
    logger.level(Level::Debug);
-   logger.output_handlers().push_back(std::move(cout_handler));
+   logger.add_output_handler(std::move(cout_handler));
 }
 
 //----------------------------------------------------------
@@ -51,14 +53,18 @@ int main()
 {
    setup_logger();
 
-   LOG_START();
+   log::start();
 
-   LOG(Error) << "Test error output";
-   LOG(Warning) << "Test warning output";
+   LOG(Error) << "MACRO: Test error output";
+   log::error("Test error output");
 
-   function_a();
+   LOG(Warning) << "MACRO: Test warning output";
+   log::warning("Test warning output");
 
-   LOG_END();
+   function_a(); 
+
+   log::shutdown();
+
    return EXIT_SUCCESS;   
 }
 

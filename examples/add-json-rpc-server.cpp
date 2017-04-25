@@ -21,7 +21,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <orion/Logging.h>
+#include <orion/Log.h>
 #include <orion/net/Server.h>
 #include <orion/net/http/Server.h>
 #include <orion/net/rpc/JsonRequestHandler.h>
@@ -30,7 +30,7 @@
 #include <jsoncpp/json/json.h>
 
 using namespace orion;
-using namespace orion::logging;
+using namespace orion::log;
 using namespace orion::net;
 using namespace orion::net::http;
 using namespace orion::net::rpc;
@@ -131,16 +131,16 @@ public:
 //-----------------------------------------------------------------------------------
 void setup_logger(std::fstream& file_stream)
 {
-   auto cout_handler = StreamOutputHandler::create(std::cout);
-   auto file_handler = StreamOutputHandler::create(file_stream);
+   auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
+   auto file_handler = std::make_unique<StreamOutputHandler>(file_stream);
 
-   file_handler->set_formatter(MultilineFormatter::create());
+   file_handler->set_formatter(std::make_unique<MultilineFormatter>());
 
    Logger& logger = Logger::get_logger();
 
    logger.level(Level::Debug);
-   logger.output_handlers().push_back(std::move(cout_handler));
-   logger.output_handlers().push_back(std::move(file_handler));
+   logger.add_output_handler(std::move(cout_handler));
+   logger.add_output_handler(std::move(file_handler));
 }
 
 //-----------------------------------------------------------------------------------
@@ -151,7 +151,7 @@ int main ()
    std::fstream fout("add-json-rpc-server.log", std::fstream::out | std::fstream::trunc);
    setup_logger(fout);
 
-   LOG_START();
+   log::start();
 
    auto server = http::Server::create();
 
@@ -178,6 +178,6 @@ int main ()
       LOG_EXCEPTION(e);
    }
 
-   LOG_END();
+   log::shutdown();
    return EXIT_SUCCESS;
 }
