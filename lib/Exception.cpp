@@ -22,71 +22,30 @@
 namespace orion
 {
 
-Exception::Exception(const std::string& text) :
-   _line_number(-1),
+Exception::Exception(const std::string& text, const SourceLocation& src_loc) :
    _text(text),
-   _file_name(),
-   _function_name()
-{
-}
-
-Exception::Exception(const std::string& text,
-                     const std::string& file_name,
-                           int32_t      line_number) :
-   _line_number(line_number),
-   _text(text),
-   _file_name(file_name),
-   _function_name()
-{
-}
-
-Exception::Exception(const std::string& text,
-                     const std::string& file_name,
-                           int32_t      line_number,
-                     const std::string& function) :
-   _line_number(line_number),
-   _text(text),
-   _file_name(file_name),
-   _function_name(function)
+   _src_location(src_loc)
 {
 }
 
 Exception::Exception(const Exception& other) :
-   _line_number(other._line_number),
    _text(other._text),
-   _file_name(other._file_name),
-   _function_name(other._function_name)
+   _src_location(other._src_location)
 {
 }
 
 Exception::Exception(Exception&& other) :
-   _line_number(std::move(other._line_number)),
    _text(std::move(other._text)),
-   _file_name(std::move(other._file_name)),
-   _function_name(std::move(other._function_name))
+   _src_location(std::move(other._src_location))
 {
 }
 
-Exception::~Exception()  throw()
+const SourceLocation& Exception::source_location() const
 {
+   return _src_location;
 }
 
-std::string Exception::file_name() const
-{
-   return _file_name;
-}
-
-int32_t Exception::line_number() const
-{
-   return _line_number;
-}
-
-std::string Exception::function_name() const
-{
-   return _function_name;
-}
-
-const char* Exception::what() const throw()
+const char* Exception::what() const 
 {
    return _text.c_str();
 }
@@ -98,9 +57,7 @@ Exception& Exception::operator=(const Exception& other)
    }
 
    _text = other._text;
-   _file_name = other._file_name;
-   _line_number = other._line_number;
-   _function_name = other._function_name;
+   _src_location = other._src_location;
 
    return *this ;
 }
@@ -108,9 +65,7 @@ Exception& Exception::operator=(const Exception& other)
 Exception& Exception::operator=(Exception&& other)
 {
    _text = std::move(other._text);
-   _file_name = std::move(other._file_name);
-   _line_number = std::move(other._line_number);
-   _function_name = std::move(other._function_name);
+   _src_location = std::move(other._src_location);
 
    return *this ;
 }

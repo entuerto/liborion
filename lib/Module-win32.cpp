@@ -26,6 +26,7 @@
 #include <orion/ModuleException.h>
 #include <orion/SourceLocation.h>
 #include <orion/StringUtils.h>
+#include <orion/ThrowUtils.h>
 
 namespace orion
 {
@@ -97,7 +98,7 @@ void Module::open(const std::string& file_name)
       std::string error_message;
 
       get_last_error_message(GetLastError(), error_message);
-      THROW_EXCEPTION(ModuleException, error_message);
+      throw_exception<ModuleException>(error_message, _src_loc);
    }
 
    _impl->is_open = true;
@@ -130,7 +131,7 @@ void Module::get_symbol(const std::string& symbol_name, void*& symbol)
       std::string error_message;
 
       get_last_error_message(GetLastError(), error_message);
-      THROW_EXCEPTION(ModuleSymbolNotFoundException, error_message);
+      throw_exception<ModuleSymbolNotFoundException>(error_message, _src_loc);
    }
 }
 

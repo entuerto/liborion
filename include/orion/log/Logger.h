@@ -12,6 +12,8 @@
 #include <vector>
 
 #include <orion/Orion-Stddefs.h>
+
+#include <orion/Exception.h>
 #include <orion/log/Level.h>
 #include <orion/log/OutputHandler.h>
 
@@ -83,9 +85,9 @@ public:
    template<typename... Args>
    void exception(const std::exception& e, Args... args);
 
-   //! Writes a message to the logger
+   //! Writes an Exception
    template<typename... Args>
-   void write(Args... args);
+   void exception(const orion::Exception& e, Args... args);
 
    //! Writes a message the with a specified logging level
    template<typename... Args>
@@ -151,6 +153,9 @@ void debug3(Args... args);
 
 template<typename... Args>
 void exception(const std::exception& e, Args... args);
+
+template<typename... Args>
+void exception(const orion::Exception& e, Args... args);
 
 template<typename... Args>
 void write(Level level, Args... args);

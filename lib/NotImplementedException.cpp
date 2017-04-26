@@ -24,23 +24,8 @@ namespace orion
 // ---------------------------------------------------------------------------
 // ---- NotImplementedException ----
 
-NotImplementedException::NotImplementedException(const std::string& text) :
-   Exception(text)
-{
-}
-
-NotImplementedException::NotImplementedException(const std::string& text,
-                                                 const std::string& file_name,
-                                                       int32_t      line_number) :
-   Exception(text, file_name, line_number)
-{
-}
-
-NotImplementedException::NotImplementedException(const std::string& text,
-                                                 const std::string& file_name,
-                                                       int32_t      line_number,
-                                                 const std::string& function) :
-   Exception(text, file_name, line_number, function)
+NotImplementedException::NotImplementedException(const std::string& text, const SourceLocation& src_loc) :
+   Exception(text, src_loc)
 {
 }
 
@@ -51,10 +36,6 @@ NotImplementedException::NotImplementedException(const NotImplementedException& 
 
 NotImplementedException::NotImplementedException(NotImplementedException&& other) :
    Exception(std::move(other))
-{
-}
-
-NotImplementedException::~NotImplementedException() throw()
 {
 }
 

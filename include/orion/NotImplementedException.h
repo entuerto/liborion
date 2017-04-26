@@ -20,10 +20,10 @@
 #ifndef ORION_NOTIMPLEMENTEDEXCEPTION_H
 #define ORION_NOTIMPLEMENTEDEXCEPTION_H
 
-#include <cstdint>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
+
 #include <orion/Exception.h>
 
 namespace orion
@@ -36,17 +36,12 @@ namespace orion
 class API_EXPORT NotImplementedException : public Exception
 {
 public:
-   NotImplementedException(const std::string& text);
-   NotImplementedException(const std::string& text,
-                           const std::string& file_name,
-                                 int32_t      line_number);
-   NotImplementedException(const std::string& text,
-                           const std::string& file_name,
-                                 int32_t      line_number,
-                           const std::string& function);
+   NotImplementedException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
+   
    NotImplementedException(const NotImplementedException& other);
    NotImplementedException(NotImplementedException&& other);
-   virtual ~NotImplementedException() throw();
+
+   virtual ~NotImplementedException() = default;
 
    NotImplementedException& operator=(const NotImplementedException& other);
    NotImplementedException& operator=(NotImplementedException&& other);

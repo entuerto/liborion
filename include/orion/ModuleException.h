@@ -20,8 +20,9 @@
 #ifndef ORION_MODULEEXCEPTION_H
 #define ORION_MODULEEXCEPTION_H
 
-#include <cstdint>
 #include <string>
+
+#include <orion/Orion-Stddefs.h>
 #include <orion/Exception.h>
 
 namespace orion
@@ -30,21 +31,15 @@ namespace orion
 /*!
     Throw this exception for module errors.
  */
-class ModuleException :
-   public Exception
+class API_EXPORT ModuleException : public Exception
 {
 public:
-   ModuleException(const std::string& text);
-   ModuleException(const std::string& text,
-                   const std::string& file_name,
-                         int32_t      line_number);
-   ModuleException(const std::string& text,
-                   const std::string& file_name,
-                         int32_t      line_number,
-                   const std::string& function);
+   ModuleException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
+   
    ModuleException(const ModuleException& other);
    ModuleException(ModuleException&& other);
-   virtual ~ModuleException() throw();
+
+   virtual ~ModuleException() = default;
 
    ModuleException& operator=(const ModuleException& other);
    ModuleException& operator=(ModuleException&& other);
@@ -56,21 +51,15 @@ public:
     This exception is thrown when loading the modules
     and we cannot find the symbol in the module.
  */
-class ModuleSymbolNotFoundException :
-   public ModuleException
+class API_EXPORT ModuleSymbolNotFoundException : public ModuleException
 {
 public:
-   ModuleSymbolNotFoundException(const std::string& text);
-   ModuleSymbolNotFoundException(const std::string& text,
-                                 const std::string& file_name,
-                                       int32_t      line_number);
-   ModuleSymbolNotFoundException(const std::string& text,
-                                 const std::string& file_name,
-                                       int32_t      line_number,
-                                 const std::string& function);
+   ModuleSymbolNotFoundException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
+   
    ModuleSymbolNotFoundException(const ModuleSymbolNotFoundException& other);
    ModuleSymbolNotFoundException(ModuleSymbolNotFoundException&& other);
-   virtual ~ModuleSymbolNotFoundException() throw();
+
+   virtual ~ModuleSymbolNotFoundException() = default;
 
    ModuleSymbolNotFoundException& operator=(const ModuleSymbolNotFoundException& other);
    ModuleSymbolNotFoundException& operator=(ModuleSymbolNotFoundException&& other);

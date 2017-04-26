@@ -21,17 +21,16 @@
 
 #include <algorithm>
 #include <functional>
-#include <orion/ErrorMacros.h>
-#include <orion/Logging.h>
+#include <orion/Log.h>
 #include <orion/Module.h>
 #include <orion/ModuleException.h>
+#include <orion/ThrowUtils.h>
 #include <orion/plugin/PlugInException.h>
 
 namespace orion
 {
 namespace plugin
 {
-using namespace orion::logging;
 
 //-----------------------------------------------------------------------------------
 // Predicate class for find
@@ -156,9 +155,9 @@ void PlugInManager::load_modules()
       {
          load_modules_in_directory(path);
       }
-      catch (Exception& error) // TODO: Change exception type
+      catch (const Exception& error) // TODO: Change exception type
       {
-         LOG_EXCEPTION(error);
+         log::exception(error, _src_loc);
       }
    }
 }
@@ -217,7 +216,7 @@ void PlugInManager::load_module(const std::string& name)
    }
    catch (ModuleException& me)
    {
-      THROW_EXCEPTION(PlugInException, me.what());
+      throw_exception<PlugInException>(me.what(), _src_loc);
    }
 
    bool (*func)(PlugIn*& plugin);
@@ -228,8 +227,10 @@ void PlugInManager::load_module(const std::string& name)
    }
    catch (ModuleSymbolNotFoundException& snf)
    {
-      THROW_EXCEPTION(PlugInSymbolNotFoundException,
-                      "Module: " + name + " Symbol not found -> create_plugin_instance");
+      throw_exception<PlugInSymbolNotFoundException>("Module: " + 
+                                                     name + 
+                                                     " Symbol not found -> create_plugin_instance", 
+                                                     _src_loc);
    }
 
    PlugIn* plugin = NULL;

@@ -20,7 +20,6 @@
 #ifndef ORION_PLUGIN_PLUGINEXCEPTION_H
 #define ORION_PLUGIN_PLUGINEXCEPTION_H
 
-#include <cstdint>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
@@ -38,21 +37,15 @@ class API_EXPORT PlugInException :
    public Exception
 {
 public:
-   PlugInException(const std::string& text);
-   PlugInException(const std::string& text,
-                   const std::string& file_name,
-                         int32_t      line_number);
-   PlugInException(const std::string& text,
-                   const std::string& file_name,
-                         int32_t      line_number,
-                   const std::string& function);
+   PlugInException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
+   
    PlugInException(const PlugInException& other);
    PlugInException(PlugInException&& other);
-   virtual ~PlugInException() throw();
+
+   virtual ~PlugInException() = default;
 
    PlugInException& operator=(const PlugInException& other);
    PlugInException& operator=(PlugInException&& other);
-
 };
 
 //! Symbol not found exception
@@ -60,21 +53,15 @@ public:
     This exception is thrown when loading the modules
     and we cannot find the entry point in the module.
  */
-class API_EXPORT PlugInSymbolNotFoundException :
-   public PlugInException
+class API_EXPORT PlugInSymbolNotFoundException : public PlugInException
 {
 public:
-   PlugInSymbolNotFoundException(const std::string& text);
-   PlugInSymbolNotFoundException(const std::string& text,
-                                 const std::string& file_name,
-                                       int32_t      line_number);
-   PlugInSymbolNotFoundException(const std::string& text,
-                                 const std::string& file_name,
-                                       int32_t      line_number,
-                                 const std::string& function);
+   PlugInSymbolNotFoundException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
+   
    PlugInSymbolNotFoundException(const PlugInSymbolNotFoundException& other);
    PlugInSymbolNotFoundException(PlugInSymbolNotFoundException&& other);
-   virtual ~PlugInSymbolNotFoundException() throw();
+
+   virtual ~PlugInSymbolNotFoundException() = default;
 
    PlugInSymbolNotFoundException& operator=(const PlugInSymbolNotFoundException& other);
    PlugInSymbolNotFoundException& operator=(PlugInSymbolNotFoundException&& other);

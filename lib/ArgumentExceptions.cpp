@@ -24,23 +24,8 @@ namespace orion
 // ---------------------------------------------------------------------------
 // ---- ArgumentException ----
 
-ArgumentException::ArgumentException(const std::string& text) :
-   Exception(text)
-{
-}
-
-ArgumentException::ArgumentException(const std::string& text,
-                                     const std::string& file_name,
-                                           int32_t      line_number) :
-   Exception(text, file_name, line_number)
-{
-}
-
-ArgumentException::ArgumentException(const std::string& text,
-                                     const std::string& file_name,
-                                           int32_t      line_number,
-                                     const std::string& function) :
-   Exception(text, file_name, line_number, function)
+ArgumentException::ArgumentException(const std::string& text, const SourceLocation& src_loc) :
+   Exception(text, src_loc)
 {
 }
 
@@ -51,10 +36,6 @@ ArgumentException::ArgumentException(const ArgumentException& other) :
 
 ArgumentException::ArgumentException(ArgumentException&& other) :
    Exception(std::move(other))
-{
-}
-
-ArgumentException::~ArgumentException() throw()
 {
 }
 
@@ -79,23 +60,8 @@ ArgumentException& ArgumentException::operator=(ArgumentException&& other)
 // ---------------------------------------------------------------------------
 // ---- ArgumentNullException ----
 
-ArgumentNullException::ArgumentNullException(const std::string& text) :
-   ArgumentException(text)
-{
-}
-
-ArgumentNullException::ArgumentNullException(const std::string& text,
-                                             const std::string& file_name,
-                                                   int32_t      line_number) :
-   ArgumentException(text, file_name, line_number)
-{
-}
-
-ArgumentNullException::ArgumentNullException(const std::string& text,
-                                             const std::string& file_name,
-                                                   int32_t      line_number,
-                                             const std::string& function) :
-   ArgumentException(text, file_name, line_number, function)
+ArgumentNullException::ArgumentNullException(const std::string& text, const SourceLocation& src_loc) :
+   ArgumentException(text, src_loc)
 {
 }
 
@@ -106,10 +72,6 @@ ArgumentNullException::ArgumentNullException(const ArgumentNullException& other)
 
 ArgumentNullException::ArgumentNullException(ArgumentNullException&& other) :
    ArgumentException(std::move(other))
-{
-}
-
-ArgumentNullException::~ArgumentNullException() throw()
 {
 }
 
@@ -134,23 +96,8 @@ ArgumentNullException& ArgumentNullException::operator=(ArgumentNullException&& 
 // ---------------------------------------------------------------------------
 // ---- ArgumentOutOfRangeException ----
 
-ArgumentOutOfRangeException::ArgumentOutOfRangeException(const std::string& text) :
-   ArgumentException(text)
-{
-}
-
-ArgumentOutOfRangeException::ArgumentOutOfRangeException(const std::string& text,
-                                                         const std::string& file_name,
-                                                               int32_t      line_number) :
-   ArgumentException(text, file_name, line_number)
-{
-}
-
-ArgumentOutOfRangeException::ArgumentOutOfRangeException(const std::string& text,
-                                                         const std::string& file_name,
-                                                               int32_t      line_number,
-                                                         const std::string& function) :
-   ArgumentException(text, file_name, line_number, function)
+ArgumentOutOfRangeException::ArgumentOutOfRangeException(const std::string& text, const SourceLocation& src_loc) :
+   ArgumentException(text, src_loc)
 {
 }
 
@@ -161,10 +108,6 @@ ArgumentOutOfRangeException::ArgumentOutOfRangeException(const ArgumentOutOfRang
 
 ArgumentOutOfRangeException::ArgumentOutOfRangeException(ArgumentOutOfRangeException&& other) :
    ArgumentException(std::move(other))
-{
-}
-
-ArgumentOutOfRangeException::~ArgumentOutOfRangeException() throw()
 {
 }
 

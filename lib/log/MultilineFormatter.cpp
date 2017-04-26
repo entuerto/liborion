@@ -45,11 +45,6 @@ std::string MultilineFormatter::format(const Record& record)
    if (not scope.empty())
       scope = scope + " ";
 
-   std::string source_info_prefix("\t- " + scope);
-   std::string source_info;
-
-   source_info = format_source_info(source_info_prefix, record.source_location());
-
    std::ostringstream stream;
 
    stream << "|" 
@@ -59,8 +54,26 @@ std::string MultilineFormatter::format(const Record& record)
           << "\n\t- "
           << scope
           << record.message()
-          << "\n"
-          << source_info;
+          << "\n";
+
+   if (record.level() == Level::Exception)
+   {
+      try
+      {
+         auto except_record = dynamic_cast<const ExceptionRecord&>(record);
+
+         stream << format_source_info("\t- Thrown from: ", except_record.thrown_source_location())
+                << format_source_info("\t- Caught at:   ", except_record.caught_source_location());
+
+         return stream.str();
+      }
+      catch (const std::bad_cast&)
+      {
+         // Continue with the record values
+      }
+   }
+
+   stream << format_source_info("\t- " + scope, record.source_location());
 
    return stream.str();
 }

@@ -24,26 +24,11 @@ namespace orion
 namespace plugin
 {
 
-// ---------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // ---- PlugInException ----
 
-PlugInException::PlugInException(const std::string& text) :
-   Exception(text)
-{
-}
-
-PlugInException::PlugInException(const std::string& text,
-                                 const std::string& file_name,
-                                       int32_t      line_number) :
-   Exception(text, file_name, line_number)
-{
-}
-
-PlugInException::PlugInException(const std::string& text,
-                                 const std::string& file_name,
-                                       int32_t      line_number,
-                                 const std::string& function) :
-   Exception(text, file_name, line_number, function)
+PlugInException::PlugInException(const std::string& text, const SourceLocation& src_loc) :
+   Exception(text, src_loc)
 {
 }
 
@@ -54,10 +39,6 @@ PlugInException::PlugInException(const PlugInException& other) :
 
 PlugInException::PlugInException(PlugInException&& other) :
    Exception(std::move(other))
-{
-}
-
-PlugInException::~PlugInException() throw()
 {
 }
 
@@ -80,26 +61,11 @@ PlugInException& PlugInException::operator=(PlugInException&& other)
    return *this ;
 }
 
-// ---------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // ---- PlugInSymbolNotFoundException ----
 
-PlugInSymbolNotFoundException::PlugInSymbolNotFoundException(const std::string& text) :
-   PlugInException(text)
-{
-}
-
-PlugInSymbolNotFoundException::PlugInSymbolNotFoundException(const std::string& text,
-                                                             const std::string& file_name,
-                                                                   int32_t      line_number) :
-   PlugInException(text, file_name, line_number)
-{
-}
-
-PlugInSymbolNotFoundException::PlugInSymbolNotFoundException(const std::string& text,
-                                                             const std::string& file_name,
-                                                                   int32_t      line_number,
-                                                             const std::string& function) :
-   PlugInException(text, file_name, line_number, function)
+PlugInSymbolNotFoundException::PlugInSymbolNotFoundException(const std::string& text, const SourceLocation& src_loc) :
+   PlugInException(text, src_loc)
 {
 }
 
@@ -110,10 +76,6 @@ PlugInSymbolNotFoundException::PlugInSymbolNotFoundException(const PlugInSymbolN
 
 PlugInSymbolNotFoundException::PlugInSymbolNotFoundException(PlugInSymbolNotFoundException&& other) :
    PlugInException(std::move(other))
-{
-}
-
-PlugInSymbolNotFoundException::~PlugInSymbolNotFoundException() throw()
 {
 }
 

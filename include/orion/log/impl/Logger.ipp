@@ -11,6 +11,7 @@
 
 #include <orion/Utils.h>
 #include <orion/log/Record.h>
+#include <orion/log/ExceptionRecord.h>
 
 namespace orion
 {
@@ -72,13 +73,21 @@ void Logger::exception(const std::exception& e, Args... args)
 
    auto sl = get_value<SourceLocation>(t, SourceLocation{});
 
-   write(Record{Level::Exception, msg, sl});
+   write(ExceptionRecord{msg, SourceLocation{}, sl});
 }
 
 template<typename... Args>
-void Logger::write(Args... args)
+void Logger::exception(const orion::Exception& e, Args... args)
 {
-   write(Level::NotSet, args...);
+   auto t = std::make_tuple(args...);
+
+   std::string msg = e.what(); 
+   
+   get_all_values(detail::StringConcat{msg}, t);
+
+   auto sl = get_value<SourceLocation>(t, SourceLocation{});
+
+   write(ExceptionRecord{msg, e.source_location(), sl});
 }
 
 template<typename... Args>
@@ -151,6 +160,12 @@ void debug3(Args... args)
 
 template<typename... Args>
 void exception(const std::exception& e, Args... args)
+{
+   Logger::get_logger().exception(e, args...);
+}
+
+template<typename... Args>
+void exception(const orion::Exception& e, Args... args)
 {
    Logger::get_logger().exception(e, args...);
 }

@@ -24,23 +24,8 @@ namespace orion
 // ---------------------------------------------------------------------------
 // ---- ModuleException ----
 
-ModuleException::ModuleException(const std::string& text) :
-   Exception(text)
-{
-}
-
-ModuleException::ModuleException(const std::string& text,
-                                 const std::string& file_name,
-                                       int32_t      line_number) :
-   Exception(text, file_name, line_number)
-{
-}
-
-ModuleException::ModuleException(const std::string& text,
-                                 const std::string& file_name,
-                                       int32_t      line_number,
-                                 const std::string& function) :
-   Exception(text, file_name, line_number, function)
+ModuleException::ModuleException(const std::string& text, const SourceLocation& src_loc) :
+   Exception(text, src_loc)
 {
 }
 
@@ -51,10 +36,6 @@ ModuleException::ModuleException(const ModuleException& other) :
 
 ModuleException::ModuleException(ModuleException&& other) :
    Exception(std::move(other))
-{
-}
-
-ModuleException::~ModuleException() throw()
 {
 }
 
@@ -80,23 +61,9 @@ ModuleException& ModuleException::operator=(ModuleException&& other)
 // ---------------------------------------------------------------------------
 // ---- ModuleSymbolNotFoundException ----
 
-ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(const std::string& text) :
-   ModuleException(text)
-{
-}
-
-ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(const std::string& text,
-                                                             const std::string& file_name,
-                                                                   int32_t      line_number) :
-   ModuleException(text, file_name, line_number)
-{
-}
-
-ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(const std::string& text,
-                                                             const std::string& file_name,
-                                                                   int32_t      line_number,
-                                                             const std::string& function) :
-   ModuleException(text, file_name, line_number, function)
+ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(const std::string& text, 
+                                                             const SourceLocation& src_loc) :
+   ModuleException(text, src_loc)
 {
 }
 
@@ -107,10 +74,6 @@ ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(const ModuleSymbolN
 
 ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(ModuleSymbolNotFoundException&& other) :
    ModuleException(std::move(other))
-{
-}
-
-ModuleSymbolNotFoundException::~ModuleSymbolNotFoundException() throw()
 {
 }
 

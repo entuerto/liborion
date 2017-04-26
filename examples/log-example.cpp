@@ -20,7 +20,9 @@
 #include <stdexcept>
 #include <iostream>
 
+#include <orion/ArgumentExceptions.h>
 #include <orion/Log.h>
+#include <orion/ThrowUtils.h>
 
 using namespace orion;
 using namespace orion::log;
@@ -37,14 +39,19 @@ void function_a()
 
 void function_b()
 {
-   throw std::invalid_argument("No arguments in function b");
+   throw_exception<std::invalid_argument>("No arguments in function b");
+}
+
+void function_c()
+{
+   throw_exception<ArgumentException>("No arguments in function c", _src_loc);
 }
 
 void setup_logger()
 {
    auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
 
-   //cout_handler->set_formatter(std::make_unique<MultilineFormatter>());
+   cout_handler->set_formatter(std::make_unique<MultilineFormatter>());
    //cout_handler->set_formatter(std::make_unique<OnelineWithSourceInfoFormatter>());
 
    Logger& logger = Logger::get_logger();
@@ -73,6 +80,15 @@ int main()
       function_b();
    }
    catch (const std::exception& e)
+   {
+      log::exception(e, _src_loc);
+   }
+
+   try
+   {
+      function_c();
+   }
+   catch (const Exception& e)
    {
       log::exception(e, _src_loc);
    }
