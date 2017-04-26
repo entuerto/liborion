@@ -48,9 +48,7 @@ std::string MultilineFormatter::format(const Record& record)
    std::string source_info_prefix("\t- " + scope);
    std::string source_info;
 
-   source_info = (record.level() == Level::Exception) ?
-                    format_source_info("\t- Caught: ", record.source_location()) :
-                    format_source_info(source_info_prefix, record.source_location());
+   source_info = format_source_info(source_info_prefix, record.source_location());
 
    std::ostringstream stream;
 

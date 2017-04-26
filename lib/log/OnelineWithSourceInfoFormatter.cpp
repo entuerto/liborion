@@ -65,12 +65,10 @@ std::string OnelineWithSourceInfoFormatter::format(const Record& record)
           << record.time_stamp()
           << "|"
           << scope
-          << record.message()
-          << "|"
-          << ((record.level() == Level::Exception) ? "Caught: " : "");
+          << record.message();
 
    if (sl.line_number != 0)
-      stream << sl;
+      stream << "|" << sl;
 
    return stream.str();
 }

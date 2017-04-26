@@ -16,8 +16,8 @@ function FindBoost(version)
 
    boostPath = os.getenv("BOOST_PATH") or envPath
 
-   boostIncl = os.pathsearch("boost/config.hpp", boostPath)
-   boostLib  = path.join(boostPath, "lib64-msvc-14.1")
+   boostIncl = os.pathsearch("boost/config.hpp", path.join(boostPath, "include"))
+   boostLib  = path.join(boostPath, "lib")
 
    includedirs { boostIncl }
    libdirs { boostLib }

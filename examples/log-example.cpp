@@ -1,4 +1,4 @@
-// module-example.cpp
+// log-example.cpp
 //
 // Copyright 2014 tomas <tomasp@videotron.ca>
 //
@@ -17,9 +17,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include "module-example-lib.h"
-
+#include <stdexcept>
 #include <iostream>
+
 #include <orion/Log.h>
 
 using namespace orion;
@@ -35,12 +35,17 @@ void function_a()
    log::warning("FUNC: Test warning output from function A");
 }
 
+void function_b()
+{
+   throw std::invalid_argument("No arguments in function b");
+}
+
 void setup_logger()
 {
    auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
 
    //cout_handler->set_formatter(std::make_unique<MultilineFormatter>());
-   cout_handler->set_formatter(std::make_unique<OnelineWithSourceInfoFormatter>());
+   //cout_handler->set_formatter(std::make_unique<OnelineWithSourceInfoFormatter>());
 
    Logger& logger = Logger::get_logger();
 
@@ -62,6 +67,16 @@ int main()
    log::warning("Test warning output");
 
    function_a(); 
+
+   try
+   {
+      function_b();
+   }
+   catch (const std::exception& e)
+   {
+      log::exception(e, _src_loc);
+   }
+    
 
    log::shutdown();
 

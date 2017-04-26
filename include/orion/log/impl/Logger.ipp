@@ -62,9 +62,17 @@ void Logger::debug(Args... args)
 }
 
 template<typename... Args>
-void Logger::exception(Args... args)
+void Logger::exception(const std::exception& e, Args... args)
 {
-   write(Level::Exception, args...);
+   auto t = std::make_tuple(args...);
+
+   std::string msg = e.what(); 
+   
+   get_all_values(detail::StringConcat{msg}, t);
+
+   auto sl = get_value<SourceLocation>(t, SourceLocation{});
+
+   write(Record{Level::Exception, msg, sl});
 }
 
 template<typename... Args>
@@ -142,9 +150,9 @@ void debug3(Args... args)
 }
 
 template<typename... Args>
-void exception(Args... args)
+void exception(const std::exception& e, Args... args)
 {
-   Logger::get_logger().write(Level::Exception, args...);
+   Logger::get_logger().exception(e, args...);
 }
 
 template<typename... Args>

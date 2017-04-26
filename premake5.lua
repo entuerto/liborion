@@ -33,7 +33,7 @@ workspace "liborion"
       "deps", 
    }
 
-   FindBoost(1.64)
+   FindBoost(1.61)
 
 
 group "Libraries"
