@@ -115,22 +115,6 @@ group "Libraries"
       FilterPlatformSourceFiles()
 
 
-   project "orion-plugin"
-      kind "SharedLib"
-
-      dependson "orion"
-
-      defines { "ORION_SHARED_EXPORTS" }
-
-      links "orion"
-
-      files { 
-         "lib/plugin/*.cpp" 
-      }
-      
-      FilterPlatformSourceFiles()
-
-
    project "orion-net"
       kind "SharedLib"
 
@@ -164,9 +148,6 @@ group "Libraries"
       }
 
       includedirs { "C:/Tools/pkgs/asio-1.10.8/include" }
-
-      --filter { "system:windows", "files:**Mongoose**.*" }
-      --   flags { "ExcludeFromBuild"}
 
       FilterPlatformSourceFiles()
 
