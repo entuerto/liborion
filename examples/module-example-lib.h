@@ -29,7 +29,7 @@ struct Hello
 
 extern "C"
 {
-API_EXPORT bool create_instance(Hello*& hello);
+API_EXPORT Hello* create_instance();
 }
 
 #endif

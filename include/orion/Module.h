@@ -20,15 +20,12 @@
 #ifndef ORION_MODULE_H
 #define ORION_MODULE_H
 
+#include <functional>
 #include <memory>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/MemoryUtils.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif 
 
 namespace orion
 {
@@ -40,9 +37,12 @@ class API_EXPORT Module
 {
 public:
    NO_COPY(Module)
-   NO_MOVE(Module)
 
    Module();
+   Module(const std::string& file_name);
+   
+   Module(Module&& rhs);
+
    ~Module();
 
    //! Module name
@@ -57,24 +57,29 @@ public:
    //! Close library
    void close();
 
-   //! Gets a symbol pointer from the module.
-   void get_symbol(const std::string& symbol_name, void*& symbol);
+   //! Finds a symbol pointer in the library.
+   void* find_symbol_address(const std::string& symbol_name);
 
-   
-   static std::unique_ptr<Module> create();
-   
-   static std::unique_ptr<Module> create_and_open(const std::string& file_name);
+   template<class T>
+   std::function<T> import(const std::string& name);
+
+   Module& operator=(Module&& rhs);
 
 private:
    struct Private;
    std::unique_ptr<Private> _impl;
 };
 
+//-------------------------------------------------------------------------------------------------
+
+template<class T>
+std::function<T> Module::import(const std::string& name)
+{
+   auto f = reinterpret_cast<T*>(find_symbol_address(name));
+   return std::function<T>(f);
+}
+
+
 } // namespace orion
 
-#ifdef __cplusplus
-}
 #endif
-
-#endif
-

@@ -32,10 +32,9 @@ struct HelloWorld : public Hello
 extern "C"
 {
 
-bool create_instance(Hello*& hello)
+Hello* create_instance()
 {
-   hello = new HelloWorld; 
-   return true;
+   return new HelloWorld;
 }
 
 }

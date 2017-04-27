@@ -30,14 +30,6 @@
 
 namespace orion
 {
-using namespace orion::log;
-
-struct Module::Private
-{
-   HMODULE handle;
-   bool is_open;
-   std::string name;
-};
 
 static void get_last_error_message(DWORD last_error_code, std::string& error_message)
 {
@@ -58,16 +50,35 @@ static void get_last_error_message(DWORD last_error_code, std::string& error_mes
    }
 }
 
+//-------------------------------------------------------------------------------------------------
+
+struct Module::Private
+{
+   HMODULE handle;
+   bool is_open;
+   std::string name;
+};
+
+//-------------------------------------------------------------------------------------------------
 
 Module::Module() :
-   _impl(new Private)
+   _impl(new Private{nullptr, false, ""})
 {
-   _impl->handle = nullptr;
-   _impl->is_open = false;
+}
+
+Module::Module(const std::string& file_name) :
+   _impl(new Private{nullptr, false, file_name})
+{
+}
+
+Module::Module(Module&& rhs) :
+   _impl(std::move(rhs._impl))
+{
 }
 
 Module::~Module()
 {
+   close();
 }
 
 /*! 
@@ -118,13 +129,14 @@ void Module::close()
 }
 
 /*! 
-   Gets a symbol pointer from the module.
+   Finds a symbol pointer in the library.
  */
-void Module::get_symbol(const std::string& symbol_name, void*& symbol) 
+void* Module::find_symbol_address(const std::string& symbol_name) 
 {
-   RETURN_IF_FAIL(is_open());
+   RETURN_VALUE_IF_FAIL(is_open(), nullptr);
   
-   symbol = (void*)GetProcAddress(_impl->handle, symbol_name.c_str());
+   // reinterpret_cast
+   void* symbol = reinterpret_cast<void*>(GetProcAddress(_impl->handle, symbol_name.c_str()));
 
    if (symbol == nullptr)
    {
@@ -133,6 +145,15 @@ void Module::get_symbol(const std::string& symbol_name, void*& symbol)
       get_last_error_message(GetLastError(), error_message);
       throw_exception<ModuleSymbolNotFoundException>(error_message, _src_loc);
    }
+
+   return symbol;
+}
+
+Module& Module::operator=(Module&& rhs)
+{
+   _impl = std::move(rhs._impl);
+   
+   return *this;
 }
 
 } // namespace orion
