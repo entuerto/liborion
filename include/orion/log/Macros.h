@@ -23,8 +23,8 @@
 
 #ifndef LOG
 #define LOG(lvl) \
-if (orion::log::Logger::get_logger().is_enabled(orion::log::Level::lvl)) \
-   orion::log::Logger::get_logger() += orion::log::Record(orion::log::Level::lvl, "", _src_loc)
+if (orion::log::default_logger().is_enabled(orion::log::Level::lvl)) \
+   orion::log::default_logger() += orion::log::Record(orion::log::Level::lvl, "", _src_loc)
 #endif
 
 #ifndef LOG_FUNCTION

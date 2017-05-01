@@ -30,7 +30,6 @@
 using namespace orion;
 using namespace orion::log;
 using namespace orion::net;
-using namespace orion::net::http;
 
 
 class HelloRequestHandler : public http::RequestHandler
@@ -48,7 +47,7 @@ public:
    }
    
 protected:
-   virtual std::error_code on_get(const Request& request, Response& response)
+   virtual std::error_code on_get(const http::Request& request, http::Response& response)
    {
       response.header("Content-Type", "text/plain; charset=utf-8");
       response.header("Connection", "close");
@@ -76,7 +75,7 @@ public:
    }
    
 protected:
-   virtual std::error_code on_get(const Request& request, Response& response)
+   virtual std::error_code on_get(const http::Request& request, http::Response& response)
    {
       response.header("Content-Type", "text/plain; charset=utf-8");
       response.header("Connection", "close");
@@ -96,7 +95,7 @@ void setup_logger(std::fstream& file_stream)
 
    file_handler->set_formatter(std::make_unique<MultilineFormatter>());
 
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    logger.level(Level::Debug);
    logger.add_output_handler(std::move(cout_handler));

@@ -36,14 +36,23 @@ struct Module::Private
 };
 
 Module::Module() :
-   _impl(new Private)
+   _impl(new Private{nullptr, false, ""})
 {
-   _impl->handle = nullptr;
-   _impl->is_open = false;
+}
+
+Module::Module(const std::string& file_name) :
+   _impl(new Private{nullptr, false, file_name})
+{
+}
+
+Module::Module(Module&& rhs) :
+   _impl(std::move(rhs._impl))
+{
 }
 
 Module::~Module()
 {
+   close();
 }
 
 /*! 
@@ -72,7 +81,7 @@ void Module::open(const std::string& file_name)
    _impl->handle = dlopen(file_name, RTLD_LAZY);
 
    if (_impl->handle == nullptr)
-      THROW_EXCEPTION(ModuleException, dlerror());
+      throw_exception<ModuleException>(dlerror(), _src_loc);
 
    _impl->is_open = true;
    _impl->name = file_name;
@@ -93,18 +102,25 @@ void Module::close()
 /*! 
    Gets a symbol pointer from the module.
  */
-void Module::get_symbol(const std::string& symbol_name, void*& symbol)
+void* Module::find_symbol_address(const std::string& symbol_name)
 {
-   RETURN_IF_FAIL(is_open());
+   RETURN_VALUE_IF_FAIL(is_open(), nullptr);
 
    dlerror(); /* Reset error status. */
 
-   symbol = dlsym(_impl->handle, symbol_name);
+   void* symbol = dlsym(_impl->handle, symbol_name);
 
    if (symbol == nullptr)
-      THROW_EXCEPTION(ModuleSymbolNotFoundException, dlerror());
+      throw_exception<ModuleSymbolNotFoundException>(dlerror(), _src_loc);
 
-   return symbol != nullptr;
+   return symbol;
+}
+
+Module& Module::operator=(Module&& rhs)
+{
+   _impl = std::move(rhs._impl);
+   
+   return *this;
 }
 
 } // namespace orion

@@ -11,9 +11,9 @@
 #include <orion/unittest/TestOutput.h>
 #include <orion/unittest/TestStdOutput.h>
 
-//#include <boost/program_options.hpp>
+#include <boost/program_options.hpp>
 
-//namespace opts = boost::program_options;
+namespace opts = boost::program_options;
 
 namespace orion
 {
@@ -45,7 +45,6 @@ uint32_t Runner::test_case_count() const
 
 bool Runner::parse(int argc, char* argv[])
 { 
-/*
    opts::options_description desc("Test options");
 
    desc.add_options()
@@ -62,7 +61,7 @@ bool Runner::parse(int argc, char* argv[])
                 << "\n";
       return false;
    }
-*/
+
    return true;
 }
 

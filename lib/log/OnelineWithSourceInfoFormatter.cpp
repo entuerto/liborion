@@ -48,14 +48,10 @@ std::string OnelineWithSourceInfoFormatter::format(const Record& record)
 
    std::string scope;
 
-   for (uint32_t i = 0; i < Logger::get_logger().scope_depth(); i++)
+   for (uint32_t i = 0; i < default_logger().scope_depth(); i++)
    {
       scope += " |";
    }
-
-   std::string source_info;
-
-   auto sl = record.source_location();
 
    std::ostringstream stream;
 
@@ -65,12 +61,31 @@ std::string OnelineWithSourceInfoFormatter::format(const Record& record)
           << record.time_stamp()
           << "|"
           << scope
-          << record.message()
-          << "|"
-          << ((record.level() == Level::Exception) ? "Caught: " : "");
+          << record.message();
+
+   if (record.level() == Level::Exception)
+   {
+      try
+      {
+         auto except_record = dynamic_cast<const ExceptionRecord&>(record);
+
+         stream << "| Thrown from: " 
+                << except_record.thrown_source_location()
+                << "| Caught at: "
+                << except_record.caught_source_location();
+
+         return stream.str();
+      }
+      catch (const std::bad_cast&)
+      {
+         // Continue with the record values
+      }
+   }
+
+   auto sl = record.source_location();
 
    if (sl.line_number != 0)
-      stream << sl;
+      stream << "|" << sl;
 
    return stream.str();
 }

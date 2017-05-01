@@ -45,30 +45,8 @@
    }				          \
 }
 #endif
-
-#ifndef THROW_EXCEPTION
-#define THROW_EXCEPTION(except, message) \
-   throw except((message), __FILE__, __LINE__, __FUNCTION__);
-#endif
-
-#ifndef THROW_STDEXCEPTION
-#define THROW_STDEXCEPTION(except, message) \
-   throw except((message));
-#endif
-
-#ifndef THROW_IF
-#define THROW_IF(condition, except) \
-   if ((condition)) { \
-      throw except(#except ": Condition " #condition, __FILE__, __LINE__, __FUNCTION__); \
-   }
-#endif
-
-#ifndef THROW_IF3
-#define THROW_IF3(condition, except, message) \
-   if ((condition)) { \
-      throw except((message), __FILE__, __LINE__, __PRETTY_FUNCTION__); \
-   }
-#endif
+ 
+//throw_error  
 
 #endif
 

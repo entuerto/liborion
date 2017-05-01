@@ -9,6 +9,7 @@
 #define ORION_NET_HTTP_RESPONSE_H
 
 #include <memory>
+#include <ostream>
 #include <streambuf>
 #include <string>
 
@@ -55,7 +56,7 @@ public:
 
    virtual std::streambuf* rdbuf() const;
 
-   friend API_EXPORT const log::Record& operator<<(const log::Record& rec, const Response& r);
+   friend API_EXPORT std::ostream& operator<<(std::ostream& o, const Response& r);
 
 protected:
    StatusCode _status_code;
@@ -67,7 +68,10 @@ protected:
 
 };
 
+API_EXPORT std::ostream& operator<<(std::ostream& o, const Response& r);
+
 API_EXPORT const log::Record& operator<<(const log::Record& rec, const Response& r);
+
 } // http
 } // net
 } // orion

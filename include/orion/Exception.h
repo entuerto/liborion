@@ -25,6 +25,8 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/SourceLocation.h>
+
 namespace orion
 {
 //! Generic exception
@@ -34,34 +36,25 @@ namespace orion
 class API_EXPORT Exception : public std::exception
 {
 public:
-   Exception(const std::string& text);
-   Exception(const std::string& text,
-             const std::string& file_name,
-                   int32_t      line_number);
-   Exception(const std::string& text,
-             const std::string& file_name,
-                   int32_t      line_number,
-             const std::string& function);
+   Exception(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
+   
    Exception(const Exception& other);
    Exception(Exception&& other);
-   virtual ~Exception() throw();
 
-   std::string file_name() const;
+   virtual ~Exception() = default;
 
-   int32_t line_number() const;
+   //! Returns the recorded source location 
+   virtual const SourceLocation& source_location() const;
 
-   std::string function_name() const;
-
-   const char* what() const throw();
+   const char* what() const override;
 
    Exception& operator=(const Exception& other);
    Exception& operator=(Exception&& other);
 
 private:
-   int32_t _line_number;
    std::string _text;
-   std::string _file_name;
-   std::string _function_name;
+
+   SourceLocation _src_location;
 };
 
 } // namespace orion

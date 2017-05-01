@@ -21,7 +21,7 @@ Function::Function(Level level, const SourceLocation& src_loc) :
    _level(level),
    _name(src_loc.function_name)
 {
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    if (not logger.is_enabled(level))
       return;
@@ -48,7 +48,7 @@ Function::Function(Function&& rhs) :
 
 Function::~Function()
 {
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    if (not logger.is_enabled(_level))
       return;

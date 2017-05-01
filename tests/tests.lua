@@ -23,6 +23,7 @@ project "test-orion"
       "test-main.cpp"
    }
    
+   UseAsio()
    UseBoostLibShared("program_options")
 
 project "test-orion-rpc"

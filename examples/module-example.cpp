@@ -19,7 +19,10 @@
 
 #include "module-example-lib.h"
 
+#include <functional>
 #include <iostream>
+#include <memory>
+
 #include <orion/Module.h>
 #include <orion/ModuleException.h>
 
@@ -28,35 +31,32 @@ using namespace orion;
 //----------------------------------------------------------
 int main()
 {
-   std::unique_ptr<Module> module;
+   std::unique_ptr<Module> module = std::make_unique<Module>();
    
    try 
    {
-      module = Module::create_and_open("mod-example-0.1.dll");
+      module->open("mod-example-0.1-d.dll");
    }
-   catch (ModuleException& me)
+   catch (const ModuleException& me)
    {
       std::cout << me.what() << "\n";
       return 1;
    }
 
-   bool (*func)(Hello*& hello);
+   std::function<Hello* ()> create_instance;
 
    try
    {
-      module->get_symbol("create_instance", reinterpret_cast<void*&>(func));
+      create_instance = module->import<Hello* ()>("create_instance");
    }
-   catch (ModuleSymbolNotFoundException& snf)
+   catch (const ModuleSymbolNotFoundException& snf)
    {
       std::cout << snf.what() << "\n";
       return 1;
    }
 
-   Hello* hello = nullptr;
-   (*func)(hello);
+   std::unique_ptr<Hello> hello(create_instance());
    
    hello->print();
-
-   delete hello;
 }
 

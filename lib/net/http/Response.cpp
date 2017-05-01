@@ -125,10 +125,8 @@ std::streambuf* Response::rdbuf() const
    return _body_streambuf.get();
 }
 
-const log::Record& operator<<(const log::Record& rec, const Response& r)
+std::ostream& operator<<(std::ostream& o, const Response& r)
 {
-   std::ostringstream o;
-
    auto v = r._version;
 
    auto status_msg = boost::format("HTTP/%d.%d %s") % v.major % v.minor % r.status();
@@ -150,7 +148,16 @@ const log::Record& operator<<(const log::Record& rec, const Response& r)
 
    o << "\n";
 
-   const_cast<log::Record&>(rec).message(o.str());
+   return o;
+}
+
+const log::Record& operator<<(const log::Record& rec, const Response& r)
+{
+   std::ostringstream outs;
+
+   outs << r;
+
+   const_cast<log::Record&>(rec).message(outs.str());
 
    return rec; 
 }

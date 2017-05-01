@@ -1,4 +1,4 @@
-// module-example.cpp
+// log-example.cpp
 //
 // Copyright 2014 tomas <tomasp@videotron.ca>
 //
@@ -17,13 +17,19 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include "module-example-lib.h"
-
+#include <stdexcept>
 #include <iostream>
+#include <chrono>
+#include <thread>
+
+#include <orion/ArgumentExceptions.h>
 #include <orion/Log.h>
+#include <orion/ThrowUtils.h>
 
 using namespace orion;
 using namespace orion::log;
+
+using namespace std::chrono_literals;
 
 void function_a()
 {
@@ -35,14 +41,24 @@ void function_a()
    log::warning("FUNC: Test warning output from function A");
 }
 
+void function_b()
+{
+   throw_exception<std::invalid_argument>("No arguments in function b");
+}
+
+void function_c()
+{
+   throw_exception<ArgumentException>("No arguments in function c", _src_loc);
+}
+
 void setup_logger()
 {
    auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
 
    //cout_handler->set_formatter(std::make_unique<MultilineFormatter>());
-   cout_handler->set_formatter(std::make_unique<OnelineWithSourceInfoFormatter>());
+   //cout_handler->set_formatter(std::make_unique<OnelineWithSourceInfoFormatter>());
 
-   Logger& logger = Logger::get_logger();
+   auto& logger = default_logger();
 
    logger.level(Level::Debug);
    logger.add_output_handler(std::move(cout_handler));
@@ -61,9 +77,34 @@ int main()
    LOG(Warning) << "MACRO: Test warning output";
    log::warning("Test warning output");
 
+   const std::string text = "Text from a variable";
+
+   log::write(text);
+   log::write(text, " v2");
+
    function_a(); 
 
+   try
+   {
+      function_b();
+   }
+   catch (const std::exception& e)
+   {
+      log::exception(e, _src_loc);
+   }
+
+   try
+   {
+      function_c();
+   }
+   catch (const Exception& e)
+   {
+      log::exception(e, _src_loc);
+   }
+
    log::shutdown();
+
+   //std::this_thread::sleep_for(2s);
 
    return EXIT_SUCCESS;   
 }

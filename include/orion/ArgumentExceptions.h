@@ -20,18 +20,10 @@
 #ifndef ORION_ARGUMENTEXCEPTIONS_H
 #define ORION_ARGUMENTEXCEPTIONS_H
 
-#include <cstdint>
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/Exception.h>
-
-#ifndef THROW_IF_NULL
-#define THROW_IF_NULL(value) \
-   if ((value) == NULL) { \
-      throw ArgumentNullException("ArgumentNullException: " #value " is NULL", __FILE__, __LINE__, __PRETTY_FUNCTION__); \
-   }
-#endif
 
 namespace orion
 {
@@ -43,17 +35,12 @@ namespace orion
 class API_EXPORT ArgumentException : public Exception
 {
 public:
-   ArgumentException(const std::string& text);
-   ArgumentException(const std::string& text,
-                     const std::string& file_name,
-                           int32_t      line_number);
-   ArgumentException(const std::string& text,
-                     const std::string& file_name,
-                           int32_t      line_number,
-                     const std::string& function);
+   ArgumentException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
+   
    ArgumentException(const ArgumentException& other);
    ArgumentException(ArgumentException&& other);
-   virtual ~ArgumentException() throw();
+
+   virtual ~ArgumentException() = default;
 
    ArgumentException& operator=(const ArgumentException& other);
    ArgumentException& operator=(ArgumentException&& other);
@@ -67,17 +54,12 @@ public:
 class API_EXPORT ArgumentNullException : public ArgumentException
 {
 public:
-   ArgumentNullException(const std::string& text);
-   ArgumentNullException(const std::string& text,
-                         const std::string& file_name,
-                               int32_t      line_number);
-   ArgumentNullException(const std::string& text,
-                         const std::string& file_name,
-                               int32_t      line_number,
-                         const std::string& function);
+   ArgumentNullException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
+   
    ArgumentNullException(const ArgumentNullException& other);
    ArgumentNullException(ArgumentNullException&& other);
-   virtual ~ArgumentNullException() throw();
+
+   virtual ~ArgumentNullException() = default;
 
    ArgumentNullException& operator=(const ArgumentNullException& other);
    ArgumentNullException& operator=(ArgumentNullException&& other);
@@ -92,17 +74,12 @@ public:
 class API_EXPORT ArgumentOutOfRangeException : public ArgumentException
 {
 public:
-   ArgumentOutOfRangeException(const std::string& text);
-   ArgumentOutOfRangeException(const std::string& text,
-                               const std::string& file_name,
-                                     int32_t      line_number);
-   ArgumentOutOfRangeException(const std::string& text,
-                               const std::string& file_name,
-                                     int32_t      line_number,
-                               const std::string& function);
+   ArgumentOutOfRangeException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
+   
    ArgumentOutOfRangeException(const ArgumentOutOfRangeException& other);
    ArgumentOutOfRangeException(ArgumentOutOfRangeException&& other);
-   virtual ~ArgumentOutOfRangeException() throw();
+
+   virtual ~ArgumentOutOfRangeException() = default;
 
    ArgumentOutOfRangeException& operator=(const ArgumentOutOfRangeException& other);
    ArgumentOutOfRangeException& operator=(ArgumentOutOfRangeException&& other);

@@ -43,9 +43,9 @@ public:
 
    virtual ~MockRequest() = default;
 
-   virtual std::string content() const override { return _data; }
-
    virtual std::streambuf* rdbuf() const override { return nullptr; }
+
+   std::string content() const { return _data; } 
 
 private:
    std::string _data;
@@ -60,12 +60,12 @@ public:
 
    virtual ~MockResponse() = default;
 
-   virtual std::string content() const override { return _buf.str(); }
-
    virtual std::streambuf* rdbuf() const override 
    { 
       return const_cast<std::streambuf*>(dynamic_cast<const std::streambuf*>(&_buf)); 
    }
+
+   std::string content() const { return _buf.str(); }
 
 private:
    std::stringbuf _buf;
@@ -207,7 +207,7 @@ void request_method_not_found(Test& t)
 
    Json::Value error = json_result[JSON_RPC_RESPONSE_ERROR];
 
-   t.assert<std::equal_to<>>(error["code"], -32601, _src_loc); // JsonErrc::MethodNotFound
+   t.assert<std::equal_to<>>(-32601, error["code"].asInt(), _src_loc); // JsonErrc::MethodNotFound
 
 }
 
