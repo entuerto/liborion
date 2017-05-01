@@ -48,7 +48,7 @@ std::string OnelineWithSourceInfoFormatter::format(const Record& record)
 
    std::string scope;
 
-   for (uint32_t i = 0; i < Logger::get_logger().scope_depth(); i++)
+   for (uint32_t i = 0; i < default_logger().scope_depth(); i++)
    {
       scope += " |";
    }

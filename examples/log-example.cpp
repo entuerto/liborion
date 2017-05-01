@@ -19,6 +19,8 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 #include <orion/ArgumentExceptions.h>
 #include <orion/Log.h>
@@ -26,6 +28,8 @@
 
 using namespace orion;
 using namespace orion::log;
+
+using namespace std::chrono_literals;
 
 void function_a()
 {
@@ -51,10 +55,10 @@ void setup_logger()
 {
    auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
 
-   cout_handler->set_formatter(std::make_unique<MultilineFormatter>());
+   //cout_handler->set_formatter(std::make_unique<MultilineFormatter>());
    //cout_handler->set_formatter(std::make_unique<OnelineWithSourceInfoFormatter>());
 
-   Logger& logger = Logger::get_logger();
+   auto& logger = default_logger();
 
    logger.level(Level::Debug);
    logger.add_output_handler(std::move(cout_handler));
@@ -92,9 +96,10 @@ int main()
    {
       log::exception(e, _src_loc);
    }
-    
 
    log::shutdown();
+
+   //std::this_thread::sleep_for(2s);
 
    return EXIT_SUCCESS;   
 }

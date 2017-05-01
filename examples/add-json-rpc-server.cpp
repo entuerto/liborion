@@ -136,7 +136,7 @@ void setup_logger(std::fstream& file_stream)
 
    file_handler->set_formatter(std::make_unique<MultilineFormatter>());
 
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    logger.level(Level::Debug);
    logger.add_output_handler(std::move(cout_handler));
@@ -175,7 +175,7 @@ int main ()
    }
    catch (const std::exception& e)
    {
-      LOG_EXCEPTION(e);
+      log::exception(e);
    }
 
    log::shutdown();

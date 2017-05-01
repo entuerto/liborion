@@ -15,13 +15,12 @@
 using namespace orion;
 using namespace orion::log;
 using namespace orion::net;
-using namespace orion::net::http;
 
 void setup_logger()
 {
    auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
 
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    logger.level(Level::Debug);
    logger.add_output_handler(std::move(cout_handler));

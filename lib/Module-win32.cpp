@@ -19,14 +19,14 @@
 
 #include <orion/Module.h>
 
-#include <windows.h>
-
 #include <orion/ErrorMacros.h>
 #include <orion/Log.h>
 #include <orion/ModuleException.h>
 #include <orion/SourceLocation.h>
 #include <orion/StringUtils.h>
 #include <orion/ThrowUtils.h>
+
+#include <windows.h>
 
 namespace orion
 {

@@ -5,6 +5,7 @@
 --
 
 require "premake/clangcl"
+require "premake/asio"
 require "premake/boost"
 require "premake/utils"
 require "premake/gnumake"
@@ -33,6 +34,8 @@ workspace "liborion"
       "deps", 
    }
 
+   UseAsio()
+   
    FindBoost(1.61)
 
 
@@ -77,7 +80,9 @@ group "Libraries"
    project "orion"
       kind "SharedLib"
 
-      defines { "ORION_SHARED_EXPORTS" }
+      defines { 
+         "ORION_SHARED_EXPORTS"
+      }
 
       filter "system:Windows"
          links { 
@@ -126,11 +131,7 @@ group "Libraries"
       }
 
       defines { 
-         "ORION_SHARED_EXPORTS", 
-         "_WIN32_WINNT=0x0501",
-         "ASIO_STANDALONE"
-         --"BOOST_DATE_TIME_NO_LIB", 
-         --"BOOST_REGEX_NO_LIB" 
+         "ORION_SHARED_EXPORTS"
       }
 
       links { 
@@ -146,8 +147,6 @@ group "Libraries"
       files { 
          "lib/net/**.cpp" 
       }
-
-      includedirs { "C:/Tools/pkgs/asio-1.10.8/include" }
 
       FilterPlatformSourceFiles()
 

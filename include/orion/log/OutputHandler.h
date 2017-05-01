@@ -70,6 +70,8 @@ private:
 
 };
 
+typedef std::vector<std::unique_ptr<OutputHandler>> OutputHandlers;
+
 } // namespace log
 } // namespace orion
 

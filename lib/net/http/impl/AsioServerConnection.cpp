@@ -87,7 +87,7 @@ void AsioServerConnection::accept()
    LOG(Info) << "   Remote address: " << _remote_addr->to_string();
    LOG(Info) << "   Local address:  " << _local_addr->to_string();
    
-   if (Logger::get_logger().is_enabled(Level::Debug))
+   if (default_logger().is_enabled(Level::Debug))
       dump_socket_options();
 
    start_read_timer();

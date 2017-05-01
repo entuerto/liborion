@@ -44,14 +44,14 @@ TestSuite(OrionCore)
 //----------------------------------------------------------------------------
 void log_default_level(Test& t)
 {
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    t.assert<std::equal_to<>>(Level::NotSet, logger.level(), _src_loc);
 }
 
 void log_level_change(Test& t)
 {
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    logger.level(Level::Warning);
 
@@ -60,7 +60,7 @@ void log_level_change(Test& t)
 
 void log_level_output(Test& t)
 {
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    logger.level(Level::Warning);
 
@@ -82,7 +82,7 @@ void log_level_output(Test& t)
 
 void log_error_message(Test& t)
 {
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    logger.level(Level::NotSet);
 
@@ -94,7 +94,7 @@ void log_error_message(Test& t)
 
 void log_fail_message(Test& t)
 {
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    logger.level(Level::NotSet);
 
@@ -108,7 +108,7 @@ void log_fail_message(Test& t)
 
 void log_record_output(Test& t)
 {
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    logger += Record(Level::Message, "", SourceLocation{"FileName", 99, "function name"}) << "message";
 
@@ -133,7 +133,7 @@ void setup_logger(Record& record)
 {
    auto out_handler = std::make_unique<RecordOutputHandler>(record);
 
-   Logger& logger = Logger::get_logger();
+   Logger& logger = default_logger();
 
    logger.level(Level::NotSet);
    logger.add_output_handler(std::move(out_handler));

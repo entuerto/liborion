@@ -47,7 +47,7 @@ std::string OnelineFormatter::format(const Record& record)
 
    std::string scope;
 
-   auto& l = Logger::get_logger();
+   auto& l = default_logger();
 
    for (uint32_t i = 0; i < l.scope_depth(); i++)
    {
