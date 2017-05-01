@@ -32,37 +32,37 @@ using Logger = BasicLogger<LoggerService<LoggerImpl>>;
 //---------------------------------------------------------------------------------------
 
 template<typename... Args>
-void info(Args... args);
+void info(Args&&... args);
 
 template<typename... Args>
-void message(Args... args);
+void message(Args&&... args);
 
 template<typename... Args>
-void warning(Args... args);
+void warning(Args&&... args);
 
 template<typename... Args>
-void error(Args... args);
+void error(Args&&... args);
 
 template<typename... Args>
-void debug(Args... args);
+void debug(Args&&... args);
 
 template<typename... Args>
-void debug2(Args... args);
+void debug2(Args&&... args);
 
 template<typename... Args>
-void debug3(Args... args);
+void debug3(Args&&... args);
 
 template<typename... Args>
-void exception(const std::exception& e, Args... args);
+void exception(const std::exception& e, Args&&... args);
 
 template<typename... Args>
-void exception(const orion::Exception& e, Args... args);
+void exception(const orion::Exception& e, Args&&... args);
 
 template<typename... Args>
-void write(Level level, Args... args);
+void write(Level level, Args&&... args);
 
 template<typename... Args>
-void write(Args... args);
+void write(Args&&... args);
 
 /// Retreive the logger instance
 API_EXPORT Logger& default_logger();

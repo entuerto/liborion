@@ -77,6 +77,11 @@ int main()
    LOG(Warning) << "MACRO: Test warning output";
    log::warning("Test warning output");
 
+   const std::string text = "Text from a variable";
+
+   log::write(text);
+   log::write(text, " v2");
+
    function_a(); 
 
    try

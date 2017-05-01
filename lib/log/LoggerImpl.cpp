@@ -7,7 +7,6 @@
 #include <orion/log/LoggerImpl.h>
 
 #include <functional>
-#include <iostream>
 
 #include <log/EndRecord.h>
 #include <log/StartRecord.h>
@@ -24,12 +23,10 @@ LoggerImpl::LoggerImpl(Level level) :
    _is_running(false), 
    _scope_depth(0)
 {
-   std::cout << "Constructor: LoggerImpl::LoggerImpl()\n";
 }
    
 LoggerImpl::~LoggerImpl()
 {
-   std::cout << "Destructor: LoggerImpl::~LoggerImpl()\n";
 }
 
 /// Get the logging level

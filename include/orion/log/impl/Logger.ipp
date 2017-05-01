@@ -21,67 +21,67 @@ namespace log
 //---------------------------------------------------------------------------------------
 
 template<typename... Args>
-void info(Args... args)
+void info(Args&&... args)
 {
    default_logger().write(Level::Info, args...);
 }
 
 template<typename... Args>
-void message(Args... args)
+void message(Args&&... args)
 {
    default_logger().write(Level::Message, args...);
 }
 
 template<typename... Args>
-void warning(Args... args)
+void warning(Args&&... args)
 {
    default_logger().write(Level::Warning, args...);
 }
 
 template<typename... Args>
-void error(Args... args)
+void error(Args&&... args)
 {
    default_logger().write(Level::Error, args...);
 }
 
 template<typename... Args>
-void debug(Args... args)
+void debug(Args&&... args)
 {
    default_logger().write(Level::Debug, args...);
 }
 
 template<typename... Args>
-void debug2(Args... args)
+void debug2(Args&&... args)
 {
    default_logger().write(Level::Debug2, args...);
 }
 
 template<typename... Args>
-void debug3(Args... args)
+void debug3(Args&&... args)
 {
    default_logger().write(Level::Debug3, args...);
 }
 
 template<typename... Args>
-void exception(const std::exception& e, Args... args)
+void exception(const std::exception& e, Args&&... args)
 {
    default_logger().exception(e, args...);
 }
 
 template<typename... Args>
-void exception(const orion::Exception& e, Args... args)
+void exception(const orion::Exception& e, Args&&... args)
 {
    default_logger().exception(e, args...);
 }
 
 template<typename... Args>
-void write(Level level, Args... args)
+void write(Level level, Args&&... args)
 {
    default_logger().write(level, args...);
 }
 
 template<typename... Args>
-void write(Args... args)
+void write(Args&&... args)
 {
    default_logger().write(Level::NotSet, args...);
 }

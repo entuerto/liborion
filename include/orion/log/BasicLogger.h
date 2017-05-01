@@ -60,34 +60,34 @@ public:
 
    /// Writes an Info message
    template<typename... Args>
-   void info(Args... args);
+   void info(Args&&... args);
 
    template<typename... Args>
-   void message(Args... args);
+   void message(Args&&... args);
 
    /// Writes a Warning message
    template<typename... Args>
-   void warning(Args... args);
+   void warning(Args&&... args);
 
    /// Writes an Error message
    template<typename... Args>
-   void error(Args... args);
+   void error(Args&&... args);
 
    /// Writes a Debug message
    template<typename... Args>
-   void debug(Args... args);
+   void debug(Args&&... args);
 
    /// Writes an Exception
    template<typename... Args>
-   void exception(const std::exception& e, Args... args);
+   void exception(const std::exception& e, Args&&... args);
 
    /// Writes an Exception
    template<typename... Args>
-   void exception(const orion::Exception& e, Args... args);
+   void exception(const orion::Exception& e, Args&&... args);
 
    /// Writes a message the with a specified logging level
    template<typename... Args>
-   void write(Level level, Args... args);
+   void write(Level level, Args&&... args);
 
    /// Writes a log record with a specified logging level
    void write(const Record& record);

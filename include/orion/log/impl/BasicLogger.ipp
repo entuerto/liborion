@@ -9,6 +9,8 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <sstream>
+
 namespace orion
 {
 namespace log
@@ -16,17 +18,19 @@ namespace log
 
 namespace detail
 {
-struct StringConcat
+struct Concatenate
 {
-   std::string& text;
+   std::ostringstream& buffer;
 
    template<typename T>
-   void operator()(T) {  }
+   void operator()(T& value) 
+   {  
+      buffer << value;
+   }
 
-   void operator()(const char* v)        { text += v; }
-   void operator()(const std::string& v) { text += v; }
+   void operator()(SourceLocation&) { }
 };
-}
+} // namespace detail
 
 template <typename Service>
 Level BasicLogger<Service>::level() const
@@ -54,82 +58,82 @@ void BasicLogger<Service>::add_output_handler(std::unique_ptr<OutputHandler>&& h
 
 template <typename Service>
 template <typename... Args>
-void BasicLogger<Service>::info(Args... args)
+void BasicLogger<Service>::info(Args&&... args)
 {
    write(Level::Info, args...);
 }
 
 template <typename Service>
 template <typename... Args>
-void BasicLogger<Service>::message(Args... args)
+void BasicLogger<Service>::message(Args&&... args)
 {
    write(Level::Message, args...);
 }
 
 template <typename Service>
 template <typename... Args>
-void BasicLogger<Service>::warning(Args... args)
+void BasicLogger<Service>::warning(Args&&... args)
 {
    write(Level::Warning, args...);
 }
 
 template <typename Service>
 template <typename... Args>
-void BasicLogger<Service>::error(Args... args)
+void BasicLogger<Service>::error(Args&&... args)
 {
    write(Level::Error, args...);
 }
 
 template <typename Service>
 template <typename... Args>
-void BasicLogger<Service>::debug(Args... args)
+void BasicLogger<Service>::debug(Args&&... args)
 {
    write(Level::Debug, args...);
 }
 
 template <typename Service>
 template <typename... Args>
-void BasicLogger<Service>::exception(const std::exception& e, Args... args)
+void BasicLogger<Service>::exception(const std::exception& e, Args&&... args)
 {
    auto t = std::make_tuple(args...);
 
-   std::string msg = e.what(); 
+   std::ostringstream buffer(e.what(), std::ios_base::ate); 
    
-   get_all_values(detail::StringConcat{msg}, t);
+   get_all_values(detail::Concatenate{buffer}, t);
 
    auto sl = get_value<SourceLocation>(t, SourceLocation{});
 
-   this->get_service().write(this->get_implementation(), ExceptionRecord{msg, SourceLocation{}, sl});
+   this->get_service().write(this->get_implementation(), ExceptionRecord{buffer.str(), SourceLocation{}, sl});
 }
 
 template <typename Service>
 template <typename... Args>
-void BasicLogger<Service>::exception(const orion::Exception& e, Args... args)
+void BasicLogger<Service>::exception(const orion::Exception& e, Args&&... args)
 {
    auto t = std::make_tuple(args...);
 
-   std::string msg = e.what(); 
+   std::ostringstream buffer(e.what(), std::ios_base::ate);
    
-   get_all_values(detail::StringConcat{msg}, t);
+   get_all_values(detail::Concatenate{buffer}, t);
 
    auto sl = get_value<SourceLocation>(t, SourceLocation{});
 
-   this->get_service().write(this->get_implementation(), ExceptionRecord{msg, e.source_location(), sl});
+   this->get_service().write(this->get_implementation(), ExceptionRecord{buffer.str(), e.source_location(), sl});
 }
 
 template <typename Service>
 template <typename... Args>
-void BasicLogger<Service>::write(Level level, Args... args)
+void BasicLogger<Service>::write(Level level, Args&&... args)
 {
-   auto t = std::make_tuple(args...);
+   auto t = std::forward_as_tuple(args...);
 
-   std::string msg;
+   std::ostringstream buffer;
 
-   get_all_values(detail::StringConcat{msg}, t);
+   get_all_values(detail::Concatenate{buffer}, t);
 
    auto sl = get_value<SourceLocation>(t, SourceLocation{});
 
-   this->get_service().write(this->get_implementation(), Record{level, msg, sl});
+   this->get_service().write(this->get_implementation(), Record{level, buffer.str(), sl});
 }
 
 template <typename Service>

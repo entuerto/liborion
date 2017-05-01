@@ -40,8 +40,8 @@ int main ()
    
       auto response = r.get();
    
-      LOG_WRITE() << response;
-      LOG_WRITE() << response.rdbuf();
+      log::write(response);
+      log::write(response.rdbuf());
    }
    catch (const std::future_error& e)
    {
