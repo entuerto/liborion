@@ -41,13 +41,25 @@ public:
 protected:
    RequestHandler(const std::string& uri);
 
+   virtual std::error_code on_connect(const Request& request, Response& response);
+
+   virtual std::error_code on_delete(const Request& request, Response& response);
+
    virtual std::error_code on_get(const Request& request, Response& response);
+
+   virtual std::error_code on_head(const Request& request, Response& response);
+
+   virtual std::error_code on_options(const Request& request, Response& response);
+
+   virtual std::error_code on_patch(const Request& request, Response& response);
 
    virtual std::error_code on_post(const Request& request, Response& response);
 
    virtual std::error_code on_put(const Request& request, Response& response);
 
-   virtual std::error_code on_delete(const Request& request, Response& response);
+   virtual std::error_code on_trace(const Request& request, Response& response);
+
+   virtual std::error_code on_user_defined(const Request& request, Response& response);
 
 private:
    std::string _uri;

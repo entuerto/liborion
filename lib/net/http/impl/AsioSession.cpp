@@ -21,7 +21,7 @@ namespace net
 namespace http
 {
 
-Response Session::operator()(const std::string& m)
+Response Session::operator()(const Method& m)
 {
    asio::io_service io_service;
 

@@ -34,7 +34,7 @@ void set_option(Session& session, T&& t)
 template <typename T, typename... Ts>
 void set_option(Session& session, T&& t, Ts&&... ts) 
 {
-   set_option(session, std::forward<Ts>(t));
+   set_option(session, std::forward<T>(t));
    set_option(session, std::forward<Ts>(ts)...);
 }
 
@@ -72,7 +72,7 @@ public:
    void set_option(const Header& header);
    void set_option(const Timeout& timeout);
 
-   virtual Response operator()(const std::string& m);
+   virtual Response operator()(const Method& m);
 
 protected:
    Url _url;

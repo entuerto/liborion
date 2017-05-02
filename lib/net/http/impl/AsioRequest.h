@@ -26,7 +26,7 @@ class AsioRequest : public Request
 {
 public:
    AsioRequest();
-   AsioRequest(const std::string& method, 
+   AsioRequest(const Method& method, 
                const Url& url, 
                const Version& version, 
                const Header& header);

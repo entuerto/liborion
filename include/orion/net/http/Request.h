@@ -24,18 +24,16 @@ namespace net
 {
 namespace http
 {
-
-
-//! Encapsulates HTTP-request information.
-/*!
- */
+///
+/// Encapsulates HTTP-request information.
+///
 class API_EXPORT Request
 {
 public:
    NO_COPY(Request)
 
    Request();
-   Request(const std::string& method, 
+   Request(const Method& method, 
            const Url& url, 
            const Version& version, 
            const Header& header);
@@ -45,8 +43,8 @@ public:
    Request& operator=(Request&& Rhs);
 
    //! "GET", "POST", etc
-   virtual std::string method() const; 
-   virtual void method(const std::string& m); 
+   virtual Method method() const; 
+   virtual void method(const Method& value); 
 
    //! URL-decoded URI
    virtual Url url() const;
@@ -72,7 +70,7 @@ public:
    friend API_EXPORT std::ostream& operator<<(std::ostream& o, const Request& r);
 
 protected:
-   std::string _method;
+   Method _method;
    Url _url;
    Version _version;
    Header _header;

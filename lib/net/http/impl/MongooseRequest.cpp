@@ -25,7 +25,7 @@ MongooseRequest::MongooseRequest(struct http_message* hm) :
    Request(),
    _body_streambuf(std::make_unique<std::stringbuf>(std::string(hm->body.p, hm->body.len)))
 {
-   _method  = std::string(hm->method.p, hm->method.len);
+   _method  = as_method(std::string(hm->method.p, hm->method.len));
    _url     = std::string(hm->uri.p, hm->uri.len) + 
               std::string(hm->query_string.p, hm->query_string.len);
    _version = Version{1, 1};

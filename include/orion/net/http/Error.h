@@ -22,7 +22,7 @@ namespace http
 ///
 ///
 ///
-enum class errc
+enum class ErrorCode
 {
    BadRequest                    = 400, 
    Unauthorized                  = 401, 
@@ -87,7 +87,7 @@ inline const std::error_category& get_error_category()
 ///
 ///
 ///
-inline std::error_code make_error_code(errc code) noexcept
+inline std::error_code make_error_code(ErrorCode code) noexcept
 {
    return std::error_code(static_cast<int>(code), get_error_category());
 }
@@ -95,7 +95,7 @@ inline std::error_code make_error_code(errc code) noexcept
 ///
 ///
 ///
-inline std::error_condition make_error_condition(errc code) noexcept
+inline std::error_condition make_error_condition(ErrorCode code) noexcept
 {
    return std::error_condition(static_cast<int>(code), get_error_category());
 }
@@ -106,7 +106,7 @@ inline std::error_condition make_error_condition(errc code) noexcept
 
 namespace std
 {
-   template<> struct is_error_condition_enum<orion::net::http::errc> : true_type {};
+   template<> struct is_error_condition_enum<orion::net::http::ErrorCode> : true_type {};
 }
 
 #endif // ORION_NET_HTTP_ERROR_H
