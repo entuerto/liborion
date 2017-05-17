@@ -8,7 +8,7 @@ require "premake/clangcl"
 require "premake/asio"
 require "premake/boost"
 require "premake/utils"
-require "premake/gnumake"
+require "premake/ninja"
 
 workspace "liborion"
    
@@ -23,16 +23,18 @@ workspace "liborion"
 
    language "C++"
 
-   filter { "system:windows",  "action:gmake or gnumake" }
-      toolset "clangcl"
-
    SetupDefaultConfigurations()
+
+   filter { "system:windows",  "action:gmake or ninja" }
+      toolset "clangcl"
 
    includedirs { 
       "include", 
       "lib", 
       "deps", 
    }
+
+   --removeconfigurations { "Release" }
 
    UseAsio()
    
@@ -45,10 +47,11 @@ group "Libraries"
 
       language "C"
 
-      defines { 
-         "_CRT_SECURE_NO_WARNINGS", 
-         "_WINSOCK_DEPRECATED_NO_WARNINGS" 
-      }
+      filter { "system:windows" }
+         defines { 
+            "_CRT_SECURE_NO_WARNINGS", 
+            "_WINSOCK_DEPRECATED_NO_WARNINGS" 
+         }
 
       removeincludedirs "*" 
       includedirs "deps/mongoose" 
@@ -59,7 +62,8 @@ group "Libraries"
    project "jsoncpp"
       kind "StaticLib"
 
-      defines "_CRT_SECURE_NO_WARNINGS"
+      filter { "system:windows" }
+         defines "_CRT_SECURE_NO_WARNINGS"
 
       removeincludedirs "*"
       includedirs "deps/jsoncpp" 
@@ -84,15 +88,6 @@ group "Libraries"
          "ORION_SHARED_EXPORTS"
       }
 
-      filter "system:Windows"
-         links { 
-            "mincore", 
-            "Advapi32", 
-            "psapi", 
-            "ntdll", 
-            "rpcrt4" 
-         }
-
       files { 
          "lib/*.cpp",
          "lib/log/*.cpp", 
@@ -102,6 +97,15 @@ group "Libraries"
       FilterPlatformSourceFiles()
       
       UseBoostLibShared("program_options")
+
+      filter "system:Windows"
+         links { 
+            "mincore", 
+            "Advapi32", 
+            "psapi", 
+            "ntdll", 
+            "rpcrt4" 
+         }
 
    
    project "orion-fs"

@@ -88,11 +88,11 @@ project "hello-client"
    links { "jsoncpp", "orion", "orion-net" }
 
 
-project "add-json-rpc-server"
+project "calculator-rpc-server"
    kind "ConsoleApp"
 
    dependson { "orion", "orion-net" }
 
-   files "add-json-rpc-server.cpp"
+   files "calculator-rpc-server.cpp"
 
    links { "jsoncpp", "orion", "orion-net" }

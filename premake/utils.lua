@@ -30,6 +30,9 @@ function SetupDefaultConfigurations()
    -- We only use Debug and release
    configurations { "Debug", "Release" }
 
+   -- We only support 64bit
+   architecture "x86_64"
+
    filter "kind:SharedLib"
       targetsuffix "-%{wks.version.major}.%{wks.version.minor}"
 
@@ -37,7 +40,6 @@ function SetupDefaultConfigurations()
    filter { "configurations:Debug" }
       defines { "DEBUG" }
       -- We want debug symbols in our debug config
-      -- flags { "Symbols" }
       symbols "On"
 
    filter { "configurations:Debug", "kind:*Lib" }
@@ -63,14 +65,14 @@ end
 -- exclude platform specific files from the project
 function FilterPlatformSourceFiles()
    -- Exclude files for other operating systems (so they don't get compiled)
-   filter { "system:macosx", "files:**-win32.* or files:**-linux.*" }
-      flags { "ExcludeFromBuild" }
+   filter { "system:macosx" }
+      removefiles { "**-win32.*", "**-linux.*" }
 
-   filter { "system:windows", "files:**-darwin.* or files:**-linux.*" }
-      flags { "ExcludeFromBuild"}
+   filter { "system:Windows" }
+      removefiles { "**-darwin.*", "**-linux.*" }
 
-   filter { "system:linux", "files:**-darwin.* or files:**-win32.*" }
-      flags { "ExcludeFromBuild"}
+   filter { "system:linux" }
+      removefiles { "**-darwin.*", "**-win32.*" }
     
    filter {} -- clear filter!
 end

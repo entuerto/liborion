@@ -38,7 +38,7 @@ namespace rpc
 class API_EXPORT Method
 {
 public:
-   Method(const std::string& name, const std::string& desc);
+   Method(const std::string& name, const std::string& desc, float version);
 
    Method(const Method& rhs);
    Method(Method&& rhs);
@@ -49,12 +49,15 @@ public:
 
    virtual std::string description() const;
 
+   virtual float version() const;
+
    Method& operator=(const Method& rhs);
    Method& operator=(Method&& rhs);
 
 private:
    std::string _name;
    std::string _description;
+   float _version;
 };
 
 } // namespace rpc
