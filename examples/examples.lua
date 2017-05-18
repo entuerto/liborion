@@ -18,6 +18,26 @@ project "mod-example"
    links { "orion" }
 
 
+project "date-example"
+   kind "ConsoleApp"
+
+   dependson "orion"
+
+   files "date-example.cpp"
+
+   links { "orion" }
+
+
+project "datetime-example"
+   kind "ConsoleApp"
+
+   dependson "orion"
+
+   files "datetime-example.cpp"
+
+   links { "orion" }
+
+
 project "log-example"
    kind "ConsoleApp"
 
