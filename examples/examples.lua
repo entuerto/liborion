@@ -18,6 +18,26 @@ project "mod-example"
    links { "orion" }
 
 
+project "date-example"
+   kind "ConsoleApp"
+
+   dependson "orion"
+
+   files "date-example.cpp"
+
+   links { "orion" }
+
+
+project "datetime-example"
+   kind "ConsoleApp"
+
+   dependson "orion"
+
+   files "datetime-example.cpp"
+
+   links { "orion" }
+
+
 project "log-example"
    kind "ConsoleApp"
 
@@ -88,11 +108,11 @@ project "hello-client"
    links { "jsoncpp", "orion", "orion-net" }
 
 
-project "add-json-rpc-server"
+project "calculator-rpc-server"
    kind "ConsoleApp"
 
    dependson { "orion", "orion-net" }
 
-   files "add-json-rpc-server.cpp"
+   files "calculator-rpc-server.cpp"
 
    links { "jsoncpp", "orion", "orion-net" }

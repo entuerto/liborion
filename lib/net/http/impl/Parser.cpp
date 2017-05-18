@@ -132,7 +132,7 @@ std::error_code Parser::parse(AsioRequest& request, const char* data, std::size_
 
    if (_headers_complete)
    {
-      request.method(http_method_str(static_cast<http_method>(_parser.method)));
+      request.method(as_method(http_method_str(static_cast<http_method>(_parser.method))));
       request.http_version(Version{_parser.http_major, _parser.http_minor});
       request.url(_url);
       request.header(_header);

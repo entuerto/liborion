@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <orion/net/rpc/JsonError.h>
+#include <net/rpc/JsonError.h>
 
 #include <jsoncpp/json/json.h>
 

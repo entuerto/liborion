@@ -15,6 +15,7 @@
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/log/Record.h>
+#include <orion/net/http/StatusCode.h>
 #include <orion/net/http/Utils.h>
 
 namespace orion

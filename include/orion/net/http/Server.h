@@ -24,7 +24,7 @@ namespace http
 //! This class provides an embedded HTTP Server
 /*!
    This class provides an embedded HTTP Server to handle incoming Requests
-   and send HTTP 1.1/2 valid responses.
+   and send HTTP 1.1 valid responses.
  */
 class API_EXPORT Server : public net::Server
 {

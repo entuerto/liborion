@@ -18,7 +18,6 @@
 using namespace orion;
 using namespace orion::net;
 using namespace orion::net::http;
-using namespace orion::net::rpc;
 using namespace orion::unittest;
 
 using namespace std::string_literals;
@@ -38,7 +37,7 @@ class MockRequest : public http::Request
 {
 public:
    MockRequest(const std::string& data) : 
-      http::Request("POST", Url(), http::Version{1, 1}, http::Header()) 
+      http::Request(Method::POST, Url(), http::Version{1, 1}, http::Header()) 
       { _data = data; }
 
    virtual ~MockRequest() = default;
@@ -71,24 +70,24 @@ private:
    std::stringbuf _buf;
 };
 
-class MockMethod : public JsonMethod
+class MockMethod : public rpc::JsonMethod
 {
 public:
    MockMethod() : 
-      JsonMethod("mock", "Mock method for tests.") {}
+      rpc::JsonMethod("mock", "Mock method for tests.") {}
 
    virtual ~MockMethod() = default;
 
-   virtual Error operator()(Json::Value& json_request, Json::Value& json_result) override
+   virtual rpc::Error operator()(Json::Value& json_request, Json::Value& json_result) override
    {
-      return Error();
+      return rpc::Error();
    }
 };
 
-class MockJsonRequestHandler : public JsonRequestHandler
+class MockJsonRequestHandler : public rpc::JsonRequestHandler
 {
 public:
-   MockJsonRequestHandler() : JsonRequestHandler("") {}
+   MockJsonRequestHandler() : rpc::JsonRequestHandler("") {}
    virtual ~MockJsonRequestHandler() = default;
 
    std::error_code send_post_request(const http::Request& request, http::Response& response)

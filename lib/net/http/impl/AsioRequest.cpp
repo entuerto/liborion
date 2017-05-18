@@ -19,7 +19,7 @@ AsioRequest::AsioRequest() :
    _body_streambuf   = std::make_unique<asio::streambuf>();
 }
 
-AsioRequest::AsioRequest(const std::string& method, 
+AsioRequest::AsioRequest(const Method& method, 
                          const Url& url, 
                          const Version& version, 
                          const Header& header) :

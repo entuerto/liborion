@@ -19,7 +19,7 @@ namespace net
 namespace http
 {
 Request::Request() :
-   _method(),
+   _method(Method::GET),
    _url(),
    _version(),
    _header(),
@@ -28,7 +28,7 @@ Request::Request() :
 {
 }
 
-Request::Request(const std::string& method, 
+Request::Request(const Method& method, 
                  const Url& url, 
                  const Version& version, 
                  const Header& header) :
@@ -58,14 +58,14 @@ Request::~Request()
 }
 
 //! "GET", "POST", etc
-std::string Request::method() const
+Method Request::method() const
 {
    return _method;
 }
 
-void Request::method(const std::string& m)
+void Request::method(const Method& value)
 {
-   _method = m;
+   _method = value;
 }
 
 //! URL-decoded URI
