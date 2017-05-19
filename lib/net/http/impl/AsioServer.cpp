@@ -7,10 +7,10 @@
 
 #include <net/http/impl/AsioServer.h>
 
-#include <future>
-
 #include <orion/Log.h>
 #include <net/http/impl/AsioServerConnection.h>
+
+#include <future>
 
 using namespace orion::log;
 
@@ -21,11 +21,11 @@ namespace net
 namespace http
 {
 
-AsioServer::AsioServer() :
-   Server(),
-   _io_service(),
-   _signals(_io_service),
-   _acceptors()
+AsioServer::AsioServer()
+   : Server()
+   , _io_service()
+   , _signals(_io_service)
+   , _acceptors()
 {
 }
 
@@ -36,7 +36,7 @@ AsioServer::~AsioServer()
 void AsioServer::shutdown()
 {
    asio::error_code ec;
-   
+
    for (auto& acceptor : _acceptors)
    {
       acceptor.close(ec);
@@ -57,7 +57,7 @@ std::error_code AsioServer::listen_and_serve(const std::string& addr, int port)
    std::error_code ec;
 
    auto it = resolver.resolve(query, ec);
-   if (ec) 
+   if (ec)
       return ec;
 
    for (; it != asio::ip::tcp::resolver::iterator(); ++it)
@@ -66,24 +66,24 @@ std::error_code AsioServer::listen_and_serve(const std::string& addr, int port)
 
       auto acceptor = asio::ip::tcp::acceptor(_io_service);
 
-      if (acceptor.open(endpoint.protocol(), ec)) 
+      if (acceptor.open(endpoint.protocol(), ec))
          continue;
-    
+
       acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
 
-      if (acceptor.bind(endpoint, ec)) 
+      if (acceptor.bind(endpoint, ec))
          continue;
 
-      if (acceptor.listen(asio::socket_base::max_connections, ec)) 
+      if (acceptor.listen(asio::socket_base::max_connections, ec))
          continue;
-    
+
       _acceptors.push_back(std::move(acceptor));
    }
-  
-   if (_acceptors.empty()) 
+
+   if (_acceptors.empty())
       return ec;
 
-   for (auto& acceptor : _acceptors) 
+   for (auto& acceptor : _acceptors)
    {
       do_accept(acceptor);
    }
@@ -97,39 +97,35 @@ void AsioServer::do_accept(asio::ip::tcp::acceptor& acceptor)
 {
    auto conn = std::make_shared<AsioServerConnection>(_io_service, _RequestHandlers);
 
-   acceptor.async_accept(conn->socket(),
-      [this, &acceptor, conn](std::error_code ec)
+   acceptor.async_accept(conn->socket(), [this, &acceptor, conn](std::error_code ec) {
+      // Check whether the server was stopped by a signal before this
+      // completion handler had a chance to run.
+      if (not acceptor.is_open())
+         return;
+
+      if (not ec)
       {
-         // Check whether the server was stopped by a signal before this
-         // completion handler had a chance to run.
-         if (not acceptor.is_open())
-            return;
+         conn->socket().set_option(asio::ip::tcp::socket::keep_alive(true));
+         conn->socket().set_option(asio::ip::tcp::no_delay(true));
+         conn->accept();
+      }
 
-         if (not ec)
-         {
-            conn->socket().set_option(asio::ip::tcp::socket::keep_alive(true));
-            conn->socket().set_option(asio::ip::tcp::no_delay(true));
-            conn->accept(); 
-         }
-
-         do_accept(acceptor);
-      });
+      do_accept(acceptor);
+   });
 }
 
 void AsioServer::do_close()
 {
-   _signals.async_wait(
-      [this](std::error_code ec, int /*signo*/)
-      {
-         if (ec)
-            LOG(Error) << ec;
+   _signals.async_wait([this](std::error_code ec, int /*signo*/) {
+      if (ec)
+         LOG(Error) << ec;
 
-         // The server is stopped by cancelling all outstanding asynchronous
-         // operations. Once all operations have finished the io_service::run()
-         // call will exit.
-         for (auto& acceptor : _acceptors)
-            acceptor.close();
-      });
+      // The server is stopped by cancelling all outstanding asynchronous
+      // operations. Once all operations have finished the io_service::run()
+      // call will exit.
+      for (auto& acceptor : _acceptors)
+         acceptor.close();
+   });
 }
 
 void AsioServer::setup_signals()
@@ -145,4 +141,3 @@ void AsioServer::setup_signals()
 } // http
 } // net
 } // orion
-   

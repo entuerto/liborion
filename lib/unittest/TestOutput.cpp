@@ -3,12 +3,12 @@
 // Copyright 2017 The liborion Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-// 
+//
 #include <orion/unittest/TestOutput.h>
 
-#include <stdexcept>
-
 #include <orion/StringUtils.h>
+
+#include <stdexcept>
 
 namespace orion
 {
@@ -17,7 +17,7 @@ namespace unittest
 
 std::string to_string(ReportLevel rl)
 {
-   switch(rl)
+   switch (rl)
    {
       case ReportLevel::Error:
          return "Error";
@@ -31,7 +31,7 @@ std::string to_string(ReportLevel rl)
    return "Error";
 }
 
-std::istream& operator>> (std::istream &in, ReportLevel& report_level)
+std::istream& operator>>(std::istream& in, ReportLevel& report_level)
 {
    std::string token;
    in >> token;
@@ -56,24 +56,24 @@ std::istream& operator>> (std::istream &in, ReportLevel& report_level)
    return in;
 }
 
-std::ostream& operator<< (std::ostream& out, ReportLevel report_level)
+std::ostream& operator<<(std::ostream& out, ReportLevel report_level)
 {
    out << to_string(report_level);
    return out;
 }
 
-OutputStats& operator+= (OutputStats& lhs, const OutputStats& rhs)
+OutputStats& operator+=(OutputStats& lhs, const OutputStats& rhs)
 {
-   lhs.count += rhs.count; 
-   lhs.passed_count  += rhs.passed_count; 
-   lhs.failed_count  += rhs.failed_count;
+   lhs.count += rhs.count;
+   lhs.passed_count += rhs.passed_count;
+   lhs.failed_count += rhs.failed_count;
    lhs.skipped_count += rhs.skipped_count;
 
    lhs.item_count += rhs.item_count;
-   lhs.passed_item_count += rhs.passed_item_count; 
-   lhs.failed_item_count += rhs.failed_item_count; 
-   lhs.skipped_item_count += rhs.skipped_item_count; 
-   
+   lhs.passed_item_count += rhs.passed_item_count;
+   lhs.failed_item_count += rhs.failed_item_count;
+   lhs.skipped_item_count += rhs.skipped_item_count;
+
    lhs.time_elapsed += rhs.time_elapsed;
 
    return lhs;

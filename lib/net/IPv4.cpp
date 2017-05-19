@@ -21,9 +21,9 @@
 
 #include <orion/net/IPv4.h>
 
-#include <algorithm>
-
 #include <orion/StringUtils.h>
+
+#include <algorithm>
 
 namespace orion
 {
@@ -36,43 +36,43 @@ IPv4 IPv4::all_systems = IPv4(224, 0, 0, 1);
 IPv4 IPv4::all_routers = IPv4(224, 0, 0, 2);
 IPv4 IPv4::zero        = IPv4(0, 0, 0, 0);
 
-IPv4::IPv4():
-   _a(IPv4::zero._a)
+IPv4::IPv4()
+   : _a(IPv4::zero._a)
 {
 }
 
-IPv4::IPv4(uint8_t a, uint8_t b, uint8_t c, uint8_t d):
-   _a({ {a, b, c, d} })
+IPv4::IPv4(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
+   : _a({{a, b, c, d}})
 {
 }
 
-IPv4::IPv4(const std::array<uint8_t, 4>& b):
-   _a()
+IPv4::IPv4(const std::array<uint8_t, 4>& b)
+   : _a()
 {
    std::copy(std::begin(b), std::end(b), std::begin(_a.b));
 }
 
-IPv4::IPv4(std::initializer_list<uint8_t> l):
-   _a()
+IPv4::IPv4(std::initializer_list<uint8_t> l)
+   : _a()
 {
    std::copy(l.begin(), l.end(), std::begin(_a.b));
 }
 
-IPv4::IPv4(const IPv4& Other):
-   _a(Other._a) 
+IPv4::IPv4(const IPv4& Other)
+   : _a(Other._a)
 {
 }
 
-IPv4::IPv4(IPv4&& Other):
-   _a(std::move(Other._a)) 
+IPv4::IPv4(IPv4&& Other)
+   : _a(std::move(Other._a))
 {
 }
 
-IPv4::~IPv4() 
+IPv4::~IPv4()
 {
 }
 
-IPv4& IPv4::operator=(const IPv4& Rhs) 
+IPv4& IPv4::operator=(const IPv4& Rhs)
 {
    if (this == &Rhs)
       return *this;
@@ -82,7 +82,7 @@ IPv4& IPv4::operator=(const IPv4& Rhs)
    return *this;
 }
 
-IPv4& IPv4::operator=(IPv4&& Rhs) 
+IPv4& IPv4::operator=(IPv4&& Rhs)
 {
    _a = std::move(Rhs._a);
    return *this;
@@ -117,17 +117,17 @@ bool IPv4::is_class_c() const
    return (_a.l & 0xE0000000) == 0xC0000000;
 }
 
-bool IPv4::is_loopback() const 
+bool IPv4::is_loopback() const
 {
    return _a.b[0] == 127;
 }
 
-bool IPv4::is_multicast() const 
+bool IPv4::is_multicast() const
 {
    return (_a.b[0] & 0xf0) == 0xe0;
 }
 
-bool IPv4::is_unspecified() const 
+bool IPv4::is_unspecified() const
 {
    return _a.l == 0;
 }
@@ -137,16 +137,16 @@ uint8_t* IPv4::to_bytes() const
    return const_cast<uint8_t*>(&(_a.b[0]));
 }
 
-std::string IPv4::to_string() const 
+std::string IPv4::to_string() const
 {
    std::string s;
 
-   s  = std::to_string(_a.b[0]);
-   s += "."; 
+   s = std::to_string(_a.b[0]);
+   s += ".";
    s += std::to_string(_a.b[1]);
-   s += "."; 
+   s += ".";
    s += std::to_string(_a.b[2]);
-   s += "."; 
+   s += ".";
    s += std::to_string(_a.b[3]);
 
    return s;

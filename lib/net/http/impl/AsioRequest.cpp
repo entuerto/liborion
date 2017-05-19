@@ -12,25 +12,25 @@ namespace net
 {
 namespace http
 {
-AsioRequest::AsioRequest() :
-   Request()
+AsioRequest::AsioRequest()
+   : Request()
 {
    _header_streambuf = std::make_unique<asio::streambuf>();
    _body_streambuf   = std::make_unique<asio::streambuf>();
 }
 
-AsioRequest::AsioRequest(const Method& method, 
-                         const Url& url, 
-                         const Version& version, 
-                         const Header& header) :
-   Request(method, url, version, header)
+AsioRequest::AsioRequest(const Method& method,
+                         const Url& url,
+                         const Version& version,
+                         const Header& header)
+   : Request(method, url, version, header)
 {
    _header_streambuf = std::make_unique<asio::streambuf>();
    _body_streambuf   = std::make_unique<asio::streambuf>();
 }
 
-AsioRequest::AsioRequest(AsioRequest&& rhs) :
-   Request(std::move(rhs))
+AsioRequest::AsioRequest(AsioRequest&& rhs)
+   : Request(std::move(rhs))
 {
 }
 
@@ -42,7 +42,7 @@ AsioRequest& AsioRequest::operator=(AsioRequest&& rhs)
 {
    Request::operator=(std::move(rhs));
 
-   return *this;   
+   return *this;
 }
 
 void AsioRequest::build_header_buffer()
@@ -61,22 +61,14 @@ void AsioRequest::build_header_buffer()
    auto v = http_version();
 
    // request-line = method SP request-target SP HTTP-version CRLF
-   auto request_line = boost::format("%s %s HTTP/%d.%d") 
-                          % method()
-                          % u.path()
-                          % v.major 
-                          % v.minor;
+   auto request_line = boost::format("%s %s HTTP/%d.%d") % method() % u.path() % v.major % v.minor;
 
-   o << boost::str(request_line)
-     << crlf;  
+   o << boost::str(request_line) << crlf;
 
    for (const auto& item : _header)
    {
-      o << item.first
-        << ": "
-        << item.second
-        << crlf;
-   } 
+      o << item.first << ": " << item.second << crlf;
+   }
 
    o << crlf;
 }
@@ -94,11 +86,10 @@ std::vector<asio::const_buffer> AsioRequest::buffers()
 
 std::size_t AsioRequest::size() const
 {
-   return static_cast<asio::streambuf*>(_header_streambuf.get())->size() + 
+   return static_cast<asio::streambuf*>(_header_streambuf.get())->size() +
           static_cast<asio::streambuf*>(_body_streambuf.get())->size();
 }
 
 } // http
 } // net
 } // orion
-

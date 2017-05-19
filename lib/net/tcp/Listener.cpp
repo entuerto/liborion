@@ -28,24 +28,22 @@ namespace net
 namespace tcp
 {
 
-Listener::Listener(const IPAddress& addr):
-   net::Listener(addr)
-{
-
-}
-
-Listener::~Listener() 
+Listener::Listener(const IPAddress& addr)
+   : net::Listener(addr)
 {
 }
 
-std::unique_ptr<Connection> Listener::accept() 
+Listener::~Listener()
+{
+}
+
+std::unique_ptr<Connection> Listener::accept()
 {
    return nullptr;
 }
 
-void Listener::close() 
+void Listener::close()
 {
-
 }
 
 } // tcp

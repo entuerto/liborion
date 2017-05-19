@@ -14,12 +14,12 @@ namespace unittest
 //---------------------------------------------------------------------------------------
 
 /// Constructor
-Suite::Suite(const std::string& name) :
-   _setup(),
-   _teardown(),
-   _name(name),
-   _test_cases(),
-   _stats()
+Suite::Suite(const std::string& name)
+   : _setup()
+   , _teardown()
+   , _name(name)
+   , _test_cases()
+   , _stats()
 {
 }
 
@@ -97,17 +97,17 @@ const OutputStats& Suite::run_tests(Output& output)
       else if (test_result.failed())
       {
          _stats.failed_count++;
-      } 
-      else 
+      }
+      else
       {
          _stats.passed_count++;
       }
 
-      _stats.item_count         += test_result.item_count();
-      _stats.passed_item_count  += test_result.passed_item_count();
-      _stats.failed_item_count  += test_result.failed_item_count();
+      _stats.item_count += test_result.item_count();
+      _stats.passed_item_count += test_result.passed_item_count();
+      _stats.failed_item_count += test_result.failed_item_count();
       _stats.skipped_item_count += test_result.skipped_item_count();
-      _stats.time_elapsed       += test_result.time_elapsed();
+      _stats.time_elapsed += test_result.time_elapsed();
 
       output.write(test_result);
    }

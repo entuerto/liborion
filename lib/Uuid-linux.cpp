@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #include <orion/Uuid.h>
 
 #include <uuid/uuid.h>
@@ -33,33 +32,33 @@ struct Uuid::Private
 {
    uuid_t _uuid;
 
-   Private() : _uuid()
-   {}
-
-   ~Private()
+   Private()
+      : _uuid()
    {
    }
+
+   ~Private() {}
 };
 
-Uuid::Uuid() :
-   _impl(new Private)
+Uuid::Uuid()
+   : _impl(new Private)
 {
    uuid_generate(_impl->_uuid);
 }
 
-Uuid::Uuid(const Uuid& rhs) :
-   _impl(new Private)
+Uuid::Uuid(const Uuid& rhs)
+   : _impl(new Private)
 {
    uuid_copy(_impl->_uuid, rhs._impl->_uuid);
 }
 
-Uuid::Uuid(const Uuid&& rhs) :
-   _impl(std::move(rhs._impl))
+Uuid::Uuid(const Uuid&& rhs)
+   : _impl(std::move(rhs._impl))
 {
 }
 
-Uuid::Uuid(const std::string& value) :
-   _impl(new Private)
+Uuid::Uuid(const std::string& value)
+   : _impl(new Private)
 {
    uuid_parse(value.c_str(), _impl->_uuid);
 }
@@ -108,5 +107,4 @@ bool Uuid::operator!=(const Uuid& rhs) const
 {
    return not operator==(rhs);
 }
-
 }

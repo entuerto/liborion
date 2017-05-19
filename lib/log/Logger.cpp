@@ -7,9 +7,8 @@
 
 #include <orion/log/Logger.h>
 
-#include <sstream>
-
 #include <orion/SystemInfo.h>
+#include <sstream>
 
 namespace orion
 {
@@ -49,7 +48,6 @@ std::string DefaultInfo()
                << "\n"
                << "Program Information\n"
                << "  " << systeminfo::get_program_name() << "\n";
-               
 
    return stream_info.str();
 }

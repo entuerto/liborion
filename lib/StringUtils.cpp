@@ -4,35 +4,34 @@
 
 #include <orion/StringUtils.h>
 
-#include <locale>
 #include <codecvt>
+#include <locale>
 
 namespace orion
 {
-inline bool no_case_char_compare(char a, char b) 
+inline bool no_case_char_compare(char a, char b)
 {
-   return(toupper(a) == toupper(b));
+   return (toupper(a) == toupper(b));
 }
-
 
 // convert UTF-8 string to wstring
 std::wstring utf8_to_wstring(const std::string& str)
 {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
-    return myconv.from_bytes(str);
+   std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
+   return myconv.from_bytes(str);
 }
 
 // convert wstring to UTF-8 string
 std::string wstring_to_utf8(const std::wstring& str)
 {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
-    return myconv.to_bytes(str);
+   std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
+   return myconv.to_bytes(str);
 }
 
 bool equals_no_case(const std::string& str1, const std::string& str2)
 {
-   return (str1.size() == str2.size()) and 
-          std::equal(str1.begin(), str1.end(), str2.begin(), no_case_char_compare); 
+   return (str1.size() == str2.size()) and
+          std::equal(str1.begin(), str1.end(), str2.begin(), no_case_char_compare);
 }
 
 int compare_no_case(const std::string& str1, const std::string& str2)
@@ -47,7 +46,9 @@ int compare_no_case(const std::string& str1, const std::string& str2)
 
       c2 = *s2++;
 
-      if (c1 != c2 and ::tolower(c1) != ::tolower(c2)) // This includes the possibility that one of the characters is the null-terminator, which implies a string mismatch.
+      if (c1 != c2 and ::tolower(c1) != ::tolower(c2)) // This includes the possibility that one of
+                                                       // the characters is the null-terminator,
+                                                       // which implies a string mismatch.
          return ::tolower(c1) - ::tolower(c2);
 
    } while (c2 != '\0'); // At this point, we know c1 == c2, so there's no need to test them both.
@@ -70,16 +71,16 @@ StringVector split(const std::string& text, char separator)
    std::string::size_type i = 0;
    std::string::size_type j = text.find(separator);
 
-   while (j != std::string::npos) 
+   while (j != std::string::npos)
    {
       v.push_back(text.substr(i, j - i));
 
       i = ++j;
       j = text.find(separator, j);
 
-      if (j == std::string::npos) 
+      if (j == std::string::npos)
          v.push_back(text.substr(i, text.length()));
-   }   
+   }
    return v;
 }
 
@@ -91,7 +92,7 @@ std::string& trim_left(std::string& text)
    std::string::iterator it  = text.begin();
    std::string::iterator end = text.end();
 
-   for ( ; it != end; ++it) 
+   for (; it != end; ++it)
    {
       if (not std::isspace(*it, std::locale()))
          break;
@@ -111,16 +112,16 @@ std::string& trim_right(std::string& text)
 
    std::string::iterator it = --(text.end());
 
-   for ( ; ; --it) 
+   for (;; --it)
    {
-      if (not std::isspace(*it, std::locale())) 
+      if (not std::isspace(*it, std::locale()))
       {
          std::string::iterator it_adv(it);
          text.erase(++it_adv, text.end());
          break;
       }
 
-      if (it == text.begin()) 
+      if (it == text.begin())
       {
          text.clear();
          break;
@@ -156,11 +157,12 @@ uint32_t compute_hash(const std::string& text)
    uint32_t s1 = checksum & 0xffff;
    uint32_t s2 = checksum >> 16;
 
-   int off = 0;
-   int len = text.size();
+   int off            = 0;
+   int len            = text.size();
    const uint8_t* buf = (const uint8_t*)text.data();
 
-   while (len > 0) {
+   while (len > 0)
+   {
       // We can defer the modulo operation:
       // s1 maximally grows from 65521 to 65521 + 255 * 3800
       // s2 maximally grows by 3800 * median(s1) = 2090079800 < 2^31
@@ -168,7 +170,8 @@ uint32_t compute_hash(const std::string& text)
       if (n > len)
          n = len;
       len -= n;
-      while (--n >= 0) {
+      while (--n >= 0)
+      {
          s1 = s1 + (buf[off++] & 0xFF);
          s2 = s2 + s1;
       }
@@ -181,7 +184,9 @@ uint32_t compute_hash(const std::string& text)
    return checksum & 0xffffffffL;
 }
 
-void tokenize(const std::string& input, std::vector<std::string>& tokens, const std::string& delimiters)
+void tokenize(const std::string& input,
+              std::vector<std::string>& tokens,
+              const std::string& delimiters)
 {
    // Tokenize ripped from http://www.linuxselfhelp.com/HOWTO/C++Programming-HOWTO-7.html
    // Skip delimiters at beginning.
@@ -199,5 +204,4 @@ void tokenize(const std::string& input, std::vector<std::string>& tokens, const 
       pos = input.find_first_of(delimiters, lastPos);
    }
 }
-
 }

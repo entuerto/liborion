@@ -14,11 +14,11 @@ namespace net
 //---------------------------------------------------------------------------------------
 // Connection
 
-Connection::Connection():
-   _local_addr(),
-   _remote_addr(),
-   _read_deadline(),
-   _write_deadline()
+Connection::Connection()
+   : _local_addr()
+   , _remote_addr()
+   , _read_deadline()
+   , _write_deadline()
 {
 }
 
@@ -50,7 +50,7 @@ std::chrono::seconds Connection::deadline() const
 
 std::error_code Connection::read_deadline(const std::chrono::seconds& sec)
 {
-   _read_deadline  = sec;
+   _read_deadline = sec;
    return std::error_code();
 }
 

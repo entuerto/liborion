@@ -19,11 +19,11 @@
 
 #include <orion/log/OnelineWithSourceInfoFormatter.h>
 
-#include <sstream> 
-
 #include <orion/SourceLocation.h>
 #include <orion/log/Logger.h>
 #include <orion/log/Record.h>
+
+#include <sstream>
 
 namespace orion
 {
@@ -55,12 +55,7 @@ std::string OnelineWithSourceInfoFormatter::format(const Record& record)
 
    std::ostringstream stream;
 
-   stream << "|" 
-          << to_string(record.level())
-          << "|"
-          << record.time_stamp()
-          << "|"
-          << scope
+   stream << "|" << to_string(record.level()) << "|" << record.time_stamp() << "|" << scope
           << record.message();
 
    if (record.level() == Level::Exception)
@@ -69,10 +64,8 @@ std::string OnelineWithSourceInfoFormatter::format(const Record& record)
       {
          auto except_record = dynamic_cast<const ExceptionRecord&>(record);
 
-         stream << "| Thrown from: " 
-                << except_record.thrown_source_location()
-                << "| Caught at: "
-                << except_record.caught_source_location();
+         stream << "| Thrown from: " << except_record.thrown_source_location()
+                << "| Caught at: " << except_record.caught_source_location();
 
          return stream.str();
       }

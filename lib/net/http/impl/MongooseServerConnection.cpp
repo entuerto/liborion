@@ -21,10 +21,10 @@
 
 #include <net/http/impl/MongooseServerConnection.h>
 
-#include <cstdlib>
 #include <orion/Log.h>
 #include <orion/StringUtils.h>
 #include <orion/net/IPAddress.h>
+#include <cstdlib>
 
 using namespace orion::log;
 
@@ -41,26 +41,27 @@ static std::string as_string(struct mg_str& str)
 }
 
 MongooseServerConnection::MongooseServerConnection(struct mg_connection* connection,
-                                                   struct http_message* hm, 
-                                                   const Handlers& RequestHandlers) :
-   tcp::Connection(),
-   _connection(connection),
-   _hm(hm),
-   _RequestHandlers(RequestHandlers),
-   _request(),
-   _response(StatusCode::OK)
+                                                   struct http_message* hm,
+                                                   const Handlers& RequestHandlers)
+   : tcp::Connection()
+   , _connection(connection)
+   , _hm(hm)
+   , _RequestHandlers(RequestHandlers)
+   , _request()
+   , _response(StatusCode::OK)
 {
    char buffer[100];
-   mg_conn_addr_to_str(connection, buffer, 100, MG_SOCK_STRINGIFY_REMOTE |
-                                                MG_SOCK_STRINGIFY_IP     |
-                                                MG_SOCK_STRINGIFY_PORT);
-   StringVector remote = split(buffer,  ':');
+   mg_conn_addr_to_str(connection,
+                       buffer,
+                       100,
+                       MG_SOCK_STRINGIFY_REMOTE | MG_SOCK_STRINGIFY_IP | MG_SOCK_STRINGIFY_PORT);
+   StringVector remote = split(buffer, ':');
 
    _remote_addr.reset(new IPAddress(IPv4::parse(remote[0]), std::atoi(remote[1].c_str())));
 
    mg_conn_addr_to_str(connection, buffer, 100, MG_SOCK_STRINGIFY_IP | MG_SOCK_STRINGIFY_PORT);
-   
-   StringVector host = split(buffer,  ':');
+
+   StringVector host = split(buffer, ':');
 
    _local_addr.reset(new IPAddress(IPv4::parse(host[0]), std::atoi(host[1].c_str())));
 }
@@ -72,7 +73,7 @@ MongooseServerConnection::~MongooseServerConnection()
 
 void MongooseServerConnection::close()
 {
-   //mg_close_conn(_connection);
+   // mg_close_conn(_connection);
 }
 
 void MongooseServerConnection::accept()
@@ -99,11 +100,11 @@ void MongooseServerConnection::do_handler()
    LOG(Debug2) << _request;
 
    auto it = _RequestHandlers.find(_request.url().pathname());
-   
+
    if (it != _RequestHandlers.end())
    {
       auto&& rl = it->second;
-   
+
       auto ec = rl->on_request(_request, _response);
       if (ec)
       {

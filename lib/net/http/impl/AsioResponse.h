@@ -8,12 +8,12 @@
 #ifndef ORION_NET_HTTP_ASIORESPONSE_H
 #define ORION_NET_HTTP_ASIORESPONSE_H
 
-#include <ostream>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/http/Response.h>
 
 #include <asio.hpp>
+
+//#include <ostream>
 
 namespace orion
 {
@@ -37,14 +37,13 @@ public:
 
    std::size_t size() const;
 
-   //friend std::ostream& operator<<(std::ostream& o, const AsioResponse& r);
+   // friend std::ostream& operator<<(std::ostream& o, const AsioResponse& r);
 
 private:
    void build_header_buffer();
-
 };
 
-//std::ostream& operator<<(std::ostream& o, const AsioResponse& r);
+// std::ostream& operator<<(std::ostream& o, const AsioResponse& r);
 
 } // http
 } // net

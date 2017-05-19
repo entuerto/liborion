@@ -6,12 +6,12 @@
 //
 #include <net/http/impl/MongooseResponse.h>
 
-#include <sstream>
-
 #include <orion/Log.h>
 #include <orion/net/http/Utils.h>
 
 #include <boost/format.hpp>
+
+#include <sstream>
 
 using namespace orion::log;
 
@@ -22,24 +22,24 @@ namespace net
 namespace http
 {
 
-MongooseResponse::MongooseResponse(StatusCode code) :
-   Response(code),
-   _header_streambuf(std::make_unique<std::stringbuf>()),
-   _body_streambuf(std::make_unique<std::stringbuf>())
+MongooseResponse::MongooseResponse(StatusCode code)
+   : Response(code)
+   , _header_streambuf(std::make_unique<std::stringbuf>())
+   , _body_streambuf(std::make_unique<std::stringbuf>())
 {
 }
 
-MongooseResponse::MongooseResponse(StatusCode code, const Version& version, const Header& header) :
-   Response(code, version, header),
-   _header_streambuf(std::make_unique<std::stringbuf>()),
-   _body_streambuf(std::make_unique<std::stringbuf>())
+MongooseResponse::MongooseResponse(StatusCode code, const Version& version, const Header& header)
+   : Response(code, version, header)
+   , _header_streambuf(std::make_unique<std::stringbuf>())
+   , _body_streambuf(std::make_unique<std::stringbuf>())
 {
 }
 
-MongooseResponse::MongooseResponse(MongooseResponse&& Other) :
-   Response(std::move(Other)),
-   _header_streambuf(std::move(Other._header_streambuf)),
-   _body_streambuf(std::move(Other._body_streambuf))
+MongooseResponse::MongooseResponse(MongooseResponse&& Other)
+   : Response(std::move(Other))
+   , _header_streambuf(std::move(Other._header_streambuf))
+   , _body_streambuf(std::move(Other._body_streambuf))
 {
 }
 
@@ -54,7 +54,7 @@ MongooseResponse& MongooseResponse::operator=(MongooseResponse&& Rhs)
    _header_streambuf = std::move(Rhs._header_streambuf);
    _body_streambuf   = std::move(Rhs._body_streambuf);
 
-   return *this;   
+   return *this;
 }
 
 std::streambuf* MongooseResponse::rdbuf() const
@@ -80,21 +80,17 @@ void MongooseResponse::build_header_buffer()
 
    auto status_msg = boost::format("HTTP/%d.%d %s") % v.major % v.minor % status();
 
-   o << boost::str(status_msg)
-     << crlf;  
+   o << boost::str(status_msg) << crlf;
 
    for (const auto& item : _header)
    {
-      o << item.first
-        << ": "
-        << item.second
-        << crlf;
-   } 
+      o << item.first << ": " << item.second << crlf;
+   }
 
    o << crlf;
 }
 
-std::string MongooseResponse::buffer() 
+std::string MongooseResponse::buffer()
 {
    build_header_buffer();
 
@@ -104,4 +100,3 @@ std::string MongooseResponse::buffer()
 } // http
 } // net
 } // orion
-

@@ -20,9 +20,9 @@
 #ifndef ORION_LOG_SYSTEMINFORECORD_H
 #define ORION_LOG_SYSTEMINFORECORD_H
 
-#include <string>
-
 #include <orion/log/Record.h>
+
+#include <string>
 
 namespace orion
 {
@@ -47,7 +47,6 @@ public:
 
    SystemInfoRecord& operator=(const SystemInfoRecord& rhs);
    SystemInfoRecord& operator=(SystemInfoRecord&& rhs);
-
 };
 
 } // namespace log

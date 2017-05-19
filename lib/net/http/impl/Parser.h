@@ -7,8 +7,6 @@
 #ifndef ORION_NET_HTTP_PARSER_H
 #define ORION_NET_HTTP_PARSER_H
 
-#include <system_error>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/http/Utils.h>
 
@@ -17,14 +15,16 @@
 
 #include <http-parser/http_parser.h>
 
+#include <system_error>
+
 namespace orion
 {
 namespace net
 {
 namespace http
 {
-///  
-class Parser  
+///
+class Parser
 {
 public:
    NO_COPY(Parser)

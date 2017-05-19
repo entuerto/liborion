@@ -15,19 +15,19 @@ namespace net
 namespace http
 {
 
-Session::Session() :
-   _url(),
-   _params(),
-   _header(),
-   _timeout()
+Session::Session()
+   : _url()
+   , _params()
+   , _header()
+   , _timeout()
 {
 }
 
-Session::Session(Session&& rhs) :
-   _url(std::move(rhs._url)),
-   _params(std::move(rhs._params)),
-   _header(std::move(rhs._header)),
-   _timeout(std::move(rhs._timeout)) 
+Session::Session(Session&& rhs)
+   : _url(std::move(rhs._url))
+   , _params(std::move(rhs._params))
+   , _header(std::move(rhs._header))
+   , _timeout(std::move(rhs._timeout))
 {
 }
 
@@ -40,8 +40,8 @@ Session& Session::operator=(Session&& rhs)
    _url     = std::move(rhs._url);
    _params  = std::move(rhs._params);
    _header  = std::move(rhs._header);
-   _timeout = std::move(rhs._timeout); 
-   return *this;   
+   _timeout = std::move(rhs._timeout);
+   return *this;
 }
 
 void Session::set_option(const Url& url)

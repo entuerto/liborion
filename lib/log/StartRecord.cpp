@@ -30,21 +30,21 @@ namespace log
 /*!
    Constructor
  */
-StartRecord::StartRecord() :
-   Record()
+StartRecord::StartRecord()
+   : Record()
 {
 }
 
 /*
    Copy constructor
  */
-StartRecord::StartRecord(const StartRecord& rhs) :
-   Record(rhs)
+StartRecord::StartRecord(const StartRecord& rhs)
+   : Record(rhs)
 {
 }
 
-StartRecord::StartRecord(StartRecord&& rhs) :
-   Record(std::move(rhs))
+StartRecord::StartRecord(StartRecord&& rhs)
+   : Record(std::move(rhs))
 {
 }
 

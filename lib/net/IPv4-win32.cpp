@@ -21,10 +21,10 @@
 
 #include <orion/net/IPv4.h>
 
+#include <orion/StringUtils.h>
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
-
-#include <orion/StringUtils.h>
 
 namespace orion
 {
@@ -50,14 +50,15 @@ IPv4 IPv4::parse(const std::string& s)
 
    address.v4.sin_family = AF_INET;
 
-   int rc = WSAStringToAddressW(const_cast<wchar_t*>(ipw.data()), AF_INET, 0, &address.base, &address_length);
+   int rc = WSAStringToAddressW(
+      const_cast<wchar_t*>(ipw.data()), AF_INET, 0, &address.base, &address_length);
 
    // Success return IPv4 address
    if (rc == 0)
    {
-      return IPv4{address.v4.sin_addr.S_un.S_un_b.s_b1, 
-                  address.v4.sin_addr.S_un.S_un_b.s_b2, 
-                  address.v4.sin_addr.S_un.S_un_b.s_b3, 
+      return IPv4{address.v4.sin_addr.S_un.S_un_b.s_b1,
+                  address.v4.sin_addr.S_un.S_un_b.s_b2,
+                  address.v4.sin_addr.S_un.S_un_b.s_b3,
                   address.v4.sin_addr.S_un.S_un_b.s_b4};
    }
 

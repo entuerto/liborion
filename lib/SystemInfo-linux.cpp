@@ -19,13 +19,13 @@
 
 #include <orion/SystemInfo.h>
 
-#include <unistd.h>
+#include <orion/StringUtils.h>
+
 #include <sys/utsname.h>
+#include <unistd.h>
 
 #include <fstream>
 #include <sstream>
-
-#include <orion/StringUtils.h>
 
 namespace orion
 {
@@ -34,7 +34,6 @@ namespace systeminfo
 
 void get_loaded_modules(unsigned long /* process_id */, ModuleList& /* modules */)
 {
-
 }
 
 std::string get_cpu_model()
@@ -57,7 +56,7 @@ std::vector<CpuInfo> get_cpu_info()
       tokens = split(line, ':');
 
       if (tokens.size() == 2 and trim(tokens.front()) == "model name")
-         cpus.push_back(CpuInfo(trim(tokens.back()), 1000, CpuTimes& times));
+         cpus.push_back(CpuInfo(trim(tokens.back()), 1000, CpuTimes & times));
    }
 
    return cpus;
@@ -67,23 +66,19 @@ std::string get_os_version()
 {
    struct utsname name;
 
-   if (uname (&name) == -1)
+   if (uname(&name) == -1)
       return "";
 
    std::ostringstream os_version;
 
-   os_version << name.sysname
-              << " "
-              << name.release
-              << " "
-              << name.version;
+   os_version << name.sysname << " " << name.release << " " << name.version;
    return os_version.str();
 }
 
 std::string get_host_name()
 {
    char hostname[100];
-   bool hostname_fail = gethostname(hostname, sizeof (hostname)) == -1;
+   bool hostname_fail = gethostname(hostname, sizeof(hostname)) == -1;
 
    return hostname_fail ? "localhost" : hostname;
 }
@@ -98,33 +93,32 @@ int get_process_id()
    return getpid();
 }
 
-std::string get_program_name() 
+std::string get_program_name()
 {
    return "";
 }
 
-void get_loadavg(double avg[3]) 
+void get_loadavg(double avg[3])
 {
    struct sysinfo info;
 
-   if (sysinfo(&info) < 0) 
+   if (sysinfo(&info) < 0)
       return;
 
-   avg[0] = (double) info.loads[0] / 65536.0;
-   avg[1] = (double) info.loads[1] / 65536.0;
-   avg[2] = (double) info.loads[2] / 65536.0;
+   avg[0] = (double)info.loads[0] / 65536.0;
+   avg[1] = (double)info.loads[1] / 65536.0;
+   avg[2] = (double)info.loads[2] / 65536.0;
 }
 
-uint64_t get_free_memory() 
+uint64_t get_free_memory()
 {
    return static_cast<uint64_t>(sysconf(_SC_PAGESIZE) * sysconf(_SC_AVPHYS_PAGES));
 }
 
-uint64_t get_total_memory() 
+uint64_t get_total_memory()
 {
    return static_cast<uint64_t>(sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES));
 }
-
 
 } // namespace systeminfo
 } // namespace orion

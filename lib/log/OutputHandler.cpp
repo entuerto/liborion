@@ -19,8 +19,8 @@
  * MA 02110-1301, USA.
  */
 
-#include <orion/log/OutputHandler.h>
 #include <orion/log/OnelineFormatter.h>
+#include <orion/log/OutputHandler.h>
 
 namespace orion
 {
@@ -29,8 +29,8 @@ namespace log
 //--------------------------------------------------------------------------
 // Class OutputHandler
 
-OutputHandler::OutputHandler() :
-   _formatter(std::make_unique<OnelineFormatter>())
+OutputHandler::OutputHandler()
+   : _formatter(std::make_unique<OnelineFormatter>())
 {
 }
 
