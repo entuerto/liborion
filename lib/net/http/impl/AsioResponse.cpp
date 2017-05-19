@@ -6,12 +6,12 @@
 //
 #include <net/http/impl/AsioResponse.h>
 
-#include <sstream>
-
 #include <orion/Log.h>
 #include <orion/net/http/Utils.h>
 
 #include <boost/format.hpp>
+
+#include <sstream>
 
 using namespace orion::log;
 
@@ -22,22 +22,22 @@ namespace net
 namespace http
 {
 
-AsioResponse::AsioResponse(StatusCode code) :
-   Response(code)
+AsioResponse::AsioResponse(StatusCode code)
+   : Response(code)
 {
    _header_streambuf = std::make_unique<asio::streambuf>();
    _body_streambuf   = std::make_unique<asio::streambuf>();
 }
 
-AsioResponse::AsioResponse(StatusCode code, const Version& version, const Header& header) :
-   Response(code, version, header)
+AsioResponse::AsioResponse(StatusCode code, const Version& version, const Header& header)
+   : Response(code, version, header)
 {
    _header_streambuf = std::make_unique<asio::streambuf>();
    _body_streambuf   = std::make_unique<asio::streambuf>();
 }
 
-AsioResponse::AsioResponse(AsioResponse&& rhs) :
-   Response(std::move(rhs))
+AsioResponse::AsioResponse(AsioResponse&& rhs)
+   : Response(std::move(rhs))
 {
 }
 
@@ -49,7 +49,7 @@ AsioResponse& AsioResponse::operator=(AsioResponse&& Rhs)
 {
    Response::operator=(std::move(Rhs));
 
-   return *this;   
+   return *this;
 }
 
 void AsioResponse::build_header_buffer()
@@ -68,16 +68,12 @@ void AsioResponse::build_header_buffer()
 
    auto status_msg = boost::format("HTTP/%d.%d %s") % v.major % v.minor % status();
 
-   o << boost::str(status_msg)
-     << crlf;  
+   o << boost::str(status_msg) << crlf;
 
    for (const auto& item : _header)
    {
-      o << item.first
-        << ": "
-        << item.second
-        << crlf;
-   } 
+      o << item.first << ": " << item.second << crlf;
+   }
 
    o << crlf;
 }
@@ -95,11 +91,10 @@ std::vector<asio::const_buffer> AsioResponse::buffers()
 
 std::size_t AsioResponse::size() const
 {
-   return static_cast<asio::streambuf*>(_header_streambuf.get())->size() + 
+   return static_cast<asio::streambuf*>(_header_streambuf.get())->size() +
           static_cast<asio::streambuf*>(_body_streambuf.get())->size();
 }
 
 } // http
 } // net
 } // orion
-

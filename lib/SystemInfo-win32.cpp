@@ -19,15 +19,19 @@
 
 #include <orion/SystemInfo.h>
 
+#include <orion/StringUtils.h>
+
+#include <boost/format.hpp>
+
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0500
 #endif
 
-#include <windows.h>
-#include <lmcons.h>   /* For UNLEN */
+#include <lmcons.h> /* For UNLEN */
 #include <process.h>
+#include <windows.h>
 
-#if 0 //ndef __MINGW64__
+#if 0 // ndef __MINGW64__
 #include <ddk/ntifs.h>
 
 typedef struct _SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION {
@@ -44,10 +48,6 @@ LARGE_INTEGER IdleTime;
 
 #include <psapi.h>
 
-#include <orion/StringUtils.h>
-
-#include <boost/format.hpp>
-
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 namespace orion
@@ -61,23 +61,23 @@ void get_loaded_modules(unsigned long process_id, ModuleList& modules)
    DWORD cbNeeded;
 
    // Get a list of all the modules in this process.
-   HANDLE process_handle = OpenProcess(PROCESS_QUERY_INFORMATION |
-                                       PROCESS_VM_READ,
-                                       FALSE, 
-                                       process_id);
+   HANDLE process_handle =
+      OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, process_id);
    if (process_handle == nullptr)
-       return;
+      return;
 
    HMODULE module_handles[1024];
 
-   if (EnumProcessModulesEx(process_handle, module_handles, sizeof(module_handles), &cbNeeded, LIST_MODULES_ALL)) 
+   if (EnumProcessModulesEx(
+          process_handle, module_handles, sizeof(module_handles), &cbNeeded, LIST_MODULES_ALL))
    {
-      for (int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) 
+      for (int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++)
       {
          wchar_t module_name[MAX_PATH];
 
          // Get the full path to the module's file.
-         if (GetModuleFileNameExW(process_handle, module_handles[i], module_name, sizeof(module_name))) 
+         if (GetModuleFileNameExW(
+                process_handle, module_handles[i], module_name, sizeof(module_name)))
          {
             // Print the module name and handle value.
             modules.push_back(wstring_to_utf8(module_name));
@@ -91,21 +91,21 @@ std::string get_cpu_model()
 {
    const uint32_t max_length = 4096;
 
-   DWORD   type = REG_SZ;
-   HKEY    hKey = nullptr;
-   DWORD   length = max_length;
+   DWORD type   = REG_SZ;
+   HKEY hKey    = nullptr;
+   DWORD length = max_length;
    wchar_t value[max_length];
 
    ZeroMemory(value, max_length);
 
-   const wchar_t* keyToOpen = L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
+   const wchar_t* keyToOpen   = L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
    const wchar_t* valueToFind = L"ProcessorNameString";
 
    RegOpenKeyExW(HKEY_LOCAL_MACHINE, keyToOpen, 0, KEY_READ, &hKey);
    RegQueryValueExW(hKey, valueToFind, nullptr, &type, (LPBYTE)&value, &length);
    RegCloseKey(hKey);
 
-   std::string cpuName = wstring_to_utf8(value); 
+   std::string cpuName = wstring_to_utf8(value);
 
    SYSTEM_INFO sysinfo;
    ZeroMemory(&sysinfo, sizeof(SYSTEM_INFO));
@@ -113,9 +113,8 @@ std::string get_cpu_model()
 
    const uint64_t cpuThreadCount = sysinfo.dwNumberOfProcessors;
 
-   auto f = (cpuThreadCount == 1) ?
-               boost::format("%s (%d thread)") % cpuName % cpuThreadCount:
-               boost::format("%s (%d threads)") % cpuName % cpuThreadCount;
+   auto f = (cpuThreadCount == 1) ? boost::format("%s (%d thread)") % cpuName % cpuThreadCount :
+                                    boost::format("%s (%d threads)") % cpuName % cpuThreadCount;
 
    return boost::str(f);
 }
@@ -135,21 +134,18 @@ std::vector<CpuInfo> get_cpu_info()
    ULONG result_size;
 
    DWORD sppi_size = cpu_count * sizeof(*sppi);
-   sppi = (SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION*)malloc(sppi_size);
+   sppi            = (SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION*)malloc(sppi_size);
 
-   NTSTATUS status = NtQuerySystemInformation(SystemProcessorPerformanceInformation,
-                                              sppi,
-                                              sppi_size,
-                                              &result_size);
+   NTSTATUS status = NtQuerySystemInformation(
+      SystemProcessorPerformanceInformation, sppi, sppi_size, &result_size);
 
-   if (not NT_SUCCESS(status)) 
+   if (not NT_SUCCESS(status))
    {
       // err = RtlNtStatusToDosError(status);
       RtlNtStatusToDosError(status);
       free(sppi);
       return cpu_infos;
    }
-
 
    for (int32_t i = 0; i < cpu_count; i++)
    {
@@ -159,11 +155,12 @@ std::vector<CpuInfo> get_cpu_info()
       int len = _snwprintf_s(key_name,
                              sizeof(key_name),
                              ARRAY_SIZE(key_name),
-                             L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\%d", i);
+                             L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\%d",
+                             i);
 
       DWORD ret = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key_name, 0, KEY_QUERY_VALUE, &processor_key);
 
-      if (ret != ERROR_SUCCESS) 
+      if (ret != ERROR_SUCCESS)
       {
          // err = GetLastError();
          // free(sppi);
@@ -172,9 +169,10 @@ std::vector<CpuInfo> get_cpu_info()
       DWORD cpu_speed;
       DWORD cpu_speed_size = sizeof(cpu_speed);
 
-      ret = RegQueryValueExW(processor_key, L"~MHz", NULL, NULL, (BYTE*) &cpu_speed, &cpu_speed_size);
+      ret =
+         RegQueryValueExW(processor_key, L"~MHz", NULL, NULL, (BYTE*)&cpu_speed, &cpu_speed_size);
 
-      if (ret != ERROR_SUCCESS) 
+      if (ret != ERROR_SUCCESS)
       {
          // err = GetLastError();
          // free(sppi);
@@ -184,9 +182,10 @@ std::vector<CpuInfo> get_cpu_info()
       WCHAR cpu_brand[256];
       DWORD cpu_brand_size = sizeof(cpu_brand);
 
-      ret = RegQueryValueExW(processor_key, L"ProcessorNameString", NULL, NULL, (BYTE*) &cpu_brand, &cpu_brand_size);
+      ret = RegQueryValueExW(
+         processor_key, L"ProcessorNameString", NULL, NULL, (BYTE*)&cpu_brand, &cpu_brand_size);
 
-      if (ret != ERROR_SUCCESS) 
+      if (ret != ERROR_SUCCESS)
       {
          // err = GetLastError();
          // free(sppi);
@@ -201,16 +200,16 @@ std::vector<CpuInfo> get_cpu_info()
       cpu_times.nice = 0;
       cpu_times.sys  = (sppi[i].KernelTime.QuadPart - sppi[i].IdleTime.QuadPart) / 10000;
       cpu_times.idle = sppi[i].IdleTime.QuadPart / 10000;
-#if 0 //ndef __MINGW64__
+#if 0 // ndef __MINGW64__
       cpu_times.irq  = sppi[i].InterruptTime.QuadPart / 10000;
 #else
-      cpu_times.irq  = sppi[i].Reserved1[0].QuadPart / 10000;
+      cpu_times.irq = sppi[i].Reserved1[0].QuadPart / 10000;
 #endif
 
+      len = WideCharToMultiByte(
+         CP_UTF8, 0, cpu_brand, cpu_brand_size / sizeof(WCHAR), NULL, 0, NULL, NULL);
 
-      len = WideCharToMultiByte(CP_UTF8, 0, cpu_brand, cpu_brand_size / sizeof(WCHAR), NULL, 0, NULL, NULL);
-
-      if (len == 0) 
+      if (len == 0)
       {
          // err = GetLastError();
          // free(sppi);
@@ -218,9 +217,10 @@ std::vector<CpuInfo> get_cpu_info()
 
       char* model = new char[len];
 
-      len = WideCharToMultiByte(CP_UTF8, 0, cpu_brand, cpu_brand_size / sizeof(WCHAR), model, len, NULL, NULL);
+      len = WideCharToMultiByte(
+         CP_UTF8, 0, cpu_brand, cpu_brand_size / sizeof(WCHAR), model, len, NULL, NULL);
 
-      if (len == 0) 
+      if (len == 0)
       {
          // err = GetLastError();
          // free(sppi);
@@ -230,7 +230,7 @@ std::vector<CpuInfo> get_cpu_info()
 
       cpu_infos.push_back(cpu_info);
 
-      delete [] model;
+      delete[] model;
    }
 
    free(sppi);
@@ -250,9 +250,9 @@ std::string get_os_version()
    {
       return "Microsoft Windows (Unkown version)";
    }
- 
+
    VS_FIXEDFILEINFO* file_info = nullptr;
-   UINT len = 0;
+   UINT len                    = 0;
 
    if (not VerQueryValue(data.get(), TEXT("\\"), (LPVOID*)&file_info, &len))
    {
@@ -277,7 +277,7 @@ std::string get_os_version()
 std::string get_host_name()
 {
    wchar_t hostname[100];
-   DWORD size = sizeof (hostname);
+   DWORD size         = sizeof(hostname);
    bool hostname_fail = not GetComputerNameW(hostname, &size);
 
    return hostname_fail ? "localhost" : wstring_to_utf8(hostname);
@@ -288,9 +288,9 @@ std::string get_user_name()
    std::string user_name;
 
    uint32_t len = UNLEN + 1;
-   wchar_t  buffer[UNLEN + 1];
-    
-   if (GetUserNameW(buffer, (LPDWORD) &len))
+   wchar_t buffer[UNLEN + 1];
+
+   if (GetUserNameW(buffer, (LPDWORD)&len))
    {
       user_name = wstring_to_utf8(buffer);
    }
@@ -304,17 +304,14 @@ int get_process_id()
 
 std::string get_program_name()
 {
-   HANDLE process_handle = OpenProcess(PROCESS_QUERY_INFORMATION |
-                                       PROCESS_VM_READ,
-                                       FALSE, get_process_id());
+   HANDLE process_handle =
+      OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, get_process_id());
    if (process_handle == nullptr)
-       return "";
+      return "";
 
    wchar_t module_name[MAX_PATH];
 
-   GetModuleFileNameExW(process_handle,
-                        nullptr,
-                        module_name, sizeof(module_name)); 
+   GetModuleFileNameExW(process_handle, nullptr, module_name, sizeof(module_name));
 
    CloseHandle(process_handle);
 
@@ -337,7 +334,6 @@ uint64_t get_free_memory()
    }
 
    return static_cast<uint64_t>(memory_status.ullAvailPhys);
-   
 }
 
 uint64_t get_total_memory()
@@ -350,8 +346,7 @@ uint64_t get_total_memory()
       return -1;
    }
 
-  return static_cast<uint64_t>(memory_status.ullTotalPhys);
-   
+   return static_cast<uint64_t>(memory_status.ullTotalPhys);
 }
 
 } // namespace systeminfo

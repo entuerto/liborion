@@ -20,12 +20,12 @@
 #ifndef ORION_LOG_RECORD_H
 #define ORION_LOG_RECORD_H
 
-#include <boost/format.hpp>
-
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/SourceLocation.h>
 #include <orion/log/Level.h>
+
+#include <boost/format.hpp>
 
 namespace orion
 {
@@ -40,7 +40,7 @@ namespace log
     the jog of th Formatter to format the Records information that
     will be saved by the OutputHandler.
  */
-class API_EXPORT Record 
+class API_EXPORT Record
 {
 public:
    Record();
@@ -100,7 +100,7 @@ public:
    Record& operator<<(std::streambuf* buf);
 
 private:
-   Level       _level;
+   Level _level;
    std::string _time_stamp;
    std::string _message;
 

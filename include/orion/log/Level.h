@@ -8,10 +8,10 @@
 #ifndef ORION_LOG_LEVEL_H
 #define ORION_LOG_LEVEL_H
 
-#include <string>
-#include <iosfwd>
-
 #include <orion/Orion-Stddefs.h>
+
+#include <iosfwd>
+#include <string>
 
 namespace orion
 {

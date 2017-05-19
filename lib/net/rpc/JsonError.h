@@ -22,12 +22,12 @@ namespace rpc
 
 enum class JsonErrc
 {
-   ParseError      = -32700,
-   InvalidRequest  = -32600,
-   MethodNotFound  = -32601,
-   InvalidParams   = -32602,
-   InternalError   = -32603,
-   ServerError     = -32000
+   ParseError     = -32700,
+   InvalidRequest = -32600,
+   MethodNotFound = -32601,
+   InvalidParams  = -32602,
+   InternalError  = -32603,
+   ServerError    = -32000
 };
 
 API_EXPORT Error make_error(JsonErrc code) noexcept;

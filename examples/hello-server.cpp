@@ -17,25 +17,25 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
+#include <orion/Log.h>
+#include <orion/net/Server.h>
+#include <orion/net/http/Request.h>
+#include <orion/net/http/Response.h>
+#include <orion/net/http/Server.h>
+
 #include <cstdio>
 #include <fstream>
 #include <iostream>
-
-#include <orion/Log.h>
-#include <orion/net/Server.h>
-#include <orion/net/http/Server.h>
-#include <orion/net/http/Request.h>
-#include <orion/net/http/Response.h>
 
 using namespace orion;
 using namespace orion::log;
 using namespace orion::net;
 
-
 class HelloRequestHandler : public http::RequestHandler
 {
 public:
-   HelloRequestHandler() : http::RequestHandler("/")
+   HelloRequestHandler()
+      : http::RequestHandler("/")
    {
    }
 
@@ -45,7 +45,7 @@ public:
    {
       return std::make_unique<HelloRequestHandler>();
    }
-   
+
 protected:
    virtual std::error_code on_get(const http::Request& request, http::Response& response)
    {
@@ -63,7 +63,8 @@ protected:
 class WorldRequestHandler : public http::RequestHandler
 {
 public:
-   WorldRequestHandler() : http::RequestHandler("/")
+   WorldRequestHandler()
+      : http::RequestHandler("/")
    {
    }
 
@@ -73,13 +74,13 @@ public:
    {
       return std::make_unique<WorldRequestHandler>();
    }
-   
+
 protected:
    virtual std::error_code on_get(const http::Request& request, http::Response& response)
    {
       response.header("Content-Type", "text/plain; charset=utf-8");
       response.header("Connection", "close");
-      
+
       std::ostream o(response.rdbuf());
 
       o << "World turns round";
@@ -102,7 +103,7 @@ void setup_logger(std::fstream& file_stream)
    logger.add_output_handler(std::move(file_handler));
 }
 
-int main ()
+int main()
 {
    std::fstream fout("hello-server.log", std::fstream::out | std::fstream::trunc);
    setup_logger(fout);
@@ -113,8 +114,8 @@ int main ()
 
    if (server == nullptr)
    {
-      LOG(Info) << "Server error...";  
-      return EXIT_FAILURE; 
+      LOG(Info) << "Server error...";
+      return EXIT_FAILURE;
    }
 
    server->add_handler(WorldRequestHandler::create());

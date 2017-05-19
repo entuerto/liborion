@@ -7,12 +7,12 @@
 #ifndef ORION_LOG_LOGGERSERVICE_H
 #define ORION_LOG_LOGGERSERVICE_H
 
-#include <string>
-#include <thread>
-
 #include <orion/Orion-Stddefs.h>
 
 #include <asio.hpp>
+
+#include <string>
+#include <thread>
 
 namespace orion
 {
@@ -22,7 +22,7 @@ class OutputHandler;
 class Record;
 
 /// Service implementation for the logger.
-template <typename LoggerImplementation>
+template<typename LoggerImplementation>
 class LoggerService : public asio::io_service::service
 {
 public:
@@ -32,21 +32,21 @@ public:
    /// The type for an implementation of the logger.
    typedef std::shared_ptr<LoggerImplementation> implementation_type;
 
-   explicit LoggerService(asio::io_service& io_service) : 
-      asio::io_service::service(io_service),
-      _work_io_service(),
-      _work(std::make_unique<asio::io_service::work>(_work_io_service)),
-      _work_thread([&](){ _work_io_service.run(); })
+   explicit LoggerService(asio::io_service& io_service)
+      : asio::io_service::service(io_service)
+      , _work_io_service()
+      , _work(std::make_unique<asio::io_service::work>(_work_io_service))
+      , _work_thread([&]() { _work_io_service.run(); })
    {
    }
-   
+
    ~LoggerService()
    {
-      // The work thread will finish when _work is reset as all asynchronous 
-      // operations have been aborted and were discarded before (in destroy). 
+      // The work thread will finish when _work is reset as all asynchronous
+      // operations have been aborted and were discarded before (in destroy).
       _work.reset(nullptr);
 
-      // Event processing is stopped to discard queued operations. 
+      // Event processing is stopped to discard queued operations.
       _work_io_service.stop();
 
       /// Indicate that we have finished with the private io_service. Its
@@ -56,25 +56,16 @@ public:
 
    void construct(implementation_type& impl)
    {
-      impl.reset(new LoggerImplementation(Level::Warning)); 
+      impl.reset(new LoggerImplementation(Level::Warning));
    }
 
-   void destroy(implementation_type& impl)
-   {
-      impl.reset();
-   }
+   void destroy(implementation_type& impl) { impl.reset(); }
 
    /// Get the logging level
-   Level level(const implementation_type& impl) const
-   {
-      return impl->level();
-   }
+   Level level(const implementation_type& impl) const { return impl->level(); }
 
    /// Set the logging level
-   void level(implementation_type& impl, Level value)
-   {
-      impl->level(value);
-   }
+   void level(implementation_type& impl, Level value) { impl->level(value); }
 
    bool is_enabled(const implementation_type& impl, Level level) const
    {
@@ -82,15 +73,9 @@ public:
    }
 
    /// Indicates if the service is suspended
-   bool is_running(const implementation_type& impl) const
-   {
-      return impl->is_running();
-   }
+   bool is_running(const implementation_type& impl) const { return impl->is_running(); }
 
-   void is_running(implementation_type& impl, bool value)
-   {
-      impl->is_running(value);
-   }
+   void is_running(implementation_type& impl, bool value) { impl->is_running(value); }
 
    void add_output_handler(implementation_type& impl, std::unique_ptr<OutputHandler>&& hdl)
    {
@@ -98,49 +83,25 @@ public:
    }
 
    /// Write a record to the output handlers
-   void write(implementation_type& impl, const Record& record)
-   {
-      impl->write(record);
-   }
+   void write(implementation_type& impl, const Record& record) { impl->write(record); }
 
    /// Starts the logging
-   void start(implementation_type& impl, SystemInfoFunc system_info)
-   {
-      impl->start(system_info);
-   }
+   void start(implementation_type& impl, SystemInfoFunc system_info) { impl->start(system_info); }
 
    /// Shuts down the logger
-   void shutdown(implementation_type& impl)
-   {
-      impl->shutdown();
-   }
+   void shutdown(implementation_type& impl) { impl->shutdown(); }
 
    /// Suspend logging
-   void suspend(implementation_type& impl)
-   {
-      impl->suspend();
-   }
+   void suspend(implementation_type& impl) { impl->suspend(); }
 
    /// Resume logging
-   void resume(implementation_type& impl)
-   {
-      impl->resume();
-   }
+   void resume(implementation_type& impl) { impl->resume(); }
 
-   void push_scope(implementation_type& impl)
-   {
-      impl->push_scope();
-   }
+   void push_scope(implementation_type& impl) { impl->push_scope(); }
 
-   void pop_scope(implementation_type& impl)
-   {
-      impl->pop_scope();
-   }
+   void pop_scope(implementation_type& impl) { impl->pop_scope(); }
 
-   uint32_t scope_depth(const implementation_type& impl) const
-   {
-      return impl->scope_depth();
-   }
+   uint32_t scope_depth(const implementation_type& impl) const { return impl->scope_depth(); }
 
 private:
    /// Destroy all user-defined handler objects owned by the service.
@@ -159,7 +120,7 @@ private:
    std::thread _work_thread;
 };
 
-template <typename LoggerImplementation>
+template<typename LoggerImplementation>
 asio::io_service::id LoggerService<LoggerImplementation>::id;
 
 } // namespace log

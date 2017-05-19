@@ -20,12 +20,11 @@
 #ifndef ORION_LOG_FUNCTION_H
 #define ORION_LOG_FUNCTION_H
 
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/SourceLocation.h>
 #include <orion/log/Level.h>
+#include <string>
 
 namespace orion
 {
@@ -34,11 +33,11 @@ namespace log
 //! A Function represents an function being logged.
 /*!
  */
-class API_EXPORT Function 
+class API_EXPORT Function
 {
 public:
    Function(Level level, const SourceLocation& src_loc);
-   
+
    Function(const Function& rhs);
    Function(Function&& rhs);
 
@@ -62,7 +61,6 @@ public:
 private:
    Level _level;
    std::string _name;
-
 };
 
 } // namespace log

@@ -4,9 +4,10 @@
 #ifndef ORION_STRINGUTILS_H
 #define ORION_STRINGUTILS_H
 
-#include <cstdint>
+#include <orion/Orion-Stddefs.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <list>
 #include <sstream>
 #include <stdexcept>
@@ -14,20 +15,18 @@
 #include <typeinfo>
 #include <vector>
 
-#include <orion/Orion-Stddefs.h>
-
 namespace orion
 {
 typedef std::list<std::string> StringList;
 typedef std::vector<std::string> StringVector;
 
-
 class API_EXPORT BadConversion : public std::runtime_error
 {
 public:
    BadConversion(const std::string& s)
-     : std::runtime_error(s)
-   { }
+      : std::runtime_error(s)
+   {
+   }
 };
 
 /// convert UTF-8 string to wstring
@@ -36,11 +35,11 @@ API_EXPORT std::wstring utf8_to_wstring(const std::string& str);
 /// convert wstring to UTF-8 string
 API_EXPORT std::string wstring_to_utf8(const std::wstring& str);
 
-//! 
+//!
 API_EXPORT bool equals_no_case(const std::string& str1, const std::string& str2);
 
 //! Splits a string into various substrings.
-API_EXPORT StringVector split(const std::string& text,  char separator);
+API_EXPORT StringVector split(const std::string& text, char separator);
 
 //! Remove whitespace on the left side of the string
 API_EXPORT std::string& trim_left(std::string& text);
@@ -61,7 +60,9 @@ API_EXPORT std::string& to_upper(std::string& text);
 API_EXPORT uint32_t compute_hash(const std::string& text);
 
 // Speperate a string into different tokens
-API_EXPORT void tokenize(const std::string& input, std::vector<std::string>& tokens, const std::string& delimiters);
+API_EXPORT void tokenize(const std::string& input,
+                         std::vector<std::string>& tokens,
+                         const std::string& delimiters);
 
 inline std::string plural(std::size_t n, const std::string& s, const std::string& p)
 {
@@ -74,7 +75,7 @@ inline std::string to_string(const T& x)
 {
    std::ostringstream os;
 
-   if (not (os << x))
+   if (not(os << x))
       throw BadConversion("Cannot convert " + std::string(typeid(x).name()) + " to string");
 
    return os.str();
@@ -89,14 +90,12 @@ inline std::string to_string(const T& x)
    the conversion
 */
 template<typename T>
-inline void convert_to(const std::string& str,
-                       T& x,
-                       bool fail_if_leftover_chars = true)
+inline void convert_to(const std::string& str, T& x, bool fail_if_leftover_chars = true)
 {
    std::istringstream is(str.c_str());
    char c;
 
-   if ((not (is >> x)) or (fail_if_leftover_chars and is.get(c)))
+   if ((not(is >> x)) or (fail_if_leftover_chars and is.get(c)))
       throw BadConversion(str);
 }
 
@@ -118,63 +117,79 @@ inline T convert_to(const std::string& str, bool fail_if_leftover_chars = true)
 }
 
 /*!
-   
+
  */
-template <typename I>
+template<typename I>
 struct MapKeyIterator : public I
 {
-    typedef typename I::value_type::first_type value_type;
-    MapKeyIterator(I const &i) : I(i) { }
-    value_type const & operator*() const { return (*this)->first; }
+   typedef typename I::value_type::first_type value_type;
+   MapKeyIterator(I const& i)
+      : I(i)
+   {
+   }
+   value_type const& operator*() const { return (*this)->first; }
 };
 
-template <typename I>
+template<typename I>
 struct MapValueIterator : public I
 {
-    typedef typename I::value_type::second_type value_type;
-    MapValueIterator(I const &i) : I(i) { }
-    value_type const & operator*() const { return (*this)->second; }
+   typedef typename I::value_type::second_type value_type;
+   MapValueIterator(I const& i)
+      : I(i)
+   {
+   }
+   value_type const& operator*() const { return (*this)->second; }
 };
 
-template <typename I>
+template<typename I>
 struct join_functor : public I::value_type
 {
-    typedef typename I::value_type value_type;
-    join_functor(value_type const &sep) : sep(sep) { }
-    void operator()(value_type const &s)
-    {
-    	*this += s;
-    	*this += sep;
-    }
+   typedef typename I::value_type value_type;
+   join_functor(value_type const& sep)
+      : sep(sep)
+   {
+   }
+   void operator()(value_type const& s)
+   {
+      *this += s;
+      *this += sep;
+   }
+
 private:
-    const value_type sep;
+   const value_type sep;
 };
 
-template <typename I>
-typename I::value_type join(typename I::value_type const &sep, I beg, I const &end)
+template<typename I>
+typename I::value_type join(typename I::value_type const& sep, I beg, I const& end)
 {
-    return std::for_each(beg, end, join_functor<I>(sep));
+   return std::for_each(beg, end, join_functor<I>(sep));
 }
 
-template <typename I>
-typename I::value_type::first_type join_keys(typename I::value_type::first_type const &sep, I const &beg, I const &end)
+template<typename I>
+typename I::value_type::first_type join_keys(typename I::value_type::first_type const& sep,
+                                             I const& beg,
+                                             I const& end)
 {
-    return join(sep, MapKeyIterator<I>(beg), MapKeyIterator<I>(end));
+   return join(sep, MapKeyIterator<I>(beg), MapKeyIterator<I>(end));
 }
-template <typename I>
-typename I::value_type::first_type join_keys(typename I::value_type::first_type const &sep, std::pair<I, I> const &ip)
+template<typename I>
+typename I::value_type::first_type join_keys(typename I::value_type::first_type const& sep,
+                                             std::pair<I, I> const& ip)
 {
-    return join(sep, MapKeyIterator<I>(ip.first), MapKeyIterator<I>(ip.second));
+   return join(sep, MapKeyIterator<I>(ip.first), MapKeyIterator<I>(ip.second));
 }
-template <typename I>
-typename I::value_type::second_type join_values(typename I::value_type::second_type const &sep, I const &beg, I const &end)
+template<typename I>
+typename I::value_type::second_type join_values(typename I::value_type::second_type const& sep,
+                                                I const& beg,
+                                                I const& end)
 {
-    return join(sep, MapValueIterator<I>(beg), MapValueIterator<I>(end));
+   return join(sep, MapValueIterator<I>(beg), MapValueIterator<I>(end));
 }
-template <typename I>
-typename I::value_type::second_type join_values(typename I::value_type::second_type const &sep, std::pair<I, I> const &ip)
+template<typename I>
+typename I::value_type::second_type join_values(typename I::value_type::second_type const& sep,
+                                                std::pair<I, I> const& ip)
 {
-    return join(sep, MapValueIterator<I>(ip.first), MapValueIterator<I>(ip.second));
+   return join(sep, MapValueIterator<I>(ip.first), MapValueIterator<I>(ip.second));
 }
 
 } // namespace orion

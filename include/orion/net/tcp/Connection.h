@@ -22,10 +22,10 @@
 #ifndef ORION_NET_TCP_CONNECTION_H
 #define ORION_NET_TCP_CONNECTION_H
 
-#include <system_error>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/Connection.h>
+
+#include <system_error>
 
 namespace orion
 {
@@ -34,11 +34,11 @@ namespace net
 namespace tcp
 {
 /// TCP network connections.
-class API_EXPORT Connection : public net::Connection 
+class API_EXPORT Connection : public net::Connection
 {
 public:
    NO_COPY(Connection)
-   
+
    Connection();
    virtual ~Connection();
 
@@ -48,8 +48,8 @@ public:
    /// Get the current value of the keepalive property.
    virtual bool keep_alive() const;
 
-   /// Controls whether the operating system should delay packet transmission in hopes of 
-   /// sending fewer packets (Nagle's algorithm). The default is true (no delay), meaning 
+   /// Controls whether the operating system should delay packet transmission in hopes of
+   /// sending fewer packets (Nagle's algorithm). The default is true (no delay), meaning
    /// that data is sent as soon as possible after a Write.
    virtual std::error_code no_delay(bool value);
 

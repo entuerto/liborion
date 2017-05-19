@@ -19,8 +19,8 @@
 
 #include <orion/SystemInfo.h>
 
-#include <sstream>
 #include <iomanip>
+#include <sstream>
 
 namespace orion
 {
@@ -28,10 +28,10 @@ namespace systeminfo
 {
 // class CpuInfo
 
-CpuInfo::CpuInfo(const std::string& model, uint32_t speed, CpuTimes& times) :
-   _model(model),
-   _speed(speed),
-   _times(times)
+CpuInfo::CpuInfo(const std::string& model, uint32_t speed, CpuTimes& times)
+   : _model(model)
+   , _speed(speed)
+   , _times(times)
 {
 }
 
@@ -62,29 +62,25 @@ std::string CpuInfo::to_string() const
 std::string human_readable(uint64_t value, uint64_t base /* = 1024 */)
 {
    uint32_t i = -1;
-   
+
    // base 1000
-   const char* units_si[]  = {" kB", " MB", " GB", " TB", "PB", "EB", "ZB", "YB"}; 
+   const char* units_si[] = {" kB", " MB", " GB", " TB", "PB", "EB", "ZB", "YB"};
    // base 1024
-   const char* units_iec[] = {" kiB", " MiB", " GiB", " TiB", "PiB", "EiB", "ZiB", "YiB"}; 
+   const char* units_iec[] = {" kiB", " MiB", " GiB", " TiB", "PiB", "EiB", "ZiB", "YiB"};
 
    double bytes = value;
-   do 
+   do
    {
       bytes = bytes / base;
       i++;
-   } 
-   while (bytes > base);
+   } while (bytes > base);
 
    std::ostringstream oss;
 
-   oss << std::setprecision(2) 
-       << bytes
-       << (base == 1000 ? units_si[i] : units_iec[i]);
+   oss << std::setprecision(2) << bytes << (base == 1000 ? units_si[i] : units_iec[i]);
 
    return oss.str();
 }
 
 } // namespace systeminfo
 } // namespace orion
-

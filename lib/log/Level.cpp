@@ -42,7 +42,7 @@ std::string to_string(Level level)
    return "";
 }
 
-std::ostream& operator<<(std::ostream& o, Level level) 
+std::ostream& operator<<(std::ostream& o, Level level)
 {
    o << to_string(level);
    return o;

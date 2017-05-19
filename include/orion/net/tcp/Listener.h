@@ -24,9 +24,9 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/Connection.h> 
-#include <orion/net/IPAddress.h> 
-#include <orion/net/Listener.h> 
+#include <orion/net/Connection.h>
+#include <orion/net/IPAddress.h>
+#include <orion/net/Listener.h>
 
 namespace orion
 {
@@ -35,9 +35,9 @@ namespace net
 namespace tcp
 {
 ///
-/// Listener is a TCP network listener. 
+/// Listener is a TCP network listener.
 ///
-class API_EXPORT Listener : public net::Listener 
+class API_EXPORT Listener : public net::Listener
 {
 public:
    NO_COPY(Listener)
@@ -50,7 +50,6 @@ public:
    void close() override;
 
 private:
-   
 };
 
 } // tcp

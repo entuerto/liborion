@@ -10,8 +10,8 @@
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/Utils.h>
-#include <orion/log/Record.h>
 #include <orion/log/ExceptionRecord.h>
+#include <orion/log/Record.h>
 
 namespace orion
 {

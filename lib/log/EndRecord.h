@@ -9,9 +9,9 @@
 #ifndef ORION_LOG_ENDRECORD_H
 #define ORION_LOG_ENDRECORD_H
 
-#include <string>
-
 #include <orion/log/Record.h>
+
+#include <string>
 
 namespace orion
 {
@@ -37,7 +37,6 @@ public:
 
    EndRecord& operator=(const EndRecord& rhs);
    EndRecord& operator=(EndRecord&& rhs);
-
 };
 
 } // namespace log

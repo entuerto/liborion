@@ -21,18 +21,18 @@
 
 #include <net/rpc/HttpRequestHandler.h>
 
-#include <json/json.hpp>
-
-#include <orion/Log.h>
 #include <orion/ErrorMacros.h>
+#include <orion/Log.h>
 #include <orion/net/rpc/Error.h>
 
 #include <net/rpc/JsonError.h>
 
+#include <json/json.hpp>
+
 #include <iostream>
 
-#define JSON_RPC_METHODNAME      "method"
-#define JSON_RPC_PARAMETERS      "params"
+#define JSON_RPC_METHODNAME "method"
+#define JSON_RPC_PARAMETERS "params"
 #define JSON_RPC_RESPONSE_RESULT "result"
 
 using json = nlohmann::json;
@@ -51,15 +51,15 @@ static Json::Value make_response(const Error& error);
 #endif
 //-------------------------------------------------------------------------------------------------
 
-HttpRequestHandler::HttpRequestHandler(std::unique_ptr<Service>&& service) :
-   http::RequestHandler(service->url()),
-   _service(std::move(service))
+HttpRequestHandler::HttpRequestHandler(std::unique_ptr<Service>&& service)
+   : http::RequestHandler(service->url())
+   , _service(std::move(service))
 {
 }
 
 std::error_code HttpRequestHandler::on_post(const http::Request& request, http::Response& response)
 {
-	LOG_FUNCTION(Debug2, "HttpRequestHandler::on_post()")
+   LOG_FUNCTION(Debug2, "HttpRequestHandler::on_post()")
 
    if (request.header("Content-Type") == "application/json")
    {
@@ -72,11 +72,9 @@ std::error_code HttpRequestHandler::on_post(const http::Request& request, http::
    }
    else if (request.header("Content-Type") == "application/json+cbor")
    {
-      
    }
    else if (request.header("Content-Type") == "application/cbor")
    {
-      
    }
 
    return std::error_code();

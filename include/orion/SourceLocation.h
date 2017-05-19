@@ -15,7 +15,8 @@
 namespace orion
 {
 
-#define _src_loc SourceLocation{__FILE__, __LINE__, __FUNCTION__}
+#define _src_loc \
+   SourceLocation { __FILE__, __LINE__, __FUNCTION__ }
 
 struct API_EXPORT SourceLocation
 {
@@ -24,13 +25,11 @@ struct API_EXPORT SourceLocation
    std::string function_name;
 };
 
-API_EXPORT inline std::ostream& operator<< (std::ostream& out, const SourceLocation& sl)
+API_EXPORT inline std::ostream& operator<<(std::ostream& out, const SourceLocation& sl)
 {
-   out << sl.file_name
-       << ":"
-       << sl.line_number;
+   out << sl.file_name << ":" << sl.line_number;
 
-   if (not sl.function_name.empty()) 
+   if (not sl.function_name.empty())
    {
       out << ":" << sl.function_name;
    }

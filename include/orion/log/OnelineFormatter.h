@@ -20,10 +20,10 @@
 #ifndef ORION_LOG_ONELINEFORMATTER_H
 #define ORION_LOG_ONELINEFORMATTER_H
 
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/log/Formatter.h>
+
+#include <string>
 
 namespace orion
 {

@@ -22,9 +22,9 @@
 #ifndef ORION_NET_RPC_METHOD_H
 #define ORION_NET_RPC_METHOD_H
 
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
+
+#include <string>
 
 namespace orion
 {

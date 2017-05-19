@@ -22,18 +22,17 @@
 #ifndef ORION_NET_IPV4_H
 #define ORION_NET_IPV4_H
 
-#include <array>
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/IP.h>
+#include <array>
+#include <string>
 
 namespace orion
 {
 namespace net
 {
 
-class API_EXPORT IPv4 : public IP 
+class API_EXPORT IPv4 : public IP
 {
 public:
    IPv4();
@@ -84,7 +83,7 @@ public:
 private:
    union
    {
-      uint8_t  b[4];
+      uint8_t b[4];
       uint16_t w[2];
       uint32_t l;
    } _a;

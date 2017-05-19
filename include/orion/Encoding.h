@@ -8,10 +8,10 @@
 #ifndef ORION_ENCODING_H
 #define ORION_ENCODING_H
 
-#include <cstdint>
-#include <array>
-
 #include <orion/Orion-Stddefs.h>
+
+#include <array>
+#include <cstdint>
 
 namespace orion
 {
@@ -45,9 +45,9 @@ struct API_EXPORT LittleEndian
 
 // __llvm__
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-   typedef LittleEndian ByteOrder;
+typedef LittleEndian ByteOrder;
 #else
-   typedef BigEndian ByteOrder;
+typedef BigEndian ByteOrder;
 #endif
 
 //---------------------------------------------------------------------------------------
@@ -63,27 +63,27 @@ int enc_varint(T value, uint8_t* output)
    auto uvalue = static_cast<typename std::make_unsigned<T>::type>(value);
 
    int i = 0;
-   
-    while (uvalue >= 0x80) 
-    {
-        output[i] = uint8_t(uvalue) | 0x80;
-        //Remove the seven bits we just wrote
-        uvalue >>= 7;
-        i++;
-    }
 
-    output[i] = uint8_t(uvalue);
-    return i + 1;
+   while (uvalue >= 0x80)
+   {
+      output[i] = uint8_t(uvalue) | 0x80;
+      // Remove the seven bits we just wrote
+      uvalue >>= 7;
+      i++;
+   }
+
+   output[i] = uint8_t(uvalue);
+   return i + 1;
 }
 
 /// Decodes a int from input and returns that value and the
 /// number of bytes read (> 0).
 template<typename T = uint64_t>
-T dec_varint(uint8_t* input, int in_size) 
+T dec_varint(uint8_t* input, int in_size)
 {
    T ret = 0;
 
-   for (int i = 0; i < in_size; i++) 
+   for (int i = 0; i < in_size; i++)
    {
       if (input[i] < 0x80)
          return ret | (T)input[i] << (i * 7);

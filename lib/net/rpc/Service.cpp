@@ -4,8 +4,8 @@
 //
 #include <orion/net/rpc/Service.h>
 
-#include <orion/Log.h>
 #include <orion/ErrorMacros.h>
+#include <orion/Log.h>
 
 #include <net/rpc/HttpRequestHandler.h>
 
@@ -24,15 +24,15 @@ std::unique_ptr<http::RequestHandler> make_http_handler(std::unique_ptr<Service>
 
 //-------------------------------------------------------------------------------------------------
 
-Service::Service(const std::string& name, 
-                 const std::string& desc, 
-                       float        version, 
-                 const std::string& url) :
-   _name(name),
-   _description(desc),
-   _version(version),
-   _url(url),
-   _methods()
+Service::Service(const std::string& name,
+                 const std::string& desc,
+                 float version,
+                 const std::string& url)
+   : _name(name)
+   , _description(desc)
+   , _version(version)
+   , _url(url)
+   , _methods()
 {
 }
 

@@ -22,11 +22,11 @@
 #ifndef ORION_NET_MONGOOSESERVER_H
 #define ORION_NET_MONGOOSESERVER_H
 
-#include <string>
-
 #include <orion/net/http/Server.h>
 
 #include <mongoose/mongoose.h>
+
+#include <string>
 
 namespace orion
 {
@@ -50,10 +50,10 @@ public:
    std::error_code serve(struct mg_connection* connection, struct http_message* hm);
 
 private:
-   struct mg_mgr _mgr; 
+   struct mg_mgr _mgr;
 };
 
 } // http
 } // net
 } // orion
-#endif 
+#endif

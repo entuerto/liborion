@@ -17,17 +17,16 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <cstdio>
-#include <sstream>
-#include <iostream>
-
 #include <orion/SystemInfo.h>
+
+#include <cstdio>
+#include <iostream>
+#include <sstream>
 
 using namespace orion;
 using namespace orion::systeminfo;
 
-
-int main ()
+int main()
 {
    std::cout << "System Information\n"
              << "  Name:       " << get_user_name() << "\n"
@@ -37,18 +36,19 @@ int main ()
              << "  CPU:        " << get_cpu_model() << "\n"
              << "\n"
              << "Memory\n"
-             << "  Free:       " << human_readable(get_free_memory())  << "\n"
-             << "  Total:      " << human_readable(get_total_memory())  << "\n"
+             << "  Free:       " << human_readable(get_free_memory()) << "\n"
+             << "  Total:      " << human_readable(get_total_memory()) << "\n"
              << "\n"
              << "Processor\n";
 
-   std::vector<CpuInfo> cpu_infos = get_cpu_info(); 
+   std::vector<CpuInfo> cpu_infos = get_cpu_info();
 
    for (auto it = cpu_infos.begin(); it != cpu_infos.end(); it++)
    {
       std::cout << "  Model:   " << it->model() << "\n"
                 << "  Speed:   " << it->speed() << "\n"
-                << "  Times" << "\n"
+                << "  Times"
+                << "\n"
                 << "     user:  " << it->times().user << "\n"
                 << "     nice:  " << it->times().nice << "\n"
                 << "     sys:   " << it->times().sys << "\n"

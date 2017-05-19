@@ -15,10 +15,10 @@ namespace net
 {
 namespace http
 {
-Server::Server() :
-   _port(-1),
-   _is_running(false),
-   _RequestHandlers()
+Server::Server()
+   : _port(-1)
+   , _is_running(false)
+   , _RequestHandlers()
 {
 }
 
@@ -43,10 +43,9 @@ bool Server::is_running() const
 
 std::unique_ptr<http::Server> Server::create()
 {
-   return std::make_unique<AsioServer>(); 
+   return std::make_unique<AsioServer>();
 }
 
 } // http
 } // net
 } // orion
-   

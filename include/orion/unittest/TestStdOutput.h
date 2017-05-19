@@ -7,11 +7,11 @@
 #ifndef ORION_UNITTEST_TESTSTDOUTPUT_H
 #define ORION_UNITTEST_TESTSTDOUTPUT_H
 
-#include <map>
-#include <ostream>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/unittest/TestOutput.h>
+
+#include <map>
+#include <ostream>
 
 namespace orion
 {
@@ -50,7 +50,7 @@ private:
 
 private:
    std::ostream& _stream;
-   ReportLevel   _report_level;
+   ReportLevel _report_level;
    int _indent;
 };
 

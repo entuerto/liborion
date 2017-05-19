@@ -24,37 +24,39 @@ namespace orion
 // ---------------------------------------------------------------------------
 // ---- NotImplementedException ----
 
-NotImplementedException::NotImplementedException(const std::string& text, const SourceLocation& src_loc) :
-   Exception(text, src_loc)
+NotImplementedException::NotImplementedException(const std::string& text,
+                                                 const SourceLocation& src_loc)
+   : Exception(text, src_loc)
 {
 }
 
-NotImplementedException::NotImplementedException(const NotImplementedException& other) :
-   Exception(other)
+NotImplementedException::NotImplementedException(const NotImplementedException& other)
+   : Exception(other)
 {
 }
 
-NotImplementedException::NotImplementedException(NotImplementedException&& other) :
-   Exception(std::move(other))
+NotImplementedException::NotImplementedException(NotImplementedException&& other)
+   : Exception(std::move(other))
 {
 }
 
 NotImplementedException& NotImplementedException::operator=(const NotImplementedException& other)
 {
-   if (this == &other) {
+   if (this == &other)
+   {
       return *this;
    }
 
    Exception::operator=(other);
 
-   return *this ;
+   return *this;
 }
 
 NotImplementedException& NotImplementedException::operator=(NotImplementedException&& other)
 {
    Exception::operator=(std::move(other));
 
-   return *this ;
+   return *this;
 }
 
 } // namespace orion

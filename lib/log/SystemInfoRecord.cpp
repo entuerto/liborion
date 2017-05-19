@@ -28,26 +28,26 @@ namespace log
 /*!
    Constructor
  */
-SystemInfoRecord::SystemInfoRecord() :
-   Record()
+SystemInfoRecord::SystemInfoRecord()
+   : Record()
 {
 }
 
-SystemInfoRecord::SystemInfoRecord(const std::string& msg) :
-   Record(Level::NotSet, msg)
+SystemInfoRecord::SystemInfoRecord(const std::string& msg)
+   : Record(Level::NotSet, msg)
 {
 }
 
 /*
    Copy constructor
  */
-SystemInfoRecord::SystemInfoRecord(const SystemInfoRecord& rhs) :
-   Record(rhs)
+SystemInfoRecord::SystemInfoRecord(const SystemInfoRecord& rhs)
+   : Record(rhs)
 {
 }
 
-SystemInfoRecord::SystemInfoRecord(SystemInfoRecord&& rhs) :
-   Record(std::move(rhs))
+SystemInfoRecord::SystemInfoRecord(SystemInfoRecord&& rhs)
+   : Record(std::move(rhs))
 {
 }
 

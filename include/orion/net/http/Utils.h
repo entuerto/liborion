@@ -10,9 +10,9 @@
 
 #include <chrono>
 #include <map>
-#include <vector>
 #include <string>
- 
+#include <vector>
+
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/StringUtils.h>
@@ -42,8 +42,8 @@ struct Version
 #undef DELETE
 #endif
 ///
-/// HTTP defines methods (sometimes referred to as verbs) to indicate the desired action to be 
-/// performed on the identified resource. 
+/// HTTP defines methods (sometimes referred to as verbs) to indicate the desired action to be
+/// performed on the identified resource.
 ///
 /// Summary table
 /// +--------------+----------+----------+----------+------+------------+-----------+
@@ -60,87 +60,84 @@ struct Version
 /// | TRACE        | RFC 7231 |    No    |   Yes    | Yes  |    Yes     |    No     |
 /// | PATCH        | RFC 5789 |    Yes   |   Yes    | No   |    No      |    Yes    |
 /// +--------------+----------+----------+----------+------+------------+-----------+
-/// 
-enum class Method 
+///
+enum class Method
 {
-   DELETE      = 0,
-   GET         = 1,
-   HEAD        = 2,
-   POST        = 3,
-   PUT         = 4,
-   // Pathological 
-   CONNECT     = 5,
-   OPTIONS     = 6,
-   TRACE       = 7,
-   // WebDAV 
-   COPY        = 8, 
-   LOCK        = 9, 
-   MKCOL       = 10,
-   MOVE        = 11,
-   PROPFIND    = 12,
-   PROPPATCH   = 13,
-   SEARCH      = 14,
-   UNLOCK      = 15,
-   BIND        = 16,
-   REBIND      = 17,
-   UNBIND      = 18,
-   ACL         = 19,
-   // Subversion 
-   REPORT      = 20,
-   MKACTIVITY  = 21,
-   CHECKOUT    = 22,
-   MERGE       = 23,
-   // upnp 
-   MSEARCH     = 24, 
-   NOTIFY      = 25, 
-   SUBSCRIBE   = 26, 
-   UNSUBSCRIBE = 27, 
-   // RFC-5789 
-   PATCH       = 28,
-   PURGE       = 29,
-   // CalDAV 
-   MKCALENDAR  = 30,
-   // RFC-2068, section 19.6.1.2 
-   LINK        = 31, 
-   UNLINK      = 32 
+   DELETE = 0,
+   GET    = 1,
+   HEAD   = 2,
+   POST   = 3,
+   PUT    = 4,
+   // Pathological
+   CONNECT = 5,
+   OPTIONS = 6,
+   TRACE   = 7,
+   // WebDAV
+   COPY      = 8,
+   LOCK      = 9,
+   MKCOL     = 10,
+   MOVE      = 11,
+   PROPFIND  = 12,
+   PROPPATCH = 13,
+   SEARCH    = 14,
+   UNLOCK    = 15,
+   BIND      = 16,
+   REBIND    = 17,
+   UNBIND    = 18,
+   ACL       = 19,
+   // Subversion
+   REPORT     = 20,
+   MKACTIVITY = 21,
+   CHECKOUT   = 22,
+   MERGE      = 23,
+   // upnp
+   MSEARCH     = 24,
+   NOTIFY      = 25,
+   SUBSCRIBE   = 26,
+   UNSUBSCRIBE = 27,
+   // RFC-5789
+   PATCH = 28,
+   PURGE = 29,
+   // CalDAV
+   MKCALENDAR = 30,
+   // RFC-2068, section 19.6.1.2
+   LINK   = 31,
+   UNLINK = 32
 };
 
-static const std::map<Method, std::string> MethodText
-{ 
-   {Method::DELETE,      "DELETE"},
-   {Method::GET,         "GET"},
-   {Method::HEAD,        "HEAD"}, 
-   {Method::POST,        "POST"},  
-   {Method::PUT,         "PUT"},
-   {Method::CONNECT,     "CONNECT"},
-   {Method::OPTIONS,     "OPTIONS"},
-   {Method::TRACE,       "TRACE"},  
-   {Method::COPY,        "COPY"},     
-   {Method::LOCK,        "LOCK"},     
-   {Method::MKCOL,       "MKCOL"},    
-   {Method::MOVE,        "MOVE"},     
-   {Method::PROPFIND,    "PROPFIND"}, 
-   {Method::PROPPATCH,   "PROPPATCH"},
-   {Method::SEARCH,      "SEARCH"},   
-   {Method::UNLOCK,      "UNLOCK"},   
-   {Method::BIND,        "BIND"},     
-   {Method::REBIND,      "REBIND"},   
-   {Method::UNBIND,      "UNBIND"},   
-   {Method::ACL,         "ACL"}, 
-   {Method::REPORT,      "REPORT"},    
-   {Method::MKACTIVITY,  "MKACTIVITY"},
-   {Method::CHECKOUT,    "CHECKOUT"},  
-   {Method::MERGE,       "MERGE"},
-   {Method::MSEARCH,     "MSEARCH"},    
-   {Method::NOTIFY,      "NOTIFY"},     
-   {Method::SUBSCRIBE,   "SUBSCRIBE"},  
-   {Method::UNSUBSCRIBE, "UNSUBSCRIBE"},
-   {Method::PATCH,       "PATCH"},
-   {Method::PURGE,       "PURGE"},
-   {Method::MKCALENDAR,  "MKCALENDAR"}, 
-   {Method::LINK,        "LINK"},  
-   {Method::UNLINK,      "UNLINK"}        
-};
+static const std::map<Method, std::string> MethodText{{Method::DELETE, "DELETE"},
+                                                      {Method::GET, "GET"},
+                                                      {Method::HEAD, "HEAD"},
+                                                      {Method::POST, "POST"},
+                                                      {Method::PUT, "PUT"},
+                                                      {Method::CONNECT, "CONNECT"},
+                                                      {Method::OPTIONS, "OPTIONS"},
+                                                      {Method::TRACE, "TRACE"},
+                                                      {Method::COPY, "COPY"},
+                                                      {Method::LOCK, "LOCK"},
+                                                      {Method::MKCOL, "MKCOL"},
+                                                      {Method::MOVE, "MOVE"},
+                                                      {Method::PROPFIND, "PROPFIND"},
+                                                      {Method::PROPPATCH, "PROPPATCH"},
+                                                      {Method::SEARCH, "SEARCH"},
+                                                      {Method::UNLOCK, "UNLOCK"},
+                                                      {Method::BIND, "BIND"},
+                                                      {Method::REBIND, "REBIND"},
+                                                      {Method::UNBIND, "UNBIND"},
+                                                      {Method::ACL, "ACL"},
+                                                      {Method::REPORT, "REPORT"},
+                                                      {Method::MKACTIVITY, "MKACTIVITY"},
+                                                      {Method::CHECKOUT, "CHECKOUT"},
+                                                      {Method::MERGE, "MERGE"},
+                                                      {Method::MSEARCH, "MSEARCH"},
+                                                      {Method::NOTIFY, "NOTIFY"},
+                                                      {Method::SUBSCRIBE, "SUBSCRIBE"},
+                                                      {Method::UNSUBSCRIBE, "UNSUBSCRIBE"},
+                                                      {Method::PATCH, "PATCH"},
+                                                      {Method::PURGE, "PURGE"},
+                                                      {Method::MKCALENDAR, "MKCALENDAR"},
+                                                      {Method::LINK, "LINK"},
+                                                      {Method::UNLINK, "UNLINK"}};
 
 inline std::ostream& operator<<(std::ostream& o, const Method m)
 {
@@ -194,34 +191,33 @@ inline Method as_method(const std::string& text)
 
 //-------------------------------------------------------------------------------------------------
 
-const char crlf[] = { '\r', '\n', '\0' };
+const char crlf[] = {'\r', '\n', '\0'};
 
 //-------------------------------------------------------------------------------------------------
 
-struct Parameter 
+struct Parameter
 {
    std::string key;
    std::string value;
 };
 
-class Parameters 
+class Parameters
 {
 public:
    Parameters() = default;
-   Parameters(const std::initializer_list<Parameter>& p) :
-      _params(p) {}
-
-   void add(const Parameter& p)
+   Parameters(const std::initializer_list<Parameter>& p)
+      : _params(p)
    {
-      _params.push_back(p);
    }
+
+   void add(const Parameter& p) { _params.push_back(p); }
 
    std::vector<Parameter> _params;
 };
 
 //-------------------------------------------------------------------------------------------------
 
-struct Timeout 
+struct Timeout
 {
    std::chrono::milliseconds ms;
 };

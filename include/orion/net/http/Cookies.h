@@ -6,10 +6,10 @@
 #ifndef ORION_NET_HTTP_COOKIES_H
 #define ORION_NET_HTTP_COOKIES_H
 
+#include <orion/Orion-Stddefs.h>
+
 #include <chrono>
 #include <string>
-
-#include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
@@ -20,7 +20,7 @@ namespace http
 
 struct Cookie
 {
-   std::string name;  
+   std::string name;
    std::string value;
 
    /// The scope of each cookie is limited to a set of paths, controlled by
@@ -54,8 +54,8 @@ struct Cookie
    session is over" (as defined by the user agent).
 
    The Path Attribute:
-   If the server omits the Path attribute, the user agent will use the 
-   "directory" of the request-uri's path component as the default value.  
+   If the server omits the Path attribute, the user agent will use the
+   "directory" of the request-uri's path component as the default value.
    (See Section 5.1.4 for more details.)
 */
 

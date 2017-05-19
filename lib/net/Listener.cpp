@@ -26,16 +26,16 @@ namespace orion
 namespace net
 {
 
-Listener::Listener(const IPAddress& addr):
-   _addr(std::make_unique<IPAddress>(addr))
+Listener::Listener(const IPAddress& addr)
+   : _addr(std::make_unique<IPAddress>(addr))
 {
 }
 
-Listener::~Listener() 
+Listener::~Listener()
 {
 }
 
-IPAddress* Listener::addr() const 
+IPAddress* Listener::addr() const
 {
    return _addr.get();
 }

@@ -19,13 +19,12 @@
  * MA 02110-1301, USA.
  */
 
-
 #include <orion/Uuid.h>
+
+#include <orion/StringUtils.h>
 
 #include <cstdint>
 #include <rpc.h>
-
-#include <orion/StringUtils.h>
 
 namespace orion
 {
@@ -37,8 +36,8 @@ struct Uuid::Private
    uuid_t _uuid;
 };
 
-Uuid::Uuid() :
-   _impl(new Private)
+Uuid::Uuid()
+   : _impl(new Private)
 {
    RPC_STATUS ret = UuidCreate(&(_impl->_uuid));
 
@@ -46,19 +45,19 @@ Uuid::Uuid() :
       UuidCreateNil(&(_impl->_uuid));
 }
 
-Uuid::Uuid(const Uuid& rhs) :
-   _impl(new Private)
+Uuid::Uuid(const Uuid& rhs)
+   : _impl(new Private)
 {
    _impl->_uuid = rhs._impl->_uuid;
 }
 
-Uuid::Uuid(Uuid&& rhs) :
-   _impl(std::move(rhs._impl))
+Uuid::Uuid(Uuid&& rhs)
+   : _impl(std::move(rhs._impl))
 {
 }
 
-Uuid::Uuid(const std::string& value) :
-   _impl(new Private)
+Uuid::Uuid(const std::string& value)
+   : _impl(new Private)
 {
    std::wstring str_uuid = utf8_to_wstring(value);
 
@@ -113,7 +112,7 @@ Uuid& Uuid::operator=(Uuid&& rhs)
 bool Uuid::operator==(const Uuid& rhs) const
 {
    RPC_STATUS status;
-   int ret = UuidEqual(&(_impl->_uuid),&(rhs._impl->_uuid), &status);
+   int ret = UuidEqual(&(_impl->_uuid), &(rhs._impl->_uuid), &status);
 
    if (status != RPC_S_OK)
       return false;
@@ -125,5 +124,4 @@ bool Uuid::operator!=(const Uuid& rhs) const
 {
    return not operator==(rhs);
 }
-
 }

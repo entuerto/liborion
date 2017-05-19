@@ -24,13 +24,11 @@
 
 struct Hello
 {
-   virtual void print() =0;
+   virtual void print() = 0;
 };
 
-extern "C"
-{
+extern "C" {
 API_EXPORT Hello* create_instance();
 }
 
 #endif
-

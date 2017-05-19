@@ -24,10 +24,10 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <memory>
-
 #include <orion/net/http/RequestHandler.h>
 #include <orion/net/rpc/Service.h>
+
+#include <memory>
 
 namespace orion
 {
@@ -39,8 +39,8 @@ class Service;
 
 /// Provides RPC protocol handler.
 ///
-/// Using the RpcRequestListener class, you can create a simple RPC protocol handler that 
-/// responds to RPC requests. 
+/// Using the RpcRequestListener class, you can create a simple RPC protocol handler that
+/// responds to RPC requests.
 ///
 class HttpRequestHandler : public http::RequestHandler
 {

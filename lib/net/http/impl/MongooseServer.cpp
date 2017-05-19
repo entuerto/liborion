@@ -21,15 +21,15 @@
 
 #include <net/http/impl/MongooseServer.h>
 
-#include <cstring>
-#include <iostream>
-#include <utility>
-
 #include <orion/Log.h>
 
 #include <net/http/impl/MongooseServerConnection.h>
 
 #include <boost/format.hpp>
+
+#include <cstring>
+#include <iostream>
+#include <utility>
 
 using namespace orion::log;
 
@@ -42,7 +42,7 @@ namespace http
 
 static void request_handler(struct mg_connection* nc, int event, void* ev_data)
 {
-   struct mg_mgr* mgr = nc->mgr;
+   struct mg_mgr* mgr      = nc->mgr;
    struct http_message* hm = static_cast<struct http_message*>(ev_data);
 
    switch (event)
@@ -50,9 +50,11 @@ static void request_handler(struct mg_connection* nc, int event, void* ev_data)
       case MG_EV_ACCEPT:
       {
          char addr[32];
-         mg_conn_addr_to_str(nc, addr, sizeof(addr), MG_SOCK_STRINGIFY_REMOTE |
-                                                     MG_SOCK_STRINGIFY_IP     |
-                                                     MG_SOCK_STRINGIFY_PORT);
+         mg_conn_addr_to_str(nc,
+                             addr,
+                             sizeof(addr),
+                             MG_SOCK_STRINGIFY_REMOTE | MG_SOCK_STRINGIFY_IP |
+                                MG_SOCK_STRINGIFY_PORT);
 
          LOG(Info) << boost::format("Accepting connection %p from %s") % nc % addr;
          break;
@@ -75,9 +77,9 @@ static void request_handler(struct mg_connection* nc, int event, void* ev_data)
    }
 }
 
-MongooseServer::MongooseServer() :
-   Server(),
-   _mgr()
+MongooseServer::MongooseServer()
+   : Server()
+   , _mgr()
 {
    mg_mgr_init(&_mgr, this);
 }
@@ -101,7 +103,7 @@ std::error_code MongooseServer::listen_and_serve(const std::string& addr, int po
 
    _is_running = true;
 
-   while (is_running()) 
+   while (is_running())
    {
       mg_mgr_poll(&_mgr, 1000);
    }
@@ -110,7 +112,8 @@ std::error_code MongooseServer::listen_and_serve(const std::string& addr, int po
 
 std::error_code MongooseServer::serve(struct mg_connection* connection, struct http_message* hm)
 {
-   std::unique_ptr<MongooseServerConnection> conn = std::make_unique<MongooseServerConnection>(connection, hm, _RequestHandlers);
+   std::unique_ptr<MongooseServerConnection> conn =
+      std::make_unique<MongooseServerConnection>(connection, hm, _RequestHandlers);
 
    conn->accept();
 
@@ -120,4 +123,3 @@ std::error_code MongooseServer::serve(struct mg_connection* connection, struct h
 } // http
 } // net
 } // orion
-

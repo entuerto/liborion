@@ -3,24 +3,24 @@
 // Copyright 2017 The liborion Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-// 
-#include <orion/unittest/TestResult.h>
+//
 #include <orion/unittest/Test.h>
+#include <orion/unittest/TestResult.h>
 
 namespace orion
 {
 namespace unittest
 {
 
-TestResult::TestResult(const std::string& name, const std::string& suite_name) :
-   _name(name),
-   _suite_name(suite_name),
-   _failed_item_count(0),
-   _passed_item_count(0),
-   _skipped_item_count(0),
-   _time_point_start(),
-   _time_point_end(),
-   _result_items()
+TestResult::TestResult(const std::string& name, const std::string& suite_name)
+   : _name(name)
+   , _suite_name(suite_name)
+   , _failed_item_count(0)
+   , _passed_item_count(0)
+   , _skipped_item_count(0)
+   , _time_point_start()
+   , _time_point_end()
+   , _result_items()
 {
 }
 
@@ -82,7 +82,8 @@ std::size_t TestResult::skipped_item_count() const
  */
 std::chrono::milliseconds TestResult::time_elapsed() const
 {
-   return std::chrono::duration_cast<std::chrono::milliseconds>(_time_point_end - _time_point_start);
+   return std::chrono::duration_cast<std::chrono::milliseconds>(_time_point_end -
+                                                                _time_point_start);
 }
 
 /*!

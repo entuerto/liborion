@@ -12,25 +12,25 @@ namespace net
 {
 namespace rpc
 {
-   
-Method::Method(const std::string& name, const std::string& desc, float version) :
-   _name(name),
-   _description(desc),
-   _version(version)
+
+Method::Method(const std::string& name, const std::string& desc, float version)
+   : _name(name)
+   , _description(desc)
+   , _version(version)
 {
 }
 
-Method::Method(const Method& rhs) :
-   _name(rhs._name),
-   _description(rhs._description),
-   _version(rhs._version)
+Method::Method(const Method& rhs)
+   : _name(rhs._name)
+   , _description(rhs._description)
+   , _version(rhs._version)
 {
 }
 
-Method::Method(Method&& rhs) :
-   _name(std::move(rhs._name)),
-   _description(std::move(rhs._description)),
-   _version(std::move(_version))
+Method::Method(Method&& rhs)
+   : _name(std::move(rhs._name))
+   , _description(std::move(rhs._description))
+   , _version(std::move(rhs._version))
 {
 }
 

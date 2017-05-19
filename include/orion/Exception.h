@@ -20,12 +20,11 @@
 #ifndef ORION_EXCEPTION_H
 #define ORION_EXCEPTION_H
 
+#include <orion/Orion-Stddefs.h>
+#include <orion/SourceLocation.h>
+
 #include <cstdint>
 #include <string>
-
-#include <orion/Orion-Stddefs.h>
-
-#include <orion/SourceLocation.h>
 
 namespace orion
 {
@@ -37,13 +36,13 @@ class API_EXPORT Exception : public std::exception
 {
 public:
    Exception(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
-   
+
    Exception(const Exception& other);
    Exception(Exception&& other);
 
    virtual ~Exception() = default;
 
-   //! Returns the recorded source location 
+   //! Returns the recorded source location
    virtual const SourceLocation& source_location() const;
 
    const char* what() const override;

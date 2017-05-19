@@ -19,10 +19,10 @@
 
 #include <orion/Module.h>
 
-#include <dlfcn.h>
 #include <orion/ErrorMacros.h>
 #include <orion/Log.h>
 #include <orion/ModuleException.h>
+#include <dlfcn.h>
 
 namespace orion
 {
@@ -35,18 +35,18 @@ struct Module::Private
    std::string name;
 };
 
-Module::Module() :
-   _impl(new Private{nullptr, false, ""})
+Module::Module()
+   : _impl(new Private{nullptr, false, ""})
 {
 }
 
-Module::Module(const std::string& file_name) :
-   _impl(new Private{nullptr, false, file_name})
+Module::Module(const std::string& file_name)
+   : _impl(new Private{nullptr, false, file_name})
 {
 }
 
-Module::Module(Module&& rhs) :
-   _impl(std::move(rhs._impl))
+Module::Module(Module&& rhs)
+   : _impl(std::move(rhs._impl))
 {
 }
 
@@ -55,7 +55,7 @@ Module::~Module()
    close();
 }
 
-/*! 
+/*!
    Module name
 */
 std::string Module::name() const
@@ -63,7 +63,7 @@ std::string Module::name() const
    return _impl->name;
 }
 
-/*! 
+/*!
    Is module open (loaded)
 */
 bool Module::is_open() const
@@ -71,7 +71,7 @@ bool Module::is_open() const
    return _impl->is_open;
 }
 
-/*! 
+/*!
    Load library
 */
 void Module::open(const std::string& file_name)
@@ -84,10 +84,10 @@ void Module::open(const std::string& file_name)
       throw_exception<ModuleException>(dlerror(), _src_loc);
 
    _impl->is_open = true;
-   _impl->name = file_name;
+   _impl->name    = file_name;
 }
 
-/*! 
+/*!
    Close library
 */
 void Module::close()
@@ -99,7 +99,7 @@ void Module::close()
    _impl->is_open = false;
 }
 
-/*! 
+/*!
    Gets a symbol pointer from the module.
  */
 void* Module::find_symbol_address(const std::string& symbol_name)
@@ -119,9 +119,8 @@ void* Module::find_symbol_address(const std::string& symbol_name)
 Module& Module::operator=(Module&& rhs)
 {
    _impl = std::move(rhs._impl);
-   
+
    return *this;
 }
 
 } // namespace orion
-

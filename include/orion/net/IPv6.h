@@ -22,18 +22,17 @@
 #ifndef ORION_NET_IPV6_H
 #define ORION_NET_IPV6_H
 
-#include <array>
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/IP.h>
+#include <array>
+#include <string>
 
 namespace orion
 {
 namespace net
 {
 
-class API_EXPORT IPv6 : public IP 
+class API_EXPORT IPv6 : public IP
 {
 public:
    IPv6();
@@ -75,11 +74,11 @@ public:
 private:
    union
    {
-      uint8_t  b[16];
+      uint8_t b[16];
       uint16_t w[8];
    } _a;
 };
 
 } // net
 } // orion
-#endif // ORION_NET_IPV6_H 
+#endif // ORION_NET_IPV6_H

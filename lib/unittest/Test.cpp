@@ -6,11 +6,11 @@
 
 #include <orion/unittest/Test.h>
 
+#include <orion/unittest/TestSuite.h>
+
 #include <algorithm>
 #include <exception>
 #include <map>
-
-#include <orion/unittest/TestSuite.h>
 
 namespace orion
 {
@@ -23,29 +23,29 @@ using namespace orion::unittest::option;
 
 /*!
  */
-Test::Test(const std::string& name, const Suite& suite) :
-   _name(name),
-   _label(name),
-   _description(),
-   _is_enabled(true),
-   _disabled_reason(),
-   _test_result(name, suite.name()),
-   _setup_func(),
-   _teardown_func(),
-   _func()
+Test::Test(const std::string& name, const Suite& suite)
+   : _name(name)
+   , _label(name)
+   , _description()
+   , _is_enabled(true)
+   , _disabled_reason()
+   , _test_result(name, suite.name())
+   , _setup_func()
+   , _teardown_func()
+   , _func()
 {
 }
 
-Test::Test(const std::string& name, const Suite& suite, TestCaseFunc&& f) :
-   _name(name),
-   _label(name),
-   _description(),
-   _is_enabled(true),
-   _disabled_reason(),
-   _test_result(name, suite.name()),
-   _setup_func(),
-   _teardown_func(),
-   _func(std::move(f))
+Test::Test(const std::string& name, const Suite& suite, TestCaseFunc&& f)
+   : _name(name)
+   , _label(name)
+   , _description()
+   , _is_enabled(true)
+   , _disabled_reason()
+   , _test_result(name, suite.name())
+   , _setup_func()
+   , _teardown_func()
+   , _func(std::move(f))
 {
 }
 
@@ -102,7 +102,7 @@ void Test::set_option(Enabled opt)
 
 void Test::set_option(Disabled opt)
 {
-   _is_enabled = false;
+   _is_enabled      = false;
    _disabled_reason = std::move(opt.reason);
 }
 
@@ -164,7 +164,8 @@ TestResult& Test::execute_test()
    }
    catch (...)
    {
-      _test_result.log_exception(std::current_exception(), "An unexpected, unknown exception was thrown: ", _src_loc);
+      _test_result.log_exception(
+         std::current_exception(), "An unexpected, unknown exception was thrown: ", _src_loc);
    }
    _test_result.on_end();
 

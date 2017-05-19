@@ -3,15 +3,15 @@
 // Copyright 2017 The liborion Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-// 
+//
 #include <orion/unittest/TestRunner.h>
-
-#include <iostream>
 
 #include <orion/unittest/TestOutput.h>
 #include <orion/unittest/TestStdOutput.h>
 
 #include <boost/program_options.hpp>
+
+#include <iostream>
 
 namespace opts = boost::program_options;
 
@@ -20,9 +20,9 @@ namespace orion
 namespace unittest
 {
 
-Runner::Runner() :
-   _test_suites(),
-   _level(ReportLevel::Detailed)
+Runner::Runner()
+   : _test_suites()
+   , _level(ReportLevel::Detailed)
 {
 }
 
@@ -44,21 +44,21 @@ uint32_t Runner::test_case_count() const
 }
 
 bool Runner::parse(int argc, char* argv[])
-{ 
+{
    opts::options_description desc("Test options");
 
-   desc.add_options()
-      ("help,h", "Help message")
-      ("level,l", opts::value<ReportLevel>(&_level)->default_value(ReportLevel::Error), "Set report output level");
+   desc.add_options()("help,h", "Help message")(
+      "level,l",
+      opts::value<ReportLevel>(&_level)->default_value(ReportLevel::Error),
+      "Set report output level");
 
    opts::variables_map vm;
    opts::store(opts::parse_command_line(argc, argv, desc), vm);
    opts::notify(vm);
 
-   if (vm.count("help")) 
+   if (vm.count("help"))
    {
-      std::cout << desc 
-                << "\n";
+      std::cout << desc << "\n";
       return false;
    }
 
@@ -97,15 +97,15 @@ void Runner::run_tests(Output& output, const std::string& suite_name /* = "" */)
    {
       auto suite_stats = item.run_tests(output);
 
-      stats.passed_count  += suite_stats.passed_count; 
-      stats.failed_count  += suite_stats.failed_count;
+      stats.passed_count += suite_stats.passed_count;
+      stats.failed_count += suite_stats.failed_count;
       stats.skipped_count += suite_stats.skipped_count;
 
-      stats.item_count         += suite_stats.item_count;
-      stats.passed_item_count  += suite_stats.passed_item_count; 
-      stats.failed_item_count  += suite_stats.failed_item_count; 
-      stats.skipped_item_count += suite_stats.skipped_item_count; 
-      
+      stats.item_count += suite_stats.item_count;
+      stats.passed_item_count += suite_stats.passed_item_count;
+      stats.failed_item_count += suite_stats.failed_item_count;
+      stats.skipped_item_count += suite_stats.skipped_item_count;
+
       stats.time_elapsed += suite_stats.time_elapsed;
    }
 
@@ -122,7 +122,6 @@ Runner& Runner::runner()
 
    return s_runner;
 }
-
 
 } // namespace orion
 } // namespace unittest

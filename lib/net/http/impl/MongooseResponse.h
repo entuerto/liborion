@@ -8,12 +8,12 @@
 #ifndef ORION_NET_HTTP_MONGOOSERESPONSE_H
 #define ORION_NET_HTTP_MONGOOSERESPONSE_H
 
-#include <sstream>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/http/Response.h>
 
 #include <mongoose/mongoose.h>
+
+#include <sstream>
 
 namespace orion
 {
@@ -36,7 +36,7 @@ public:
    virtual std::streambuf* rdbuf() const override;
 
    std::string buffer();
-   
+
 private:
    void build_header_buffer();
 

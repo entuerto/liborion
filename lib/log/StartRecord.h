@@ -17,13 +17,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-
 #ifndef ORION_LOG_STARTRECORD_H
 #define ORION_LOG_STARTRECORD_H
 
-#include <string>
-
 #include <orion/log/Record.h>
+
+#include <string>
 
 namespace orion
 {
@@ -48,7 +47,6 @@ public:
 
    StartRecord& operator=(const StartRecord& rhs);
    StartRecord& operator=(StartRecord&& rhs);
-
 };
 
 } // namespace log

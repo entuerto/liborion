@@ -22,10 +22,10 @@
 #ifndef ORION_NET_RPC_ERROR_H
 #define ORION_NET_RPC_ERROR_H
 
+#include <orion/Orion-Stddefs.h>
+
 #include <memory>
 #include <string>
-
-#include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
@@ -35,7 +35,7 @@ namespace rpc
 {
 //! Abstract class to define RPC errors
 /*!
-   
+
  */
 class API_EXPORT Error
 {
@@ -64,8 +64,8 @@ public:
    virtual std::string data() const;
 
 private:
-   int32_t _code; 
-   std::string _message; 
+   int32_t _code;
+   std::string _message;
    std::string _data;
 };
 
@@ -74,4 +74,3 @@ private:
 } // namespace orion
 
 #endif
-

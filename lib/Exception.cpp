@@ -22,21 +22,21 @@
 namespace orion
 {
 
-Exception::Exception(const std::string& text, const SourceLocation& src_loc) :
-   _text(text),
-   _src_location(src_loc)
+Exception::Exception(const std::string& text, const SourceLocation& src_loc)
+   : _text(text)
+   , _src_location(src_loc)
 {
 }
 
-Exception::Exception(const Exception& other) :
-   _text(other._text),
-   _src_location(other._src_location)
+Exception::Exception(const Exception& other)
+   : _text(other._text)
+   , _src_location(other._src_location)
 {
 }
 
-Exception::Exception(Exception&& other) :
-   _text(std::move(other._text)),
-   _src_location(std::move(other._src_location))
+Exception::Exception(Exception&& other)
+   : _text(std::move(other._text))
+   , _src_location(std::move(other._src_location))
 {
 }
 
@@ -45,29 +45,30 @@ const SourceLocation& Exception::source_location() const
    return _src_location;
 }
 
-const char* Exception::what() const 
+const char* Exception::what() const
 {
    return _text.c_str();
 }
 
 Exception& Exception::operator=(const Exception& other)
 {
-   if (this == &other) {
+   if (this == &other)
+   {
       return *this;
    }
 
-   _text = other._text;
+   _text         = other._text;
    _src_location = other._src_location;
 
-   return *this ;
+   return *this;
 }
 
 Exception& Exception::operator=(Exception&& other)
 {
-   _text = std::move(other._text);
+   _text         = std::move(other._text);
    _src_location = std::move(other._src_location);
 
-   return *this ;
+   return *this;
 }
 
 } // namespace orion

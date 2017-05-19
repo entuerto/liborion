@@ -17,12 +17,12 @@ namespace net
 namespace http
 {
 
-RequestHandler::RequestHandler(const std::string& uri) :
-   _uri(uri)
+RequestHandler::RequestHandler(const std::string& uri)
+   : _uri(uri)
 {
 }
 
-RequestHandler::~RequestHandler() 
+RequestHandler::~RequestHandler()
 {
 }
 
@@ -57,7 +57,7 @@ std::error_code RequestHandler::on_request(const Request& request, Response& res
          break;
    }
 
-   return on_user_defined(request, response); 
+   return on_user_defined(request, response);
 }
 
 std::error_code RequestHandler::on_connect(const Request& /* request */, Response& /* response */)
@@ -70,7 +70,7 @@ std::error_code RequestHandler::on_delete(const Request& /* request */, Response
    return make_error_code(ErrorCode::NotImplemented);
 }
 
-std::error_code RequestHandler::on_get(const Request& /* request */, Response& /* response */) 
+std::error_code RequestHandler::on_get(const Request& /* request */, Response& /* response */)
 {
    return make_error_code(ErrorCode::NotImplemented);
 }
@@ -90,7 +90,7 @@ std::error_code RequestHandler::on_patch(const Request& /* request */, Response&
    return make_error_code(ErrorCode::NotImplemented);
 }
 
-std::error_code RequestHandler::on_post(const Request& /* request */, Response& /* response */) 
+std::error_code RequestHandler::on_post(const Request& /* request */, Response& /* response */)
 {
    return make_error_code(ErrorCode::NotImplemented);
 }
@@ -105,7 +105,8 @@ std::error_code RequestHandler::on_trace(const Request& /* request */, Response&
    return make_error_code(ErrorCode::NotImplemented);
 }
 
-std::error_code RequestHandler::on_user_defined(const Request& /* request */, Response& /* response */)
+std::error_code RequestHandler::on_user_defined(const Request& /* request */,
+                                                Response& /* response */)
 {
    return make_error_code(ErrorCode::MethodNotAllowed);
 }

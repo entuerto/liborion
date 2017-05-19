@@ -22,14 +22,14 @@
 #ifndef ORION_NET_SERVER_H
 #define ORION_NET_SERVER_H
 
-#include <system_error>
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
+
+#include <string>
+#include <system_error>
 
 namespace orion
 {
-namespace net 
+namespace net
 {
 /// Server interface declaration
 class Server
@@ -37,14 +37,13 @@ class Server
 public:
    virtual ~Server() = default;
 
-   virtual void shutdown() =0;
+   virtual void shutdown() = 0;
 
-   virtual bool is_running() const =0;
+   virtual bool is_running() const = 0;
 
-   virtual std::error_code listen_and_serve(const std::string& addr, int port) =0;
+   virtual std::error_code listen_and_serve(const std::string& addr, int port) = 0;
 };
 
 } // net
 } // orion
-#endif 
-
+#endif

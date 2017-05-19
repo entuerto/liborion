@@ -20,10 +20,9 @@
 #ifndef ORION_ARGUMENTEXCEPTIONS_H
 #define ORION_ARGUMENTEXCEPTIONS_H
 
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/Exception.h>
+#include <string>
 
 namespace orion
 {
@@ -36,7 +35,7 @@ class API_EXPORT ArgumentException : public Exception
 {
 public:
    ArgumentException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
-   
+
    ArgumentException(const ArgumentException& other);
    ArgumentException(ArgumentException&& other);
 
@@ -55,7 +54,7 @@ class API_EXPORT ArgumentNullException : public ArgumentException
 {
 public:
    ArgumentNullException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
-   
+
    ArgumentNullException(const ArgumentNullException& other);
    ArgumentNullException(ArgumentNullException&& other);
 
@@ -74,8 +73,9 @@ public:
 class API_EXPORT ArgumentOutOfRangeException : public ArgumentException
 {
 public:
-   ArgumentOutOfRangeException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
-   
+   ArgumentOutOfRangeException(const std::string& text,
+                               const SourceLocation& src_loc = SourceLocation{});
+
    ArgumentOutOfRangeException(const ArgumentOutOfRangeException& other);
    ArgumentOutOfRangeException(ArgumentOutOfRangeException&& other);
 

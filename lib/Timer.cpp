@@ -23,9 +23,9 @@
 namespace orion
 {
 
-Timer::Timer() :
-   _time_point_start(),
-   _time_point_end()
+Timer::Timer()
+   : _time_point_start()
+   , _time_point_end()
 {
 }
 
@@ -50,8 +50,7 @@ void Timer::reset()
 
 std::chrono::milliseconds Timer::elapsed() const
 {
-   return std::chrono::duration_cast<std::chrono::milliseconds>(_time_point_end - _time_point_start);
+   return std::chrono::duration_cast<std::chrono::milliseconds>(_time_point_end -
+                                                                _time_point_start);
 }
-
 }
-
