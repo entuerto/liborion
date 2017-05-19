@@ -7,13 +7,13 @@
 #ifndef ORION_UNITTEST_TESTRESULT_H
 #define ORION_UNITTEST_TESTRESULT_H
 
-#include <chrono>
-#include <string>
-#include <vector>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/SourceLocation.h>
 #include <orion/Utils.h>
+
+#include <chrono>
+#include <string>
+#include <vector>
 
 namespace orion
 {
@@ -46,7 +46,7 @@ struct API_EXPORT ResultItem
 //!
 /*!
  */
-class API_EXPORT TestResult 
+class API_EXPORT TestResult
 {
 public:
    TestResult(const std::string& name, const std::string& suite_name);
@@ -70,7 +70,6 @@ public:
    void on_start();
    void on_end();
 
-
    template<typename... Args>
    void log_success(Args... args);
 
@@ -92,7 +91,7 @@ public:
 private:
    std::string _name;
    std::string _suite_name;
-   
+
    int _failed_item_count;
    int _passed_item_count;
    int _skipped_item_count;
@@ -108,9 +107,11 @@ struct StringConcat
    std::string& text;
 
    template<typename T>
-   void operator()(T) {  }
+   void operator()(T)
+   {
+   }
 
-   void operator()(const char* v)        { text += v; }
+   void operator()(const char* v) { text += v; }
    void operator()(const std::string& v) { text += v; }
 };
 
@@ -125,13 +126,8 @@ void TestResult::log_success(Args... args)
 
    get_all_values(StringConcat{msg}, t);
 
-   _result_items.push_back(ResultItem{
-      Result::Passed,
-      msg,
-      "",
-      "",
-      get_value<SourceLocation>(t, SourceLocation{})
-   });
+   _result_items.push_back(
+      ResultItem{Result::Passed, msg, "", "", get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 template<typename T, typename... Args>
@@ -145,13 +141,11 @@ void TestResult::log_failure(const T& expected, const T& actual, Args... args)
 
    get_all_values(StringConcat{msg}, t);
 
-   _result_items.push_back(ResultItem{
-      Result::Failed,
-      msg,
-      get_as_string(expected),
-      get_as_string(actual),
-      get_value<SourceLocation>(t, SourceLocation{})
-   });
+   _result_items.push_back(ResultItem{Result::Failed,
+                                      msg,
+                                      get_as_string(expected),
+                                      get_as_string(actual),
+                                      get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 template<typename... Args>
@@ -165,13 +159,8 @@ void TestResult::log_failure(Args... args)
 
    get_all_values(StringConcat{msg}, t);
 
-   _result_items.push_back(ResultItem{
-      Result::Failed,
-      msg,
-      "",
-      "",
-      get_value<SourceLocation>(t, SourceLocation{})
-   });
+   _result_items.push_back(
+      ResultItem{Result::Failed, msg, "", "", get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 template<typename E, typename... Args>
@@ -187,13 +176,8 @@ void TestResult::log_exception(const E& e, Args... args)
 
    msg += type_name(e) + " (" + e.what() + ") ";
 
-   _result_items.push_back(ResultItem{
-      Result::Exception,
-      msg,
-      "",
-      "",
-      get_value<SourceLocation>(t, SourceLocation{})
-   });
+   _result_items.push_back(
+      ResultItem{Result::Exception, msg, "", "", get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 template<typename... Args>
@@ -208,14 +192,9 @@ void TestResult::log_exception(std::exception_ptr eptr, Args... args)
    get_all_values(StringConcat{msg}, t);
 
    msg += type_name(eptr);
-   
-   _result_items.push_back(ResultItem{
-      Result::Exception,
-      msg,
-      "",
-      "",
-      get_value<SourceLocation>(t, SourceLocation{})
-   });
+
+   _result_items.push_back(
+      ResultItem{Result::Exception, msg, "", "", get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 template<typename... Args>
@@ -229,13 +208,8 @@ void TestResult::log_skipped(Args... args)
 
    get_all_values(StringConcat{msg}, t);
 
-   _result_items.push_back(ResultItem{
-      Result::Skipped,
-      msg,
-      "",
-      "",
-      get_value<SourceLocation>(t, SourceLocation{})
-   });
+   _result_items.push_back(
+      ResultItem{Result::Skipped, msg, "", "", get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 } // namespace orion

@@ -7,11 +7,11 @@
 #ifndef ORION_UNITTEST_TESTOUTPUT_H
 #define ORION_UNITTEST_TESTOUTPUT_H
 
+#include <orion/Orion-Stddefs.h>
+
 #include <chrono>
 #include <istream>
 #include <string>
-
-#include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
@@ -22,7 +22,7 @@ class TestResult;
 
 //---------------------------------------------------------------------------------------
 
-enum class ReportLevel 
+enum class ReportLevel
 {
    Error    = 0,
    Short    = 1,
@@ -31,27 +31,27 @@ enum class ReportLevel
 
 std::string to_string(ReportLevel rl);
 
-std::istream& operator>> (std::istream& in, ReportLevel& report_level);
-std::ostream& operator<< (std::ostream& out, ReportLevel report_level);
+std::istream& operator>>(std::istream& in, ReportLevel& report_level);
+std::ostream& operator<<(std::ostream& out, ReportLevel report_level);
 
 //---------------------------------------------------------------------------------------
 
 struct OutputStats
 {
-   int count; 
-   int passed_count; 
+   int count;
+   int passed_count;
    int failed_count;
    int skipped_count;
 
    int item_count;
-   int passed_item_count; 
-   int failed_item_count; 
-   int skipped_item_count; 
-   
+   int passed_item_count;
+   int failed_item_count;
+   int skipped_item_count;
+
    std::chrono::milliseconds time_elapsed;
 };
 
-OutputStats& operator+= (OutputStats& lhs, const OutputStats& rhs);
+OutputStats& operator+=(OutputStats& lhs, const OutputStats& rhs);
 
 //!
 /*!
@@ -62,19 +62,19 @@ public:
    virtual ~Output() = default;
 
    /// Global test report header
-   virtual void write_header(int test_count) =0;
+   virtual void write_header(int test_count) = 0;
 
    /// Test suite header
-   virtual void write_suite_header(const Suite& suite) =0;
+   virtual void write_suite_header(const Suite& suite) = 0;
 
    /// Test results information
-   virtual void write(const TestResult& test_result) =0;
+   virtual void write(const TestResult& test_result) = 0;
 
    /// Summary of the test suite
-   virtual void write_suite_summary(const Suite& suite) =0;
+   virtual void write_suite_summary(const Suite& suite) = 0;
 
    /// Summary of all tests
-   virtual void write_summary(const OutputStats& stats) =0;
+   virtual void write_summary(const OutputStats& stats) = 0;
 };
 
 } // namespace orion

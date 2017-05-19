@@ -7,13 +7,13 @@
 #ifndef ORION_UNITTEST_TEST_H
 #define ORION_UNITTEST_TEST_H
 
-#include <functional>
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/unittest/TestOptions.h>
-#include <orion/unittest/TestResult.h>
 #include <orion/unittest/TestOutput.h>
+#include <orion/unittest/TestResult.h>
+
+#include <functional>
+#include <string>
 
 namespace orion
 {
@@ -22,17 +22,17 @@ namespace unittest
 // Forward declaration
 class Test;
 
-using TestCaseFunc = std::function<void (Test&)>;
+using TestCaseFunc = std::function<void(Test&)>;
 
 //---------------------------------------------------------------------------------------
 
 ///
 ///
 ///
-class API_EXPORT Test 
+class API_EXPORT Test
 {
 public:
-   //NO_COPY(Test)
+   // NO_COPY(Test)
 
    Test(const std::string& name, const Suite& suite);
    Test(const std::string& name, const Suite& suite, TestCaseFunc&& f);
@@ -91,10 +91,10 @@ private:
    bool _is_enabled;
    std::string _disabled_reason;
 
-   TestResult  _test_result;
+   TestResult _test_result;
 
-   std::function<void ()> _setup_func;
-   std::function<void ()> _teardown_func;
+   std::function<void()> _setup_func;
+   std::function<void()> _teardown_func;
 
    TestCaseFunc _func;
 };
@@ -112,7 +112,7 @@ bool Test::assert(const T& expected, const T& actual, Args... args)
 
    _test_result.log_failure(expected, actual, args...);
 
-   return false; 
+   return false;
 }
 
 template<bool ExpectedValue, typename... Args>
@@ -126,34 +126,35 @@ bool Test::assert(const bool value, Args... args)
 
    _test_result.log_failure(ExpectedValue, value, args...);
 
-   return false; 
+   return false;
 }
 
 template<typename ExpectedException, typename Func, typename... Args>
 bool Test::assert_throw(Func f, Args... args)
 {
-   try 
-   { 
-      f(); 
-   } 
-   catch (const ExpectedException&) 
-   { 
+   try
+   {
+      f();
+   }
+   catch (const ExpectedException&)
+   {
       _test_result.log_success();
-      return true; 
+      return true;
    }
    catch (const std::exception& e)
-   { 
+   {
       _test_result.log_exception(e, "An unexpected exception was thrown: ", args...);
       return false;
    }
-   catch (...) 
+   catch (...)
    {
-      _test_result.log_exception(std::current_exception(), "An unexpected, unknown exception was thrown: ", args...);
+      _test_result.log_exception(
+         std::current_exception(), "An unexpected, unknown exception was thrown: ", args...);
       return false;
    }
    // Not thrown
    fail("The exception was not thrown: ", type_name<ExpectedException>(), args...);
-   return false; 
+   return false;
 }
 
 template<typename... Args>
@@ -173,20 +174,22 @@ void Test::fail_if(const bool value, Args... args)
 
    _test_result.log_failure(false, value, args...);
 
-   return; 
+   return;
 }
 
 //---------------------------------------------------------------------------------------
 
-inline void set_options(Test& /* test */) {}
+inline void set_options(Test& /* test */)
+{
+}
 
-template <typename O>
-void set_options(Test& test, O&& opt) 
+template<typename O>
+void set_options(Test& test, O&& opt)
 {
    test.set_option(std::forward<decltype(opt)>(opt));
 }
 
-template <typename O, typename... Opts>
+template<typename O, typename... Opts>
 void set_options(Test& test, O&& opt, Opts&&... opts)
 {
    set_options(test, std::forward<decltype(opt)>(opt));

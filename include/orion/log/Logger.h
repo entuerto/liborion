@@ -8,8 +8,6 @@
 #ifndef ORION_LOG_LOGGER_H
 #define ORION_LOG_LOGGER_H
 
-#include <functional>
-
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/Exception.h>
@@ -17,6 +15,8 @@
 #include <orion/log/Level.h>
 #include <orion/log/LoggerImpl.h>
 #include <orion/log/LoggerService.h>
+
+#include <functional>
 
 namespace orion
 {

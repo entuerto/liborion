@@ -22,11 +22,11 @@
 #ifndef ORION_NET_CONNECTION_H
 #define ORION_NET_CONNECTION_H
 
-#include <chrono>
-#include <system_error>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/IPAddress.h>
+
+#include <chrono>
+#include <system_error>
 
 namespace orion
 {
@@ -37,7 +37,7 @@ namespace net
 /*!
    Connection is a generic stream-oriented network connection.
  */
-class API_EXPORT Connection 
+class API_EXPORT Connection
 {
 public:
    Connection();
@@ -45,7 +45,7 @@ public:
 
    /// Close closes the connection.
    /// Any blocked Read or Write operations will be unblocked and return errors.
-   virtual void close() =0;
+   virtual void close() = 0;
 
    /// Returns the local network address.
    virtual IPAddress* local_addr() const;
@@ -91,4 +91,4 @@ private:
 
 } // net
 } // orion
-#endif 
+#endif

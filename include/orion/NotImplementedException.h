@@ -20,11 +20,9 @@
 #ifndef ORION_NOTIMPLEMENTEDEXCEPTION_H
 #define ORION_NOTIMPLEMENTEDEXCEPTION_H
 
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
-
 #include <orion/Exception.h>
+#include <string>
 
 namespace orion
 {
@@ -36,8 +34,9 @@ namespace orion
 class API_EXPORT NotImplementedException : public Exception
 {
 public:
-   NotImplementedException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
-   
+   NotImplementedException(const std::string& text,
+                           const SourceLocation& src_loc = SourceLocation{});
+
    NotImplementedException(const NotImplementedException& other);
    NotImplementedException(NotImplementedException&& other);
 
@@ -45,7 +44,6 @@ public:
 
    NotImplementedException& operator=(const NotImplementedException& other);
    NotImplementedException& operator=(NotImplementedException&& other);
-
 };
 
 } // namespace orion

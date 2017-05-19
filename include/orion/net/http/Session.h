@@ -6,13 +6,12 @@
 #ifndef ORION_NET_HTTP_SESSION_H
 #define ORION_NET_HTTP_SESSION_H
 
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
-
 #include <orion/net/Url.h>
 #include <orion/net/http/Response.h>
 #include <orion/net/http/Utils.h>
+
+#include <string>
 
 namespace orion
 {
@@ -22,17 +21,17 @@ namespace http
 {
 class Session;
 
-namespace priv 
+namespace priv
 {
 
-template <typename T>
-void set_option(Session& session, T&& t) 
+template<typename T>
+void set_option(Session& session, T&& t)
 {
    session.set_option(std::forward<T>(t));
 }
 
-template <typename T, typename... Ts>
-void set_option(Session& session, T&& t, Ts&&... ts) 
+template<typename T, typename... Ts>
+void set_option(Session& session, T&& t, Ts&&... ts)
 {
    set_option(session, std::forward<T>(t));
    set_option(session, std::forward<Ts>(ts)...);
@@ -49,12 +48,12 @@ public:
 
    Session();
 
-   template <typename... Ts>
-   Session(Ts&&... ts) :
-      _url(),
-      _params(),
-      _header(),
-      _timeout()
+   template<typename... Ts>
+   Session(Ts&&... ts)
+      : _url()
+      , _params()
+      , _header()
+      , _timeout()
    {
       priv::set_option(*this, std::forward<Ts>(ts)...);
    }
@@ -79,7 +78,6 @@ protected:
    Parameters _params;
    Header _header;
    Timeout _timeout;
-
 };
 
 } // namespace http

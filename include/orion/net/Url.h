@@ -22,7 +22,7 @@ struct API_EXPORT UserInfo
    std::string password;
 };
 
-/// A URL is a universal identifier. 
+/// A URL is a universal identifier.
 /// To disambiguate from a URL string it can also be referred to as a URL record.
 ///
 /// Example for: 'http://user:pass@host.com:8080/p/a/t/h?query=string#hash'
@@ -52,15 +52,15 @@ public:
 
    /// Identifies the URL's lower-cased protocol scheme.
    ///
-   /// Example: 'http' 
+   /// Example: 'http'
    std::string protocol() const;
    void protocol(const std::string& value);
 
-   /// The username and password portion of the URL. This string subset follows the 
-   /// protocol and double slashes (if present) and precedes the host component, delimited 
-   /// by an ASCII "at sign" (@). The format of the string is {username}[:{password}], 
+   /// The username and password portion of the URL. This string subset follows the
+   /// protocol and double slashes (if present) and precedes the host component, delimited
+   /// by an ASCII "at sign" (@). The format of the string is {username}[:{password}],
    /// with the [:{password}] portion being optional.
-   /// 
+   ///
    /// Example: 'user:pass'
    UserInfo userinfo() const;
    void userinfo(const UserInfo& value);
@@ -72,40 +72,40 @@ public:
 
    /// Lower-cased host name portion of the host component without the port included.
    ///
-   /// Example: 'host.com' 
+   /// Example: 'host.com'
    std::string hostname() const;
    void hostname(const std::string& value);
 
    /// The numeric port portion of the host component.
    ///
-   /// Example: '8080' 
+   /// Example: '8080'
    int port() const;
    void port(int value);
 
-   /// Consists of the entire path section of the URL and the search section. 
+   /// Consists of the entire path section of the URL and the search section.
    std::string path() const;
 
-   /// Consists of the entire path section of the URL. This is everything following 
-   /// the host (including the port) and before the start of the query or hash components, 
+   /// Consists of the entire path section of the URL. This is everything following
+   /// the host (including the port) and before the start of the query or hash components,
    /// delimited by either the ASCII question mark (?) or hash (#) characters.
-   /// 
-   /// Example '/p/a/t/h' 
+   ///
+   /// Example '/p/a/t/h'
    std::string pathname() const;
    void pathname(const std::string& value);
 
-   /// Maps a string key to a list of values. It is typically used for query parameters 
-   /// and form values. 
+   /// Maps a string key to a list of values. It is typically used for query parameters
+   /// and form values.
    std::string query(const std::string& key) const;
    void query(const std::string& key, const std::string& value);
 
-   /// Consists of the "fragment" portion of the URL including the leading ASCII hash 
+   /// Consists of the "fragment" portion of the URL including the leading ASCII hash
    /// (#) character.
-   /// 
-   /// Example: '#hash' 
+   ///
+   /// Example: '#hash'
    std::string hash() const;
    void hash(const std::string& value);
 
-   /// is the full URL string that was parsed with both the protocol and host components 
+   /// is the full URL string that was parsed with both the protocol and host components
    /// converted to lower-case.
    std::string href() const;
 

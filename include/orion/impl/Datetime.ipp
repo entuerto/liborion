@@ -9,10 +9,10 @@
 #ifndef ORION_DATETIME_IPP
 #define ORION_DATETIME_IPP
 
+#include <orion/Orion-Stddefs.h>
+
 #include <chrono>
 #include <string>
-
-#include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
@@ -23,54 +23,55 @@ namespace orion
 // Year
 //---------------------------------------------------------------------------------------
 
-constexpr inline Year::Year(int y) noexcept : 
-   _value(static_cast<decltype(_value)>(y)) 
-{}
-
-constexpr inline Year& Year::operator++() noexcept 
+constexpr inline Year::Year(int y) noexcept
+   : _value(static_cast<decltype(_value)>(y))
 {
-   ++_value; 
+}
+
+constexpr inline Year& Year::operator++() noexcept
+{
+   ++_value;
    return *this;
 }
 
-constexpr inline Year Year::operator++(int) noexcept 
+constexpr inline Year Year::operator++(int)noexcept
 {
-   auto tmp(*this); 
-   ++(*this); 
+   auto tmp(*this);
+   ++(*this);
    return tmp;
 }
 
-constexpr inline Year& Year::operator--() noexcept 
+constexpr inline Year& Year::operator--() noexcept
 {
-   --_value; 
+   --_value;
    return *this;
 }
 
-constexpr inline Year Year::operator--(int) noexcept 
+constexpr inline Year Year::operator--(int)noexcept
 {
-   auto tmp(*this); 
-   --(*this); 
+   auto tmp(*this);
+   --(*this);
    return tmp;
 }
 
-constexpr inline Year& Year::operator+=(const years& y) noexcept 
+constexpr inline Year& Year::operator+=(const years& y) noexcept
 {
-   *this = *this + y; 
+   *this = *this + y;
    return *this;
 }
 
-constexpr inline Year& Year::operator-=(const years& y) noexcept 
+constexpr inline Year& Year::operator-=(const years& y) noexcept
 {
-   *this = *this - y; 
+   *this = *this - y;
    return *this;
 }
 
-constexpr inline Year Year::operator-() const noexcept 
+constexpr inline Year Year::operator-() const noexcept
 {
    return Year{-_value};
 }
 
-constexpr inline Year Year::operator+() const noexcept 
+constexpr inline Year Year::operator+() const noexcept
 {
    return *this;
 }
@@ -80,12 +81,12 @@ constexpr inline bool Year::is_leap() const noexcept
    return _value % 4 == 0 and (_value % 100 != 0 or _value % 400 == 0);
 }
 
-constexpr inline Year::operator Year::value_type() const noexcept 
+constexpr inline Year::operator Year::value_type() const noexcept
 {
    return _value;
 }
 
-constexpr inline bool Year::ok() const noexcept 
+constexpr inline bool Year::ok() const noexcept
 {
    return true;
 }
@@ -107,7 +108,7 @@ constexpr inline bool operator==(const Year& x, const Year& y) noexcept
 
 constexpr inline bool operator!=(const Year& x, const Year& y) noexcept
 {
-   return not (x == y);
+   return not(x == y);
 }
 
 constexpr inline bool operator<(const Year& x, const Year& y) noexcept
@@ -122,25 +123,25 @@ constexpr inline bool operator>(const Year& x, const Year& y) noexcept
 
 constexpr inline bool operator<=(const Year& x, const Year& y) noexcept
 {
-   return not (y < x);
+   return not(y < x);
 }
 
 constexpr inline bool operator>=(const Year& x, const Year& y) noexcept
 {
-   return not (x < y);
+   return not(x < y);
 }
 
-constexpr inline Year  operator+(const Year&  x, const years& y) noexcept
+constexpr inline Year operator+(const Year& x, const years& y) noexcept
 {
    return Year{static_cast<Year::value_type>(x) + y.count()};
 }
 
-constexpr inline Year  operator+(const years& x, const Year&  y) noexcept
+constexpr inline Year operator+(const years& x, const Year& y) noexcept
 {
    return y + x;
 }
 
-constexpr inline Year  operator-(const Year& x, const years& y) noexcept
+constexpr inline Year operator-(const Year& x, const years& y) noexcept
 {
    return Year{static_cast<Year::value_type>(x) - y.count()};
 }
@@ -153,34 +154,36 @@ constexpr inline years operator-(const Year& x, const Year& y) noexcept
 // Month
 //---------------------------------------------------------------------------------------
 
-constexpr inline Month::Month(Month::value_type m) noexcept : 
-   _value(m) {}
-
-constexpr inline Month& Month::operator++() noexcept 
+constexpr inline Month::Month(Month::value_type m) noexcept
+   : _value(m)
 {
-   if (++_value == 13) 
-      _value = 1; 
+}
+
+constexpr inline Month& Month::operator++() noexcept
+{
+   if (++_value == 13)
+      _value = 1;
    return *this;
 }
 
-constexpr inline Month Month::operator++(int) noexcept 
+constexpr inline Month Month::operator++(int)noexcept
 {
-   auto tmp(*this); 
-   ++(*this); 
+   auto tmp(*this);
+   ++(*this);
    return tmp;
 }
 
-constexpr inline Month& Month::operator--() noexcept 
+constexpr inline Month& Month::operator--() noexcept
 {
-   if (--_value == 0) 
-      _value = 12; 
+   if (--_value == 0)
+      _value = 12;
    return *this;
 }
 
-constexpr inline Month Month::operator--(int) noexcept 
+constexpr inline Month Month::operator--(int)noexcept
 {
-   auto tmp(*this); 
-   --(*this); 
+   auto tmp(*this);
+   --(*this);
    return tmp;
 }
 
@@ -196,12 +199,12 @@ constexpr inline Month& Month::operator-=(const months& m) noexcept
    return *this;
 }
 
-constexpr inline Month::operator Month::value_type() const noexcept 
+constexpr inline Month::operator Month::value_type() const noexcept
 {
    return _value;
 }
 
-constexpr inline bool Month::ok() const noexcept 
+constexpr inline bool Month::ok() const noexcept
 {
    return 1 <= _value and _value <= 12;
 }
@@ -213,7 +216,7 @@ constexpr inline bool operator==(const Month& lhs, const Month& rhs) noexcept
 
 constexpr inline bool operator!=(const Month& lhs, const Month& rhs) noexcept
 {
-   return not (lhs == rhs);
+   return not(lhs == rhs);
 }
 
 constexpr inline bool operator<(const Month& lhs, const Month& rhs) noexcept
@@ -228,12 +231,12 @@ constexpr inline bool operator>(const Month& lhs, const Month& rhs) noexcept
 
 constexpr inline bool operator<=(const Month& lhs, const Month& rhs) noexcept
 {
-   return not (rhs < lhs);
+   return not(rhs < lhs);
 }
 
 constexpr inline bool operator>=(const Month& lhs, const Month& rhs) noexcept
 {
-   return not (lhs < rhs);
+   return not(lhs < rhs);
 }
 
 constexpr Month inline operator+(const Month& lhs, const months& rhs) noexcept
@@ -264,53 +267,55 @@ constexpr months inline operator-(const Month& lhs, const Month& rhs) noexcept
 // Day
 //---------------------------------------------------------------------------------------
 
-constexpr inline Day::Day(Day::value_type d) noexcept : 
-   _value(static_cast<Day::value_type>(d)) {}
-
-constexpr inline Day& Day::operator++() noexcept 
+constexpr inline Day::Day(Day::value_type d) noexcept
+   : _value(static_cast<Day::value_type>(d))
 {
-   ++_value; 
+}
+
+constexpr inline Day& Day::operator++() noexcept
+{
+   ++_value;
    return *this;
 }
 
-constexpr inline Day Day::operator++(int) noexcept 
+constexpr inline Day Day::operator++(int)noexcept
 {
-   auto tmp(*this); 
-   ++(*this); 
+   auto tmp(*this);
+   ++(*this);
    return tmp;
 }
 
-constexpr inline Day& Day::operator--() noexcept 
+constexpr inline Day& Day::operator--() noexcept
 {
-   --_value; 
+   --_value;
    return *this;
 }
 
-constexpr inline Day Day::operator--(int) noexcept 
+constexpr inline Day Day::operator--(int)noexcept
 {
-   auto tmp(*this); 
-   --(*this); 
+   auto tmp(*this);
+   --(*this);
    return tmp;
 }
 
-constexpr inline Day& Day::operator+=(const days& d) noexcept 
+constexpr inline Day& Day::operator+=(const days& d) noexcept
 {
-   *this = *this + d; 
+   *this = *this + d;
    return *this;
 }
 
-constexpr inline Day& Day::operator-=(const days& d) noexcept 
+constexpr inline Day& Day::operator-=(const days& d) noexcept
 {
-   *this = *this - d; 
+   *this = *this - d;
    return *this;
 }
 
-constexpr inline Day::operator Day::value_type() const noexcept 
+constexpr inline Day::operator Day::value_type() const noexcept
 {
    return _value;
 }
 
-constexpr inline bool Day::ok() const noexcept 
+constexpr inline bool Day::ok() const noexcept
 {
    return 1 <= _value and _value <= 31;
 }
@@ -322,7 +327,7 @@ constexpr inline bool operator==(const Day& lhs, const Day& rhs) noexcept
 
 constexpr inline bool operator!=(const Day& lhs, const Day& rhs) noexcept
 {
-   return not (lhs == rhs);
+   return not(lhs == rhs);
 }
 
 constexpr inline bool operator<(const Day& lhs, const Day& rhs) noexcept
@@ -337,18 +342,17 @@ constexpr inline bool operator>(const Day& lhs, const Day& rhs) noexcept
 
 constexpr inline bool operator<=(const Day& lhs, const Day& rhs) noexcept
 {
-   return not (rhs < lhs);
+   return not(rhs < lhs);
 }
 
 constexpr inline bool operator>=(const Day& lhs, const Day& rhs) noexcept
 {
-   return not (lhs < rhs);
+   return not(lhs < rhs);
 }
 
 constexpr inline Day operator+(const Day& lhs, const days& rhs) noexcept
 {
-   return Day{static_cast<Day::value_type>(lhs) + 
-              static_cast<Day::value_type>(rhs.count())};
+   return Day{static_cast<Day::value_type>(lhs) + static_cast<Day::value_type>(rhs.count())};
 }
 
 constexpr inline Day operator+(const days& lhs, const Day& rhs) noexcept
@@ -363,7 +367,7 @@ constexpr inline Day operator-(const Day& lhs, const days& rhs) noexcept
 
 constexpr inline days operator-(const Day& lhs, const Day& rhs) noexcept
 {
-   return days{static_cast<days::rep>(static_cast<Day::value_type>(lhs) - 
+   return days{static_cast<days::rep>(static_cast<Day::value_type>(lhs) -
                                       static_cast<Day::value_type>(rhs))};
 }
 
@@ -384,7 +388,7 @@ constexpr inline days operator-(const Day& lhs, const Day& rhs) noexcept
 //                 Exact range of validity is:
 //                 [civil_from_days(numeric_limits<IntT>::min()),
 //                  civil_from_days(numeric_limits<IntT>::max()-719468)]
-template <class IntT> 
+template<class IntT>
 constexpr IntT from_days(IntT y, unsigned m, unsigned d) noexcept
 {
    static_assert(std::numeric_limits<unsigned>::digits >= 18,
@@ -396,13 +400,12 @@ constexpr IntT from_days(IntT y, unsigned m, unsigned d) noexcept
 
    const IntT era = (y >= 0 ? y : y - 399) / 400;
 
-   const unsigned year_of_era = static_cast<unsigned>(y - era * 400);            // [0, 399]
+   const unsigned year_of_era = static_cast<unsigned>(y - era * 400); // [0, 399]
 
-   const unsigned day_of_year = (153 * (m + (m > 2 ? -3 : 9)) + 2) / 5 + d - 1;  // [0, 365]
+   const unsigned day_of_year = (153 * (m + (m > 2 ? -3 : 9)) + 2) / 5 + d - 1; // [0, 365]
 
-   const unsigned day_of_era = year_of_era * 365 + 
-                               year_of_era / 4 - 
-                               year_of_era / 100 + day_of_year; // [0, 146096]
+   const unsigned day_of_era =
+      year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year; // [0, 146096]
 
    return era * 146097 + static_cast<IntT>(day_of_era) - unix_epoch;
 }
@@ -411,7 +414,7 @@ constexpr IntT from_days(IntT y, unsigned m, unsigned d) noexcept
 // Returns year/month/day triple in civil calendar
 // Preconditions:  z is number of days since 1970-01-01 and is in the range:
 //                   [numeric_limits<IntT>::min(), numeric_limits<IntT>::max()-719468].
-template <class IntT>
+template<class IntT>
 constexpr std::tuple<IntT, unsigned, unsigned> to_days(IntT z) noexcept
 {
    static_assert(std::numeric_limits<unsigned>::digits >= 18,
@@ -424,23 +427,21 @@ constexpr std::tuple<IntT, unsigned, unsigned> to_days(IntT z) noexcept
 
    const IntT era = (z >= 0 ? z : z - 146096) / 146097;
 
-   const unsigned day_of_era = static_cast<unsigned>(z - era * 146097);    // [0, 146096]
+   const unsigned day_of_era = static_cast<unsigned>(z - era * 146097); // [0, 146096]
 
-   const unsigned year_of_era = (day_of_era - day_of_era / 1460 + 
-                                              day_of_era / 36524 - 
-                                              day_of_era / 146096) / 365;  // [0, 399]
+   const unsigned year_of_era =
+      (day_of_era - day_of_era / 1460 + day_of_era / 36524 - day_of_era / 146096) / 365; // [0, 399]
 
    const IntT y = static_cast<IntT>(year_of_era) + era * 400;
 
-   const unsigned day_of_year = day_of_era - (365 * year_of_era + 
-                                              year_of_era / 4 - 
-                                              year_of_era / 100);          // [0, 365]
+   const unsigned day_of_year =
+      day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100); // [0, 365]
 
-   const unsigned mp = ( 5 * day_of_year + 2) / 153;                       // [0, 11]
+   const unsigned mp = (5 * day_of_year + 2) / 153; // [0, 11]
 
-   const unsigned d = day_of_year - (153 * mp + 2) / 5 + 1;                // [1, 31]
+   const unsigned d = day_of_year - (153 * mp + 2) / 5 + 1; // [1, 31]
 
-   const unsigned m = mp + (mp < 10 ? 3 : -9);                            // [1, 12]
+   const unsigned m = mp + (mp < 10 ? 3 : -9); // [1, 12]
 
    return std::tuple<IntT, unsigned, unsigned>(y + (m <= 2), m, d);
 }
@@ -457,16 +458,16 @@ constexpr uint32_t last_day_of_month_common_year(uint32_t m) noexcept
 // Preconditions: m is in [1, 12]
 // Returns: The number of days in the month m of year y
 // The result is always in the range [28, 31].
-template <class IntT>
+template<class IntT>
 constexpr uint32_t last_day_of_month(IntT y, uint32_t m) noexcept
 {
-    return (m != 2 or not is_leap(y)) ? last_day_of_month_common_year(m) : 29u;
+   return (m != 2 or not is_leap(y)) ? last_day_of_month_common_year(m) : 29u;
 }
 
 // Returns day of week in civil calendar [0, 6] -> [Sun, Sat]
 // Preconditions:  z is number of days since 1970-01-01 and is in the range:
 //                   [numeric_limits<Int>::min(), numeric_limits<Int>::max()-4].
-template <class IntT>
+template<class IntT>
 constexpr uint32_t weekday_from_days(IntT z) noexcept
 {
    return static_cast<uint32_t>(z >= -4 ? (z + 4) % 7 : (z + 5) % 7 + 6);
@@ -516,34 +517,33 @@ constexpr std::pair<Day, Month> operator/(const Day& d, const Month& m) noexcept
 
 constexpr days operator/(const std::pair<Year, Month>& ym, const Day& d) noexcept
 {
-   return days(from_days(static_cast<Year::value_type>(ym.first), 
-                         static_cast<Month::value_type>(ym.second), 
+   return days(from_days(static_cast<Year::value_type>(ym.first),
+                         static_cast<Month::value_type>(ym.second),
                          static_cast<Day::value_type>(d)));
 }
 
 constexpr days operator/(const std::pair<Month, Day>& md, const Year& y) noexcept
 {
-   return days(from_days(static_cast<Year::value_type>(y), 
-                         static_cast<Month::value_type>(md.first), 
+   return days(from_days(static_cast<Year::value_type>(y),
+                         static_cast<Month::value_type>(md.first),
                          static_cast<Day::value_type>(md.second)));
 }
 
 constexpr days operator/(const std::pair<Day, Month>& dm, const Year& y) noexcept
 {
-   return days(from_days(static_cast<Year::value_type>(y), 
-                         static_cast<Month::value_type>(dm.second), 
+   return days(from_days(static_cast<Year::value_type>(y),
+                         static_cast<Month::value_type>(dm.second),
                          static_cast<Day::value_type>(dm.first)));
 }
 
 //---------------------------------------------------------------------------------------
 //
-template <class CharT, class Traits, class Rep, class Period>
-std::basic_ostream<CharT, Traits>& operator<<(      std::basic_ostream<CharT, Traits>&  os,
+template<class CharT, class Traits, class Rep, class Period>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
                                               const std::chrono::duration<Rep, Period>& d)
 {
    using namespace std::chrono;
-   return os << d.count()
-             << unit_names[std::type_index(typeid(typename Period::type))];
+   return os << d.count() << unit_names[std::type_index(typeid(typename Period::type))];
 }
 
 } // namespace orion

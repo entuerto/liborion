@@ -20,10 +20,9 @@
 #ifndef ORION_MODULEEXCEPTION_H
 #define ORION_MODULEEXCEPTION_H
 
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/Exception.h>
+#include <string>
 
 namespace orion
 {
@@ -35,7 +34,7 @@ class API_EXPORT ModuleException : public Exception
 {
 public:
    ModuleException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
-   
+
    ModuleException(const ModuleException& other);
    ModuleException(ModuleException&& other);
 
@@ -43,7 +42,6 @@ public:
 
    ModuleException& operator=(const ModuleException& other);
    ModuleException& operator=(ModuleException&& other);
-
 };
 
 //! Symbol not found exception
@@ -54,8 +52,9 @@ public:
 class API_EXPORT ModuleSymbolNotFoundException : public ModuleException
 {
 public:
-   ModuleSymbolNotFoundException(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
-   
+   ModuleSymbolNotFoundException(const std::string& text,
+                                 const SourceLocation& src_loc = SourceLocation{});
+
    ModuleSymbolNotFoundException(const ModuleSymbolNotFoundException& other);
    ModuleSymbolNotFoundException(ModuleSymbolNotFoundException&& other);
 

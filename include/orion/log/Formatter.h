@@ -7,9 +7,8 @@
 #ifndef ORION_LOG_FORMATTER_H
 #define ORION_LOG_FORMATTER_H
 
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
+#include <string>
 
 namespace orion
 {
@@ -23,14 +22,13 @@ class Record;
    a readable form that will be interpreted by either a human or
    an external system.
  */
-class API_EXPORT Formatter 
+class API_EXPORT Formatter
 {
 public:
    virtual ~Formatter() = default;
 
    //! Formats the Record into a reable form
-   virtual std::string format(const Record& record) =0;
-
+   virtual std::string format(const Record& record) = 0;
 };
 
 } // namespace log

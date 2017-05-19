@@ -8,15 +8,15 @@
 #ifndef ORION_NET_HTTP_REQUEST_H
 #define ORION_NET_HTTP_REQUEST_H
 
-#include <ostream>
-#include <streambuf>
-#include <string>
- 
 #include <orion/Orion-Stddefs.h>
 #include <orion/log/Record.h>
 #include <orion/net/IPAddress.h>
 #include <orion/net/Url.h>
 #include <orion/net/http/Utils.h>
+
+#include <ostream>
+#include <streambuf>
+#include <string>
 
 namespace orion
 {
@@ -33,27 +33,24 @@ public:
    NO_COPY(Request)
 
    Request();
-   Request(const Method& method, 
-           const Url& url, 
-           const Version& version, 
-           const Header& header);
+   Request(const Method& method, const Url& url, const Version& version, const Header& header);
    Request(Request&& Other);
    virtual ~Request();
 
    Request& operator=(Request&& Rhs);
 
    //! "GET", "POST", etc
-   virtual Method method() const; 
-   virtual void method(const Method& value); 
+   virtual Method method() const;
+   virtual void method(const Method& value);
 
    //! URL-decoded URI
    virtual Url url() const;
    virtual void url(const Url& u);
 
    //! E.g. "1.0", "1.1"
-   virtual Version http_version() const; 
-   virtual void http_version(const Version& v);  
-   
+   virtual Version http_version() const;
+   virtual void http_version(const Version& v);
+
    virtual std::string header(const std::string& name) const;
 
    virtual void header(const std::string& name, const std::string& value);
@@ -66,7 +63,7 @@ public:
    virtual void upgrade(bool value);
 
    virtual std::streambuf* rdbuf() const;
-  
+
    friend API_EXPORT std::ostream& operator<<(std::ostream& o, const Request& r);
 
 protected:
@@ -90,4 +87,3 @@ API_EXPORT const orion::log::Record& operator<<(const orion::log::Record& rec, c
 } // orion
 
 #endif
-

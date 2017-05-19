@@ -7,12 +7,12 @@
 #ifndef ORION_UNITTEST_TESTSUITE_H
 #define ORION_UNITTEST_TESTSUITE_H
 
-#include <functional>
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/unittest/Test.h>
 #include <orion/unittest/TestOutput.h>
+
+#include <functional>
+#include <string>
 
 namespace orion
 {
@@ -64,11 +64,10 @@ private:
    OutputStats _stats;
 };
 
-
 struct API_EXPORT RegisterTestHelper
 {
-   //RegisterHelper(Suite& suite, std::initializer_list<Test> l)
-   
+   // RegisterHelper(Suite& suite, std::initializer_list<Test> l)
+
    template<typename... Args>
    RegisterTestHelper(Suite& suite, const std::string& name, TestCaseFunc f, Args... args)
    {

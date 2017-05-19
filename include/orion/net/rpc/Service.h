@@ -9,14 +9,14 @@
 #ifndef ORION_NET_RPC_SERVICE_H
 #define ORION_NET_RPC_SERVICE_H
 
-#include <map>
-
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/net/http/RequestHandler.h>
 #include <orion/net/rpc/Method.h>
 #include <orion/net/rpc/Params.h>
 #include <orion/net/rpc/Result.h>
+
+#include <map>
 
 namespace orion
 {
@@ -28,15 +28,12 @@ using Methods = std::map<std::string, std::shared_ptr<Method>>;
 
 /// Provides RPC service.
 ///
-class API_EXPORT Service 
+class API_EXPORT Service
 {
 public:
    NO_COPY(Service)
 
-   Service(const std::string& name, 
-           const std::string& desc, 
-                 float        version, 
-           const std::string& url);
+   Service(const std::string& name, const std::string& desc, float version, const std::string& url);
    virtual ~Service();
 
    virtual std::string name() const;
@@ -47,7 +44,7 @@ public:
 
    virtual std::string url() const;
 
-   template <typename MethodHandler>
+   template<typename MethodHandler>
    void register_method(MethodHandler&& method);
 
    std::weak_ptr<Method> get_method(const std::string& name) const;
@@ -65,7 +62,7 @@ private:
 
 //-------------------------------------------------------------------------------------------------
 
-template <typename MethodHandler>
+template<typename MethodHandler>
 void Service::register_method(MethodHandler&& method)
 {
    auto m = std::make_shared<MethodHandler>(std::move(method));
@@ -75,7 +72,8 @@ void Service::register_method(MethodHandler&& method)
 
 //-------------------------------------------------------------------------------------------------
 
-API_EXPORT std::unique_ptr<http::RequestHandler> make_http_handler(std::unique_ptr<Service>&& service);
+API_EXPORT std::unique_ptr<http::RequestHandler> make_http_handler(
+   std::unique_ptr<Service>&& service);
 
 } // rpc
 } // net

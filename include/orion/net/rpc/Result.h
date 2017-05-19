@@ -19,7 +19,6 @@ namespace rpc
 
 class API_EXPORT Result
 {
-
 };
 
 } // rpc

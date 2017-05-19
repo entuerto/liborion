@@ -21,8 +21,8 @@
 #ifndef ORION_TIMER_H
 #define ORION_TIMER_H
 
-#include <chrono>
 #include <orion/Orion-Stddefs.h>
+#include <chrono>
 
 namespace orion
 {
@@ -45,7 +45,5 @@ private:
    std::chrono::time_point<std::chrono::system_clock> _time_point_start;
    std::chrono::time_point<std::chrono::system_clock> _time_point_end;
 };
-
 }
 #endif
-

@@ -8,15 +8,13 @@
 #ifndef ORION_LOG_BASICLOGGER_H
 #define ORION_LOG_BASICLOGGER_H
 
-#include <functional>
-
 #include <orion/Orion-Stddefs.h>
-
 #include <orion/Exception.h>
 #include <orion/log/Level.h>
 #include <orion/log/OutputHandler.h>
 
 #include <asio.hpp>
+#include <functional>
 
 namespace orion
 {
@@ -38,13 +36,15 @@ class Record;
 /// to the output handlers of the logger and is formatted by the specified
 /// Formatter class.
 ///
-template <typename Service>
+template<typename Service>
 class BasicLogger : public asio::basic_io_object<Service>
 {
 public:
-   explicit BasicLogger(asio::io_service& io_service) :
-      asio::basic_io_object<Service>(io_service) {}
-   
+   explicit BasicLogger(asio::io_service& io_service)
+      : asio::basic_io_object<Service>(io_service)
+   {
+   }
+
    ~BasicLogger() = default;
 
    /// Get the logging level

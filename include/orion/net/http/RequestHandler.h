@@ -10,8 +10,8 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/http/Response.h>
 #include <orion/net/http/Request.h>
+#include <orion/net/http/Response.h>
 
 namespace orion
 {
@@ -25,7 +25,7 @@ using Handlers = std::map<std::string, std::shared_ptr<RequestHandler>>;
 
 //! Provides a simple, programmatically controlled HTTP protocol listener.
 /*!
-   Using the RequestHandler class, you can create a simple HTTP protocol listener that 
+   Using the RequestHandler class, you can create a simple HTTP protocol listener that
    responds to HTTP requests. The listener is active for the lifetime of the RequestHandler
    object and runs within your application.
  */

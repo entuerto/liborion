@@ -7,11 +7,11 @@
 #ifndef ORION_UNITTEST_OPTIONS_H
 #define ORION_UNITTEST_OPTIONS_H
 
+#include <orion/Orion-Stddefs.h>
+
 #include <chrono>
 #include <functional>
 #include <string>
-
-#include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
@@ -20,29 +20,31 @@ namespace unittest
 namespace option
 {
 
-struct Label 
+struct Label
 {
    std::string text;
 };
 
-struct Description 
+struct Description
 {
    std::string text;
 };
 
-struct SetupFunc 
+struct SetupFunc
 {
-   std::function<void ()> func;
+   std::function<void()> func;
 };
 
-struct TeardownFunc 
+struct TeardownFunc
 {
-   std::function<void ()> func;
+   std::function<void()> func;
 };
 
-struct Enabled {};
+struct Enabled
+{
+};
 
-struct Disabled 
+struct Disabled
 {
    std::string reason;
 };

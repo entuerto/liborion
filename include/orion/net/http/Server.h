@@ -8,12 +8,12 @@
 #ifndef ORION_NET_HTTP_SERVER_H
 #define ORION_NET_HTTP_SERVER_H
 
-#include <memory>
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/Server.h>
 #include <orion/net/http/RequestHandler.h>
+
+#include <memory>
+#include <string>
 
 namespace orion
 {
@@ -38,7 +38,7 @@ public:
    virtual void add_handler(std::unique_ptr<RequestHandler>&& h);
 
    bool is_running() const override;
-   
+
    /// Create a Http server object
    static std::unique_ptr<http::Server> create();
 
@@ -53,4 +53,4 @@ protected:
 } // http
 } // net
 } // orion
-#endif 
+#endif
