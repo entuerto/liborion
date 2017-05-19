@@ -17,14 +17,14 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <cstdio>
-#include <fstream>
-#include <iostream>
-
 #include <orion/Log.h>
 #include <orion/net/Server.h>
 #include <orion/net/http/Server.h>
 #include <orion/net/rpc/Rpc.h>
+
+#include <cstdio>
+#include <fstream>
+#include <iostream>
 
 using namespace orion;
 using namespace orion::log;
@@ -61,19 +61,16 @@ struct SubstractResult : rpc::Result
 class CalculatorService : public rpc::Service
 {
 public:
-   CalculatorService() : 
-      rpc::Service("Calculator", "", 1.0, "/") 
+   CalculatorService()
+      : rpc::Service("Calculator", "", 1.0, "/")
    {
-      register_method(rpc::Method{"add", "", 1.0}); 
-      register_method(rpc::Method{"substract", "", 1.0}); 
+      register_method(rpc::Method{"add", "", 1.0});
+      register_method(rpc::Method{"substract", "", 1.0});
    }
 
    virtual ~CalculatorService() = default;
 
-   void add(const AddParams& params, AddResult& result)
-   {
-      result.value = params.a + params.b;
-   }
+   void add(const AddParams& params, AddResult& result) { result.value = params.a + params.b; }
 
    void substract(const SubstractParams& params, SubstractResult& result)
    {
@@ -101,7 +98,7 @@ void setup_logger(std::fstream& file_stream)
 //-----------------------------------------------------------------------------------
 // Main function
 //-----------------------------------------------------------------------------------
-int main ()
+int main()
 {
    std::fstream fout("add-json-rpc-server.log", std::fstream::out | std::fstream::trunc);
    setup_logger(fout);

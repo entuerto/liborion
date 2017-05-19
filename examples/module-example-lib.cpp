@@ -23,18 +23,13 @@
 
 struct HelloWorld : public Hello
 {
-   virtual void print()
-   {
-      std::cout << "Hello world\n";
-   }
+   virtual void print() { std::cout << "Hello world\n"; }
 };
 
-extern "C"
-{
+extern "C" {
 
 Hello* create_instance()
 {
    return new HelloWorld;
 }
-
 }

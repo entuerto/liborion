@@ -17,14 +17,14 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <stdexcept>
-#include <iostream>
-#include <chrono>
-#include <thread>
-
 #include <orion/ArgumentExceptions.h>
 #include <orion/Log.h>
 #include <orion/ThrowUtils.h>
+
+#include <chrono>
+#include <iostream>
+#include <stdexcept>
+#include <thread>
 
 using namespace orion;
 using namespace orion::log;
@@ -34,7 +34,6 @@ using namespace std::chrono_literals;
 void function_a()
 {
    LOG_FUNCTION(Debug, "function_a()");
-
 
    LOG(Warning) << "MACRO: Test warning output from function A";
 
@@ -55,8 +54,8 @@ void setup_logger()
 {
    auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
 
-   //cout_handler->set_formatter(std::make_unique<MultilineFormatter>());
-   //cout_handler->set_formatter(std::make_unique<OnelineWithSourceInfoFormatter>());
+   // cout_handler->set_formatter(std::make_unique<MultilineFormatter>());
+   // cout_handler->set_formatter(std::make_unique<OnelineWithSourceInfoFormatter>());
 
    auto& logger = default_logger();
 
@@ -82,7 +81,7 @@ int main()
    log::write(text);
    log::write(text, " v2");
 
-   function_a(); 
+   function_a();
 
    try
    {
@@ -104,8 +103,7 @@ int main()
 
    log::shutdown();
 
-   //std::this_thread::sleep_for(2s);
+   // std::this_thread::sleep_for(2s);
 
-   return EXIT_SUCCESS;   
+   return EXIT_SUCCESS;
 }
-

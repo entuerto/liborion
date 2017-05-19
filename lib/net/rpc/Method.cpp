@@ -30,7 +30,7 @@ Method::Method(const Method& rhs)
 Method::Method(Method&& rhs)
    : _name(std::move(rhs._name))
    , _description(std::move(rhs._description))
-   , _version(std::move(_version))
+   , _version(std::move(rhs._version))
 {
 }
 
