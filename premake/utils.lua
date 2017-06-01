@@ -27,8 +27,8 @@ newoption
 
 -- Set the default configuration for the workspace
 function SetupDefaultConfigurations()
-   -- We only use Debug and release
-   configurations { "Debug", "Release" }
+   -- We only use debug and release
+   configurations { "debug", "release" }
 
    -- We only support 64bit
    architecture "x86_64"
@@ -36,19 +36,19 @@ function SetupDefaultConfigurations()
    filter "kind:SharedLib"
       targetsuffix "-%{wks.version.major}.%{wks.version.minor}"
 
-   -- We now only set settings for the Debug configuration
-   filter { "configurations:Debug" }
+   -- We now only set settings for the debug configuration
+   filter { "configurations:debug" }
       defines { "DEBUG" }
       -- We want debug symbols in our debug config
       symbols "On"
 
-   filter { "configurations:Debug", "kind:*Lib" }
+   filter { "configurations:debug", "kind:*Lib" }
       targetsuffix "-%{wks.version.major}.%{wks.version.minor}-d"
 
-   -- We now only set settings for Release
-   filter { "configurations:Release" }
+   -- We now only set settings for release
+   filter { "configurations:release" }
       defines { "NDEBUG" }
-      -- Release should be optimized
+      -- release should be optimized
       optimize "On"
 
    filter "system:Windows"
@@ -78,10 +78,10 @@ function FilterPlatformSourceFiles()
 end
 
 function UseLib(name)
-   filter { "configurations:Debug" }
+   filter { "configurations:debug" }
       links { name .. "-d" }
 
-   filter { "configurations:Release" }
+   filter { "configurations:release" }
       links { name }
 
    filter {}
