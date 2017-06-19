@@ -5,19 +5,19 @@
 // Copyright © 2017 Tomas Palazuelos. All rights reserved.
 //
 
-#include <iostream>
-
 #include <orion/log/Formatter.h>
 #include <orion/log/StreamOutputHandler.h>
+
+#include <iostream>
 
 namespace orion
 {
 namespace log
 {
 
-StreamOutputHandler::StreamOutputHandler(std::ostream& stream) :
-   OutputHandler(),
-   _ostream(stream)
+StreamOutputHandler::StreamOutputHandler(std::ostream& stream)
+   : OutputHandler()
+   , _ostream(stream)
 {
 }
 
@@ -25,13 +25,13 @@ StreamOutputHandler::~StreamOutputHandler() = default;
 
 void StreamOutputHandler::write(const Record& record)
 {
-   _ostream << formatter()->format(record)
-            << std::endl;
+   _ostream << formatter()->format(record) << std::endl;
 }
 
 void StreamOutputHandler::flush()
 {
-   _ostream << std::flush;;
+   _ostream << std::flush;
+   ;
 }
 
 void StreamOutputHandler::close()

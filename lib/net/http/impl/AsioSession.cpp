@@ -6,13 +6,13 @@
 //
 #include <orion/net/http/Session.h>
 
-#include <iostream>
-
 #include <net/http/impl/AsioRequest.h>
 #include <net/http/impl/AsioResponse.h>
 #include <net/http/impl/Parser.h>
 
 #include <asio.hpp>
+
+#include <iostream>
 
 namespace orion
 {
@@ -21,7 +21,7 @@ namespace net
 namespace http
 {
 
-Response Session::operator()(const std::string& m)
+Response Session::operator()(const Method& m)
 {
    asio::io_service io_service;
 
@@ -36,7 +36,7 @@ Response Session::operator()(const std::string& m)
    // Try each endpoint until we successfully establish a connection.
    asio::ip::tcp::socket socket(io_service);
    asio::connect(socket, endpoint_iterator);
-   
+
    // Form the request. We specify the "Connection: close" header so that the
    // server will close the socket after transmitting the response. This will
    // allow us to treat all data up until the EOF as the content.
@@ -56,19 +56,20 @@ Response Session::operator()(const std::string& m)
    while (asio::read(socket, response_buffer, asio::transfer_all(), ec))
    {
       if (ec != asio::error::eof)
-         throw asio::system_error(ec); 
+         throw asio::system_error(ec);
    }
 
    Parser parser;
    AsioResponse response(StatusCode::OK);
 
-   ec = parser.parse(response, asio::buffer_cast<const char*>(response_buffer.data()), response_buffer.size()); 
+   ec = parser.parse(
+      response, asio::buffer_cast<const char*>(response_buffer.data()), response_buffer.size());
    if (ec)
    {
       throw std::system_error(ec);
-   }  
+   }
 
-   return std::move(response); 
+   return std::move(response);
 }
 
 } // http

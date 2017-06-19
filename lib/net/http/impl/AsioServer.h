@@ -8,13 +8,13 @@
 #ifndef ORION_NET_HTTP_ASIOSERVER_H
 #define ORION_NET_HTTP_ASIOSERVER_H
 
-#include <string>
-#include <vector>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/http/Server.h>
 
 #include <asio.hpp>
+
+#include <string>
+#include <vector>
 
 namespace orion
 {
@@ -34,7 +34,7 @@ public:
    void shutdown() override;
 
    std::error_code listen_and_serve(const std::string& addr, int port) override;
-   
+
 protected:
    void do_accept(asio::ip::tcp::acceptor& acceptor);
    void do_close();
@@ -49,10 +49,10 @@ private:
    asio::signal_set _signals;
 
    // Acceptor used to listen for incoming connections.
-   std::vector<asio::ip::tcp::acceptor> _acceptors; 
+   std::vector<asio::ip::tcp::acceptor> _acceptors;
 };
 
 } // http
 } // net
 } // orion
-#endif 
+#endif

@@ -12,22 +12,25 @@ namespace net
 {
 namespace rpc
 {
-   
-Method::Method(const std::string& name, const std::string& desc) :
-   _name(name),
-   _description(desc)
+
+Method::Method(const std::string& name, const std::string& desc, float version)
+   : _name(name)
+   , _description(desc)
+   , _version(version)
 {
 }
 
-Method::Method(const Method& rhs) :
-   _name(rhs._name),
-   _description(rhs._description)
+Method::Method(const Method& rhs)
+   : _name(rhs._name)
+   , _description(rhs._description)
+   , _version(rhs._version)
 {
 }
 
-Method::Method(Method&& rhs) :
-   _name(std::move(rhs._name)),
-   _description(std::move(rhs._description))
+Method::Method(Method&& rhs)
+   : _name(std::move(rhs._name))
+   , _description(std::move(rhs._description))
+   , _version(std::move(rhs._version))
 {
 }
 
@@ -41,6 +44,11 @@ std::string Method::description() const
    return _description;
 }
 
+float Method::version() const
+{
+   return _version;
+}
+
 Method& Method::operator=(const Method& rhs)
 {
    if (this == &rhs)
@@ -48,6 +56,7 @@ Method& Method::operator=(const Method& rhs)
 
    _name        = rhs._name;
    _description = rhs._description;
+   _version     = rhs._version;
 
    return *this;
 }
@@ -56,6 +65,7 @@ Method& Method::operator=(Method&& rhs)
 {
    _name        = std::move(rhs._name);
    _description = std::move(rhs._description);
+   _version     = std::move(rhs._version);
 
    return *this;
 }

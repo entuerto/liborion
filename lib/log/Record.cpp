@@ -19,9 +19,9 @@
 
 #include <orion/log/Record.h>
 
-#include <string>
-
 #include <orion/DateUtils.h>
+
+#include <string>
 
 namespace orion
 {
@@ -30,11 +30,11 @@ namespace log
 /*!
    Constructor
  */
-Record::Record() :
-   _level(Level::NotSet),
-   _time_stamp(),
-   _message(),
-   _src_location()
+Record::Record()
+   : _level(Level::NotSet)
+   , _time_stamp()
+   , _message()
+   , _src_location()
 {
    _time_stamp = orion::to_string(std::chrono::system_clock::now(), "%X");
 }
@@ -42,11 +42,11 @@ Record::Record() :
 /*!
    Constructor
  */
-Record::Record(Level level, const std::string& msg) :
-   _level(level),
-   _time_stamp(),
-   _message(msg),
-   _src_location()
+Record::Record(Level level, const std::string& msg)
+   : _level(level)
+   , _time_stamp()
+   , _message(msg)
+   , _src_location()
 {
    _time_stamp = orion::to_string(std::chrono::system_clock::now(), "%X");
 }
@@ -54,11 +54,11 @@ Record::Record(Level level, const std::string& msg) :
 /*!
    Constructor
  */
-Record::Record(Level level, const std::string& msg, const SourceLocation& src_loc) :
-   _level(level),
-   _time_stamp(),
-   _message(msg),
-   _src_location(src_loc)
+Record::Record(Level level, const std::string& msg, const SourceLocation& src_loc)
+   : _level(level)
+   , _time_stamp()
+   , _message(msg)
+   , _src_location(src_loc)
 {
    _time_stamp = orion::to_string(std::chrono::system_clock::now(), "%X");
 }
@@ -66,19 +66,19 @@ Record::Record(Level level, const std::string& msg, const SourceLocation& src_lo
 /*
    Copy constructor
  */
-Record::Record(const Record& rhs) :
-   _level(rhs._level),
-   _time_stamp(rhs._time_stamp),
-   _message(rhs._message),
-   _src_location(rhs._src_location)
+Record::Record(const Record& rhs)
+   : _level(rhs._level)
+   , _time_stamp(rhs._time_stamp)
+   , _message(rhs._message)
+   , _src_location(rhs._src_location)
 {
 }
 
-Record::Record(Record&& rhs) :
-   _level(std::move(rhs._level)),
-   _time_stamp(std::move(rhs._time_stamp)),
-   _message(std::move(rhs._message)),
-   _src_location(std::move(rhs._src_location))
+Record::Record(Record&& rhs)
+   : _level(std::move(rhs._level))
+   , _time_stamp(std::move(rhs._time_stamp))
+   , _message(std::move(rhs._message))
+   , _src_location(std::move(rhs._src_location))
 {
 }
 
@@ -197,10 +197,7 @@ Record& Record::operator<<(char value)
 
 Record& Record::operator<<(const std::error_code& ec)
 {
-   auto fmt = boost::format("%s (%d): %s") 
-                 % ec.category().name()  
-                 % ec.value() 
-                 % ec.message();
+   auto fmt = boost::format("%s (%d): %s") % ec.category().name() % ec.value() % ec.message();
    _message += boost::str(fmt);
    return *this;
 }

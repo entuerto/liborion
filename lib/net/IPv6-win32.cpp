@@ -21,12 +21,12 @@
 
 #include <orion/net/IPv6.h>
 
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include <orion/StringUtils.h>
 
 #include <algorithm>
 
-#include <orion/StringUtils.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 namespace orion
 {
@@ -47,14 +47,15 @@ IPv6 IPv6::parse(const std::string& s)
 
    address.v6.sin6_family = AF_INET6;
 
-   int rc = WSAStringToAddressW(const_cast<wchar_t*>(ipw.data()), AF_INET6, 0, &address.base, &address_length);
+   int rc = WSAStringToAddressW(
+      const_cast<wchar_t*>(ipw.data()), AF_INET6, 0, &address.base, &address_length);
    if (rc == 0)
    {
       IPv6 ip;
 
       auto s = std::begin(address.v6.sin6_addr.s6_bytes);
       auto e = std::end(address.v6.sin6_addr.s6_bytes);
-      
+
       std::copy(s, e, std::begin(ip._a.b));
       return ip;
    }

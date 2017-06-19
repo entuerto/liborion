@@ -6,10 +6,10 @@
 //
 #include <net/http/impl/Parser.h>
 
-#include <iostream>
-#include <iomanip>
-
 #include <orion/Log.h>
+
+#include <iomanip>
+#include <iostream>
 
 using namespace orion::log;
 
@@ -71,31 +71,29 @@ int cb_chunk_complete(http_parser* p)
 }
 //---------------------------------------------------------------------------------------
 
-Parser::Parser() :
-   _settings(),
-   _parser(),
-   _url(),
-   _status(),
-   _cur_field(),
-   _header(),
-   _streambuf(nullptr),
-   _headers_complete(false),
-   _message_complete(false)
+Parser::Parser()
+   : _settings()
+   , _parser()
+   , _url()
+   , _status()
+   , _cur_field()
+   , _header()
+   , _streambuf(nullptr)
+   , _headers_complete(false)
+   , _message_complete(false)
 {
    http_parser_settings_init(&_settings);
 
-   _settings = {
-      cb_message_begin,
-      cb_url,
-      cb_status,
-      cb_header_field,
-      cb_header_value,
-      cb_headers_complete,
-      cb_body,
-      cb_message_complete,
-      cb_chunk_header,
-      cb_chunk_complete
-   };
+   _settings = {cb_message_begin,
+                cb_url,
+                cb_status,
+                cb_header_field,
+                cb_header_value,
+                cb_headers_complete,
+                cb_body,
+                cb_message_complete,
+                cb_chunk_header,
+                cb_chunk_complete};
 }
 
 Parser::~Parser()
@@ -118,21 +116,21 @@ std::error_code Parser::parse(AsioRequest& request, const char* data, std::size_
    _parser.data = this;
 
    _streambuf = request.rdbuf();
-   
-   std::size_t nparsed = http_parser_execute(&_parser, &_settings, data, length);
 
-   if (_parser.upgrade) 
+   int nparsed = http_parser_execute(&_parser, &_settings, data, length);
+
+   if (_parser.upgrade)
    {
-   /* handle new protocol */
-   } 
-   else if (nparsed != length) 
+      /* handle new protocol */
+   }
+   else if (nparsed != length)
    {
-   /* Handle error. Usually just close the connection. */
+      /* Handle error. Usually just close the connection. */
    }
 
    if (_headers_complete)
    {
-      request.method(http_method_str(static_cast<http_method>(_parser.method)));
+      request.method(as_method(http_method_str(static_cast<http_method>(_parser.method))));
       request.http_version(Version{_parser.http_major, _parser.http_minor});
       request.url(_url);
       request.header(_header);
@@ -152,13 +150,13 @@ std::error_code Parser::parse(AsioResponse& response, const char* data, std::siz
 
    std::size_t nparsed = http_parser_execute(&_parser, &_settings, data, length);
 
-   if (_parser.upgrade) 
+   if (_parser.upgrade)
    {
-   /* handle new protocol */
-   } 
-   else if (nparsed != length) 
+      /* handle new protocol */
+   }
+   else if (nparsed != length)
    {
-   /* Handle error. Usually just close the connection. */
+      /* Handle error. Usually just close the connection. */
    }
 
    if (_headers_complete)
@@ -262,4 +260,3 @@ int Parser::on_chunk_complete()
 } // http
 } // net
 } // orion
- 

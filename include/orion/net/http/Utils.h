@@ -11,10 +11,13 @@
 #include <chrono>
 #include <iostream>
 #include <map>
-#include <vector>
 #include <string>
- 
+#include <vector>
+
 #include <orion/Orion-Stddefs.h>
+
+#include <orion/StringUtils.h>
+#include <orion/net/http/Error.h>
 
 namespace orion
 {
@@ -22,7 +25,11 @@ namespace net
 {
 namespace http
 {
+//-------------------------------------------------------------------------------------------------
+
 using Header = std::map<std::string, std::string>;
+
+//-------------------------------------------------------------------------------------------------
 
 struct Version
 {
@@ -30,193 +37,188 @@ struct Version
    int minor;
 };
 
-enum class StatusCode 
+//-------------------------------------------------------------------------------------------------
+
+#if defined(DELETE) && defined(_WIN32)
+#undef DELETE
+#endif
+///
+/// HTTP defines methods (sometimes referred to as verbs) to indicate the desired action to be
+/// performed on the identified resource.
+///
+/// Summary table
+/// +--------------+----------+----------+----------+------+------------+-----------+
+/// | HTTP Method  | RFC      | Request  | Response | Safe | Idempotent | Cacheable |
+/// |              |          | Has Body | Has Body |      |            |           |
+/// +--------------+----------+----------+----------+------+------------+-----------+
+/// | GET          | RFC 7231 |    No    |   Yes    | Yes  |    Yes     |    Yes    |
+/// | HEAD         | RFC 7231 |    No    |   No     | Yes  |    Yes     |    Yes    |
+/// | POST         | RFC 7231 |    Yes   |   Yes    | No   |    No      |    Yes    |
+/// | PUT          | RFC 7231 |    Yes   |   Yes    | No   |    Yes     |    No     |
+/// | DELETE       | RFC 7231 |    No    |   Yes    | No   |    Yes     |    No     |
+/// | CONNECT      | RFC 7231 |    Yes   |   Yes    | No   |    No      |    No     |
+/// | OPTIONS      | RFC 7231 | Optional |   Yes    | Yes  |    Yes     |    No     |
+/// | TRACE        | RFC 7231 |    No    |   Yes    | Yes  |    Yes     |    No     |
+/// | PATCH        | RFC 5789 |    Yes   |   Yes    | No   |    No      |    Yes    |
+/// +--------------+----------+----------+----------+------+------------+-----------+
+///
+enum class Method
 {
-   Continue                      = 100, // RFC 7231, 6.2.1
-   SwitchingProtocols            = 101, // RFC 7231, 6.2.2
-   Processing                    = 102, // RFC 2518, 10.1
-
-   OK                            = 200, // RFC 7231, 6.3.1
-   Created                       = 201, // RFC 7231, 6.3.2
-   Accepted                      = 202, // RFC 7231, 6.3.3
-   NonAuthoritativeInfo          = 203, // RFC 7231, 6.3.4
-   NoContent                     = 204, // RFC 7231, 6.3.5
-   ResetContent                  = 205, // RFC 7231, 6.3.6
-   PartialContent                = 206, // RFC 7233, 4.1
-   MultiStatus                   = 207, // RFC 4918, 11.1
-   AlreadyReported               = 208, // RFC 5842, 7.1
-   IMUsed                        = 226, // RFC 3229, 10.4.1
-
-   MultipleChoices               = 300, // RFC 7231, 6.4.1
-   MovedPermanently              = 301, // RFC 7231, 6.4.2
-   Found                         = 302, // RFC 7231, 6.4.3
-   SeeOther                      = 303, // RFC 7231, 6.4.4
-   NotModified                   = 304, // RFC 7232, 4.1
-   UseProxy                      = 305, // RFC 7231, 6.4.5
-   TemporaryRedirect             = 307, // RFC 7231, 6.4.7
-   PermanentRedirect             = 308, // RFC 7538, 3
-
-   BadRequest                    = 400, // RFC 7231, 6.5.1
-   Unauthorized                  = 401, // RFC 7235, 3.1
-   PaymentRequired               = 402, // RFC 7231, 6.5.2
-   Forbidden                     = 403, // RFC 7231, 6.5.3
-   NotFound                      = 404, // RFC 7231, 6.5.4
-   MethodNotAllowed              = 405, // RFC 7231, 6.5.5
-   NotAcceptable                 = 406, // RFC 7231, 6.5.6
-   ProxyAuthRequired             = 407, // RFC 7235, 3.2
-   RequestTimeout                = 408, // RFC 7231, 6.5.7
-   Conflict                      = 409, // RFC 7231, 6.5.8
-   Gone                          = 410, // RFC 7231, 6.5.9
-   LengthRequired                = 411, // RFC 7231, 6.5.10
-   PreconditionFailed            = 412, // RFC 7232, 4.2
-   RequestEntityTooLarge         = 413, // RFC 7231, 6.5.11
-   RequestURITooLong             = 414, // RFC 7231, 6.5.12
-   UnsupportedMediaType          = 415, // RFC 7231, 6.5.13
-   RequestedRangeNotSatisfiable  = 416, // RFC 7233, 4.4
-   ExpectationFailed             = 417, // RFC 7231, 6.5.14
-   Teapot                        = 418, // RFC 7168, 2.3.3
-   UnprocessableEntity           = 422, // RFC 4918, 11.2
-   Locked                        = 423, // RFC 4918, 11.3
-   FailedDependency              = 424, // RFC 4918, 11.4
-   UpgradeRequired               = 426, // RFC 7231, 6.5.15
-   PreconditionRequired          = 428, // RFC 6585, 3
-   TooManyRequests               = 429, // RFC 6585, 4
-   RequestHeaderFieldsTooLarge   = 431, // RFC 6585, 5
-   UnavailableForLegalReasons    = 451, // RFC 7725, 3
-
-   InternalServerError           = 500, // RFC 7231, 6.6.1
-   NotImplemented                = 501, // RFC 7231, 6.6.2
-   BadGateway                    = 502, // RFC 7231, 6.6.3
-   ServiceUnavailable            = 503, // RFC 7231, 6.6.4
-   GatewayTimeout                = 504, // RFC 7231, 6.6.5
-   HTTPVersionNotSupported       = 505, // RFC 7231, 6.6.6
-   VariantAlsoNegotiates         = 506, // RFC 2295, 8.1
-   InsufficientStorage           = 507, // RFC 4918, 11.5
-   LoopDetected                  = 508, // RFC 5842, 7.2
-   NotExtended                   = 510, // RFC 2774, 7
-   NetworkAuthenticationRequired = 511 // RFC 6585, 6
+   DELETE = 0,
+   GET    = 1,
+   HEAD   = 2,
+   POST   = 3,
+   PUT    = 4,
+   // Pathological
+   CONNECT = 5,
+   OPTIONS = 6,
+   TRACE   = 7,
+   // WebDAV
+   COPY      = 8,
+   LOCK      = 9,
+   MKCOL     = 10,
+   MOVE      = 11,
+   PROPFIND  = 12,
+   PROPPATCH = 13,
+   SEARCH    = 14,
+   UNLOCK    = 15,
+   BIND      = 16,
+   REBIND    = 17,
+   UNBIND    = 18,
+   ACL       = 19,
+   // Subversion
+   REPORT     = 20,
+   MKACTIVITY = 21,
+   CHECKOUT   = 22,
+   MERGE      = 23,
+   // upnp
+   MSEARCH     = 24,
+   NOTIFY      = 25,
+   SUBSCRIBE   = 26,
+   UNSUBSCRIBE = 27,
+   // RFC-5789
+   PATCH = 28,
+   PURGE = 29,
+   // CalDAV
+   MKCALENDAR = 30,
+   // RFC-2068, section 19.6.1.2
+   LINK   = 31,
+   UNLINK = 32
 };
 
-inline std::ostream& operator<<(std::ostream& o, const StatusCode code)
+static const std::map<Method, std::string> MethodText{{Method::DELETE, "DELETE"},
+                                                      {Method::GET, "GET"},
+                                                      {Method::HEAD, "HEAD"},
+                                                      {Method::POST, "POST"},
+                                                      {Method::PUT, "PUT"},
+                                                      {Method::CONNECT, "CONNECT"},
+                                                      {Method::OPTIONS, "OPTIONS"},
+                                                      {Method::TRACE, "TRACE"},
+                                                      {Method::COPY, "COPY"},
+                                                      {Method::LOCK, "LOCK"},
+                                                      {Method::MKCOL, "MKCOL"},
+                                                      {Method::MOVE, "MOVE"},
+                                                      {Method::PROPFIND, "PROPFIND"},
+                                                      {Method::PROPPATCH, "PROPPATCH"},
+                                                      {Method::SEARCH, "SEARCH"},
+                                                      {Method::UNLOCK, "UNLOCK"},
+                                                      {Method::BIND, "BIND"},
+                                                      {Method::REBIND, "REBIND"},
+                                                      {Method::UNBIND, "UNBIND"},
+                                                      {Method::ACL, "ACL"},
+                                                      {Method::REPORT, "REPORT"},
+                                                      {Method::MKACTIVITY, "MKACTIVITY"},
+                                                      {Method::CHECKOUT, "CHECKOUT"},
+                                                      {Method::MERGE, "MERGE"},
+                                                      {Method::MSEARCH, "MSEARCH"},
+                                                      {Method::NOTIFY, "NOTIFY"},
+                                                      {Method::SUBSCRIBE, "SUBSCRIBE"},
+                                                      {Method::UNSUBSCRIBE, "UNSUBSCRIBE"},
+                                                      {Method::PATCH, "PATCH"},
+                                                      {Method::PURGE, "PURGE"},
+                                                      {Method::MKCALENDAR, "MKCALENDAR"},
+                                                      {Method::LINK, "LINK"},
+                                                      {Method::UNLINK, "UNLINK"}};
+
+inline std::ostream& operator<<(std::ostream& o, const Method m)
 {
-   o << static_cast<int>(code);
+   auto item = MethodText.find(m);
+
+   if (item != MethodText.end())
+      o << item->second;
+   else
+      o << "UNKOWN";
+
    return o;
 }
 
-static const std::map<StatusCode, std::string> StatusText
+inline bool operator==(const Method m, const std::string& text)
 {
-   {StatusCode::Continue,                     "Continue"},
-   {StatusCode::SwitchingProtocols,           "Switching Protocols"},
-   {StatusCode::Processing,                   "Processing"},
+   auto item = MethodText.find(m);
 
-   {StatusCode::OK,                           "OK"},
-   {StatusCode::Created,                      "Created"},
-   {StatusCode::Accepted,                     "Accepted"},
-   {StatusCode::NonAuthoritativeInfo,         "Non-Authoritative Information"},
-   {StatusCode::NoContent,                    "No Content"},
-   {StatusCode::ResetContent,                 "Reset Content"},
-   {StatusCode::PartialContent,               "Partial Content"},
-   {StatusCode::MultiStatus,                  "Multi-Status"},
-   {StatusCode::AlreadyReported,              "Already Reported"},
-   {StatusCode::IMUsed,                       "IM Used"},
+   if (item != MethodText.end())
+      return item->second == text;
 
-   {StatusCode::MultipleChoices,              "Multiple Choices"},
-   {StatusCode::MovedPermanently,             "Moved Permanently"},
-   {StatusCode::Found,                        "Found"},
-   {StatusCode::SeeOther,                     "See Other"},
-   {StatusCode::NotModified,                  "Not Modified"},
-   {StatusCode::UseProxy,                     "Use Proxy"},
-   {StatusCode::TemporaryRedirect,            "Temporary Redirect"},
-   {StatusCode::PermanentRedirect,            "Permanent Redirect"},
+   return false;
+}
 
-   {StatusCode::BadRequest,                   "Bad Request"},
-   {StatusCode::Unauthorized,                 "Unauthorized"},
-   {StatusCode::PaymentRequired,              "Payment Required"},
-   {StatusCode::Forbidden,                    "Forbidden"},
-   {StatusCode::NotFound,                     "Not Found"},
-   {StatusCode::MethodNotAllowed,             "Method Not Allowed"},
-   {StatusCode::NotAcceptable,                "Not Acceptable"},
-   {StatusCode::ProxyAuthRequired,            "Proxy Authentication Required"},
-   {StatusCode::RequestTimeout,               "Request Timeout"},
-   {StatusCode::Conflict,                     "Conflict"},
-   {StatusCode::Gone,                         "Gone"},
-   {StatusCode::LengthRequired,               "Length Required"},
-   {StatusCode::PreconditionFailed,           "Precondition Failed"},
-   {StatusCode::RequestEntityTooLarge,        "Request Entity Too Large"},
-   {StatusCode::RequestURITooLong,            "Request URI Too Long"},
-   {StatusCode::UnsupportedMediaType,         "Unsupported Media Type"},
-   {StatusCode::RequestedRangeNotSatisfiable, "Requested Range Not Satisfiable"},
-   {StatusCode::ExpectationFailed,            "Expectation Failed"},
-   {StatusCode::Teapot,                       "I'm a teapot"},
-   {StatusCode::UnprocessableEntity,          "Unprocessable Entity"},
-   {StatusCode::Locked,                       "Locked"},
-   {StatusCode::FailedDependency,             "Failed Dependency"},
-   {StatusCode::UpgradeRequired,              "Upgrade Required"},
-   {StatusCode::PreconditionRequired,         "Precondition Required"},
-   {StatusCode::TooManyRequests,              "Too Many Requests"},
-   {StatusCode::RequestHeaderFieldsTooLarge,  "Request Header Fields Too Large"},
-   {StatusCode::UnavailableForLegalReasons,   "Unavailable For Legal Reasons"},
-
-   {StatusCode::InternalServerError,           "Internal Server Error"},
-   {StatusCode::NotImplemented,                "Not Implemented"},
-   {StatusCode::BadGateway,                    "Bad Gateway"},
-   {StatusCode::ServiceUnavailable,            "Service Unavailable"},
-   {StatusCode::GatewayTimeout,                "Gateway Timeout"},
-   {StatusCode::HTTPVersionNotSupported,       "HTTP Version Not Supported"},
-   {StatusCode::VariantAlsoNegotiates,         "Variant Also Negotiates"},
-   {StatusCode::InsufficientStorage,           "Insufficient Storage"},
-   {StatusCode::LoopDetected,                  "Loop Detected"},
-   {StatusCode::NotExtended,                   "Not Extended"},
-   {StatusCode::NetworkAuthenticationRequired, "Network Authentication Required"}
-};
-
-struct Method final
+inline bool operator==(const std::string& text, const Method m)
 {
-   /// Transfer a current representation of the target resource.
-   constexpr static const char* Get     = "GET";    
-   /// Same as GET, but only transfer the status line and header section.
-   constexpr static const char* Head    = "HEAD";   
-   /// Perform resource-specific processing on the request payload.
-   constexpr static const char* Post    = "POST";   
-   /// Replace all current representations of the target resource with the request payload.
-   constexpr static const char* Put     = "PUT";   
-   /// RFC 5789 
-   constexpr static const char* Patch   = "PATCH"; 
-   /// Remove all current representations of the target resource.
-   constexpr static const char* Delete  = "DELETE"; 
-   /// Establish a tunnel to the server identified by the target resource.
-   constexpr static const char* Connect = "CONNECT"; 
-   /// Describe the communication options for the target resource.
-   constexpr static const char* Options = "OPTIONS"; 
-   /// Perform a message loop-back test along the path to the target resource.
-   constexpr static const char* Trace   = "TRACE";   
-};
+   return operator==(m, text);
+}
 
-const char crlf[] = { '\r', '\n', '\0' };
+inline std::string to_string(const Method m)
+{
+   auto item = MethodText.find(m);
 
+   if (item != MethodText.end())
+      return item->second;
 
-struct Parameter 
+   return "UNKOWN";
+}
+
+inline Method as_method(const std::string& text)
+{
+   for (auto& item : MethodText)
+   {
+      if (not equals_no_case(item.second, text))
+         continue;
+
+      return item.first;
+   }
+
+   throw std::system_error(make_error_code(ErrorCode::MethodNotAllowed));
+}
+
+//-------------------------------------------------------------------------------------------------
+
+const char crlf[] = {'\r', '\n', '\0'};
+
+//-------------------------------------------------------------------------------------------------
+
+struct Parameter
 {
    std::string key;
    std::string value;
 };
 
-class Parameters 
+class Parameters
 {
 public:
    Parameters() = default;
-   Parameters(const std::initializer_list<Parameter>& p) :
-      _params(p) {}
-
-   void add(const Parameter& p)
+   Parameters(const std::initializer_list<Parameter>& p)
+      : _params(p)
    {
-      _params.push_back(p);
    }
+
+   void add(const Parameter& p) { _params.push_back(p); }
 
    std::vector<Parameter> _params;
 };
 
-struct Timeout 
+//-------------------------------------------------------------------------------------------------
+
+struct Timeout
 {
    std::chrono::milliseconds ms;
 };

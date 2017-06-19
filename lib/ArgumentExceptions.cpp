@@ -24,109 +24,115 @@ namespace orion
 // ---------------------------------------------------------------------------
 // ---- ArgumentException ----
 
-ArgumentException::ArgumentException(const std::string& text, const SourceLocation& src_loc) :
-   Exception(text, src_loc)
+ArgumentException::ArgumentException(const std::string& text, const SourceLocation& src_loc)
+   : Exception(text, src_loc)
 {
 }
 
-ArgumentException::ArgumentException(const ArgumentException& other) :
-   Exception(other)
+ArgumentException::ArgumentException(const ArgumentException& other)
+   : Exception(other)
 {
 }
 
-ArgumentException::ArgumentException(ArgumentException&& other) :
-   Exception(std::move(other))
+ArgumentException::ArgumentException(ArgumentException&& other)
+   : Exception(std::move(other))
 {
 }
 
 ArgumentException& ArgumentException::operator=(const ArgumentException& other)
 {
-   if (this == &other) {
+   if (this == &other)
+   {
       return *this;
    }
 
    Exception::operator=(other);
 
-   return *this ;
+   return *this;
 }
 
 ArgumentException& ArgumentException::operator=(ArgumentException&& other)
 {
    Exception::operator=(std::move(other));
 
-   return *this ;
+   return *this;
 }
 
 // ---------------------------------------------------------------------------
 // ---- ArgumentNullException ----
 
-ArgumentNullException::ArgumentNullException(const std::string& text, const SourceLocation& src_loc) :
-   ArgumentException(text, src_loc)
+ArgumentNullException::ArgumentNullException(const std::string& text, const SourceLocation& src_loc)
+   : ArgumentException(text, src_loc)
 {
 }
 
-ArgumentNullException::ArgumentNullException(const ArgumentNullException& other) :
-   ArgumentException(other)
+ArgumentNullException::ArgumentNullException(const ArgumentNullException& other)
+   : ArgumentException(other)
 {
 }
 
-ArgumentNullException::ArgumentNullException(ArgumentNullException&& other) :
-   ArgumentException(std::move(other))
+ArgumentNullException::ArgumentNullException(ArgumentNullException&& other)
+   : ArgumentException(std::move(other))
 {
 }
 
 ArgumentNullException& ArgumentNullException::operator=(const ArgumentNullException& other)
 {
-   if (this == &other) {
+   if (this == &other)
+   {
       return *this;
    }
 
    ArgumentException::operator=(other);
 
-   return *this ;
+   return *this;
 }
 
 ArgumentNullException& ArgumentNullException::operator=(ArgumentNullException&& other)
 {
    ArgumentException::operator=(std::move(other));
 
-   return *this ;
+   return *this;
 }
 
 // ---------------------------------------------------------------------------
 // ---- ArgumentOutOfRangeException ----
 
-ArgumentOutOfRangeException::ArgumentOutOfRangeException(const std::string& text, const SourceLocation& src_loc) :
-   ArgumentException(text, src_loc)
+ArgumentOutOfRangeException::ArgumentOutOfRangeException(const std::string& text,
+                                                         const SourceLocation& src_loc)
+   : ArgumentException(text, src_loc)
 {
 }
 
-ArgumentOutOfRangeException::ArgumentOutOfRangeException(const ArgumentOutOfRangeException& other) :
-   ArgumentException(other)
+ArgumentOutOfRangeException::ArgumentOutOfRangeException(const ArgumentOutOfRangeException& other)
+   : ArgumentException(other)
 {
 }
 
-ArgumentOutOfRangeException::ArgumentOutOfRangeException(ArgumentOutOfRangeException&& other) :
-   ArgumentException(std::move(other))
+ArgumentOutOfRangeException::ArgumentOutOfRangeException(ArgumentOutOfRangeException&& other)
+   : ArgumentException(std::move(other))
 {
 }
 
-ArgumentOutOfRangeException& ArgumentOutOfRangeException::operator=(const ArgumentOutOfRangeException& other)
+ArgumentOutOfRangeException& ArgumentOutOfRangeException::operator=(
+   const ArgumentOutOfRangeException& other)
 {
-   if (this == &other) {
+   if (this == &other)
+   {
       return *this;
    }
 
    ArgumentException::operator=(other);
 
-   return *this ;
+   return *this;
 }
 
-ArgumentOutOfRangeException& ArgumentOutOfRangeException::operator=(ArgumentOutOfRangeException&& other)
+ArgumentOutOfRangeException& ArgumentOutOfRangeException::operator=(
+   ArgumentOutOfRangeException&& other)
 {
    ArgumentException::operator=(std::move(other));
 
-   return *this ;
+   return *this;
 }
 
 } // namespace orion

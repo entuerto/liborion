@@ -8,13 +8,13 @@
 #ifndef ORION_NET_HTTP_MONGOOSEREQUEST_H
 #define ORION_NET_HTTP_MONGOOSEREQUEST_H
 
-#include <string>
-#include <sstream>
- 
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/http/Request.h>
 
 #include <mongoose/mongoose.h>
+
+#include <sstream>
+#include <string>
 
 namespace orion
 {

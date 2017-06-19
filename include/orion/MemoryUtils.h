@@ -20,9 +20,8 @@
 #ifndef ORION_MEMORY_UTILS_H
 #define ORION_MEMORY_UTILS_H
 
-#include <memory>
-
 #include <orion/Orion-Stddefs.h>
+#include <memory>
 
 namespace orion
 {
@@ -36,13 +35,11 @@ template<typename R, typename T>
 inline R iface_cast(T other)
 {
    auto ptr = dynamic_cast<R>(other);
-   
+
    if (ptr == nullptr)
       return static_cast<R>(*other);
 
    return ptr;
 }
-
 }
 #endif
-

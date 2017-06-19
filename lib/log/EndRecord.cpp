@@ -19,21 +19,21 @@ namespace log
 /*!
    Constructor
  */
-EndRecord::EndRecord() :
-   Record()
+EndRecord::EndRecord()
+   : Record()
 {
 }
 
 /*
    Copy constructor
  */
-EndRecord::EndRecord(const EndRecord& rhs) :
-   Record(rhs)
+EndRecord::EndRecord(const EndRecord& rhs)
+   : Record(rhs)
 {
 }
 
-EndRecord::EndRecord(EndRecord&& rhs) :
-   Record(std::move(rhs))
+EndRecord::EndRecord(EndRecord&& rhs)
+   : Record(std::move(rhs))
 {
 }
 

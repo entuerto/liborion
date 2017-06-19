@@ -17,32 +17,31 @@ namespace log
 /*!
    Constructor
  */
-Function::Function(Level level, const SourceLocation& src_loc) :
-   _level(level),
-   _name(src_loc.function_name)
+Function::Function(Level level, const SourceLocation& src_loc)
+   : _level(level)
+   , _name(src_loc.function_name)
 {
    Logger& logger = default_logger();
 
    if (not logger.is_enabled(level))
       return;
 
-   logger += Record(level, "", src_loc) << "Entering function: "
-                                    << _name;
-   logger.push_scope();                                                            
+   logger += Record(level, "", src_loc) << "Entering function: " << _name;
+   logger.push_scope();
 }
 
 /*
    Copy constructor
  */
-Function::Function(const Function& rhs) :
-   _level(rhs._level),
-   _name(rhs._name)
+Function::Function(const Function& rhs)
+   : _level(rhs._level)
+   , _name(rhs._name)
 {
 }
 
-Function::Function(Function&& rhs) :
-   _level(std::move(rhs._level)),
-   _name(std::move(rhs._name))
+Function::Function(Function&& rhs)
+   : _level(std::move(rhs._level))
+   , _name(std::move(rhs._name))
 {
 }
 
@@ -53,9 +52,8 @@ Function::~Function()
    if (not logger.is_enabled(_level))
       return;
 
-   logger.pop_scope();                                                            
-   logger += Record(_level, "") << "Exiting function: "
-                                << _name; 
+   logger.pop_scope();
+   logger += Record(_level, "") << "Exiting function: " << _name;
 }
 
 /*!

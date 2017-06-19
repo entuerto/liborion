@@ -3,8 +3,8 @@
 //  Created by Tomas Palazuelos on 2016-11-07.
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
-
 #include <orion/net/Url.h>
+
 #include <orion/StringUtils.h>
 
 #include <http-parser/http_parser.h>
@@ -37,7 +37,7 @@ inline bool ascii_hex_digit(char ch)
    return ascii_digit(ch) or (ch >= 0x41 and ch <= 0x46) or (ch >= 0x61 and ch <= 0x66);
 }
 
-inline uint16_t hex2bin(const char ch) 
+inline uint16_t hex2bin(const char ch)
 {
    if (ch >= '0' and ch <= '9')
       return ch - '0';
@@ -51,10 +51,10 @@ inline uint16_t hex2bin(const char ch)
    return static_cast<uint16_t>(-1);
 }
 
-std::string percent_decode(const char* input, std::size_t len) 
+std::string percent_decode(const char* input, std::size_t len)
 {
    if (len == 0)
-     return "";
+      return "";
 
    std::string dest;
 
@@ -65,10 +65,10 @@ std::string percent_decode(const char* input, std::size_t len)
 
    std::size_t remaining = ptr - end - 1;
 
-   while (ptr < end) 
+   while (ptr < end)
    {
       const char ch = ptr[0];
-      
+
       remaining = (end - ptr) + 1;
 
       if (ch == '+')
@@ -78,15 +78,13 @@ std::string percent_decode(const char* input, std::size_t len)
          continue;
       }
 
-      if (ch != '%' or 
-          remaining < 2 or
-          (ch == '%' and
-           (not ascii_hex_digit(ptr[1]) or not ascii_hex_digit(ptr[2])))) 
+      if (ch != '%' or remaining < 2 or
+          (ch == '%' and (not ascii_hex_digit(ptr[1]) or not ascii_hex_digit(ptr[2]))))
       {
          dest += ch;
          ptr++;
          continue;
-      } 
+      }
 
       uint16_t a = hex2bin(ptr[1]);
       uint16_t b = hex2bin(ptr[2]);
@@ -110,12 +108,12 @@ struct EncodePathChar
       if (ascii_alphanumeric(c))
          return false;
 
-      switch (c) 
+      switch (c)
       {
          case '-': // §2.3 Unreserved characters (mark)
-         case '_': 
-         case '.': 
-         case '~': 
+         case '_':
+         case '.':
+         case '~':
             return false;
          case '$': // §2.2 Reserved characters (reserved)
          case '&':
@@ -130,7 +128,7 @@ struct EncodePathChar
             // §3.3
             // The RFC allows : @ & = + $ but saves / ; , for assigning
             // meaning to individual path segments. This package
-            // only manipulates the path as a whole. That leaves 
+            // only manipulates the path as a whole. That leaves
             // only ? to escape.
             return c == '?';
       }
@@ -150,7 +148,7 @@ struct EncodePathChar
          out += UPPER_XDIGITS[c >> 4];
          out += UPPER_XDIGITS[(c & 0x0f)];
       }
-      return out; 
+      return out;
    }
 };
 
@@ -162,12 +160,12 @@ struct EncodeUserPasswordChar
       if (ascii_alphanumeric(c))
          return false;
 
-      switch (c) 
+      switch (c)
       {
          case '-': // §2.3 Unreserved characters (mark)
-         case '_': 
-         case '.': 
-         case '~': 
+         case '_':
+         case '.':
+         case '~':
             return false;
          case '$': // §2.2 Reserved characters (reserved)
          case '&':
@@ -179,7 +177,7 @@ struct EncodeUserPasswordChar
          case '=':
          case '?':
          case '@':
-             // §3.2.1
+            // §3.2.1
             // The RFC allows ';', ':', '&', '=', '+', '$', and ',' in
             // userinfo, so we must escape only '@', '/', and '?'.
             // The parsing of userinfo treats ':' as special so we must escape
@@ -202,7 +200,7 @@ struct EncodeUserPasswordChar
          out += UPPER_XDIGITS[c >> 4];
          out += UPPER_XDIGITS[(c & 0x0f)];
       }
-      return out; 
+      return out;
    }
 };
 
@@ -214,12 +212,12 @@ struct EncodeQueryChar
       if (ascii_alphanumeric(c))
          return false;
 
-      switch (c) 
+      switch (c)
       {
          case '-': // §2.3 Unreserved characters (mark)
-         case '_': 
-         case '.': 
-         case '~': 
+         case '_':
+         case '.':
+         case '~':
             return false;
          case '$': // §3.4
          case '&': // The RFC reserves (so we must escape) everything.
@@ -230,7 +228,7 @@ struct EncodeQueryChar
          case ';':
          case '=':
          case '?':
-         case '@': 
+         case '@':
             return true;
       }
       // Everything else must be escaped.
@@ -251,10 +249,9 @@ struct EncodeQueryChar
          out += UPPER_XDIGITS[c >> 4];
          out += UPPER_XDIGITS[(c & 0x0f)];
       }
-      return out; 
+      return out;
    }
 };
-
 
 struct EncodeFragmentChar
 {
@@ -264,14 +261,14 @@ struct EncodeFragmentChar
       if (ascii_alphanumeric(c))
          return false;
 
-      switch (c) 
+      switch (c)
       {
          case '-': // §2.3 Unreserved characters (mark)
-         case '_': 
-         case '.': 
-         case '~': 
+         case '_':
+         case '.':
+         case '~':
             return false;
-         case '$': // §4.1 
+         case '$': // §4.1
          case '&': // The RFC text is silent but the grammar allows
          case '+': // everything, so escape nothing.
          case ',':
@@ -280,7 +277,7 @@ struct EncodeFragmentChar
          case ';':
          case '=':
          case '?':
-         case '@': 
+         case '@':
             return false;
       }
       // Everything else must be escaped.
@@ -299,14 +296,14 @@ struct EncodeFragmentChar
          out += UPPER_XDIGITS[c >> 4];
          out += UPPER_XDIGITS[(c & 0x0f)];
       }
-      return out; 
+      return out;
    }
 };
 
 template<typename T>
 std::string encode(const std::string& str)
 {
-   T e; 
+   T e;
 
    std::string out;
 
@@ -345,48 +342,48 @@ int normalize_port(const std::string& scheme, int port)
 
 //---------------------------------------------------------------------------------------
 
-Url::Url() :
-   _userinfo(),
-   _port(-1),
-   _protocol(),
-   _hostname(),
-   _pathname(),
-   _hash(),
-   _query()
+Url::Url()
+   : _userinfo()
+   , _port(-1)
+   , _protocol()
+   , _hostname()
+   , _pathname()
+   , _hash()
+   , _query()
 {
 }
 
-Url::Url(const std::string& value) :
-   _userinfo(),
-   _port(-1),
-   _protocol(),
-   _hostname(),
-   _pathname(),
-   _hash(),
-   _query()
+Url::Url(const std::string& value)
+   : _userinfo()
+   , _port(-1)
+   , _protocol()
+   , _hostname()
+   , _pathname()
+   , _hash()
+   , _query()
 {
    parse(value);
 }
 
-Url::Url(const Url& rhs) :
-   _userinfo(rhs._userinfo),
-   _port(rhs._port),
-   _protocol(rhs._protocol),
-   _hostname(rhs._hostname),
-   _pathname(rhs._pathname),
-   _hash(rhs._hash),
-   _query(rhs._query)
+Url::Url(const Url& rhs)
+   : _userinfo(rhs._userinfo)
+   , _port(rhs._port)
+   , _protocol(rhs._protocol)
+   , _hostname(rhs._hostname)
+   , _pathname(rhs._pathname)
+   , _hash(rhs._hash)
+   , _query(rhs._query)
 {
 }
 
-Url::Url(Url&& rhs) :
-   _userinfo(std::move(rhs._userinfo)),
-   _port(std::move(rhs._port)),
-   _protocol(std::move(rhs._protocol)),
-   _hostname(std::move(rhs._hostname)),
-   _pathname(std::move(rhs._pathname)),
-   _hash(std::move(rhs._hash)),
-   _query(std::move(rhs._query))
+Url::Url(Url&& rhs)
+   : _userinfo(std::move(rhs._userinfo))
+   , _port(std::move(rhs._port))
+   , _protocol(std::move(rhs._protocol))
+   , _hostname(std::move(rhs._hostname))
+   , _pathname(std::move(rhs._pathname))
+   , _hash(std::move(rhs._hash))
+   , _query(std::move(rhs._query))
 {
 }
 
@@ -474,19 +471,19 @@ std::string Url::path() const
 {
    std::string out;
 
-   out += priv::encode<priv::EncodePathChar>(_pathname); 
+   out += priv::encode<priv::EncodePathChar>(_pathname);
    if (not _query.empty())
    {
-      out += "?"; 
+      out += "?";
       for (const auto& item : _query)
       {
          out += priv::encode<priv::EncodeQueryChar>(item.first);
-         out += "="; 
+         out += "=";
          out += priv::encode<priv::EncodeQueryChar>(item.second);
          out += "&";
       }
       out.erase(--out.end());
-   } 
+   }
 
    return out;
 }
@@ -533,43 +530,43 @@ std::string Url::href() const
 
    if (not _protocol.empty())
    {
-      out += _protocol; 
+      out += _protocol;
       out += "://";
    }
    if (not _userinfo.username.empty())
-   { 
-      out += priv::encode<priv::EncodeUserPasswordChar>(_userinfo.username); 
+   {
+      out += priv::encode<priv::EncodeUserPasswordChar>(_userinfo.username);
       if (not _userinfo.password.empty())
       {
          out += ":";
          out += priv::encode<priv::EncodeUserPasswordChar>(_userinfo.password);
       }
-      out += "@"; 
+      out += "@";
    }
-   out += _hostname; 
+   out += _hostname;
    if (_port > 0)
    {
-      out += ":"; 
+      out += ":";
       out += std::to_string(_port);
-   } 
-   out += priv::encode<priv::EncodePathChar>(_pathname); 
+   }
+   out += priv::encode<priv::EncodePathChar>(_pathname);
    if (not _query.empty())
    {
-      out += "?"; 
+      out += "?";
       for (const auto& item : _query)
       {
          out += priv::encode<priv::EncodeQueryChar>(item.first);
-         out += "="; 
+         out += "=";
          out += priv::encode<priv::EncodeQueryChar>(item.second);
          out += "&";
       }
       out.erase(--out.end());
-   } 
+   }
    if (not _hash.empty())
    {
       out += '#';
       out += priv::encode<priv::EncodeFragmentChar>(_hash.substr(1));
-   } 
+   }
    return out;
 }
 
@@ -581,7 +578,7 @@ void Url::parse(const std::string& value)
 
    int result = http_parser_parse_url(value.c_str(), value.length(), 0, &u);
 
-   if (result != 0) 
+   if (result != 0)
       return;
 
    _port = u.port;
@@ -590,21 +587,21 @@ void Url::parse(const std::string& value)
       _protocol = value.substr(u.field_data[UF_SCHEMA].off, u.field_data[UF_SCHEMA].len);
 
    if (u.field_set & (1 << UF_HOST))
-      _hostname = priv::percent_decode(value.c_str() + u.field_data[UF_HOST].off, 
-                                                       u.field_data[UF_HOST].len);
+      _hostname =
+         priv::percent_decode(value.c_str() + u.field_data[UF_HOST].off, u.field_data[UF_HOST].len);
 
    if (u.field_set & (1 << UF_PATH))
-      _pathname = priv::percent_decode(value.c_str() + u.field_data[UF_PATH].off, 
-                                                       u.field_data[UF_PATH].len);
+      _pathname =
+         priv::percent_decode(value.c_str() + u.field_data[UF_PATH].off, u.field_data[UF_PATH].len);
 
    if (u.field_set & (1 << UF_FRAGMENT))
-      _hash = "#" + priv::percent_decode(value.c_str() + u.field_data[UF_FRAGMENT].off, 
-                                                         u.field_data[UF_FRAGMENT].len);
+      _hash = "#" + priv::percent_decode(value.c_str() + u.field_data[UF_FRAGMENT].off,
+                                         u.field_data[UF_FRAGMENT].len);
 
    if (u.field_set & (1 << UF_USERINFO))
    {
-      std::string userinfo = priv::percent_decode(value.c_str() + u.field_data[UF_USERINFO].off, 
-                                                                  u.field_data[UF_USERINFO].len);
+      std::string userinfo = priv::percent_decode(value.c_str() + u.field_data[UF_USERINFO].off,
+                                                  u.field_data[UF_USERINFO].len);
 
       auto pos = userinfo.find(":");
       if (pos != std::string::npos)
@@ -618,8 +615,8 @@ void Url::parse(const std::string& value)
 
    if (u.field_set & (1 << UF_QUERY))
    {
-      std::string p = priv::percent_decode(value.c_str() + u.field_data[UF_QUERY].off, 
-                                                           u.field_data[UF_QUERY].len);
+      std::string p = priv::percent_decode(value.c_str() + u.field_data[UF_QUERY].off,
+                                           u.field_data[UF_QUERY].len);
 
       auto query_items = split(p, '&');
 

@@ -6,11 +6,11 @@
 //
 #include <orion/net/http/Request.h>
 
+#include <orion/StringUtils.h>
+
 #include <cstdlib>
 #include <iomanip>
 #include <sstream>
-
-#include <orion/StringUtils.h>
 
 namespace orion
 {
@@ -18,38 +18,35 @@ namespace net
 {
 namespace http
 {
-Request::Request() :
-   _method(),
-   _url(),
-   _version(),
-   _header(),
-   _should_keep_alive(false),
-   _upgrade(false)
+Request::Request()
+   : _method(Method::GET)
+   , _url()
+   , _version()
+   , _header()
+   , _should_keep_alive(false)
+   , _upgrade(false)
 {
 }
 
-Request::Request(const std::string& method, 
-                 const Url& url, 
-                 const Version& version, 
-                 const Header& header) :
-   _method(method),
-   _url(url),
-   _version(version),
-   _header(header),
-   _should_keep_alive(false),
-   _upgrade(false)
+Request::Request(const Method& method, const Url& url, const Version& version, const Header& header)
+   : _method(method)
+   , _url(url)
+   , _version(version)
+   , _header(header)
+   , _should_keep_alive(false)
+   , _upgrade(false)
 {
 }
 
-Request::Request(Request&& rhs) :
-   _method(std::move(rhs._method)),
-   _url(std::move(rhs._url)),
-   _version(std::move(rhs._version)),
-   _header(std::move(rhs._header)),
-   _should_keep_alive(std::move(rhs._should_keep_alive)),
-   _upgrade(std::move(rhs._upgrade)),
-   _header_streambuf(std::move(rhs._header_streambuf)),
-   _body_streambuf(std::move(rhs._body_streambuf)) 
+Request::Request(Request&& rhs)
+   : _method(std::move(rhs._method))
+   , _url(std::move(rhs._url))
+   , _version(std::move(rhs._version))
+   , _header(std::move(rhs._header))
+   , _should_keep_alive(std::move(rhs._should_keep_alive))
+   , _upgrade(std::move(rhs._upgrade))
+   , _header_streambuf(std::move(rhs._header_streambuf))
+   , _body_streambuf(std::move(rhs._body_streambuf))
 {
 }
 
@@ -58,14 +55,14 @@ Request::~Request()
 }
 
 //! "GET", "POST", etc
-std::string Request::method() const
+Method Request::method() const
 {
    return _method;
 }
 
-void Request::method(const std::string& m)
+void Request::method(const Method& value)
 {
-   _method = m;
+   _method = value;
 }
 
 //! URL-decoded URI
@@ -137,16 +134,16 @@ std::streambuf* Request::rdbuf() const
 
 Request& Request::operator=(Request&& rhs)
 {
-   _method  = std::move(rhs._method);
-   _url     = std::move(rhs._url);
-   _version = std::move(rhs._version);
-   _header  = std::move(rhs._header);
-   _should_keep_alive  = std::move(rhs._should_keep_alive);
-   _upgrade            = std::move(rhs._upgrade);
+   _method            = std::move(rhs._method);
+   _url               = std::move(rhs._url);
+   _version           = std::move(rhs._version);
+   _header            = std::move(rhs._header);
+   _should_keep_alive = std::move(rhs._should_keep_alive);
+   _upgrade           = std::move(rhs._upgrade);
 
    _header_streambuf = std::move(rhs._header_streambuf);
-   _body_streambuf   = std::move(rhs._body_streambuf); 
-   return *this;   
+   _body_streambuf   = std::move(rhs._body_streambuf);
+   return *this;
 }
 
 std::ostream& operator<<(std::ostream& o, const Request& r)
@@ -155,30 +152,24 @@ std::ostream& operator<<(std::ostream& o, const Request& r)
 
    Version v = r._version;
 
-   o << std::left
-     << std::boolalpha
-     << "Request Record\n";
+   o << std::left << std::boolalpha << "Request Record\n";
 
-   o << std::setw(w) << "Method" << " : " << r._method
-     << "\n"
-     << std::setw(w) << "URL" << " : " << r._url.href()
-     << "\n"
-     << std::setw(w) << "Version" << " : " << v.major << "." << v.minor
-     << "\n";
+   o << std::setw(w) << "Method"
+     << " : " << r._method << "\n"
+     << std::setw(w) << "URL"
+     << " : " << r._url.href() << "\n"
+     << std::setw(w) << "Version"
+     << " : " << v.major << "." << v.minor << "\n";
 
    for (const auto& item : r._header)
    {
-      o << std::setw(w) 
-        << item.first
-        << " : "
-        << item.second
-        << "\n";
+      o << std::setw(w) << item.first << " : " << item.second << "\n";
    }
 
-   o << std::setw(w) << "Should keep alive" << " : " << r._should_keep_alive
-     << "\n"
-     << std::setw(w) << "Upgrade" << " : " << r._upgrade
-     << "\n";
+   o << std::setw(w) << "Should keep alive"
+     << " : " << r._should_keep_alive << "\n"
+     << std::setw(w) << "Upgrade"
+     << " : " << r._upgrade << "\n";
    return o;
 }
 
@@ -186,15 +177,13 @@ const orion::log::Record& operator<<(const orion::log::Record& rec, const Reques
 {
    std::ostringstream outs;
 
-   outs << "\n"
-        << r;
+   outs << "\n" << r;
 
    const_cast<orion::log::Record&>(rec).message(outs.str());
 
-   return rec; 
+   return rec;
 }
 
 } // http
 } // net
 } // orion
-

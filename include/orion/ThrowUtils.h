@@ -9,7 +9,6 @@
 #define ORION_THROWUTILS_H
 
 #include <orion/Orion-Stddefs.h>
-
 #include <orion/SourceLocation.h>
 
 namespace orion
@@ -28,14 +27,18 @@ void throw_exception(const std::string& msg, const SourceLocation& src_loc)
 }
 
 template<typename E>
-void throw_if(bool condition, const std::string& msg, const SourceLocation& src_loc = SourceLocation{})
+void throw_if(bool condition,
+              const std::string& msg,
+              const SourceLocation& src_loc = SourceLocation{})
 {
    if (condition)
       throw_exception<E>(msg, src_loc);
 }
 
 template<typename E, typename T>
-void throw_if_null(const T* value, const std::string& msg, const SourceLocation& src_loc = SourceLocation{})
+void throw_if_null(const T* value,
+                   const std::string& msg,
+                   const SourceLocation& src_loc = SourceLocation{})
 {
    if (value == nullptr)
       throw_exception<E>(msg, src_loc);

@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <orion/net/rpc/JsonError.h>
+#include <net/rpc/JsonError.h>
 
 #include <jsoncpp/json/json.h>
 
@@ -30,15 +30,12 @@ namespace net
 namespace rpc
 {
 
-static const std::map<JsonErrc, std::string> JsonErrorText
-{
-   {JsonErrc::ParseError,     "An error occurred on the server while parsing the JSON text."},
+static const std::map<JsonErrc, std::string> JsonErrorText{
+   {JsonErrc::ParseError, "An error occurred on the server while parsing the JSON text."},
    {JsonErrc::InvalidRequest, "The JSON sent is not a valid Request object."},
    {JsonErrc::MethodNotFound, "The method does not exist / is not available."},
-   {JsonErrc::InvalidParams,  "Invalid method parameter(s)."},
-   {JsonErrc::InternalError,  "Internal JSON-RPC error."}
-};
-
+   {JsonErrc::InvalidParams, "Invalid method parameter(s)."},
+   {JsonErrc::InternalError, "Internal JSON-RPC error."}};
 
 Error make_error(JsonErrc code) noexcept
 {

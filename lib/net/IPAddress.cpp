@@ -21,9 +21,8 @@
 
 #include <orion/net/IPAddress.h>
 
-#include <cstdio>
-
 #include <orion/StringUtils.h>
+#include <cstdio>
 
 namespace orion
 {
@@ -53,50 +52,50 @@ IP* clone_ip(const IP* ip)
 //---------------------------------------------------------------------------------------
 // IPAddress
 
-IPAddress::IPAddress(const IPv4& ip, int port):
-   _ip(std::make_unique<IPv4>(ip)),
-   _zone(),
-   _port(port)
+IPAddress::IPAddress(const IPv4& ip, int port)
+   : _ip(std::make_unique<IPv4>(ip))
+   , _zone()
+   , _port(port)
 {
 }
 
-IPAddress::IPAddress(const IPv6& ip, int port, const std::string& zone):
-   _ip(std::make_unique<IPv6>(ip)),
-   _zone(zone),
-   _port(port)
+IPAddress::IPAddress(const IPv6& ip, int port, const std::string& zone)
+   : _ip(std::make_unique<IPv6>(ip))
+   , _zone(zone)
+   , _port(port)
 {
 }
 
-IPAddress::IPAddress(const IPAddress& Other):
-   _ip(priv::clone_ip(Other._ip.get())), 
-   _zone(Other._zone), 
-   _port(Other._port) 
+IPAddress::IPAddress(const IPAddress& Other)
+   : _ip(priv::clone_ip(Other._ip.get()))
+   , _zone(Other._zone)
+   , _port(Other._port)
 {
 }
 
-IPAddress::IPAddress(IPAddress&& Other):
-   _ip(std::move(Other._ip)), 
-   _zone(std::move(Other._zone)), 
-   _port(std::move(Other._port)) 
+IPAddress::IPAddress(IPAddress&& Other)
+   : _ip(std::move(Other._ip))
+   , _zone(std::move(Other._zone))
+   , _port(std::move(Other._port))
 {
 }
 
 IPAddress::~IPAddress() = default;
 
-IPAddress& IPAddress::operator=(const IPAddress& Rhs) 
+IPAddress& IPAddress::operator=(const IPAddress& Rhs)
 {
    if (this == &Rhs)
       return *this;
 
-   _ip = std::unique_ptr<IP>(priv::clone_ip(Rhs._ip.get()));
+   _ip   = std::unique_ptr<IP>(priv::clone_ip(Rhs._ip.get()));
    _zone = Rhs._zone;
    _port = Rhs._port;
    return *this;
 }
 
-IPAddress& IPAddress::operator=(IPAddress&& Rhs) 
+IPAddress& IPAddress::operator=(IPAddress&& Rhs)
 {
-   _ip = std::move(Rhs._ip);
+   _ip   = std::move(Rhs._ip);
    _zone = std::move(Rhs._zone);
    _port = std::move(Rhs._port);
    return *this;

@@ -7,11 +7,11 @@
 #ifndef ORION_UNITTEST_TESTRUNNER_H
 #define ORION_UNITTEST_TESTRUNNER_H
 
-#include <string>
-#include <vector>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/unittest/TestSuite.h>
+
+#include <string>
+#include <vector>
 
 namespace orion
 {
@@ -34,7 +34,7 @@ public:
    virtual uint32_t test_suite_count() const;
    virtual uint32_t test_case_count() const;
 
-   virtual  Suite& add_test_suite(const Suite& suite);
+   virtual Suite& add_test_suite(const Suite& suite);
 
    virtual bool run(int argc, char* argv[]);
 
@@ -53,12 +53,12 @@ private:
 
 //---------------------------------------------------------------------------------------
 
-/// 
+///
 class API_EXPORT RegisterTestSuiteHelper
 {
 public:
-   RegisterTestSuiteHelper(const std::string& name) :
-      suite(Runner::runner().add_test_suite(Suite{name}))
+   RegisterTestSuiteHelper(const std::string& name)
+      : suite(Runner::runner().add_test_suite(Suite{name}))
    {
    }
 

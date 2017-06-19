@@ -20,10 +20,10 @@
 #ifndef ORION_SYSTEMINFO_H
 #define ORION_SYSTEMINFO_H
 
+#include <orion/Orion-Stddefs.h>
 #include <cstdint>
 #include <string>
 #include <vector>
-#include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
@@ -45,15 +45,15 @@ public:
    ~CpuInfo();
 
    std::string model() const;
-   uint32_t    speed() const;
-   CpuTimes    times() const;
+   uint32_t speed() const;
+   CpuTimes times() const;
 
    std::string to_string() const;
 
 private:
    std::string _model;
    uint32_t _speed;
-   CpuTimes _times; 
+   CpuTimes _times;
 };
 
 typedef std::vector<std::string> ModuleList;
@@ -81,7 +81,6 @@ API_EXPORT void get_loadavg(double avg[3]);
 API_EXPORT uint64_t get_free_memory();
 
 API_EXPORT uint64_t get_total_memory();
-
 }
 } // namespace orion
 #endif // ORION_SYSTEMINFO_H

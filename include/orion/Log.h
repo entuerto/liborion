@@ -24,14 +24,14 @@
 
 #include <orion/log/Formatter.h>
 #include <orion/log/Function.h>
-#include <orion/log/Record.h>
 #include <orion/log/Level.h>
 #include <orion/log/Logger.h>
+#include <orion/log/Macros.h>
 #include <orion/log/MultilineFormatter.h>
 #include <orion/log/OnelineFormatter.h>
 #include <orion/log/OnelineWithSourceInfoFormatter.h>
 #include <orion/log/OutputHandler.h>
+#include <orion/log/Record.h>
 #include <orion/log/StreamOutputHandler.h>
-#include <orion/log/Macros.h>
 
 #endif

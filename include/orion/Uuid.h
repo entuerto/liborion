@@ -22,9 +22,9 @@
 #ifndef UUID_H
 #define UUID_H
 
+#include <orion/Orion-Stddefs.h>
 #include <memory>
 #include <string>
-#include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
@@ -59,6 +59,5 @@ private:
    struct Private;
    std::unique_ptr<Private> _impl;
 };
-
 }
 #endif /* UUID_H */

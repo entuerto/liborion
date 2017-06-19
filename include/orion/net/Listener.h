@@ -23,8 +23,8 @@
 #define ORION_NET_LISTENER_H
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/net/Connection.h> 
-#include <orion/net/IPAddress.h> 
+#include <orion/net/Connection.h>
+#include <orion/net/IPAddress.h>
 
 namespace orion
 {
@@ -35,18 +35,18 @@ namespace net
 /*!
    A Listener is a generic network listener for stream-oriented protocols.
  */
-class API_EXPORT Listener 
+class API_EXPORT Listener
 {
 public:
    Listener(const IPAddress& addr);
    virtual ~Listener();
 
    // Accept waits for and returns the next connection to the listener.
-   virtual std::unique_ptr<Connection> accept() =0;
+   virtual std::unique_ptr<Connection> accept() = 0;
 
    // Close closes the listener.
    // Any blocked Accept operations will be unblocked and return errors.
-   virtual void close() =0;
+   virtual void close() = 0;
 
    // Addr returns the listener's network address.
    virtual IPAddress* addr() const;
@@ -57,4 +57,4 @@ protected:
 
 } // net
 } // orion
-#endif 
+#endif

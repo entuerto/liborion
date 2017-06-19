@@ -22,19 +22,19 @@
 #ifndef ORION_NET_MONGOOSESERVERCONNECTION_H
 #define ORION_NET_MONGOOSESERVERCONNECTION_H
 
-#include <memory>
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/tcp/Connection.h>
 #include <orion/net/http/RequestHandler.h>
 #include <orion/net/http/Utils.h>
+#include <orion/net/tcp/Connection.h>
 
 #include <net/http/impl/MongooseRequest.h>
 #include <net/http/impl/MongooseResponse.h>
 
 #include <mongoose/mongoose.h>
+
+#include <memory>
+#include <string>
 
 namespace orion
 {
@@ -47,10 +47,10 @@ class MongooseServerConnection : public tcp::Connection
 {
 public:
    NO_COPY(MongooseServerConnection)
-   
-   MongooseServerConnection(struct mg_connection* connection, 
-   	                        struct http_message*  hm, 
-   	                        const Handlers& RequestHandlers);
+
+   MongooseServerConnection(struct mg_connection* connection,
+                            struct http_message* hm,
+                            const Handlers& RequestHandlers);
 
    virtual ~MongooseServerConnection();
 
@@ -69,9 +69,8 @@ private:
    /// Request handlers
    Handlers _RequestHandlers;
 
-   MongooseRequest  _request;
+   MongooseRequest _request;
    MongooseResponse _response;
-   
 };
 
 } // http
@@ -79,4 +78,3 @@ private:
 } // orion
 
 #endif // ORION_NET_MONGOOSESERVERCONNECTION_H
-

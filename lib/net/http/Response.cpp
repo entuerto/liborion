@@ -7,10 +7,10 @@
 
 #include <orion/net/http/Response.h>
 
+#include <boost/format.hpp>
+
 #include <iomanip>
 #include <sstream>
-
-#include <boost/format.hpp>
 
 namespace orion
 {
@@ -19,42 +19,42 @@ namespace net
 namespace http
 {
 
-Response::Response() :
-   _status_code(StatusCode::OK),
-   _version({1, 1}),
-   _header()
+Response::Response()
+   : _status_code(StatusCode::OK)
+   , _version({1, 1})
+   , _header()
 {
 }
 
-Response::Response(StatusCode code) :
-   _status_code(code),
-   _version({1, 1}),
-   _header()
+Response::Response(StatusCode code)
+   : _status_code(code)
+   , _version({1, 1})
+   , _header()
 {
-/*
-   if (_status_code >= StatusCode::BadRequest)
-   {
-      header("Connection", "close");
-      header("X-Content-Type-Options", "nosniff");
-   }
-   else
-      header("Content-Type", "text/plain; charset=utf-8");
-*/
+   /*
+      if (_status_code >= StatusCode::BadRequest)
+      {
+         header("Connection", "close");
+         header("X-Content-Type-Options", "nosniff");
+      }
+      else
+         header("Content-Type", "text/plain; charset=utf-8");
+   */
 }
 
-Response::Response(StatusCode code, const Version& version, const Header& header) :
-   _status_code(code),
-   _version(version),
-   _header(header)
+Response::Response(StatusCode code, const Version& version, const Header& header)
+   : _status_code(code)
+   , _version(version)
+   , _header(header)
 {
 }
 
-Response::Response(Response&& rhs) :
-   _status_code(std::move(rhs._status_code)),
-   _version(std::move(rhs._version)),
-   _header(std::move(rhs._header)),
-   _header_streambuf(std::move(rhs._header_streambuf)),
-   _body_streambuf(std::move(rhs._body_streambuf))   
+Response::Response(Response&& rhs)
+   : _status_code(std::move(rhs._status_code))
+   , _version(std::move(rhs._version))
+   , _header(std::move(rhs._header))
+   , _header_streambuf(std::move(rhs._header_streambuf))
+   , _body_streambuf(std::move(rhs._body_streambuf))
 {
 }
 
@@ -62,13 +62,12 @@ Response::~Response()
 {
 }
 
-
 Response& Response::operator=(Response&& rhs)
 {
    _status_code = std::move(rhs._status_code);
    _version     = std::move(rhs._version);
    _header      = std::move(rhs._header);
-   
+
    _header_streambuf = std::move(rhs._header_streambuf);
    _body_streambuf   = std::move(rhs._body_streambuf);
 
@@ -131,19 +130,13 @@ std::ostream& operator<<(std::ostream& o, const Response& r)
 
    auto status_msg = boost::format("HTTP/%d.%d %s") % v.major % v.minor % r.status();
 
-   o << std::left
-     << std::boolalpha
-     << "\nResponse Header\n";
+   o << std::left << std::boolalpha << "\nResponse Header\n";
 
-   o << boost::str(status_msg)
-     << "\n";
+   o << boost::str(status_msg) << "\n";
 
    for (const auto& item : r._header)
    {
-      o << item.first
-        << ": "
-        << item.second
-        << "\n";
+      o << item.first << ": " << item.second << "\n";
    }
 
    o << "\n";
@@ -159,10 +152,9 @@ const log::Record& operator<<(const log::Record& rec, const Response& r)
 
    const_cast<log::Record&>(rec).message(outs.str());
 
-   return rec; 
+   return rec;
 }
 
 } // http
 } // net
 } // orion
-

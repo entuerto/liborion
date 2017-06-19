@@ -17,25 +17,26 @@ namespace log
 /*!
    Constructor
  */
-ExceptionRecord::ExceptionRecord(const std::string& msg, const SourceLocation& thrown_src_loc, 
-                                                         const SourceLocation& caught_src_loc) :
-   Record(Level::Exception, msg, thrown_src_loc),
-   _caught_src_location(caught_src_loc)
+ExceptionRecord::ExceptionRecord(const std::string& msg,
+                                 const SourceLocation& thrown_src_loc,
+                                 const SourceLocation& caught_src_loc)
+   : Record(Level::Exception, msg, thrown_src_loc)
+   , _caught_src_location(caught_src_loc)
 {
 }
 
 /*
    Copy constructor
  */
-ExceptionRecord::ExceptionRecord(const ExceptionRecord& rhs) :
-   Record(rhs),
-   _caught_src_location(rhs._caught_src_location)
+ExceptionRecord::ExceptionRecord(const ExceptionRecord& rhs)
+   : Record(rhs)
+   , _caught_src_location(rhs._caught_src_location)
 {
 }
 
-ExceptionRecord::ExceptionRecord(ExceptionRecord&& rhs) :
-   Record(std::move(rhs)),
-   _caught_src_location(std::move(rhs._caught_src_location))
+ExceptionRecord::ExceptionRecord(ExceptionRecord&& rhs)
+   : Record(std::move(rhs))
+   , _caught_src_location(std::move(rhs._caught_src_location))
 {
 }
 

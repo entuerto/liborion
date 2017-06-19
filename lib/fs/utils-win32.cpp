@@ -20,9 +20,9 @@
 
 #include <orion/fs/Utils.h>
 
-#include <windows.h>
-
 #include <orion/fs/Path.h>
+
+#include <windows.h>
 
 namespace orion
 {
@@ -31,11 +31,11 @@ namespace fs
 ///
 /// Creates a hard link link with its target set to target
 /// @param  target  path of the file or directory to link to
-/// @param  link    path of the new hard link   
+/// @param  link    path of the new hard link
 std::error_code create_hard_link(const Path& target, const Path& link)
 {
    std::wstring wtarget = static_cast<std::wstring>(target);
-   std::wstring wlink = static_cast<std::wstring>(link);
+   std::wstring wlink   = static_cast<std::wstring>(link);
 
    if (::CreateHardLinkW(wtarget.c_str(), wlink.c_str(), 0) == 0)
       return std::error_code(::GetLastError(), std::system_category());
@@ -50,7 +50,7 @@ std::error_code create_hard_link(const Path& target, const Path& link)
 std::error_code create_symlink(const Path& target, const Path& link)
 {
    std::wstring wtarget = static_cast<std::wstring>(target);
-   std::wstring wlink = static_cast<std::wstring>(link);
+   std::wstring wlink   = static_cast<std::wstring>(link);
 
    // 0x0 The link target is a file.
    // 0x1 The link target is a directory.
@@ -67,7 +67,7 @@ std::error_code create_symlink(const Path& target, const Path& link)
 std::error_code create_directory_symlink(const Path& target, const Path& link)
 {
    std::wstring wtarget = static_cast<std::wstring>(target);
-   std::wstring wlink = static_cast<std::wstring>(link);
+   std::wstring wlink   = static_cast<std::wstring>(link);
 
    // 0x0 The link target is a file.
    // 0x1 The link target is a directory.
@@ -88,7 +88,7 @@ std::error_code create_directory(const Path& p)
 
    if (::GetLastError() == ERROR_ALREADY_EXISTS and is_directory(p))
       return std::error_code();
-   
+
    return std::error_code(::GetLastError(), std::system_category());
 }
 
@@ -100,7 +100,7 @@ std::error_code create_directories(const Path& /* p */)
 }
 
 ///
-/// Returns the size of the regular file p, determined as if by reading the st_size member 
+/// Returns the size of the regular file p, determined as if by reading the st_size member
 /// of the structure obtained by POSIX stat (symlinks are followed)
 std::tuple<std::uintmax_t, std::error_code> file_size(const Path& p)
 {
@@ -133,25 +133,25 @@ std::tuple<SpaceInfo, std::error_code> space(const Path& p)
       return std::make_tuple(info, std::error_code(::GetLastError(), std::system_category()));
 
    info.capacity  = (static_cast<uintmax_t>(total.HighPart) << 32) + total.LowPart;
-   info.free      = (static_cast<uintmax_t>(free.HighPart)  << 32) + free.LowPart;
+   info.free      = (static_cast<uintmax_t>(free.HighPart) << 32) + free.LowPart;
    info.available = (static_cast<uintmax_t>(avail.HighPart) << 32) + avail.LowPart;
-   
+
    return std::make_tuple(info, std::error_code());
 }
 
-/// checks whether the given path refers to block device 
+/// checks whether the given path refers to block device
 bool is_block_file(const Path& p)
 {
    return false;
 }
-  
-/// checks whether the given path refers to a character device 
+
+/// checks whether the given path refers to a character device
 bool is_character_file(const Path& p)
 {
    return false;
 }
 
-/// checks whether the given path refers to a directory 
+/// checks whether the given path refers to a directory
 bool is_directory(const Path& p)
 {
    return false;
@@ -162,38 +162,38 @@ bool is_empty(const Path& p)
 {
    return false;
 }
- 
-/// checks whether the given path refers to a named pipe 
+
+/// checks whether the given path refers to a named pipe
 bool is_fifo(const Path& p)
 {
    return false;
 }
 
-/// checks whether the argument refers to an other file 
+/// checks whether the argument refers to an other file
 bool is_other(const Path& p)
 {
    return false;
 }
 
-/// checks whether the argument refers to a regular file 
+/// checks whether the argument refers to a regular file
 bool is_regular_file(const Path& p)
 {
    return false;
 }
 
-/// checks whether the argument refers to a named IPC socket 
+/// checks whether the argument refers to a named IPC socket
 bool is_socket(const Path& p)
 {
    return false;
 }
- 
-/// checks whether the argument refers to a symbolic link 
+
+/// checks whether the argument refers to a symbolic link
 bool is_symlink(const Path& p)
 {
    return false;
 }
 
-/// checks whether file status is known 
+/// checks whether file status is known
 bool status_known(const Path& p)
 {
    return false;

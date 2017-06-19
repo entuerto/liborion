@@ -8,10 +8,9 @@
 
 #include <orion/log/MultilineFormatter.h>
 
-#include <sstream> 
-
 #include <orion/log/Logger.h>
 #include <orion/log/Record.h>
+#include <sstream>
 
 namespace orion
 {
@@ -47,14 +46,8 @@ std::string MultilineFormatter::format(const Record& record)
 
    std::ostringstream stream;
 
-   stream << "|" 
-          << to_string(record.level())
-          << "|"
-          << record.time_stamp()
-          << "\n\t- "
-          << scope
-          << record.message()
-          << "\n";
+   stream << "|" << to_string(record.level()) << "|" << record.time_stamp() << "\n\t- " << scope
+          << record.message() << "\n";
 
    if (record.level() == Level::Exception)
    {
@@ -78,16 +71,15 @@ std::string MultilineFormatter::format(const Record& record)
    return stream.str();
 }
 
-std::string MultilineFormatter::format_source_info(const std::string& prefix, const SourceLocation& src_loc)
+std::string MultilineFormatter::format_source_info(const std::string& prefix,
+                                                   const SourceLocation& src_loc)
 {
    std::ostringstream stream;
 
    if (src_loc.line_number == 0)
       return stream.str();
 
-   stream << prefix
-          << src_loc
-          << "\n";
+   stream << prefix << src_loc << "\n";
 
    return stream.str();
 }

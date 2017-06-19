@@ -8,12 +8,12 @@
 #ifndef ORION_NET_HTTP_ASIOREQUEST_H
 #define ORION_NET_HTTP_ASIOREQUEST_H
 
-#include <string>
- 
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/http/Request.h>
 
 #include <asio.hpp>
+
+#include <string>
 
 namespace orion
 {
@@ -26,10 +26,7 @@ class AsioRequest : public Request
 {
 public:
    AsioRequest();
-   AsioRequest(const std::string& method, 
-               const Url& url, 
-               const Version& version, 
-               const Header& header);
+   AsioRequest(const Method& method, const Url& url, const Version& version, const Header& header);
    AsioRequest(AsioRequest&& rhs);
 
    virtual ~AsioRequest();
@@ -42,7 +39,6 @@ public:
 
 private:
    void build_header_buffer();
-
 };
 
 } // http

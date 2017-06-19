@@ -16,10 +16,10 @@ namespace tcp
 //---------------------------------------------------------------------------------------
 // Connection
 
-Connection::Connection():
-   net::Connection(),
-   _keep_alive(true),
-   _no_delay(true)
+Connection::Connection()
+   : net::Connection()
+   , _keep_alive(true)
+   , _no_delay(true)
 {
 }
 

@@ -7,18 +7,18 @@
 #ifndef ORION_NET_HTTP_ASIOSERVERCONNECTION_H
 #define ORION_NET_HTTP_ASIOSERVERCONNECTION_H
 
-#include <array>
-#include <memory>
-#include <asio.hpp>
-
 #include <orion/Orion-Stddefs.h>
-#include <orion/net/tcp/Connection.h>
 #include <orion/net/http/RequestHandler.h>
 #include <orion/net/http/Utils.h>
+#include <orion/net/tcp/Connection.h>
 
-#include <net/http/impl/AsioResponse.h>
 #include <net/http/impl/AsioRequest.h>
+#include <net/http/impl/AsioResponse.h>
 #include <net/http/impl/Parser.h>
+
+#include <array>
+#include <asio.hpp>
+#include <memory>
 
 namespace orion
 {
@@ -27,14 +27,13 @@ namespace net
 namespace http
 {
 
-///  
-class AsioServerConnection : 
-   public tcp::Connection,
-   public std::enable_shared_from_this<AsioServerConnection> 
+///
+class AsioServerConnection : public tcp::Connection,
+                             public std::enable_shared_from_this<AsioServerConnection>
 {
 public:
    NO_COPY(AsioServerConnection)
-   
+
    AsioServerConnection(asio::io_service& io_service, const Handlers& RequestHandlers);
    virtual ~AsioServerConnection();
 
@@ -49,10 +48,10 @@ public:
    void on_write_timeout(const asio::error_code& e);
 
 private:
-	void dump_socket_options();
+   void dump_socket_options();
 
-	void start_read_timer();
-	void start_write_timer();
+   void start_read_timer();
+   void start_write_timer();
 
    /// Perform an asynchronous read operation.
    void do_read();

@@ -6,25 +6,24 @@
 
 #include <orion/log/LoggerImpl.h>
 
-#include <functional>
-
 #include <log/EndRecord.h>
 #include <log/StartRecord.h>
 #include <log/SystemInfoRecord.h>
+#include <functional>
 
 namespace orion
 {
 namespace log
 {
 
-LoggerImpl::LoggerImpl(Level level) : 
-   _output_handlers(),
-   _level(level), 
-   _is_running(false), 
-   _scope_depth(0)
+LoggerImpl::LoggerImpl(Level level)
+   : _output_handlers()
+   , _level(level)
+   , _is_running(false)
+   , _scope_depth(0)
 {
 }
-   
+
 LoggerImpl::~LoggerImpl()
 {
 }

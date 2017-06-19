@@ -1,6 +1,6 @@
 
-#include <iostream>
 #include <orion/Signal.h>
+#include <iostream>
 
 using namespace orion;
 
@@ -8,12 +8,9 @@ using namespace orion;
 class Object
 {
 public:
-    Object() {}
+   Object() {}
 
-    void print(int i)
-    {
-       std::cout << "Printed number: " << i << "\n";
-    }
+   void print(int i) { std::cout << "Printed number: " << i << "\n"; }
 };
 
 //----------------------------------------------------------
@@ -26,38 +23,33 @@ void die(int i)
 class Object2
 {
 public:
-    Object2() {}
+   Object2() {}
 
-    void print()
-    {
-       std::cout << "Hello world" << "\n";
-    }
+   void print()
+   {
+      std::cout << "Hello world"
+                << "\n";
+   }
 };
 
 //----------------------------------------------------------
 class Object3
 {
 public:
-    Object3() {}
+   Object3() {}
 
-    void print(int i)
-    {
-       std::cout << "Ptr print number: " << i << "\n";
-    }
+   void print(int i) { std::cout << "Ptr print number: " << i << "\n"; }
 };
 
 //----------------------------------------------------------
 class Object4
 {
 public:
-    typedef std::shared_ptr<Object4> SharedPtr;
+   typedef std::shared_ptr<Object4> SharedPtr;
 
-    Object4() {}
+   Object4() {}
 
-    void print(int i)
-    {
-       std::cout << "Shared Ptr print number: " << i << "\n";
-    }
+   void print(int i) { std::cout << "Shared Ptr print number: " << i << "\n"; }
 };
 
 //----------------------------------------------------------

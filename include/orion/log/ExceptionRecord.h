@@ -21,8 +21,9 @@ namespace log
 class API_EXPORT ExceptionRecord : public Record
 {
 public:
-   ExceptionRecord(const std::string& msg, const SourceLocation& thrown_src_loc, 
-                                           const SourceLocation& caught_src_loc);
+   ExceptionRecord(const std::string& msg,
+                   const SourceLocation& thrown_src_loc,
+                   const SourceLocation& caught_src_loc);
 
    ExceptionRecord(const ExceptionRecord& rhs);
    ExceptionRecord(ExceptionRecord&& rhs);

@@ -8,10 +8,10 @@
 #ifndef ORION_LOG_STREAMOUTPUTHANDLER_H
 #define ORION_LOG_STREAMOUTPUTHANDLER_H
 
-#include <iosfwd>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/log/OutputHandler.h>
+
+#include <iosfwd>
 
 namespace orion
 {
@@ -35,7 +35,7 @@ class API_EXPORT StreamOutputHandler : public OutputHandler
 public:
    NO_COPY(StreamOutputHandler)
    NO_MOVE(StreamOutputHandler)
-   
+
    StreamOutputHandler(std::ostream& stream);
    virtual ~StreamOutputHandler();
 

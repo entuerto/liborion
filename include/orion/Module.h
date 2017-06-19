@@ -20,27 +20,27 @@
 #ifndef ORION_MODULE_H
 #define ORION_MODULE_H
 
+#include <orion/Orion-Stddefs.h>
+#include <orion/MemoryUtils.h>
+
 #include <functional>
 #include <memory>
 #include <string>
 
-#include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
-
 namespace orion
 {
 /*!
-   Dynamic Loading of Modules These functions provide a portable way to 
-   dynamically load object files. 
+   Dynamic Loading of Modules These functions provide a portable way to
+   dynamically load object files.
  */
-class API_EXPORT Module 
+class API_EXPORT Module
 {
 public:
    NO_COPY(Module)
 
    Module();
    Module(const std::string& file_name);
-   
+
    Module(Module&& rhs);
 
    ~Module();
@@ -78,7 +78,6 @@ std::function<T> Module::import(const std::string& name)
    auto f = reinterpret_cast<T*>(find_symbol_address(name));
    return std::function<T>(f);
 }
-
 
 } // namespace orion
 

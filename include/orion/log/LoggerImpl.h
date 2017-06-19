@@ -7,12 +7,11 @@
 #ifndef ORION_LOG_LOGGERIMPL_H
 #define ORION_LOG_LOGGERIMPL_H
 
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/log/OutputHandler.h>
 #include <orion/log/Record.h>
+#include <string>
 
 namespace orion
 {
@@ -28,7 +27,7 @@ public:
    NO_MOVE(LoggerImpl)
 
    explicit LoggerImpl(Level level);
-   
+
    ~LoggerImpl();
 
    /// Get the logging level
@@ -70,7 +69,7 @@ private:
    OutputHandlers _output_handlers;
 
    Level _level;
-   bool  _is_running;
+   bool _is_running;
    uint32_t _scope_depth;
 };
 

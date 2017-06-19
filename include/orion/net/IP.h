@@ -22,10 +22,10 @@
 #ifndef ORION_NET_IP_H
 #define ORION_NET_IP_H
 
+#include <orion/Orion-Stddefs.h>
+#include <orion/MemoryUtils.h>
 #include <array>
 #include <string>
-
-#include <orion/Orion-Stddefs.h>
 
 namespace orion
 {
@@ -33,31 +33,31 @@ namespace net
 {
 
 /// IPAddress represents the address of an IP end point.
-class API_EXPORT IP 
+class API_EXPORT IP
 {
 public:
    virtual ~IP() = default;
 
    /// Reports whether ip is a loopback address.
-   virtual bool is_loopback() const =0;
+   virtual bool is_loopback() const = 0;
    /// Reports whether ip is a multicast address.
-   virtual bool is_multicast() const =0;
+   virtual bool is_multicast() const = 0;
    /// Reports whether ip is an unspecified address.
-   virtual bool is_unspecified() const =0;
+   virtual bool is_unspecified() const = 0;
 
    /// Get the address in bytes, in network byte order.
-   virtual uint8_t* to_bytes() const =0;
+   virtual uint8_t* to_bytes() const = 0;
    /// Returns the string form of the IP address
-   virtual std::string to_string() const =0;
+   virtual std::string to_string() const = 0;
 };
 
-inline std::ostream& operator<<(std::ostream& o, const IP& ip) 
+inline std::ostream& operator<<(std::ostream& o, const IP& ip)
 {
    o << ip.to_string();
    return o;
 }
 
-inline std::ostream& operator<<(std::ostream& o, const IP* ip) 
+inline std::ostream& operator<<(std::ostream& o, const IP* ip)
 {
    o << (ip == nullptr ? "null" : ip->to_string());
    return o;
@@ -65,4 +65,4 @@ inline std::ostream& operator<<(std::ostream& o, const IP* ip)
 
 } // net
 } // orion
-#endif 
+#endif

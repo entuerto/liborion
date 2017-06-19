@@ -21,9 +21,9 @@
 
 #include <orion/net/IPv6.h>
 
-#include <algorithm>
-
 #include <orion/StringUtils.h>
+
+#include <algorithm>
 
 namespace orion
 {
@@ -39,42 +39,38 @@ IPv6 IPv6::interface_local_all_nodes = {0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 IPv6 IPv6::link_local_all_nodes      = {0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01};
 IPv6 IPv6::link_local_all_routers    = {0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x02};
 
-IPv6::IPv6():
-   _a(IPv6::zero._a)
+IPv6::IPv6()
+   : _a(IPv6::zero._a)
 {
-
 }
 
-IPv6::IPv6(const std::array<uint8_t, 16>& b):
-   _a()
+IPv6::IPv6(const std::array<uint8_t, 16>& b)
+   : _a()
 {
    std::copy(std::begin(b), std::end(b), std::begin(_a.b));
 }
 
-IPv6::IPv6(std::initializer_list<uint8_t> l):
-   _a()
+IPv6::IPv6(std::initializer_list<uint8_t> l)
+   : _a()
 {
    std::copy(l.begin(), l.end(), std::begin(_a.b));
 }
 
-IPv6::IPv6(const IPv6& Other):
-   _a(Other._a) 
+IPv6::IPv6(const IPv6& Other)
+   : _a(Other._a)
 {
-
 }
 
-IPv6::IPv6(IPv6&& Other):
-   _a(std::move(Other._a)) 
+IPv6::IPv6(IPv6&& Other)
+   : _a(std::move(Other._a))
 {
-
 }
 
-IPv6::~IPv6() 
+IPv6::~IPv6()
 {
-
 }
 
-IPv6& IPv6::operator=(const IPv6& Rhs) 
+IPv6& IPv6::operator=(const IPv6& Rhs)
 {
    if (this == &Rhs)
       return *this;
@@ -84,7 +80,7 @@ IPv6& IPv6::operator=(const IPv6& Rhs)
    return *this;
 }
 
-IPv6& IPv6::operator=(IPv6&& Rhs) 
+IPv6& IPv6::operator=(IPv6&& Rhs)
 {
    _a = std::move(Rhs._a);
    return *this;
@@ -101,17 +97,17 @@ bool IPv6::operator==(const IPv6& Rhs) const
    return std::equal(std::begin(_a.b), std::end(_a.b), std::begin(Rhs._a.b));
 }
 
-bool IPv6::is_loopback() const 
+bool IPv6::is_loopback() const
 {
    return std::equal(std::begin(_a.b), std::end(_a.b), std::begin(loopback._a.b));
 }
 
-bool IPv6::is_multicast() const 
+bool IPv6::is_multicast() const
 {
    return _a.b[0] == 0xff;
 }
 
-bool IPv6::is_unspecified() const 
+bool IPv6::is_unspecified() const
 {
    return std::equal(std::begin(_a.b), _a.b + 16, std::begin(unspecified._a.b));
 }
@@ -121,12 +117,12 @@ uint8_t* IPv6::to_bytes() const
    return const_cast<uint8_t*>(&(_a.b[0]));
 }
 
-std::string IPv6::to_string() const 
+std::string IPv6::to_string() const
 {
    std::string s;
-   std::for_each(_a.b, _a.b + 16, [&](auto &n) { 
+   std::for_each(_a.b, _a.b + 16, [&](auto& n) {
       s += std::to_string(n);
-      s += ":"; 
+      s += ":";
    });
 
    if (not s.empty())

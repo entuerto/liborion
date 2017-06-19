@@ -8,14 +8,15 @@
 #ifndef ORION_NET_HTTP_RESPONSE_H
 #define ORION_NET_HTTP_RESPONSE_H
 
+#include <orion/Orion-Stddefs.h>
+#include <orion/log/Record.h>
+#include <orion/net/http/StatusCode.h>
+#include <orion/net/http/Utils.h>
+
 #include <memory>
 #include <ostream>
 #include <streambuf>
 #include <string>
-
-#include <orion/Orion-Stddefs.h>
-#include <orion/log/Record.h>
-#include <orion/net/http/Utils.h>
 
 namespace orion
 {
@@ -65,7 +66,6 @@ protected:
 
    std::unique_ptr<std::streambuf> _header_streambuf;
    std::unique_ptr<std::streambuf> _body_streambuf;
-
 };
 
 API_EXPORT std::ostream& operator<<(std::ostream& o, const Response& r);
@@ -77,4 +77,3 @@ API_EXPORT const log::Record& operator<<(const log::Record& rec, const Response&
 } // orion
 
 #endif
-

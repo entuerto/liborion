@@ -22,11 +22,11 @@
 #ifndef ORION_LOG_OUTPUTHANDLER_H
 #define ORION_LOG_OUTPUTHANDLER_H
 
-#include <memory>
-#include <vector>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/log/Formatter.h>
+
+#include <memory>
+#include <vector>
 
 namespace orion
 {
@@ -40,11 +40,11 @@ class Record;
 //! OutputHandler instances dispatch logging events to specific destinations.
 /*!
     Output handlers can optionally use Formatter instances to format
-    records as desired. 
+    records as desired.
 
     By default, a basic one line formatter is specified.
  */
-class API_EXPORT OutputHandler 
+class API_EXPORT OutputHandler
 {
 public:
    OutputHandler();
@@ -53,21 +53,20 @@ public:
    //! Gets the formatter of the output handler
    Formatter* formatter() const;
 
-   //! Sets the formatter of the output handler. 
+   //! Sets the formatter of the output handler.
    void set_formatter(std::unique_ptr<Formatter>&& formatter);
 
    //! Writes a log record
-   virtual void write(const Record& record) =0;
+   virtual void write(const Record& record) = 0;
 
    //! Flushes the stream
-   virtual void flush() =0;
+   virtual void flush() = 0;
 
    //! Closes the output handler
-   virtual void close() =0;
+   virtual void close() = 0;
 
 private:
    std::unique_ptr<Formatter> _formatter;
-
 };
 
 typedef std::vector<std::unique_ptr<OutputHandler>> OutputHandlers;

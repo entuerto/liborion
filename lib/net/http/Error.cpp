@@ -14,56 +14,54 @@ namespace net
 {
 namespace http
 {
-static const std::map<errc, std::string> ErrorText
-{
-   {errc::BadRequest,                    "Bad Request"},
-   {errc::Unauthorized,                  "Unauthorized"},
-   {errc::PaymentRequired,               "Payment Required"},
-   {errc::Forbidden,                     "Forbidden"},
-   {errc::NotFound,                      "Not Found"},
-   {errc::MethodNotAllowed,              "Method Not Allowed"},
-   {errc::NotAcceptable,                 "Not Acceptable"},
-   {errc::ProxyAuthRequired,             "Proxy Authentication Required"},
-   {errc::RequestTimeout,                "Request Timeout"},
-   {errc::Conflict,                      "Conflict"},
-   {errc::Gone,                          "Gone"},
-   {errc::LengthRequired,                "Length Required"},
-   {errc::PreconditionFailed,            "Precondition Failed"},
-   {errc::RequestEntityTooLarge,         "Request Entity Too Large"},
-   {errc::RequestURITooLong,             "Request URI Too Long"},
-   {errc::UnsupportedMediaType,          "Unsupported Media Type"},
-   {errc::RequestedRangeNotSatisfiable,  "Requested Range Not Satisfiable"},
-   {errc::ExpectationFailed,             "Expectation Failed"},
-   {errc::Teapot,                        "I'm a teapot"},
-   {errc::UnprocessableEntity,           "Unprocessable Entity"},
-   {errc::Locked,                        "Locked"},
-   {errc::FailedDependency,              "Failed Dependency"},
-   {errc::UpgradeRequired,               "Upgrade Required"},
-   {errc::PreconditionRequired,          "Precondition Required"},
-   {errc::TooManyRequests,               "Too Many Requests"},
-   {errc::RequestHeaderFieldsTooLarge,   "Request Header Fields Too Large"},
-   {errc::UnavailableForLegalReasons,    "Unavailable For Legal Reasons"},
-   {errc::InternalServerError,           "Internal Server Error"},
-   {errc::NotImplemented,                "Not Implemented"},
-   {errc::BadGateway,                    "Bad Gateway"},
-   {errc::ServiceUnavailable,            "Service Unavailable"},
-   {errc::GatewayTimeout,                "Gateway Timeout"},
-   {errc::HTTPVersionNotSupported,       "HTTP Version Not Supported"},
-   {errc::VariantAlsoNegotiates,         "Variant Also Negotiates"},
-   {errc::InsufficientStorage,           "Insufficient Storage"},
-   {errc::LoopDetected,                  "Loop Detected"},
-   {errc::NotExtended,                   "Not Extended"},
-   {errc::NetworkAuthenticationRequired, "Network Authentication Required"}
-};
+static const std::map<ErrorCode, std::string> ErrorText{
+   {ErrorCode::BadRequest, "Bad Request"},
+   {ErrorCode::Unauthorized, "Unauthorized"},
+   {ErrorCode::PaymentRequired, "Payment Required"},
+   {ErrorCode::Forbidden, "Forbidden"},
+   {ErrorCode::NotFound, "Not Found"},
+   {ErrorCode::MethodNotAllowed, "Method Not Allowed"},
+   {ErrorCode::NotAcceptable, "Not Acceptable"},
+   {ErrorCode::ProxyAuthRequired, "Proxy Authentication Required"},
+   {ErrorCode::RequestTimeout, "Request Timeout"},
+   {ErrorCode::Conflict, "Conflict"},
+   {ErrorCode::Gone, "Gone"},
+   {ErrorCode::LengthRequired, "Length Required"},
+   {ErrorCode::PreconditionFailed, "Precondition Failed"},
+   {ErrorCode::RequestEntityTooLarge, "Request Entity Too Large"},
+   {ErrorCode::RequestURITooLong, "Request URI Too Long"},
+   {ErrorCode::UnsupportedMediaType, "Unsupported Media Type"},
+   {ErrorCode::RequestedRangeNotSatisfiable, "Requested Range Not Satisfiable"},
+   {ErrorCode::ExpectationFailed, "Expectation Failed"},
+   {ErrorCode::Teapot, "I'm a teapot"},
+   {ErrorCode::UnprocessableEntity, "Unprocessable Entity"},
+   {ErrorCode::Locked, "Locked"},
+   {ErrorCode::FailedDependency, "Failed Dependency"},
+   {ErrorCode::UpgradeRequired, "Upgrade Required"},
+   {ErrorCode::PreconditionRequired, "Precondition Required"},
+   {ErrorCode::TooManyRequests, "Too Many Requests"},
+   {ErrorCode::RequestHeaderFieldsTooLarge, "Request Header Fields Too Large"},
+   {ErrorCode::UnavailableForLegalReasons, "Unavailable For Legal Reasons"},
+   {ErrorCode::InternalServerError, "Internal Server Error"},
+   {ErrorCode::NotImplemented, "Not Implemented"},
+   {ErrorCode::BadGateway, "Bad Gateway"},
+   {ErrorCode::ServiceUnavailable, "Service Unavailable"},
+   {ErrorCode::GatewayTimeout, "Gateway Timeout"},
+   {ErrorCode::HTTPVersionNotSupported, "HTTP Version Not Supported"},
+   {ErrorCode::VariantAlsoNegotiates, "Variant Also Negotiates"},
+   {ErrorCode::InsufficientStorage, "Insufficient Storage"},
+   {ErrorCode::LoopDetected, "Loop Detected"},
+   {ErrorCode::NotExtended, "Not Extended"},
+   {ErrorCode::NetworkAuthenticationRequired, "Network Authentication Required"}};
 
-const char* ErrorCodeCategory::name() const noexcept 
+const char* ErrorCodeCategory::name() const noexcept
 {
    return "liborion-net http errors";
 }
 
 std::string ErrorCodeCategory::message(int err_code) const
 {
-   auto text = ErrorText.find(static_cast<errc>(err_code));
+   auto text = ErrorText.find(static_cast<ErrorCode>(err_code));
    if (text != ErrorText.end())
       return text->second;
 

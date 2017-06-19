@@ -22,13 +22,12 @@
 #ifndef ORION_NET_IPADDRESS_H
 #define ORION_NET_IPADDRESS_H
 
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/net/IP.h>
 #include <orion/net/IPv4.h>
 #include <orion/net/IPv6.h>
+#include <string>
 
 namespace orion
 {
@@ -36,7 +35,7 @@ namespace net
 {
 
 /// IPAddress represents the address of an IP end point.
-class API_EXPORT IPAddress 
+class API_EXPORT IPAddress
 {
 public:
    IPAddress(const IPv4& ip, int port);
@@ -64,4 +63,4 @@ private:
 
 } // net
 } // orion
-#endif 
+#endif

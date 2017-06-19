@@ -20,11 +20,11 @@
 #ifndef ORION_LOG_MULTILINEFORMATTER_H
 #define ORION_LOG_MULTILINEFORMATTER_H
 
-#include <string>
-
 #include <orion/Orion-Stddefs.h>
 #include <orion/SourceLocation.h>
 #include <orion/log/Formatter.h>
+
+#include <string>
 
 namespace orion
 {
@@ -46,7 +46,6 @@ public:
 
 private:
    std::string format_source_info(const std::string& prefix, const SourceLocation& src_loc);
-
 };
 
 } // namespace log

@@ -35,12 +35,14 @@ static void get_last_error_message(DWORD last_error_code, std::string& error_mes
 {
    wchar_t* buffer;
 
-   FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+   FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+                     FORMAT_MESSAGE_IGNORE_INSERTS,
                   nullptr,
                   last_error_code,
                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                  (LPWSTR) &buffer,
-                  0, nullptr);
+                  (LPWSTR)&buffer,
+                  0,
+                  nullptr);
 
    if (buffer)
    {
@@ -61,18 +63,18 @@ struct Module::Private
 
 //-------------------------------------------------------------------------------------------------
 
-Module::Module() :
-   _impl(new Private{nullptr, false, ""})
+Module::Module()
+   : _impl(new Private{nullptr, false, ""})
 {
 }
 
-Module::Module(const std::string& file_name) :
-   _impl(new Private{nullptr, false, file_name})
+Module::Module(const std::string& file_name)
+   : _impl(new Private{nullptr, false, file_name})
 {
 }
 
-Module::Module(Module&& rhs) :
-   _impl(std::move(rhs._impl))
+Module::Module(Module&& rhs)
+   : _impl(std::move(rhs._impl))
 {
 }
 
@@ -81,7 +83,7 @@ Module::~Module()
    close();
 }
 
-/*! 
+/*!
    Module name
 */
 std::string Module::name() const
@@ -89,7 +91,7 @@ std::string Module::name() const
    return _impl->name;
 }
 
-/*! 
+/*!
    Is module open (loaded)
 */
 bool Module::is_open() const
@@ -97,12 +99,13 @@ bool Module::is_open() const
    return _impl->is_open;
 }
 
-/*! 
+/*!
    Load library
 */
 void Module::open(const std::string& file_name)
 {
-   _impl->handle = LoadLibraryExW(utf8_to_wstring(file_name).c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
+   _impl->handle =
+      LoadLibraryExW(utf8_to_wstring(file_name).c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
 
    if (_impl->handle == nullptr)
    {
@@ -113,10 +116,10 @@ void Module::open(const std::string& file_name)
    }
 
    _impl->is_open = true;
-   _impl->name = file_name;
+   _impl->name    = file_name;
 }
 
-/*! 
+/*!
    Close library
 */
 void Module::close()
@@ -128,13 +131,13 @@ void Module::close()
    _impl->is_open = false;
 }
 
-/*! 
+/*!
    Finds a symbol pointer in the library.
  */
-void* Module::find_symbol_address(const std::string& symbol_name) 
+void* Module::find_symbol_address(const std::string& symbol_name)
 {
    RETURN_VALUE_IF_FAIL(is_open(), nullptr);
-  
+
    // reinterpret_cast
    void* symbol = reinterpret_cast<void*>(GetProcAddress(_impl->handle, symbol_name.c_str()));
 
@@ -152,9 +155,8 @@ void* Module::find_symbol_address(const std::string& symbol_name)
 Module& Module::operator=(Module&& rhs)
 {
    _impl = std::move(rhs._impl);
-   
+
    return *this;
 }
 
 } // namespace orion
-

@@ -24,76 +24,79 @@ namespace orion
 // ---------------------------------------------------------------------------
 // ---- ModuleException ----
 
-ModuleException::ModuleException(const std::string& text, const SourceLocation& src_loc) :
-   Exception(text, src_loc)
+ModuleException::ModuleException(const std::string& text, const SourceLocation& src_loc)
+   : Exception(text, src_loc)
 {
 }
 
-ModuleException::ModuleException(const ModuleException& other) :
-   Exception(other)
+ModuleException::ModuleException(const ModuleException& other)
+   : Exception(other)
 {
 }
 
-ModuleException::ModuleException(ModuleException&& other) :
-   Exception(std::move(other))
+ModuleException::ModuleException(ModuleException&& other)
+   : Exception(std::move(other))
 {
 }
 
 ModuleException& ModuleException::operator=(const ModuleException& other)
 {
-   if (this == &other) 
+   if (this == &other)
    {
       return *this;
    }
 
    Exception::operator=(other);
 
-   return *this ;
+   return *this;
 }
 
 ModuleException& ModuleException::operator=(ModuleException&& other)
 {
    Exception::operator=(std::move(other));
 
-   return *this ;
+   return *this;
 }
 
 // ---------------------------------------------------------------------------
 // ---- ModuleSymbolNotFoundException ----
 
-ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(const std::string& text, 
-                                                             const SourceLocation& src_loc) :
-   ModuleException(text, src_loc)
+ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(const std::string& text,
+                                                             const SourceLocation& src_loc)
+   : ModuleException(text, src_loc)
 {
 }
 
-ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(const ModuleSymbolNotFoundException& other) :
-   ModuleException(other)
+ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(
+   const ModuleSymbolNotFoundException& other)
+   : ModuleException(other)
 {
 }
 
-ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(ModuleSymbolNotFoundException&& other) :
-   ModuleException(std::move(other))
+ModuleSymbolNotFoundException::ModuleSymbolNotFoundException(ModuleSymbolNotFoundException&& other)
+   : ModuleException(std::move(other))
 {
 }
 
-ModuleSymbolNotFoundException& ModuleSymbolNotFoundException::operator=(const ModuleSymbolNotFoundException& other)
+ModuleSymbolNotFoundException& ModuleSymbolNotFoundException::operator=(
+   const ModuleSymbolNotFoundException& other)
 {
-   if (this == &other) 
+   if (this == &other)
    {
       return *this;
    }
 
    ModuleException::operator=(other);
 
-   return *this ;
+   return *this;
 }
 
-ModuleSymbolNotFoundException& ModuleSymbolNotFoundException::operator=(ModuleSymbolNotFoundException&& other)
+ModuleSymbolNotFoundException& ModuleSymbolNotFoundException::operator=(
+   ModuleSymbolNotFoundException&& other)
 {
    ModuleException::operator=(std::move(other));
 
-   return *this ;
+   return *this;
 }
 
 } // orion

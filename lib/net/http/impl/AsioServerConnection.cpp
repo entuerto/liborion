@@ -22,7 +22,7 @@ namespace http
 //---------------------------------------------------------------------------------------
 IPAddress* convert(const asio::ip::tcp::endpoint& ep)
 {
-   int port = ep.port();
+   int port  = ep.port();
    auto addr = ep.address();
 
    if (addr.is_v4())
@@ -42,15 +42,16 @@ IPAddress* convert(const asio::ip::tcp::endpoint& ep)
 
 //---------------------------------------------------------------------------------------
 
-AsioServerConnection::AsioServerConnection(asio::io_service& io_service, const Handlers& RequestHandlers) :
-   tcp::Connection(),
-   _socket(io_service),
-   _RequestHandlers(RequestHandlers),
-   _request(),
-   _response(StatusCode::OK),
-   _parser(),
-   _read_deadline(io_service),
-   _write_deadline(io_service)
+AsioServerConnection::AsioServerConnection(asio::io_service& io_service,
+                                           const Handlers& RequestHandlers)
+   : tcp::Connection()
+   , _socket(io_service)
+   , _RequestHandlers(RequestHandlers)
+   , _request()
+   , _response(StatusCode::OK)
+   , _parser()
+   , _read_deadline(io_service)
+   , _write_deadline(io_service)
 {
 }
 
@@ -64,7 +65,7 @@ void AsioServerConnection::close()
    LOG(Info) << boost::format("(%p) Connection closed") % this;
 
    std::error_code ec;
-   
+
    _socket.close(ec);
    if (ec)
       LOG(Error) << ec;
@@ -86,7 +87,7 @@ void AsioServerConnection::accept()
    LOG(Info) << boost::format("(%p) Connection accepted") % this;
    LOG(Info) << "   Remote address: " << _remote_addr->to_string();
    LOG(Info) << "   Local address:  " << _local_addr->to_string();
-   
+
    if (default_logger().is_enabled(Level::Debug))
       dump_socket_options();
 
@@ -102,9 +103,8 @@ void AsioServerConnection::start_read_timer()
 
    _read_deadline.expires_from_now(read_deadline());
 
-   _read_deadline.async_wait(std::bind(&AsioServerConnection::on_read_timeout, 
-                                       this->shared_from_this(), 
-                                       std::placeholders::_1));
+   _read_deadline.async_wait(std::bind(
+      &AsioServerConnection::on_read_timeout, this->shared_from_this(), std::placeholders::_1));
 }
 
 void AsioServerConnection::start_write_timer()
@@ -114,18 +114,16 @@ void AsioServerConnection::start_write_timer()
 
    _write_deadline.expires_from_now(write_deadline());
 
-   _write_deadline.async_wait(std::bind(&AsioServerConnection::on_write_timeout, 
-                                        this->shared_from_this(), 
-                                        std::placeholders::_1));
+   _write_deadline.async_wait(std::bind(
+      &AsioServerConnection::on_write_timeout, this->shared_from_this(), std::placeholders::_1));
 }
 
 void AsioServerConnection::do_read()
 {
    auto self = this->shared_from_this();
 
-   _socket.async_read_some(asio::buffer(_in_buffer),
-      [this, self](std::error_code ec, std::size_t bytes_transferred)
-      {
+   _socket.async_read_some(
+      asio::buffer(_in_buffer), [this, self](std::error_code ec, std::size_t bytes_transferred) {
          if (ec)
          {
             LOG(Error) << ec;
@@ -133,8 +131,7 @@ void AsioServerConnection::do_read()
             return;
          }
 
-         LOG(Debug2) << "AsioServerConnection::do_read() " 
-                     << int(bytes_transferred);
+         LOG(Debug2) << "AsioServerConnection::do_read() " << int(bytes_transferred);
 
          ec = _parser.parse(_request, _in_buffer.data(), bytes_transferred);
          if (ec)
@@ -159,9 +156,8 @@ void AsioServerConnection::do_write()
 {
    auto self = this->shared_from_this();
 
-   asio::async_write(_socket, _response.buffers(),
-      [this, self](std::error_code ec, std::size_t bytes_written)
-      {
+   asio::async_write(
+      _socket, _response.buffers(), [this, self](std::error_code ec, std::size_t bytes_written) {
          if (ec)
          {
             LOG(Error) << ec;
@@ -170,15 +166,13 @@ void AsioServerConnection::do_write()
          }
          std::size_t bytes_to_write = _response.size();
 
-         LOG(Debug2) << "AsioServerConnection::do_write() "
-                     << int(bytes_to_write)
-                     << " "
+         LOG(Debug2) << "AsioServerConnection::do_write() " << int(bytes_to_write) << " "
                      << int(bytes_written);
-         
-         //if (bytes_to_write == bytes_written)
+
+         // if (bytes_to_write == bytes_written)
          //   return;
-         
-         //do_write();
+
+         // do_write();
       });
 }
 
@@ -189,11 +183,11 @@ void AsioServerConnection::do_handler()
    LOG(Debug2) << _request;
 
    auto it = _RequestHandlers.find(_request.url().pathname());
-   
+
    if (it != _RequestHandlers.end())
    {
       auto&& rl = it->second;
-   
+
       auto ec = rl->on_request(_request, _response);
       if (ec)
       {
@@ -241,14 +235,12 @@ void AsioServerConnection::dump_socket_options()
    asio::ip::tcp::socket::keep_alive keep_alive_option;
    _socket.get_option(keep_alive_option);
 
-   log::write("   keep alive          : ",
-              (keep_alive_option.value() ? "true" : "false"));
+   log::write("   keep alive          : ", (keep_alive_option.value() ? "true" : "false"));
 
    asio::ip::tcp::no_delay no_delay_option;
    _socket.get_option(no_delay_option);
 
-   log::write("   no delay            : ",
-              (no_delay_option.value() ? "true" : "false"));
+   log::write("   no delay            : ", (no_delay_option.value() ? "true" : "false"));
 
    asio::socket_base::linger linger_option;
    _socket.get_option(linger_option);
@@ -260,9 +252,8 @@ void AsioServerConnection::dump_socket_options()
 
    asio::socket_base::reuse_address reuse_address_option;
    _socket.get_option(reuse_address_option);
-   
-   log::write("   reuse address       : ", 
-              (reuse_address_option.value() ? "true" : "false"));
+
+   log::write("   reuse address       : ", (reuse_address_option.value() ? "true" : "false"));
 
    asio::socket_base::receive_buffer_size recv_buf_size_option;
    _socket.get_option(recv_buf_size_option);
@@ -278,4 +269,3 @@ void AsioServerConnection::dump_socket_options()
 } // http
 } // net
 } // orion
- 

@@ -1,5 +1,5 @@
 /*
- * RequestHandler.h
+ * HttpRequestHandler.h
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,16 +19,15 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_NET_RPC_REQUESTHANDLER_H
-#define ORION_NET_RPC_REQUESTHANDLER_H
-
-#include <map>
-#include <memory>
+#ifndef ORION_NET_RPC_HTTPREQUESTHANDLER_H
+#define ORION_NET_RPC_HTTPREQUESTHANDLER_H
 
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/net/http/RequestHandler.h>
-#include <orion/net/rpc/Method.h>
+#include <orion/net/rpc/Service.h>
+
+#include <memory>
 
 namespace orion
 {
@@ -36,40 +35,30 @@ namespace net
 {
 namespace rpc
 {
-using Methods = std::map<std::string, std::shared_ptr<Method>>;
+class Service;
 
 /// Provides RPC protocol handler.
 ///
-/// Using the RpcRequestListener class, you can create a simple RPC protocol handler that 
-/// responds to RPC requests. 
+/// Using the RpcRequestListener class, you can create a simple RPC protocol handler that
+/// responds to RPC requests.
 ///
-class API_EXPORT RequestHandler : public http::RequestHandler
+class HttpRequestHandler : public http::RequestHandler
 {
 public:
-   NO_COPY(RequestHandler)
+   NO_COPY(HttpRequestHandler)
 
-   virtual ~RequestHandler();
-
-   template <typename MethodHandler>
-   void register_method(MethodHandler&& method)
-   {
-      auto m = std::make_shared<MethodHandler>(std::move(method));
-
-      _methods.emplace(std::make_pair(m->name(), m));
-   }
-
-   std::weak_ptr<Method> get_method(const std::string& name) const;
+   HttpRequestHandler(std::unique_ptr<Service>&& service);
+   virtual ~HttpRequestHandler() = default;
 
 protected:
-   RequestHandler(const std::string& uri);
+   virtual std::error_code on_post(const http::Request& request, http::Response& response) override;
 
-protected:
-   Methods _methods;
-
+private:
+   std::unique_ptr<Service> _service;
 };
 
 } // rpc
 } // net
 } // orion
 
-#endif // ORION_NET_RPC_REQUESTHANDLER_H
+#endif // ORION_NET_RPC_HTTPREQUESTHANDLER_H
