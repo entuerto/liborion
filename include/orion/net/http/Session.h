@@ -21,24 +21,15 @@ namespace net
 namespace http
 {
 class Session;
-
-namespace priv 
-{
-
+    
 template <typename T>
-void set_option(Session& session, T&& t) 
-{
-   session.set_option(std::forward<T>(t));
-}
+void set_option(Session& session, T&& t);
+
 
 template <typename T, typename... Ts>
-void set_option(Session& session, T&& t, Ts&&... ts) 
-{
-   set_option(session, std::forward<Ts>(t));
-   set_option(session, std::forward<Ts>(ts)...);
-}
+void set_option(Session& session, T&& t, Ts&&... ts);
 
-} // namespace priv
+
 ///
 ///
 ///
@@ -56,7 +47,7 @@ public:
       _header(),
       _timeout()
    {
-      priv::set_option(*this, std::forward<Ts>(ts)...);
+      set_option(*this, std::forward<Ts>(ts)...);
    }
 
    Session(Session&& rhs);
@@ -82,6 +73,20 @@ protected:
 
 };
 
+    
+template <typename T>
+void set_option(Session& session, T&& t)
+{
+   session.set_option(std::forward<T>(t));
+}
+    
+template <typename T, typename... Ts>
+void set_option(Session& session, T&& t, Ts&&... ts)
+{
+   set_option(session, std::forward<T>(t));
+   set_option(session, std::forward<Ts>(ts)...);
+}
+    
 } // namespace http
 } // namespace net
 } // namespace orion

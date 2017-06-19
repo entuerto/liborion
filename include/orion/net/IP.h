@@ -26,7 +26,6 @@
 #include <string>
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 
 namespace orion
 {
@@ -54,7 +53,7 @@ public:
 
 inline std::ostream& operator<<(std::ostream& o, const IP& ip) 
 {
-   o << ip;
+   o << ip.to_string();
    return o;
 }
 

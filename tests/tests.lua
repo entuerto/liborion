@@ -15,7 +15,6 @@ project "test-orion"
 
    files {
       "test-encoding.cpp",
-   --   "test-filesystem.cpp",
       "test-logger.cpp",
       "test-string.cpp",
       "test-units.cpp",
