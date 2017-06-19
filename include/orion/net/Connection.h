@@ -26,13 +26,14 @@
 #include <system_error>
 
 #include <orion/Orion-Stddefs.h>
+
 #include <orion/net/IPAddress.h>
 
 namespace orion
 {
 namespace net
 {
-
+   
 //! This class provides a generic network connection
 /*!
    Connection is a generic stream-oriented network connection.

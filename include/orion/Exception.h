@@ -46,7 +46,7 @@ public:
    //! Returns the recorded source location 
    virtual const SourceLocation& source_location() const;
 
-   const char* what() const override;
+   const char* what() const noexcept override;
 
    Exception& operator=(const Exception& other);
    Exception& operator=(Exception&& other);

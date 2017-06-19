@@ -45,7 +45,7 @@ const SourceLocation& Exception::source_location() const
    return _src_location;
 }
 
-const char* Exception::what() const 
+const char* Exception::what() const noexcept
 {
    return _text.c_str();
 }

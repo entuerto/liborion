@@ -9,6 +9,7 @@
 #define ORION_NET_HTTP_UTILS_H
 
 #include <chrono>
+#include <iostream>
 #include <map>
 #include <vector>
 #include <string>

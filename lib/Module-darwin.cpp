@@ -20,11 +20,11 @@
 #include <orion/Module.h>
 
 #include <orion/ErrorMacros.h>
-#include <orion/Logging.h>
+#include <orion/Log.h>
 
 namespace orion
 {
-using namespace orion::logging;
+using namespace orion::log;
 
 struct Module::Private
 {
@@ -33,13 +33,23 @@ struct Module::Private
 };
 
 Module::Module() :
-   _impl(new Private)
+   _impl(new Private{false, ""})
 {
-   _impl->is_open = false;
 }
-    
+
+Module::Module(const std::string& file_name) :
+   _impl(new Private{false, file_name})
+{
+}
+   
+Module::Module(Module&& rhs) :
+   _impl(std::move(rhs._impl))
+{
+}
+   
 Module::~Module()
 {
+   close();
 }
     
 /*!
@@ -81,10 +91,19 @@ void Module::close()
 /*!
  Gets a symbol pointer from the module.
  */
-void Module::get_symbol(const std::string& symbol_name, void*& symbol)
+void* Module::find_symbol_address(const std::string& symbol_name)
 {
-   RETURN_IF_FAIL(is_open());
+   RETURN_VALUE_IF_FAIL(is_open(), nullptr);
+   
+   return nullptr;
 }
 
+Module& Module::operator=(Module&& rhs)
+{
+   _impl = std::move(rhs._impl);
+        
+   return *this;
+}
+    
 } // namespace orion
 

@@ -119,7 +119,7 @@ std::error_code Parser::parse(AsioRequest& request, const char* data, std::size_
 
    _streambuf = request.rdbuf();
    
-   int nparsed = http_parser_execute(&_parser, &_settings, data, length);
+   std::size_t nparsed = http_parser_execute(&_parser, &_settings, data, length);
 
    if (_parser.upgrade) 
    {
@@ -150,7 +150,7 @@ std::error_code Parser::parse(AsioResponse& response, const char* data, std::siz
 
    _streambuf = response.rdbuf();
 
-   int nparsed = http_parser_execute(&_parser, &_settings, data, length);
+   std::size_t nparsed = http_parser_execute(&_parser, &_settings, data, length);
 
    if (_parser.upgrade) 
    {

@@ -34,12 +34,13 @@ namespace net
 {
 namespace http
 {
-
+/*
 static std::string as_string(struct mg_str& str)
 {
    return std::string(str.p, str.len);
 }
-
+*/
+   
 MongooseServerConnection::MongooseServerConnection(struct mg_connection* connection,
                                                    struct http_message* hm, 
                                                    const Handlers& RequestHandlers) :

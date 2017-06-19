@@ -9,6 +9,9 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/log/ExceptionRecord.h>
+#include <orion/Utils.h>
+
 #include <sstream>
 
 namespace orion
