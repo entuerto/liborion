@@ -19,7 +19,7 @@ function UseAsio()
    asioIncl = os.pathsearch("asio.hpp", path.join(asioPath, "include"))
    
    defines { 
-      "ASIO_STANDALONE",
+      "ASIO_STANDALONE"
     }
 
    filter "system:Windows"

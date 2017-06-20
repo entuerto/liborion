@@ -5,7 +5,7 @@
 --
 
 function FindBoost(version)
-   local envPath 
+   local envPath = ""
 
    -- assemble a search path, depending on the platform
    if os.is("windows") then
@@ -17,35 +17,36 @@ function FindBoost(version)
    boostPath = os.getenv("BOOST_PATH") or envPath
 
    boostIncl = os.pathsearch("boost/config.hpp", path.join(boostPath, "include"))
-   boostLib  = path.join(boostPath, "lib")
+   boostLib  = os.findlib("boost_program_options") 
 
    includedirs { boostIncl }
    libdirs { boostLib }
 end
 
 function UseBoostLibShared(name)
-   local libName = "boost_" .. name .. "*"
+   local libName = "boost_" .. name
 
-   local libsFound = os.matchfiles(path.join(boostLib, libName))
+   --local libsFound = os.matchfiles(path.join(boostLib, libName))
    
    --print(table.tostring(libsFound, 1))
 
-   local dbgLibName = ""
-   local relLibName = ""
-   for _, fname in ipairs(libsFound) do
-      if path.islinkable(fname) and fname:findlast("-gd-") then
-         dbgLibName = path.getbasename(fname)
-      end 
-      if path.islinkable(fname) and not fname:findlast("-gd-") then
-         relLibName = path.getbasename(fname)
-      end   
-   end
+   local dbgLibName = iif(os.findlib(libName), libName, "")
+   local relLibName = iif(os.findlib(libName), libName, "")
+
+   --for _, fname in ipairs(libsFound) do
+   --   if path.islinkable(fname) and fname:findlast("-gd-") then
+   --      dbgLibName = path.getbasename(fname)
+   --   end 
+   --   if path.islinkable(fname) and not fname:findlast("-gd-") then
+   --      relLibName = path.getbasename(fname)
+   --   end   
+   --end
 
    -- BOOST_ALL_DYN_LINK
    -- BOOST_PROGRAM_OPTIONS_DYN_LINK
 
-   --print("Found Debug: " .. dbgLibName)
-   --print("Found Release: " .. relLibName)
+   -- print("Found Debug: " .. dbgLibName)
+   -- print("Found Release: " .. relLibName)
 
    filter { "configurations:Debug" }
       defines { "BOOST_LIB_DIAGNOSTIC", "BOOST_ALL_NO_LIB", "BOOST_ALL_DYN_LINK" }

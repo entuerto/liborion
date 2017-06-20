@@ -32,7 +32,7 @@ int main()
 
    log::start();
 
-   auto r = http::Post(Url{"http://127.0.0.1:9080/"});
+   auto r = http::Get(Url{"http://127.0.0.1:9080/"});
 
    try
    {

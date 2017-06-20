@@ -19,27 +19,6 @@ namespace net
 {
 namespace http
 {
-class Session;
-    
-template <typename T>
-void set_option(Session& session, T&& t);
-
-namespace priv
-{
-
-template<typename T>
-void set_option(Session& session, T&& t)
-{
-   session.set_option(std::forward<T>(t));
-}
-
-template<typename T, typename... Ts>
-void set_option(Session& session, T&& t, Ts&&... ts)
-{
-   set_option(session, std::forward<T>(t));
-   set_option(session, std::forward<Ts>(ts)...);
-}
-
 
 ///
 ///
@@ -58,7 +37,7 @@ public:
       , _header()
       , _timeout()
    {
-      set_option(*this, std::forward<Ts>(ts)...);
+      set_option(std::forward<Ts>(ts)...);
    }
 
    Session(Session&& rhs);
@@ -73,6 +52,13 @@ public:
 
    void set_option(const Header& header);
    void set_option(const Timeout& timeout);
+    
+   template <typename T, typename... Ts>
+   void set_option(Session& session, T&& t, Ts&&... ts)
+   {
+      set_option(std::forward<T>(t));
+      set_option(std::forward<Ts>(ts)...);
+   }
 
    virtual Response operator()(const Method& m);
 

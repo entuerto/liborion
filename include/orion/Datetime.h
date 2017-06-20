@@ -128,7 +128,7 @@ public:
    using value_type = uint8_t;
 
    Day() = default;
-   explicit constexpr Day(value_type d) noexcept;
+   explicit constexpr Day(uint32_t d) noexcept;
 
    constexpr Day& operator++() noexcept;
    constexpr Day operator++(int)noexcept;
@@ -139,6 +139,7 @@ public:
    constexpr Day& operator-=(const days& d) noexcept;
 
    constexpr explicit operator value_type() const noexcept;
+   constexpr explicit operator uint32_t() const noexcept;
    constexpr bool ok() const noexcept;
 
 private:
