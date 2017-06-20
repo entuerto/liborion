@@ -267,7 +267,7 @@ constexpr months inline operator-(const Month& lhs, const Month& rhs) noexcept
 // Day
 //---------------------------------------------------------------------------------------
 
-constexpr inline Day::Day(Day::value_type d) noexcept
+constexpr inline Day::Day(uint32_t d) noexcept
    : _value(static_cast<Day::value_type>(d))
 {
 }
@@ -315,6 +315,11 @@ constexpr inline Day::operator Day::value_type() const noexcept
    return _value;
 }
 
+constexpr inline Day::operator uint32_t() const noexcept
+{
+   return _value;
+}
+
 constexpr inline bool Day::ok() const noexcept
 {
    return 1 <= _value and _value <= 31;
@@ -352,7 +357,7 @@ constexpr inline bool operator>=(const Day& lhs, const Day& rhs) noexcept
 
 constexpr inline Day operator+(const Day& lhs, const days& rhs) noexcept
 {
-   return Day{static_cast<Day::value_type>(lhs) + static_cast<Day::value_type>(rhs.count())};
+   return Day{static_cast<uint32_t>(lhs) + static_cast<uint32_t>(rhs.count())};
 }
 
 constexpr inline Day operator+(const days& lhs, const Day& rhs) noexcept

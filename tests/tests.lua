@@ -11,7 +11,7 @@ project "test-orion"
 
    defines { "ORION_TEST_LOGGER" }
 
-   links { "orion", "orion-fs"}
+   links { "orion" }
 
    files {
       "test-encoding.cpp",
@@ -41,7 +41,7 @@ project "test-orion-rpc"
 
    links { "jsoncpp", "orion", "orion-net" }
 
-   UseBoostLibStatic("program_options")
+   UseBoostLibShared("program_options")
 
 
 project "test-orion-net"
@@ -57,4 +57,4 @@ project "test-orion-net"
 
    links { "orion", "orion-net" }
 
-   UseBoostLibStatic("program_options")
+   UseBoostLibShared("program_options")
