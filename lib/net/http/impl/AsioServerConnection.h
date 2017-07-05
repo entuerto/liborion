@@ -8,7 +8,6 @@
 #define ORION_NET_HTTP_ASIOSERVERCONNECTION_H
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/net/http/RequestHandler.h>
 #include <orion/net/http/Utils.h>
 #include <orion/net/tcp/Connection.h>
 
@@ -16,8 +15,9 @@
 #include <net/http/impl/AsioResponse.h>
 #include <net/http/impl/Parser.h>
 
-#include <array>
 #include <asio.hpp>
+
+#include <array>
 #include <memory>
 
 namespace orion

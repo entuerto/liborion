@@ -24,7 +24,6 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/http/RequestHandler.h>
 #include <orion/net/rpc/Service.h>
 
 #include <memory>
@@ -42,7 +41,7 @@ class Service;
 /// Using the RpcRequestListener class, you can create a simple RPC protocol handler that
 /// responds to RPC requests.
 ///
-class HttpRequestHandler : public http::RequestHandler
+class HttpRequestHandler
 {
 public:
    NO_COPY(HttpRequestHandler)
@@ -50,8 +49,6 @@ public:
    HttpRequestHandler(std::unique_ptr<Service>&& service);
    virtual ~HttpRequestHandler() = default;
 
-protected:
-   virtual std::error_code on_post(const http::Request& request, http::Response& response) override;
 
 private:
    std::unique_ptr<Service> _service;

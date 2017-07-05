@@ -24,7 +24,6 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/http/RequestHandler.h>
 #include <orion/net/http/Utils.h>
 #include <orion/net/tcp/Connection.h>
 

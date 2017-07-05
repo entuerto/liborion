@@ -8,15 +8,16 @@
 #ifndef ORION_NET_HTTP_UTILS_H
 #define ORION_NET_HTTP_UTILS_H
 
-#include <chrono>
-#include <map>
-#include <string>
-#include <vector>
-
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/StringUtils.h>
 #include <orion/net/http/Error.h>
+
+#include <chrono>
+#include <functional>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace orion
 {
@@ -25,8 +26,16 @@ namespace net
 namespace http
 {
 //-------------------------------------------------------------------------------------------------
+class Request;
+class Response;
+
+//-------------------------------------------------------------------------------------------------
 
 using Header = std::map<std::string, std::string>;
+
+using HandlerFunc = std::function<std::error_code(const Request&, Response&)>;
+
+using Handlers = std::map<std::string, HandlerFunc>;
 
 //-------------------------------------------------------------------------------------------------
 
@@ -104,6 +113,8 @@ enum class Method
    LINK   = 31,
    UNLINK = 32
 };
+
+//-------------------------------------------------------------------------------------------------
 
 static const std::map<Method, std::string> MethodText{{Method::DELETE, "DELETE"},
                                                       {Method::GET, "GET"},
