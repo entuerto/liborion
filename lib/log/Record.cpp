@@ -32,11 +32,10 @@ namespace log
  */
 Record::Record()
    : _level(Level::NotSet)
-   , _time_stamp()
+   , _time_stamp(std::chrono::system_clock::now())
    , _message()
    , _src_location()
 {
-   _time_stamp = orion::to_string(std::chrono::system_clock::now(), "%X");
 }
 
 /*!
@@ -44,11 +43,10 @@ Record::Record()
  */
 Record::Record(Level level, const std::string& msg)
    : _level(level)
-   , _time_stamp()
+   , _time_stamp(std::chrono::system_clock::now())
    , _message(msg)
    , _src_location()
 {
-   _time_stamp = orion::to_string(std::chrono::system_clock::now(), "%X");
 }
 
 /*!
@@ -56,11 +54,10 @@ Record::Record(Level level, const std::string& msg)
  */
 Record::Record(Level level, const std::string& msg, const SourceLocation& src_loc)
    : _level(level)
-   , _time_stamp()
+   , _time_stamp(std::chrono::system_clock::now())
    , _message(msg)
    , _src_location(src_loc)
 {
-   _time_stamp = orion::to_string(std::chrono::system_clock::now(), "%X");
 }
 
 /*
@@ -105,7 +102,7 @@ void Record::level(Level level)
 /*!
    Returns the time stamp of the log record
  */
-std::string Record::time_stamp() const
+std::chrono::system_clock::time_point Record::time_stamp() const
 {
    return _time_stamp;
 }

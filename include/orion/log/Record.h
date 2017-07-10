@@ -26,6 +26,7 @@
 #include <orion/log/Level.h>
 
 #include <boost/format.hpp>
+#include <chrono>
 
 namespace orion
 {
@@ -61,7 +62,7 @@ public:
    virtual void level(Level level);
 
    //! Returns the time stamp of the log record
-   virtual std::string time_stamp() const;
+   virtual std::chrono::system_clock::time_point time_stamp() const;
 
    //! Returns the message recorded
    virtual std::string message() const;
@@ -101,7 +102,7 @@ public:
 
 private:
    Level _level;
-   std::string _time_stamp;
+   std::chrono::system_clock::time_point _time_stamp;
    std::string _message;
 
    SourceLocation _src_location;

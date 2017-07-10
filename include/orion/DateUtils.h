@@ -36,7 +36,11 @@ std::basic_string<CharT> to_basic_string(const std::chrono::time_point<Clock>& t
 
    std::tm tm{0};
 
+#if _WIN32
+   localtime_s(&tm, &t);
+#else
    tm = *std::localtime(&t);
+#endif
 
    std::basic_stringstream<CharT> ostr;
 
