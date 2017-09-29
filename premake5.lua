@@ -164,7 +164,7 @@ group "Libraries"
       }
 
       filter "system:windows"
-         links { "ws2_32", "psapi", "rpcrt4" }
+         links { "ws2_32", "mswsock", "psapi", "rpcrt4" }
 
       files { 
          "lib/net/**.cpp" 

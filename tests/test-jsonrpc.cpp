@@ -9,9 +9,6 @@
 #include <orion/net/http/Request.h>
 #include <orion/net/http/Response.h>
 #include <orion/net/http/Utils.h>
-#include <orion/net/rpc/JsonError.h>
-#include <orion/net/rpc/JsonMethod.h>
-#include <orion/net/rpc/JsonRequestHandler.h>
 
 #include <jsoncpp/json/json.h>
 

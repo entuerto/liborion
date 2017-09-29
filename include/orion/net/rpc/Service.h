@@ -17,6 +17,7 @@
 
 #include <map>
 #include <memory>
+#include <system_error>
 
 namespace orion
 {

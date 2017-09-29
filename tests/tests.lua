@@ -53,14 +53,21 @@ project "test-orion-rpc"
       "orion-net" 
    }
 
-   files {
-      "test-jsonrpc.cpp",
-      "test-main.cpp"
+   UseAsio()
+   UseBoost("boost_program_options-mt")
+
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
    }
 
    links { "jsoncpp", "orion", "orion-net" }
 
-   UseBoostLibShared("program_options")
+   files {
+      "test-jsonrpc.cpp",
+      "test-main.cpp"
+   }
 
 
 project "test-orion-net"
@@ -68,12 +75,22 @@ project "test-orion-net"
 
    dependson "orion"
 
+   UseAsio()
+   UseBoost("boost_program_options-mt")
+
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
+
+   links { "orion", "orion-net" }
+
+   filter "system:windows"
+      links { "ws2_32", "mswsock", "psapi", "rpcrt4" }
+
    files {
       "test-net.cpp",
       "test-url.cpp",
       "test-main.cpp"
    }
-
-   links { "orion", "orion-net" }
-
-   UseBoostLibShared("program_options")
