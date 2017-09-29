@@ -4,30 +4,40 @@
 -- Copyright (c) 2017 Tomas Palazuelos
 --
 
+local boostInclude = ""
+local boostLib = ""
+
 function FindBoost(version)
-   local envPath 
+   local envPath = "/include:/usr/include:/usr/local/include"
 
    -- assemble a search path, depending on the platform
-   if os.is("windows") then
+   filter { "system:windows",  "platforms:windows" }
       envPath = os.getenv("PATH") or ""
-   else
-      envPath = "/include:/usr/include:/usr/local/include"
-   end
 
    boostPath = os.getenv("BOOST_PATH") or envPath
 
-   boostIncl = os.pathsearch("boost/config.hpp", path.join(boostPath, "include"))
-   boostLib  = path.join(boostPath, "lib")
+   boostInclude = os.pathsearch("boost/config.hpp", boostPath)
+   boostLib  = path.join("C:/Tools/msys64/mingw64", "lib")
 
-   includedirs { boostIncl }
-   libdirs { boostLib }
+end
+
+function UseBoost(name)
+
+   defines { 
+      "BOOST_LIB_DIAGNOSTIC", 
+      "BOOST_ALL_NO_LIB", 
+      "BOOST_ALL_DYN_LINK" 
+   }
+
+   links { name }
+
 end
 
 function UseBoostLibShared(name)
-   local libName = "boost_" .. name .. "*"
+   local libName = path.join(boostLib, "*boost_" .. name .. "*")
 
-   local libsFound = os.matchfiles(path.join(boostLib, libName))
-   
+   local libsFound = os.matchfiles(libName)
+
    --print(table.tostring(libsFound, 1))
 
    local dbgLibName = ""
@@ -41,18 +51,24 @@ function UseBoostLibShared(name)
       end   
    end
 
+   filter { "system:windows" }
+      dbgLibName = path.getbasename(dbgLibName)
+      relLibName = path.getbasename(relLibName)
+
    -- BOOST_ALL_DYN_LINK
    -- BOOST_PROGRAM_OPTIONS_DYN_LINK
 
-   --print("Found Debug: " .. dbgLibName)
-   --print("Found Release: " .. relLibName)
+   print("Found Debug: " .. dbgLibName)
+   print("Found Release: " .. relLibName)
 
-   filter { "configurations:Debug" }
-      defines { "BOOST_LIB_DIAGNOSTIC", "BOOST_ALL_NO_LIB", "BOOST_ALL_DYN_LINK" }
+   defines { "BOOST_LIB_DIAGNOSTIC", "BOOST_ALL_NO_LIB", "BOOST_ALL_DYN_LINK" }
+   includedirs { boostInclude }
+   libdirs { boostLib }
+
+   filter { "configurations:debug" }
       links { dbgLibName }
 
-   filter { "configurations:Release" }
-      defines { "BOOST_LIB_DIAGNOSTIC", "BOOST_ALL_NO_LIB", "BOOST_ALL_DYN_LINK" }
+   filter { "configurations:release" }
       links { relLibName }
 
    filter {}

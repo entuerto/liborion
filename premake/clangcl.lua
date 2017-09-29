@@ -365,9 +365,10 @@
 --
 
    clangcl.tools = {
-      cc = "clang-cl",
+      cc  = "clang-cl",
       cxx = "clang-cl",
-      ar = "llvm-lib"
+      ar  = "llvm-lib",
+      rc  = "rc",
    }
 
    function clangcl.gettoolname(cfg, tool)

@@ -8,6 +8,10 @@
 #define ORION_LOG_BASICLOGGER_IPP
 
 #include <orion/Orion-Stddefs.h>
+#include <orion/SourceLocation.h>
+#include <orion/Utils.h>
+
+#include <orion/log/ExceptionRecord.h>
 
 #include <sstream>
 

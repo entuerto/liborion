@@ -65,7 +65,7 @@ template<int I, typename T, typename... Ts>
 struct FindLast<I, T, T, Ts...> : Max<IntType<I>, FindLast<I + 1, T, Ts...>>
 {
 };
-}
+} // namespace detail
 
 template<typename T, typename U>
 struct Find;

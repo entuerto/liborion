@@ -1,58 +1,74 @@
 --
--- Name:        premake-ninja/_preload.lua
--- Purpose:     Define the ninja action.
--- Author:      Dmitry Ivanov
--- Created:     2015/07/04
--- Copyright:   (c) 2015 Dmitry Ivanov
+-- Name:     premake/ninja/_preload.lua
+-- Purpose:  Define the ninja action.
 --
 
 local p = premake
-local solution = premake.solution
 local project = premake.project
 
 newoption
 {
-   trigger     = "config",
+   trigger     = "build-type",
    value       = "VALUE",
    description = "Build configuration to generate; default is 'debug'",
    default     = "debug"
+}
+
+newoption
+{
+   trigger     = "platform",
+   value       = "VALUE",
+   description = "Platform configuration to generate",
 }
 
 newaction
 {
    -- Metadata for the command line and help system
    trigger        = "ninja",
-   shortname      = "ninja",
+   shortname      = "Ninja build system",
    description    = "Ninja is a small build system with a focus on speed",
-   module         = "ninja",
 
    -- The capabilities of this action
-   valid_kinds      = {"ConsoleApp", "WindowedApp", "SharedLib", "StaticLib"}, 
-   valid_languages  = {"C", "C++"},
-   valid_tools      = {cc = { "gcc", "clang", "clangcl", "msc" }},
+   valid_kinds      = { "ConsoleApp", "WindowedApp", "SharedLib", "StaticLib" }, 
+   valid_languages  = { "C", "C++" },
+   valid_tools      = {
+      cc = { "gcc", "clang", "clangcl", "msc" }
+   },
 
    -- Workspace and project generation logic
-   onWorkspace = function(sln)
-      p.eol("\r\n")
-      p.indent("  ")
+   onWorkspace = function(wks)
+      --p.eol("\r\n")
+      --p.indent("  ")
       p.escaper(p.modules.ninja.esc)
-      p.generate(sln, "build.ninja", p.modules.ninja.generateWorkspace)
-      p.generate(sln, "rules.ninja", p.modules.ninja.generateDefaultRules)
+      p.generate(wks, "build.ninja", p.modules.ninja.generateWorkspace)
+      p.generate(wks, "rules.ninja", p.modules.ninja.generateDefaultRules)
    end,
+
    onProject = function(prj)
       p.eol("\r\n")
       p.indent("  ")
       p.escaper(p.modules.ninja.esc)
-      p.modules.ninja.generateProject(prj)
+      p.generate(prj, p.modules.ninja.getBuildFilename(prj), p.modules.ninja.generateProject)
    end,
-   onCleanWorkspace = function(sln)
-      -- TODO
+
+   onCleanWorkspace = function(wks)
+      p.clean.file(wks, "build.ninja")
+      p.clean.file(wks, "rules.ninja")
    end,
+
    onCleanProject = function(prj)
-      -- TODO
+      p.clean.file(prj, p.modules.ninja.getBuildFilename(prj))
    end,
 }
 
+filter { "system:windows", "platforms:mingw64", "kind:SharedLib" }
+   targetprefix "lib"
+   targetextension ".dll"
+   implibextension ".dll.a"
+
+filter { "system:windows", "platforms:mingw64", "kind:StaticLib" }
+   targetprefix "lib"
+   targetextension ".a"
 
 --
 -- Decide when the full module should be loaded.

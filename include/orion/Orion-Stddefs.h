@@ -20,7 +20,7 @@
 #ifndef ORION_STDDEFS_H
 #define ORION_STDDEFS_H
 
-#ifdef _WIN32
+#ifdef _MSC_VER
    #ifdef ORION_SHARED_EXPORTS
       #define API_EXPORT __declspec(dllexport)
    #else

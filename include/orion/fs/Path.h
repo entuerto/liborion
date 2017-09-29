@@ -25,9 +25,9 @@ class API_EXPORT Path
 {
 public:
    using value_type = char;
-   static constexpr value_type slash      = '/';
-   static constexpr value_type back_slash = '\\';
-   static constexpr value_type separator  = OS_SEPARATOR;
+   static value_type slash;
+   static value_type back_slash;
+   static value_type separator;
 
    Path();
    Path(const std::string& str);

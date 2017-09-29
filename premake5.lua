@@ -25,20 +25,14 @@ workspace "liborion"
 
    SetupDefaultConfigurations()
 
-   filter { "system:windows",  "action:gmake or ninja" }
-      toolset "clangcl"
+   toolset "clang"
 
-   includedirs { 
-      "include", 
-      "lib", 
-      "deps", 
-   }
+   filter { "system:windows",  "platforms:windows" }
+      toolset "clangcl"
 
    --removeconfigurations { "Release" }
 
-   UseAsio()
-   
-   FindBoost(1.61)
+   FindBoost(1.64)
 
 
 group "Libraries"
@@ -53,7 +47,6 @@ group "Libraries"
             "_WINSOCK_DEPRECATED_NO_WARNINGS" 
          }
 
-      removeincludedirs "*" 
       includedirs "deps/mongoose" 
                   
       files "deps/mongoose/mongoose.c"
@@ -65,7 +58,6 @@ group "Libraries"
       filter { "system:windows" }
          defines "_CRT_SECURE_NO_WARNINGS"
 
-      removeincludedirs "*"
       includedirs "deps/jsoncpp" 
                   
       files "deps/jsoncpp/jsoncpp.cpp"
@@ -75,7 +67,6 @@ group "Libraries"
 
       language "C"
 
-      removeincludedirs "*"
       includedirs "deps/http-parser" 
                   
       files "deps/http-parser/http_parser.c"
@@ -84,8 +75,17 @@ group "Libraries"
    project "orion"
       kind "SharedLib"
 
+      UseAsio()
+      UseBoost("boost_program_options-mt")
+
       defines { 
          "ORION_SHARED_EXPORTS"
+      }
+
+      includedirs { 
+         "include", 
+         "lib", 
+         "deps", 
       }
 
       files { 
@@ -96,16 +96,19 @@ group "Libraries"
 
       FilterPlatformSourceFiles()
       
-      UseBoostLibShared("program_options")
-
-      filter "system:Windows"
+      filter "system:windows"
          links { 
-            "mincore", 
-            "Advapi32", 
+            "ws2_32",
             "psapi", 
             "ntdll", 
             "rpcrt4" 
          }
+
+      filter { "system:windows", "platforms:windows" }
+         links { "mincore" }
+
+      filter { "system:windows", "platforms:mingw64" }
+         links { "version" }
 
    
    project "orion-fs"
@@ -114,6 +117,12 @@ group "Libraries"
       dependson "orion"
 
       defines { "ORION_SHARED_EXPORTS" }
+
+      includedirs { 
+         "include", 
+         "lib", 
+         "deps", 
+      }
 
       links "orion"
 
@@ -127,6 +136,8 @@ group "Libraries"
    project "orion-net"
       kind "SharedLib"
 
+      UseAsio()
+
       dependson { 
          "jsoncpp", 
          "mongoose", 
@@ -138,6 +149,12 @@ group "Libraries"
          "ORION_SHARED_EXPORTS"
       }
 
+      includedirs { 
+         "include", 
+         "lib", 
+         "deps", 
+      }
+
       links { 
          "jsoncpp", 
          "mongoose", 
@@ -145,8 +162,8 @@ group "Libraries"
          "orion" 
       }
 
-      filter "system:Windows"
-         links { "Advapi32", "ws2_32", "psapi", "rpcrt4" }
+      filter "system:windows"
+         links { "ws2_32", "psapi", "rpcrt4" }
 
       files { 
          "lib/net/**.cpp" 

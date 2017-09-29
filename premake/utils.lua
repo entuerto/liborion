@@ -30,6 +30,8 @@ function SetupDefaultConfigurations()
    -- We only use debug and release
    configurations { "debug", "release" }
 
+   platforms { "windows", "unix", "mac", "mingw64" }
+
    -- We only support 64bit
    architecture "x86_64"
 
@@ -51,14 +53,29 @@ function SetupDefaultConfigurations()
       -- release should be optimized
       optimize "On"
 
-   filter "system:Windows"
+   filter { "system:windows", "platforms:windows" }
       buildoptions { "-fms-compatibility-version=19" }
+
+   filter { "system:windows" }
+      links { 
+         "kernel32", 
+         "user32", 
+         "gdi32", 
+         "winspool", 
+         "shell32", 
+         "ole32", 
+         "oleaut32", 
+         "uuid", 
+         "comdlg32", 
+         "advapi32" 
+      }
 
    -- Reset the filter for other settings
    filter { }
 
    -- Common Compiler flags
-   flags { "C++14","NoPCH" }
+   flags { "NoPCH" }
+   cppdialect "C++14"
    rtti "On"
 end
 
@@ -68,7 +85,7 @@ function FilterPlatformSourceFiles()
    filter { "system:macosx" }
       removefiles { "**-win32.*", "**-linux.*" }
 
-   filter { "system:Windows" }
+   filter { "system:windows" }
       removefiles { "**-darwin.*", "**-linux.*" }
 
    filter { "system:linux" }
