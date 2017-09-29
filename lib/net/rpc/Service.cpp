@@ -7,20 +7,12 @@
 #include <orion/ErrorMacros.h>
 #include <orion/Log.h>
 
-#include <net/rpc/HttpRequestHandler.h>
-
 namespace orion
 {
 namespace net
 {
 namespace rpc
 {
-//-------------------------------------------------------------------------------------------------
-
-std::unique_ptr<http::RequestHandler> make_http_handler(std::unique_ptr<Service>&& service)
-{
-   return std::make_unique<HttpRequestHandler>(std::move(service));
-}
 
 //-------------------------------------------------------------------------------------------------
 

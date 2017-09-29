@@ -11,12 +11,12 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/http/RequestHandler.h>
 #include <orion/net/rpc/Method.h>
 #include <orion/net/rpc/Params.h>
 #include <orion/net/rpc/Result.h>
 
 #include <map>
+#include <memory>
 
 namespace orion
 {
@@ -69,11 +69,6 @@ void Service::register_method(MethodHandler&& method)
 
    _methods.emplace(std::make_pair(m->name(), m));
 }
-
-//-------------------------------------------------------------------------------------------------
-
-API_EXPORT std::unique_ptr<http::RequestHandler> make_http_handler(
-   std::unique_ptr<Service>&& service);
 
 } // rpc
 } // net

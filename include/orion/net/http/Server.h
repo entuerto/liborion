@@ -9,8 +9,9 @@
 #define ORION_NET_HTTP_SERVER_H
 
 #include <orion/Orion-Stddefs.h>
+
 #include <orion/net/Server.h>
-#include <orion/net/http/RequestHandler.h>
+#include <orion/net/http/Utils.h>
 
 #include <memory>
 #include <string>
@@ -35,7 +36,7 @@ public:
 
    virtual int port() const;
 
-   virtual void add_handler(std::unique_ptr<RequestHandler>&& h);
+   virtual void add_handler(const std::string& p, HandlerFunc&& h);
 
    bool is_running() const override;
 

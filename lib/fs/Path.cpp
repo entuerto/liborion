@@ -127,6 +127,11 @@ void debug(const std::string& f,
 }
 
 //---------------------------------------------------------------------------------------
+
+Path::value_type Path::slash      = '/';
+Path::value_type Path::back_slash = '\\';
+Path::value_type Path::separator  = OS_SEPARATOR;
+
 Path::Path()
    : _pathname()
 {
@@ -208,7 +213,7 @@ bool Path::empty() const
 
 Path& Path::normalize(value_type s /* = separator */)
 {
-   std::replace(_pathname.begin(), _pathname.end(), slash, s);
+   std::replace(_pathname.begin(), _pathname.end(), Path::slash, s);
    return *this;
 }
 

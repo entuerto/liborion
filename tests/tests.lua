@@ -9,9 +9,30 @@ project "test-orion"
 
    dependson "orion"
 
+   UseAsio()
+   UseBoost("boost_program_options-mt")
+
    defines { "ORION_TEST_LOGGER" }
 
-   links { "orion" }
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
+
+   libdirs {
+      "%{cfg.linktarget.directory}"
+   }
+
+   links { "orion", "orion-fs"}
+
+   filter "system:windows"
+      links { 
+         "ws2_32",
+         "psapi", 
+         "ntdll", 
+         "rpcrt4" 
+      }
 
    files {
       "test-encoding.cpp",
@@ -22,8 +43,6 @@ project "test-orion"
       "test-main.cpp"
    }
    
-   UseAsio()
-   UseBoostLibShared("program_options")
 
 project "test-orion-rpc"
    kind "ConsoleApp"

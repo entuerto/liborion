@@ -19,6 +19,7 @@
 
 #include <orion/log/OnelineFormatter.h>
 
+#include <orion/DateUtils.h>
 #include <orion/log/Logger.h>
 #include <orion/log/Record.h>
 
@@ -56,7 +57,7 @@ std::string OnelineFormatter::format(const Record& record)
 
    std::ostringstream stream;
 
-   stream << "|" << to_string(record.level()) << "|" << record.time_stamp() << "|" << scope
+   stream << "|" << to_string(record.level()) << "|" << orion::to_string(record.time_stamp(), "%X") << "|" << scope
           << record.message();
 
    return stream.str();

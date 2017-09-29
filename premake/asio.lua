@@ -4,25 +4,25 @@
 -- Copyright (c) 2017 Tomas Palazuelos
 --
 
-function UseAsio()
-   local envPath 
+function FindAsio()
+   local envPath = "/usr:/usr/local"
 
    -- assemble a search path, depending on the platform
-   if os.is("windows") then
+   filter { "system:windows", "platforms:windows" }
       envPath = os.getenv("PATH") or ""
-   else
-      envPath = "/usr:/usr/local"
-   end
 
    asioPath = os.getenv("ASIO_PATH") or envPath
 
    asioIncl = os.pathsearch("asio.hpp", path.join(asioPath, "include"))
    
+end
+
+function UseAsio()
    defines { 
       "ASIO_STANDALONE"
     }
 
-   filter "system:Windows"
+   filter "system:windows"
       defines { 
          "_WIN32_WINNT=0x0603"
       }

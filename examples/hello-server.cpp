@@ -31,63 +31,29 @@ using namespace orion;
 using namespace orion::log;
 using namespace orion::net;
 
-class HelloRequestHandler : public http::RequestHandler
+std::error_code hello(const http::Request& request, http::Response& response)
 {
-public:
-   HelloRequestHandler()
-      : http::RequestHandler("/")
-   {
-   }
+   response.header("Content-Type", "text/plain; charset=utf-8");
+   response.header("Connection", "close");
 
-   virtual ~HelloRequestHandler() = default;
+   std::ostream o(response.rdbuf());
 
-   static std::unique_ptr<http::RequestHandler> create()
-   {
-      return std::make_unique<HelloRequestHandler>();
-   }
+   o << "Hello there";
 
-protected:
-   virtual std::error_code on_get(const http::Request& request, http::Response& response)
-   {
-      response.header("Content-Type", "text/plain; charset=utf-8");
-      response.header("Connection", "close");
+   return std::error_code();
+}
 
-      std::ostream o(response.rdbuf());
-
-      o << "Hello there";
-
-      return std::error_code();
-   }
-};
-
-class WorldRequestHandler : public http::RequestHandler
+std::error_code world(const http::Request& request, http::Response& response)
 {
-public:
-   WorldRequestHandler()
-      : http::RequestHandler("/")
-   {
-   }
+   response.header("Content-Type", "text/plain; charset=utf-8");
+   response.header("Connection", "close");
 
-   virtual ~WorldRequestHandler() = default;
+   std::ostream o(response.rdbuf());
 
-   static std::unique_ptr<http::RequestHandler> create()
-   {
-      return std::make_unique<WorldRequestHandler>();
-   }
+   o << "World turns round";
 
-protected:
-   virtual std::error_code on_get(const http::Request& request, http::Response& response)
-   {
-      response.header("Content-Type", "text/plain; charset=utf-8");
-      response.header("Connection", "close");
-
-      std::ostream o(response.rdbuf());
-
-      o << "World turns round";
-
-      return std::error_code();
-   }
-};
+   return std::error_code();
+}
 
 void setup_logger(std::fstream& file_stream)
 {
@@ -118,8 +84,8 @@ int main()
       return EXIT_FAILURE;
    }
 
-   server->add_handler(WorldRequestHandler::create());
-   server->add_handler(HelloRequestHandler::create());
+   server->add_handler("/world", world);
+   server->add_handler("/hello", hello);
 
    std::cout << "Server listening on port: 9080\n";
 

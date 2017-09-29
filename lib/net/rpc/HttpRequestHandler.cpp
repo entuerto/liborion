@@ -52,10 +52,11 @@ static Json::Value make_response(const Error& error);
 //-------------------------------------------------------------------------------------------------
 
 HttpRequestHandler::HttpRequestHandler(std::unique_ptr<Service>&& service)
-   : http::RequestHandler(service->url())
-   , _service(std::move(service))
+   : _service(std::move(service))
 {
 }
+
+#if 0
 
 std::error_code HttpRequestHandler::on_post(const http::Request& request, http::Response& response)
 {
@@ -80,7 +81,6 @@ std::error_code HttpRequestHandler::on_post(const http::Request& request, http::
    return std::error_code();
 }
 
-#if 0
 //!
 Json::Value make_response(Json::Value& json_result)
 {

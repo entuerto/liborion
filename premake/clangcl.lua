@@ -66,8 +66,8 @@
          On = "/Ot",
          Debug = "/Od",
          Full = "/Ox",
-         Size = "/O1",
-         Speed = "/O2",
+         Size = "/Os",
+         Speed = "/Ot",
       },
       vectorextensions = {
          AVX = "/arch:AVX",
@@ -92,6 +92,12 @@
    }
 
    clangcl.cflags = {
+      cdialect = {
+         ["C89"] = "-std=c89",
+         ["C90"] = "-std=c90",
+         ["C99"] = "-std=c99",
+         ["C11"] = "-std=c11",
+      }
    }
 
    function clangcl.getcflags(cfg)
@@ -123,6 +129,12 @@
          Default = "/EHsc",
          On = "/EHsc",
          SEH = "/EHa",
+      },
+      cppdialect = {
+         ["C++98"] = "-std=c++98",
+         ["C++11"] = "-std=c++11",
+         ["C++14"] = "-std=c++14",
+         ["C++17"] = "-std=c++1z",
       },
       rtti = {
          On = "/GR",
@@ -229,27 +241,27 @@
       flags = {
          FatalLinkWarnings = "/WX",
          LinkTimeOptimization = "/GL",
-         NoIncrementalLink = "/INCREMENTAL:NO",
-         NoManifest = "/MANIFEST:NO",
-         OmitDefaultLibrary = "/NODEFAULTLIB",
+         NoIncrementalLink = "/incremental:no",
+         NoManifest = "/manifest:no",
+         OmitDefaultLibrary = "/nodefaultlib",
       },
       kind = {
          SharedLib = function(cfg)
-            local r = { "/DLL" }
+            local r = { "/dll" }
             if not cfg.flags.NoImportLib then
-               table.insert(r, '/IMPLIB:"' .. cfg.linktarget.relpath .. '"')
+               table.insert(r, '/implib:"' .. cfg.linktarget.relpath .. '"')
             end
             return r
          end
       },
       symbols = {
-         On = "/DEBUG"
+         On = "/debug"
       }
    }
 
    clangcl.librarianFlags = {
       flags = {
-         FatalLinkWarnings = "/WX",
+         FatalLinkWarnings = "/wx",
       }
    }
 
@@ -263,7 +275,7 @@
          if not clangcl.getLibraryExtensions()[ignore:match("[^.]+$")] then
             ignore = path.appendextension(ignore, ".lib")
          end
-         table.insert(flags, '/NODEFAULTLIB:' .. ignore)
+         table.insert(flags, '/nodefaultlib:' .. ignore)
       end
 
       return flags
@@ -285,7 +297,7 @@
       local dirs = table.join(cfg.libdirs, cfg.syslibdirs)
       for i, dir in ipairs(dirs) do
          dir = project.getrelative(cfg.project, dir)
-         table.insert(flags, '/LIBPATH:"' .. dir .. '"')
+         table.insert(flags, '/libpath:"' .. dir .. '"')
       end
       return flags
    end
@@ -353,16 +365,12 @@
 --
 
    clangcl.tools = {
-      cc = "clang-cl",
+      cc  = "clang-cl",
       cxx = "clang-cl",
-      ar = "llvm-lib"
+      ar  = "llvm-lib",
+      rc  = "rc",
    }
 
    function clangcl.gettoolname(cfg, tool)
       return clangcl.tools[tool]
    end
-
---
--- Patch actions
---
-   include( "gmake.lua" )

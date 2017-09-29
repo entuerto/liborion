@@ -7,6 +7,9 @@
 
 #include <orion/net/http/Server.h>
 
+#include <orion/net/http/Response.h>
+#include <orion/net/http/Request.h>
+
 #include <net/http/impl/AsioServer.h>
 
 namespace orion
@@ -31,9 +34,9 @@ int Server::port() const
    return _port;
 }
 
-void Server::add_handler(std::unique_ptr<RequestHandler>&& h)
+void Server::add_handler(const std::string& p, HandlerFunc&& h)
 {
-   _RequestHandlers.insert(std::make_pair(h->uri(), std::move(h)));
+   _RequestHandlers.insert(std::make_pair(p, std::move(h)));
 }
 
 bool Server::is_running() const

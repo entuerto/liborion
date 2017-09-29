@@ -186,9 +186,9 @@ void AsioServerConnection::do_handler()
 
    if (it != _RequestHandlers.end())
    {
-      auto&& rl = it->second;
+      auto& h = it->second;
 
-      auto ec = rl->on_request(_request, _response);
+      auto ec = h(_request, _response);
       if (ec)
       {
          LOG(Error) << ec;
