@@ -19,7 +19,7 @@
 
 #include <orion/log/OnelineFormatter.h>
 
-#include <orion/DateUtils.h>
+#include <orion/Chrono.h>
 #include <orion/log/Logger.h>
 #include <orion/log/Record.h>
 

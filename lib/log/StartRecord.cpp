@@ -19,7 +19,7 @@
 
 #include <log/StartRecord.h>
 
-#include <orion/DateUtils.h>
+#include <orion/Chrono.h>
 
 namespace orion
 {

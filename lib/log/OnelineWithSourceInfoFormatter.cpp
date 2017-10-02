@@ -19,7 +19,7 @@
 
 #include <orion/log/OnelineWithSourceInfoFormatter.h>
 
-#include <orion/DateUtils.h>
+#include <orion/Chrono.h>
 #include <orion/SourceLocation.h>
 #include <orion/log/Logger.h>
 #include <orion/log/Record.h>

@@ -6,16 +6,17 @@
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 
-#include <orion/DateUtils.h>
+#include <orion/Chrono.h>
 #include <orion/Datetime.h>
 
 #include <iostream>
 
 using namespace orion;
+using namespace std::chrono;
 
 int main()
 {
-   auto now = std::chrono::system_clock::now();
+   auto now = system_clock::now();
 
    std::cout << "\n"
              << "ANSIC:       " << to_string(now, ANSIC) << "\n"
@@ -28,18 +29,18 @@ int main()
              << "RFC3339:     " << to_string(now, RFC3339) << "\n"
              << "ISO8601:     " << to_string(now, ISO8601) << "\n\n";
 
-   auto y   = std::chrono::duration_cast<years>(now.time_since_epoch());
-   auto m   = std::chrono::duration_cast<months>(now.time_since_epoch());
-   auto d   = std::chrono::duration_cast<days>(now.time_since_epoch());
-   auto w   = std::chrono::duration_cast<weeks>(now.time_since_epoch());
-   auto h   = std::chrono::duration_cast<std::chrono::hours>(now.time_since_epoch());
-   auto min = std::chrono::duration_cast<std::chrono::minutes>(now.time_since_epoch());
-   auto s   = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch());
-   auto ms  = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
-   auto us  = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch());
-   auto ns  = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
+   auto y   = duration_cast<years>(now.time_since_epoch());
+   auto m   = duration_cast<months>(now.time_since_epoch());
+   auto d   = duration_cast<days>(now.time_since_epoch());
+   auto w   = duration_cast<weeks>(now.time_since_epoch());
+   auto h   = duration_cast<hours>(now.time_since_epoch());
+   auto min = duration_cast<minutes>(now.time_since_epoch());
+   auto s   = duration_cast<seconds>(now.time_since_epoch());
+   auto ms  = duration_cast<milliseconds>(now.time_since_epoch());
+   auto us  = duration_cast<microseconds>(now.time_since_epoch());
+   auto ns  = duration_cast<nanoseconds>(now.time_since_epoch());
 
-   std::chrono::duration<double> o = now.time_since_epoch() - y;
+   duration<double> o = now.time_since_epoch() - y;
 
    std::cout << "\nTime Since Epoch (01/01/1970)\n"
              << "\nyears:    " << y << "\nmonths:   " << m << "\ndays:     " << d

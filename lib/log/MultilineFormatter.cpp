@@ -8,7 +8,7 @@
 
 #include <orion/log/MultilineFormatter.h>
 
-#include <orion/DateUtils.h>
+#include <orion/Chrono.h>
 #include <orion/log/Logger.h>
 #include <orion/log/Record.h>
 #include <sstream>

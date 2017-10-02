@@ -1,19 +1,16 @@
-// Date-utils.h
+// Chrono.h
 //
 // Copyright (c) 2013-2017 Tomas Palazuelos
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 
-#ifndef ORION_DATE_UTILS_H
-#define ORION_DATE_UTILS_H
+#ifndef ORION_CHRONO_H
+#define ORION_CHRONO_H
 
 #include <orion/Orion-Stddefs.h>
 
 #include <chrono>
-#include <ctime>
-#include <iomanip>
-#include <sstream>
 #include <string>
 
 namespace orion
@@ -29,50 +26,43 @@ constexpr const char* RFC1123Z = "%a, %d %b %Y %T %z";                    // RFC
 constexpr const char* RFC3339  = "%FT%TZ%z"; // RFC3339  = "2006-01-02T15:04:05Z07:00"
 constexpr const char* ISO8601  = "%FT%TZ%z"; // ISO8601  = "2006-01-02T15:04:05Z0700"
 
-template<typename CharT, typename Clock>
-std::basic_string<CharT> to_basic_string(const std::chrono::time_point<Clock>& tp, const CharT* fmt)
-{
-   auto t = Clock::to_time_t(tp);
+template <typename D = std::chrono::nanoseconds>
+using TimePoint = std::chrono::time_point<std::chrono::system_clock, D>;
 
-   std::tm tm{0};
-
-#if _WIN32
-   localtime_s(&tm, &t);
-#else
-   tm = *std::localtime(&t);
-#endif
-
-   std::basic_stringstream<CharT> ostr;
-
-   ostr << std::put_time(&tm, fmt);
-
-   return ostr.str();
-}
+//-------------------------------------------------------------------------------------------------
 
 template<typename Clock>
-std::string to_string(const std::chrono::time_point<Clock>& tp, const char* fmt)
-{
-   return to_basic_string<char>(tp, fmt);
-}
+inline std::string to_string(const std::chrono::time_point<Clock>& tp, const char* fmt);
 
 template<typename Clock>
-std::string to_wstring(const std::chrono::time_point<Clock>& tp, const wchar_t* fmt)
-{
-   return to_basic_string<wchar_t>(tp, fmt);
-}
+inline std::wstring to_wstring(const std::chrono::time_point<Clock>& tp, const wchar_t* fmt);
 
 template<typename Clock>
-std::string to_u16string(const std::chrono::time_point<Clock>& tp, const char16_t* fmt)
-{
-   return to_basic_string<char16_t>(tp, fmt);
-}
+inline std::u16string to_u16string(const std::chrono::time_point<Clock>& tp, const char16_t* fmt);
 
 template<typename Clock>
-std::string to_u32string(const std::chrono::time_point<Clock>& tp, const char32_t* fmt)
+inline std::u32string to_u32string(const std::chrono::time_point<Clock>& tp, const char32_t* fmt);
+
+//-------------------------------------------------------------------------------------------------
+
+class API_EXPORT Timer
 {
-   return to_basic_string<char32_t>(tp, fmt);
-}
+public:
+   void start();
+   void stop();
+   void reset();
+
+   // Get the elapsed time.
+   // @return The value in nanoseconds.
+   std::chrono::nanoseconds elapsed() const;
+
+private:
+   std::chrono::time_point<std::chrono::high_resolution_clock> _start;
+   std::chrono::time_point<std::chrono::high_resolution_clock> _end;
+};
 
 } // namespace orion
 
-#endif // ORION_DATE_UTILS_H
+#include <orion/impl/Chrono.ipp>
+
+#endif // ORION_CHRONO_H

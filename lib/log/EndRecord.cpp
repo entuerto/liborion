@@ -8,7 +8,7 @@
 
 #include <log/EndRecord.h>
 
-#include <orion/DateUtils.h>
+#include <orion/Chrono.h>
 
 namespace orion
 {

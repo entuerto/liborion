@@ -23,6 +23,12 @@ project "date-example"
 
    dependson "orion"
 
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
+
    files "date-example.cpp"
 
    links { "orion" }

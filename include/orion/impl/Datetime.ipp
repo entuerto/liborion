@@ -554,4 +554,3 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 } // namespace orion
 
 #endif // ORION_DATETIME_IPP
-#
