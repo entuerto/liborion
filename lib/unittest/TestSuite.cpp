@@ -6,6 +6,8 @@
 //
 #include <orion/unittest/TestSuite.h>
 
+using namespace orion::unittest::option;
+
 namespace orion
 {
 namespace unittest
@@ -15,9 +17,13 @@ namespace unittest
 
 /// Constructor
 Suite::Suite(const std::string& name)
-   : _setup()
-   , _teardown()
-   , _name(name)
+   : _name(name)
+   , _label(name)
+   , _description()
+   , _is_enabled(true)
+   , _disabled_reason()
+   , _setup_func()
+   , _teardown_func()
    , _test_cases()
    , _stats()
 {
@@ -27,6 +33,26 @@ Suite::Suite(const std::string& name)
 std::string Suite::name() const
 {
    return _name;
+}
+
+std::string Suite::label() const
+{
+   return _label;
+}
+
+std::string Suite::description() const
+{
+   return _description;
+}
+
+bool Suite::enabled() const
+{
+   return _is_enabled;
+}
+
+std::string Suite::disabled_reason() const
+{
+   return _disabled_reason;
 }
 
 const OutputStats& Suite::stats() const
@@ -44,18 +70,49 @@ std::size_t Suite::test_count() const
    return _test_cases.size();
 }
 
+void Suite::set_option(Label opt)
+{
+   _label = opt.text;
+}
+
+void Suite::set_option(Description opt)
+{
+   _description = opt.text;
+}
+
+void Suite::set_option(SetupFunc opt)
+{
+   _setup_func = std::move(opt.func);
+}
+
+void Suite::set_option(TeardownFunc opt)
+{
+   _teardown_func = std::move(opt.func);
+}
+
+void Suite::set_option(Enabled opt)
+{
+   _is_enabled = true;
+}
+
+void Suite::set_option(Disabled opt)
+{
+   _is_enabled      = false;
+   _disabled_reason = std::move(opt.reason);
+}
+
 /// Sets up the test suite.
 void Suite::setup()
 {
-   if (_setup)
-      _setup();
+   if (_setup_func)
+      _setup_func();
 }
 
 /// Tears down the test suite.
 void Suite::teardown()
 {
-   if (_teardown)
-      _teardown();
+   if (_teardown_func)
+      _teardown_func();
 }
 
 ///
@@ -86,6 +143,8 @@ const OutputStats& Suite::run_tests(Output& output)
 
    output.write_suite_header(*this);
 
+   setup();
+
    for (auto& test : _test_cases)
    {
       auto& test_result = test.execute_test();
@@ -111,6 +170,8 @@ const OutputStats& Suite::run_tests(Output& output)
 
       output.write(test_result);
    }
+
+   teardown();
 
    output.write_suite_summary(*this);
 

@@ -31,6 +31,12 @@ public:
 
    /// Name of the test suite
    std::string name() const;
+   std::string label() const;
+   std::string description() const;
+
+   bool enabled() const;
+
+   std::string disabled_reason() const;
 
    const OutputStats& stats() const;
 
@@ -44,6 +50,13 @@ public:
    /// Tears down the test suite.
    void teardown();
 
+   void set_option(option::Label opt);
+   void set_option(option::Description opt);
+   void set_option(option::SetupFunc opt);
+   void set_option(option::TeardownFunc opt);
+   void set_option(option::Enabled opt);
+   void set_option(option::Disabled opt);
+
    /// Executes the tests and logs then to output.
    const OutputStats& run_tests(Output& output);
 
@@ -53,28 +66,38 @@ public:
 
    void add_tests(std::initializer_list<Test> l);
 
-protected:
-   std::function<void()> _setup;
-   std::function<void()> _teardown;
-
 private:
    std::string _name;
+   std::string _label;
+   std::string _description;
+
+   bool _is_enabled;
+   std::string _disabled_reason;
+
+   std::function<void()> _setup_func;
+   std::function<void()> _teardown_func;
+
    std::vector<Test> _test_cases;
 
    OutputStats _stats;
 };
 
-struct API_EXPORT RegisterTestHelper
-{
-   // RegisterHelper(Suite& suite, std::initializer_list<Test> l)
+//-------------------------------------------------------------------------------------------------
 
-   template<typename... Args>
-   RegisterTestHelper(Suite& suite, const std::string& name, TestCaseFunc f, Args... args)
-   {
-      auto& t = suite.add_test(name, f);
-      set_options(t, args...);
-   }
-};
+inline void set_options(Suite& /* suite */) {}
+
+template<typename O>
+void set_options(Suite& suite, O&& opt)
+{
+   suite.set_option(std::forward<decltype(opt)>(opt));
+}
+
+template<typename O, typename... Opts>
+void set_options(Suite& suite, O&& opt, Opts&&... opts)
+{
+   set_options(suite, std::forward<decltype(opt)>(opt));
+   set_options(suite, std::forward<decltype(opts)>(opts)...);
+}
 
 } // namespace orion
 } // namespace unittest

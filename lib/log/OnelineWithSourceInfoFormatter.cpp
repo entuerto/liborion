@@ -63,7 +63,7 @@ std::string OnelineWithSourceInfoFormatter::format(const Record& record)
    {
       try
       {
-         auto except_record = dynamic_cast<const ExceptionRecord&>(record);
+         auto& except_record = dynamic_cast<const ExceptionRecord&>(record);
 
          stream << "| Thrown from: " << except_record.thrown_source_location()
                 << "| Caught at: " << except_record.caught_source_location();

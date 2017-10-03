@@ -22,11 +22,11 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/Chrono.h>
 #include <orion/SourceLocation.h>
 #include <orion/log/Level.h>
 
-#include <boost/format.hpp>
-#include <chrono>
+#include <sstream>
 
 namespace orion
 {
@@ -44,69 +44,63 @@ namespace log
 class API_EXPORT Record
 {
 public:
+   NO_COPY(Record)
+   
    Record();
 
    Record(Level level, const std::string& msg);
 
    Record(Level level, const std::string& msg, const SourceLocation& src_loc);
 
-   Record(const Record& rhs);
    Record(Record&& rhs);
 
    virtual ~Record();
 
-   //! Returns the level of the log record
+   /// Returns the level of the log record
    virtual Level level() const;
 
-   //! Records the level of the log record
+   /// Records the level of the log record
    virtual void level(Level level);
 
-   //! Returns the time stamp of the log record
-   virtual std::chrono::system_clock::time_point time_stamp() const;
+   /// Returns the time stamp of the log record
+   virtual TimePoint<> time_stamp() const;
 
-   //! Returns the message recorded
+   /// Returns the message recorded
    virtual std::string message() const;
 
-   //! Records a message
+   /// Records a message
    virtual void message(const std::string& msg);
 
-   //! Returns the source location recorded
+   /// Appends some text to the message
+   virtual void append_message(const std::string& text);
+
+   /// Returns the source location recorded
    virtual const SourceLocation& source_location() const;
 
-   //! Records source location
+   /// Records source location
    virtual void source_location(const SourceLocation& value);
 
-   Record& operator=(const Record& rhs);
    Record& operator=(Record&& rhs);
 
-   //! Log zero terminated strings
-   Record& operator<<(const std::string& value);
-
-   //! Log an integer
-   Record& operator<<(int value);
-
-   //! Log a double
-   Record& operator<<(double value);
-
-   //! Log a character
-   Record& operator<<(char value);
-
-   //! Log std::error_code
-   Record& operator<<(const std::error_code& ec);
-
-   //! Log boost format
-   Record& operator<<(const boost::format& fmt);
-
-   /// Log stream buffer
-   Record& operator<<(std::streambuf* buf);
+   template<typename T>
+   Record& operator<<(const T& value);
 
 private:
    Level _level;
-   std::chrono::system_clock::time_point _time_stamp;
-   std::string _message;
+   TimePoint<> _time_stamp;
+   std::ostringstream _message;
 
    SourceLocation _src_location;
 };
+
+//-------------------------------------------------------------------------------------------------
+
+template<typename T>
+Record& Record::operator<<(const T& value)
+{
+   _message << value;
+   return *this;
+}
 
 } // namespace log
 } // namespace orion

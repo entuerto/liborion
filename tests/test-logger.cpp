@@ -9,8 +9,10 @@
 using namespace orion;
 using namespace orion::log;
 using namespace orion::unittest;
+using namespace orion::unittest::option;
 
 Record output_record;
+Logger& logger = default_logger();
 
 //----------------------------------------------------------------------------
 // Test log classes
@@ -26,7 +28,9 @@ public:
 
    virtual void write(const Record& record) override
    {
-      _out_record = record;
+      _out_record.level(record.level());
+      _out_record.message(record.message());
+      _out_record.source_location(record.source_location());
    }
 
    virtual void flush() override {}
@@ -37,22 +41,28 @@ private:
    Record& _out_record;
 };
 
-TestSuite(OrionCore)
+static void setup_logger()
+{
+   auto out_handler = std::make_unique<RecordOutputHandler>(output_record);
+
+   logger.level(Level::NotSet);
+   logger.add_output_handler(std::move(out_handler));
+
+   logger.start([] { return ""; });
+}
+
+TestSuite(OrionCore_Logger, SetupFunc{setup_logger})
 {
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
 void log_default_level(Test& t)
 {
-   Logger& logger = default_logger();
-
    t.assert<std::equal_to<>>(Level::NotSet, logger.level(), _src_loc);
 }
 
 void log_level_change(Test& t)
 {
-   Logger& logger = default_logger();
-
    logger.level(Level::Warning);
 
    t.assert<std::equal_to<>>(Level::Warning, logger.level(), _src_loc);
@@ -60,30 +70,29 @@ void log_level_change(Test& t)
 
 void log_level_output(Test& t)
 {
-   Logger& logger = default_logger();
-
    logger.level(Level::Warning);
 
    output_record.level(Level::NotSet);
 
    LOG(Debug) << "Debug message";
+
    t.assert<std::equal_to<>>(Level::NotSet, output_record.level(), _src_loc);
 
    output_record.level(Level::NotSet);
 
    LOG(Warning) << "Warning message";
+
    t.assert<std::equal_to<>>(Level::Warning, output_record.level(), _src_loc);
 
    output_record.level(Level::NotSet);
 
    LOG(Error) << "Error message";
+
    t.assert<std::equal_to<>>(Level::Error, output_record.level(), _src_loc);
 }
 
 void log_error_message(Test& t)
 {
-   Logger& logger = default_logger();
-
    logger.level(Level::NotSet);
 
    LOG(Error) << "Error message";
@@ -94,8 +103,6 @@ void log_error_message(Test& t)
 
 void log_fail_message(Test& t)
 {
-   Logger& logger = default_logger();
-
    logger.level(Level::NotSet);
 
    output_record.level(Level::NotSet);
@@ -108,9 +115,7 @@ void log_fail_message(Test& t)
 
 void log_record_output(Test& t)
 {
-   Logger& logger = default_logger();
-
-   logger += Record(Level::Message, "", SourceLocation{"FileName", 99, "function name"}) << "message";
+   logger.write(Record(Level::Message, "", SourceLocation{"FileName", 99, "function name"}) << "message");
 
    auto sl = output_record.source_location();
 
@@ -121,20 +126,10 @@ void log_record_output(Test& t)
    t.assert<std::equal_to<>>(std::string{"message"}, output_record.message(), _src_loc);
 }
 
-RegisterTestCase(OrionCore, log_default_level);
-RegisterTestCase(OrionCore, log_level_change);
-RegisterTestCase(OrionCore, log_level_output);
-RegisterTestCase(OrionCore, log_error_message);
-RegisterTestCase(OrionCore, log_fail_message);
-RegisterTestCase(OrionCore, log_record_output);
-} // TEST_SUITE(OrionCore)
-
-void setup_logger(Record& record)
-{
-   auto out_handler = std::make_unique<RecordOutputHandler>(record);
-
-   Logger& logger = default_logger();
-
-   logger.level(Level::NotSet);
-   logger.add_output_handler(std::move(out_handler));
-}
+RegisterTestCase(OrionCore_Logger, log_default_level);
+RegisterTestCase(OrionCore_Logger, log_level_change);
+RegisterTestCase(OrionCore_Logger, log_level_output);
+RegisterTestCase(OrionCore_Logger, log_error_message);
+RegisterTestCase(OrionCore_Logger, log_fail_message);
+RegisterTestCase(OrionCore_Logger, log_record_output);
+} // TEST_SUITE(OrionCore_Logger)

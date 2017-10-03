@@ -54,7 +54,7 @@ std::string MultilineFormatter::format(const Record& record)
    {
       try
       {
-         auto except_record = dynamic_cast<const ExceptionRecord&>(record);
+         auto& except_record = dynamic_cast<const ExceptionRecord&>(record);
 
          stream << format_source_info("\t- Thrown from: ", except_record.thrown_source_location())
                 << format_source_info("\t- Caught at:   ", except_record.caught_source_location());

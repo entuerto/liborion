@@ -11,7 +11,7 @@ using namespace orion;
 using namespace orion::unittest;
 using namespace orion::unittest::option;
 
-TestSuite(OrionCore)
+TestSuite(OrionCore_Units)
 {
 //----------------------------------------------------------------------------
 // Tests
@@ -52,8 +52,8 @@ void units_SI_int_double(Test& t)
    t.assert<true>(m == dm, _src_loc);
 }
 
-RegisterTestCase(OrionCore, units_SI_kilo_bytes);
-RegisterTestCase(OrionCore, units_SI_kilo_mega);
-RegisterTestCase(OrionCore, units_SI_mega_literal);
-RegisterTestCase(OrionCore, units_SI_int_double);
+RegisterTestCase(OrionCore_Units, units_SI_kilo_bytes);
+RegisterTestCase(OrionCore_Units, units_SI_kilo_mega);
+RegisterTestCase(OrionCore_Units, units_SI_mega_literal);
+RegisterTestCase(OrionCore_Units, units_SI_int_double);
 } // TEST_SUITE(OrionCore)

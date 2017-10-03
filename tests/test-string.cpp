@@ -11,7 +11,7 @@ using namespace std::string_literals;
 using namespace orion;
 using namespace orion::unittest;
 
-TestSuite(OrionCore)
+TestSuite(OrionCore_String)
 {
 //----------------------------------------------------------------------------
 // Tests
@@ -79,11 +79,11 @@ void string_tokenize(Test& t)
    t.assert<std::equal_to<>>("4"s,    tokens[4], _src_loc);
 }
 
-RegisterTestCase(OrionCore, string_tolower);
-RegisterTestCase(OrionCore, string_toupper);
-RegisterTestCase(OrionCore, string_equal_nocase);
-RegisterTestCase(OrionCore, string_trim_left);
-RegisterTestCase(OrionCore, string_trim_right);
-RegisterTestCase(OrionCore, string_trim);
-RegisterTestCase(OrionCore, string_tokenize);
+RegisterTestCase(OrionCore_String, string_tolower);
+RegisterTestCase(OrionCore_String, string_toupper);
+RegisterTestCase(OrionCore_String, string_equal_nocase);
+RegisterTestCase(OrionCore_String, string_trim_left);
+RegisterTestCase(OrionCore_String, string_trim_right);
+RegisterTestCase(OrionCore_String, string_trim);
+RegisterTestCase(OrionCore_String, string_tokenize);
 }

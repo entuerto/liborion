@@ -63,13 +63,13 @@ Record::Record(Level level, const std::string& msg, const SourceLocation& src_lo
 /*
    Copy constructor
  */
-Record::Record(const Record& rhs)
-   : _level(rhs._level)
-   , _time_stamp(rhs._time_stamp)
-   , _message(rhs._message)
-   , _src_location(rhs._src_location)
-{
-}
+//Record::Record(const Record& rhs)
+//   : _level(rhs._level)
+//   , _time_stamp(rhs._time_stamp)
+//   , _message(rhs._message)
+//   , _src_location(rhs._src_location)
+//{
+//}
 
 Record::Record(Record&& rhs)
    : _level(std::move(rhs._level))
@@ -112,7 +112,7 @@ std::chrono::system_clock::time_point Record::time_stamp() const
  */
 std::string Record::message() const
 {
-   return _message;
+   return _message.str();
 }
 
 /*!
@@ -120,7 +120,12 @@ std::string Record::message() const
  */
 void Record::message(const std::string& msg)
 {
-   _message = msg;
+   _message.str(msg);
+}
+
+void Record::append_message(const std::string& text)
+{
+   _message << text;
 }
 
 const SourceLocation& Record::source_location() const
@@ -133,18 +138,18 @@ void Record::source_location(const SourceLocation& value)
    _src_location = value;
 }
 
-Record& Record::operator=(const Record& rhs)
-{
-   if (this == &rhs)
-      return *this;
-
-   _level        = rhs._level;
-   _time_stamp   = rhs._time_stamp;
-   _message      = rhs._message;
-   _src_location = rhs._src_location;
-
-   return *this;
-}
+//Record& Record::operator=(const Record& rhs)
+//{
+//   if (this == &rhs)
+//      return *this;
+//
+//   _level        = rhs._level;
+//   _time_stamp   = rhs._time_stamp;
+//   _message      = rhs._message;
+//   _src_location = rhs._src_location;
+//
+//   return *this;
+//}
 
 Record& Record::operator=(Record&& rhs)
 {
@@ -152,66 +157,6 @@ Record& Record::operator=(Record&& rhs)
    _time_stamp   = std::move(rhs._time_stamp);
    _message      = std::move(rhs._message);
    _src_location = std::move(rhs._src_location);
-
-   return *this;
-}
-
-/*!
-   \param value string value to write
- */
-Record& Record::operator<<(const std::string& value)
-{
-   _message += value;
-   return *this;
-}
-
-/*!
-   \param value int value to write
- */
-Record& Record::operator<<(int value)
-{
-   _message += std::to_string(value);
-   return *this;
-}
-
-/*!
-   \param value double value to write
- */
-Record& Record::operator<<(double value)
-{
-   _message += std::to_string(value);
-   return *this;
-}
-
-/*!
-   \param value char value to write
- */
-Record& Record::operator<<(char value)
-{
-   _message += std::to_string(value);
-   return *this;
-}
-
-Record& Record::operator<<(const std::error_code& ec)
-{
-   auto fmt = boost::format("%s (%d): %s") % ec.category().name() % ec.value() % ec.message();
-   _message += boost::str(fmt);
-   return *this;
-}
-
-Record& Record::operator<<(const boost::format& fmt)
-{
-   _message += fmt.str();
-   return *this;
-}
-
-Record& Record::operator<<(std::streambuf* buf)
-{
-   std::ostringstream ostr;
-
-   ostr << buf;
-
-   _message += ostr.str();
 
    return *this;
 }

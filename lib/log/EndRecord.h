@@ -9,6 +9,7 @@
 #ifndef ORION_LOG_ENDRECORD_H
 #define ORION_LOG_ENDRECORD_H
 
+#include <orion/Chrono.h>
 #include <orion/log/Record.h>
 
 #include <string>
@@ -26,18 +27,19 @@ namespace log
 class EndRecord : public Record
 {
 public:
-   EndRecord();
-
-   EndRecord(const EndRecord& rhs);
-   EndRecord(EndRecord&& rhs);
-
-   virtual ~EndRecord();
+   virtual ~EndRecord() = default;
 
    virtual std::string message() const override;
-
-   EndRecord& operator=(const EndRecord& rhs);
-   EndRecord& operator=(EndRecord&& rhs);
 };
+
+//-------------------------------------------------------------------------------------------------
+
+std::string EndRecord::message() const
+{
+   auto now = std::chrono::system_clock::now();
+
+   return "\nLog End Time - " + orion::to_string(now, "%c");
+}
 
 } // namespace log
 } // namespace orion

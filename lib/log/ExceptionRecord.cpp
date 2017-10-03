@@ -28,11 +28,11 @@ ExceptionRecord::ExceptionRecord(const std::string& msg,
 /*
    Copy constructor
  */
-ExceptionRecord::ExceptionRecord(const ExceptionRecord& rhs)
-   : Record(rhs)
-   , _caught_src_location(rhs._caught_src_location)
-{
-}
+//ExceptionRecord::ExceptionRecord(const ExceptionRecord& rhs)
+//   : Record(rhs)
+//   , _caught_src_location(rhs._caught_src_location)
+//{
+//}
 
 ExceptionRecord::ExceptionRecord(ExceptionRecord&& rhs)
    : Record(std::move(rhs))
@@ -40,17 +40,17 @@ ExceptionRecord::ExceptionRecord(ExceptionRecord&& rhs)
 {
 }
 
-ExceptionRecord& ExceptionRecord::operator=(const ExceptionRecord& rhs)
-{
-   if (this == &rhs)
-      return *this;
-
-   Record::operator=(rhs);
-
-   _caught_src_location = rhs._caught_src_location;
-
-   return *this;
-}
+//ExceptionRecord& ExceptionRecord::operator=(const ExceptionRecord& rhs)
+//{
+//   if (this == &rhs)
+//      return *this;
+//
+//   Record::operator=(rhs);
+//
+//   _caught_src_location = rhs._caught_src_location;
+//
+//   return *this;
+//}
 
 ExceptionRecord& ExceptionRecord::operator=(ExceptionRecord&& rhs)
 {

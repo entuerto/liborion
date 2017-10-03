@@ -8,6 +8,7 @@
 #define ORION_UNITTEST_TESTRUNNER_H
 
 #include <orion/Orion-Stddefs.h>
+#include <orion/unittest/Test.h>
 #include <orion/unittest/TestSuite.h>
 
 #include <string>
@@ -18,7 +19,7 @@ namespace orion
 namespace unittest
 {
 // Forward declaration
-class Test;
+//class Test;
 class Output;
 
 //---------------------------------------------------------------------------------------
@@ -34,7 +35,7 @@ public:
    virtual uint32_t test_suite_count() const;
    virtual uint32_t test_case_count() const;
 
-   virtual Suite& add_test_suite(const Suite& suite);
+   virtual Suite& add_test_suite(Suite&& suite);
 
    virtual bool run(int argc, char* argv[]);
 
@@ -54,17 +55,29 @@ private:
 //---------------------------------------------------------------------------------------
 
 ///
-class API_EXPORT RegisterTestSuiteHelper
+struct API_EXPORT RegisterTestSuiteHelper
 {
-public:
-   RegisterTestSuiteHelper(const std::string& name)
+   template<typename... Args>
+   RegisterTestSuiteHelper(const std::string& name, Args... args)
       : suite(Runner::runner().add_test_suite(Suite{name}))
    {
+      set_options(suite, args...);
    }
 
    Suite& suite;
 };
 
+//-------------------------------------------------------------------------------------------------
+
+struct API_EXPORT RegisterTestHelper
+{
+   template<typename... Args>
+   RegisterTestHelper(Suite& suite, const std::string& name, TestCaseFunc f, Args... args)
+   {
+      auto& t = suite.add_test(name, f);
+      set_options(t, args...);
+   }
+};
 } // namespace orion
 } // namespace unittest
 

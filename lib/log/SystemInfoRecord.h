@@ -36,17 +36,11 @@ namespace log
 class SystemInfoRecord : public Record
 {
 public:
-   SystemInfoRecord();
+   SystemInfoRecord(const std::string& msg) 
+      : Record(Level::NotSet, msg) {}
 
-   SystemInfoRecord(const std::string& msg);
+   virtual ~SystemInfoRecord() = default;
 
-   SystemInfoRecord(const SystemInfoRecord& rhs);
-   SystemInfoRecord(SystemInfoRecord&& rhs);
-
-   virtual ~SystemInfoRecord();
-
-   SystemInfoRecord& operator=(const SystemInfoRecord& rhs);
-   SystemInfoRecord& operator=(SystemInfoRecord&& rhs);
 };
 
 } // namespace log
