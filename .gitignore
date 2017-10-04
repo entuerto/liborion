@@ -6,3 +6,4 @@ waf3*
 docs/html
 build
 node_modules
+.DS_Store
