@@ -27,6 +27,8 @@ void check_success_on_true(Test& t)
    Test scope_test("scope test", Suite("testSuite"), [](Test& st) { 
       st.assert<true>(true); 
    });
+   
+   scope_test.execute_test();
 
    t.assert<true>(scope_test.test_result().passed(), _src_loc);
 }
@@ -36,6 +38,8 @@ void check_failure_on_false(Test& t)
    Test scope_test("scope test", Suite("testSuite"), [](Test& st) { 
       st.assert<false>(false); 
    });
+   
+   scope_test.execute_test();
 
    t.assert<false>(scope_test.test_result().failed(), _src_loc);
 }
@@ -46,6 +50,8 @@ void check_function_failure_on_exception(Test& t)
       st.assert<std::equal_to<>>(calc_throwing_function(), 1); 
    });
 
+   scope_test.execute_test();
+   
    t.assert<true>(scope_test.test_result().failed(), _src_loc);
 }
 
@@ -91,6 +97,8 @@ void check_not_expected_exception(Test& t)
       st.assert_throw<std::domain_error>(throwing_function); 
    });
 
+   scope_test.execute_test();
+   
    t.assert<true>(scope_test.test_result().failed(), _src_loc);
 }
 
@@ -99,6 +107,8 @@ void check_expected_exception(Test& t)
    Test scope_test("throwing", Suite("testSuite"), [](Test& st) { 
       st.assert_throw<std::logic_error>(throwing_function); 
    });
+   
+   scope_test.execute_test();
 
    t.assert<true>(scope_test.test_result().passed(), _src_loc);
 }
