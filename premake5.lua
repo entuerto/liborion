@@ -99,6 +99,7 @@ group "Libraries"
       
       filter "system:windows"
          links { 
+            "dbghelp",
             "ws2_32",
             "psapi", 
             "ntdll", 

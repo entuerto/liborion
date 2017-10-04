@@ -26,6 +26,11 @@
 using namespace orion;
 using namespace orion::sys;
 
+void function_a()
+{
+   write_stack_trace(std::cout);
+}
+
 int main()
 {
    std::cout << "System Information\n"
@@ -60,6 +65,8 @@ int main()
    std::cout << "\n"
              << "Program Information\n"
              << "  " << get_program_name() << "\n";
+
+   function_a();
 
    return EXIT_SUCCESS;
 }

@@ -23,6 +23,7 @@
 #include <orion/Orion-Stddefs.h>
 
 #include <cstdint>
+#include <iosfwd>
 #include <string>
 #include <vector>
 
@@ -71,6 +72,9 @@ API_EXPORT void get_loadavg(double avg[3]);
 API_EXPORT uint64_t get_free_memory();
 
 API_EXPORT uint64_t get_total_memory();
+
+/// Writes the stack trace using the given ostream object.
+API_EXPORT void write_stack_trace(std::ostream& os);
 
 } // namespace sys
 } // namespace orion
