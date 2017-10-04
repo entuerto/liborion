@@ -1,7 +1,7 @@
 
 #include <stdexcept>
 
-#include <orion/TestUtils.h>
+#include <orion/Test.h>
 #include <orion/ErrorMacros.h>
 #include <orion/Exception.h>
 

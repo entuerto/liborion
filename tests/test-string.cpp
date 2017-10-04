@@ -4,7 +4,7 @@
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
 #include <orion/StringUtils.h>
-#include <orion/TestUtils.h>
+#include <orion/Test.h>
 
 using namespace std::string_literals;
 

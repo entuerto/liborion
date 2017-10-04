@@ -5,7 +5,7 @@
 //
 #include <sstream>
 
-#include <orion/TestUtils.h>
+#include <orion/Test.h>
 #include <orion/net/http/Request.h>
 #include <orion/net/http/Response.h>
 #include <orion/net/http/Utils.h>

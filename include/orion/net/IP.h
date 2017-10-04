@@ -23,7 +23,7 @@
 #define ORION_NET_IP_H
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
+
 #include <array>
 #include <string>
 

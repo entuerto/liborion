@@ -6,6 +6,8 @@
 //
 #include <net/http/impl/AsioRequest.h>
 
+#include <boost/format.hpp>
+
 namespace orion
 {
 namespace net

@@ -1,4 +1,4 @@
-// SystemInfo.h
+// System.h
 //
 // Copyright 2013 tomas <tomasp@videotron.ca>
 //
@@ -17,17 +17,18 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#ifndef ORION_SYSTEMINFO_H
-#define ORION_SYSTEMINFO_H
+#ifndef ORION_SYSTEM_H
+#define ORION_SYSTEM_H
 
 #include <orion/Orion-Stddefs.h>
+
 #include <cstdint>
 #include <string>
 #include <vector>
 
 namespace orion
 {
-namespace systeminfo
+namespace sys
 {
 struct CpuTimes
 {
@@ -38,22 +39,11 @@ struct CpuTimes
    uint32_t irq;
 };
 
-class API_EXPORT CpuInfo
+struct CpuInfo
 {
-public:
-   CpuInfo(const std::string& model, uint32_t speed, CpuTimes& times);
-   ~CpuInfo();
-
-   std::string model() const;
-   uint32_t speed() const;
-   CpuTimes times() const;
-
-   std::string to_string() const;
-
-private:
-   std::string _model;
-   uint32_t _speed;
-   CpuTimes _times;
+   std::string model;
+   uint32_t speed;
+   CpuTimes times;
 };
 
 typedef std::vector<std::string> ModuleList;
@@ -81,6 +71,7 @@ API_EXPORT void get_loadavg(double avg[3]);
 API_EXPORT uint64_t get_free_memory();
 
 API_EXPORT uint64_t get_total_memory();
-}
+
+} // namespace sys
 } // namespace orion
-#endif // ORION_SYSTEMINFO_H
+#endif // ORION_SYSTEM_H

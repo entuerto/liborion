@@ -5,7 +5,7 @@
 //
 
 #include <orion/Units.h>
-#include <orion/TestUtils.h>
+#include <orion/Test.h>
 
 using namespace orion;
 using namespace orion::unittest;

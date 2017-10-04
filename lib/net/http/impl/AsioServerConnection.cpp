@@ -10,6 +10,8 @@
 #include <orion/net/IPv4.h>
 #include <orion/net/IPv6.h>
 
+#include <boost/format.hpp>
+
 using namespace orion::log;
 using namespace std::chrono_literals;
 

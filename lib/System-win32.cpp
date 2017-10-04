@@ -1,4 +1,4 @@
-// SystemInfo-Win32.cpp
+// System-Win32.cpp
 //
 // Copyright 2013 tomas <tomasp@videotron.ca>
 //
@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <orion/SystemInfo.h>
+#include <orion/System.h>
 
 #include <orion/StringUtils.h>
 
@@ -52,7 +52,7 @@ LARGE_INTEGER IdleTime;
 
 namespace orion
 {
-namespace systeminfo
+namespace sys
 {
 
 //--------------------------------------------------------------------
@@ -226,9 +226,7 @@ std::vector<CpuInfo> get_cpu_info()
          // free(sppi);
       }
 
-      CpuInfo cpu_info(model, cpu_speed, cpu_times);
-
-      cpu_infos.push_back(cpu_info);
+      cpu_infos.push_back(CpuInfo{model, cpu_speed, cpu_times});
 
       delete[] model;
    }
@@ -349,5 +347,5 @@ uint64_t get_total_memory()
    return static_cast<uint64_t>(memory_status.ullTotalPhys);
 }
 
-} // namespace systeminfo
+} // namespace sys
 } // namespace orion

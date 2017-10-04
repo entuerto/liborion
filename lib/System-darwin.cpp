@@ -1,4 +1,4 @@
-// SystemInfo-linux.cpp
+// System-darwin.cpp
 //
 // Copyright 2013 tomas <tomasp@videotron.ca>
 //
@@ -17,19 +17,24 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <orion/SystemInfo.h>
+#include <orion/System.h>
 
 #include <orion/StringUtils.h>
 
+#include <cstdlib>
+#include <sys/sysctl.h>
 #include <sys/utsname.h>
 #include <unistd.h>
+
+#include <mach-o/dyld.h>
+#include <mach/mach.h>
 
 #include <fstream>
 #include <sstream>
 
 namespace orion
 {
-namespace systeminfo
+namespace sys
 {
 
 void get_loaded_modules(unsigned long /* process_id */, ModuleList& /* modules */)
@@ -38,28 +43,17 @@ void get_loaded_modules(unsigned long /* process_id */, ModuleList& /* modules *
 
 std::string get_cpu_model()
 {
-   return "";
+   char buffer[100];
+   size_t len = 100;
+
+   sysctlbyname("machdep.cpu.brand_string", &buffer, &len, nullptr, 0);
+
+   return buffer;
 }
 
 std::vector<CpuInfo> get_cpu_info()
 {
-   std::ifstream f("/proc/cpuinfo");
-
-   std::string line;
-   std::vector<std::string> tokens;
-   std::vector<CpuInfo> cpus;
-
-   while (not f.eof() and not f.fail())
-   {
-      std::getline(f, line);
-
-      tokens = split(line, ':');
-
-      if (tokens.size() == 2 and trim(tokens.front()) == "model name")
-         cpus.push_back(CpuInfo(trim(tokens.back()), 1000, CpuTimes & times));
-   }
-
-   return cpus;
+    return std::vector<CpuInfo>();
 }
 
 std::string get_os_version()
@@ -69,10 +63,7 @@ std::string get_os_version()
    if (uname(&name) == -1)
       return "";
 
-   std::ostringstream os_version;
-
-   os_version << name.sysname << " " << name.release << " " << name.version;
-   return os_version.str();
+   return name.version;
 }
 
 std::string get_host_name()
@@ -85,7 +76,7 @@ std::string get_host_name()
 
 std::string get_user_name()
 {
-   return "";
+   return getenv("USER");
 }
 
 int get_process_id()
@@ -95,30 +86,51 @@ int get_process_id()
 
 std::string get_program_name()
 {
-   return "";
+   char buffer[1024];
+   uint32_t len = 1024;
+
+   _NSGetExecutablePath(buffer, &len);
+   return buffer;
 }
 
 void get_loadavg(double avg[3])
 {
-   struct sysinfo info;
+   struct loadavg info;
+   size_t size = sizeof(info);
+   int which[] = {CTL_VM, VM_LOADAVG};
 
-   if (sysinfo(&info) < 0)
+   if (sysctl(which, 2, &info, &size, NULL, 0) < 0)
       return;
 
-   avg[0] = (double)info.loads[0] / 65536.0;
-   avg[1] = (double)info.loads[1] / 65536.0;
-   avg[2] = (double)info.loads[2] / 65536.0;
+   avg[0] = static_cast<double>(info.ldavg[0] / info.fscale);
+   avg[1] = static_cast<double>(info.ldavg[1] / info.fscale);
+   avg[2] = static_cast<double>(info.ldavg[2] / info.fscale);
 }
 
 uint64_t get_free_memory()
 {
-   return static_cast<uint64_t>(sysconf(_SC_PAGESIZE) * sysconf(_SC_AVPHYS_PAGES));
+   vm_statistics_data_t info;
+   mach_msg_type_number_t count = sizeof(info) / sizeof(integer_t);
+
+   if (host_statistics(mach_host_self(), HOST_VM_INFO, (host_info_t)&info, &count) != KERN_SUCCESS)
+   {
+      return -EINVAL; /* FIXME: Translate error. */
+   }
+
+   return (uint64_t)info.free_count * sysconf(_SC_PAGESIZE);
 }
 
 uint64_t get_total_memory()
 {
-   return static_cast<uint64_t>(sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES));
+   uint64_t info;
+   int which[] = {CTL_HW, HW_MEMSIZE};
+   size_t size = sizeof(info);
+
+   if (sysctl(which, 2, &info, &size, NULL, 0))
+      return -errno;
+
+   return (uint64_t)info;
 }
 
-} // namespace systeminfo
+} // namespace sys
 } // namespace orion

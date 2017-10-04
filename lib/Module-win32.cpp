@@ -24,7 +24,7 @@
 #include <orion/ModuleException.h>
 #include <orion/SourceLocation.h>
 #include <orion/StringUtils.h>
-#include <orion/ThrowUtils.h>
+#include <orion/Throw.h>
 
 #include <windows.h>
 

@@ -1,12 +1,12 @@
 //
-// ThrowUtils.h
+// Throw.h
 //
 // Created by Tomas Palazuelos on 2017-04-26.
 // Copyright © 2017 Tomas Palazuelos. All rights reserved.
 //
 
-#ifndef ORION_THROWUTILS_H
-#define ORION_THROWUTILS_H
+#ifndef ORION_THROW_H
+#define ORION_THROW_H
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/SourceLocation.h>
@@ -46,4 +46,4 @@ void throw_if_null(const T* value,
 
 } // namespace orion
 
-#endif /* ORION_THROWUTILS_H */
+#endif /* ORION_THROW_H */

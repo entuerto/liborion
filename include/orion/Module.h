@@ -21,7 +21,6 @@
 #define ORION_MODULE_H
 
 #include <orion/Orion-Stddefs.h>
-#include <orion/MemoryUtils.h>
 
 #include <functional>
 #include <memory>

@@ -24,6 +24,9 @@
 #include <orion/Log.h>
 #include <orion/StringUtils.h>
 #include <orion/net/IPAddress.h>
+
+#include <boost/format.hpp>
+
 #include <cstdlib>
 
 using namespace orion::log;

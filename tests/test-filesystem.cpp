@@ -4,7 +4,7 @@
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
 #include <orion/fs/Path.h>
-#include <orion/TestUtils.h>
+#include <orion/Test.h>
 
 using namespace orion;
 using namespace orion::fs;

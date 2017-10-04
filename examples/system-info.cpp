@@ -17,14 +17,14 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <orion/SystemInfo.h>
+#include <orion/System.h>
 
 #include <cstdio>
 #include <iostream>
 #include <sstream>
 
 using namespace orion;
-using namespace orion::systeminfo;
+using namespace orion::sys;
 
 int main()
 {
@@ -43,17 +43,17 @@ int main()
 
    std::vector<CpuInfo> cpu_infos = get_cpu_info();
 
-   for (auto it = cpu_infos.begin(); it != cpu_infos.end(); it++)
+   for (const auto& cpu : cpu_infos)
    {
-      std::cout << "  Model:   " << it->model() << "\n"
-                << "  Speed:   " << it->speed() << "\n"
+      std::cout << "  Model:   " << cpu.model << "\n"
+                << "  Speed:   " << cpu.speed << "\n"
                 << "  Times"
                 << "\n"
-                << "     user:  " << it->times().user << "\n"
-                << "     nice:  " << it->times().nice << "\n"
-                << "     sys:   " << it->times().sys << "\n"
-                << "     idle:  " << it->times().idle << "\n"
-                << "     irq:   " << it->times().irq << "\n"
+                << "     user:  " << cpu.times.user << "\n"
+                << "     nice:  " << cpu.times.nice << "\n"
+                << "     sys:   " << cpu.times.sys << "\n"
+                << "     idle:  " << cpu.times.idle << "\n"
+                << "     irq:   " << cpu.times.irq << "\n"
                 << "\n";
    }
 

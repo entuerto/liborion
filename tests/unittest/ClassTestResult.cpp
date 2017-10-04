@@ -1,5 +1,5 @@
 
-#include <orion/TestUtils.h>
+#include <orion/Test.h>
 
 using namespace std::string_literals;
 

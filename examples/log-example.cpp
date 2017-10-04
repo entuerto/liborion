@@ -19,7 +19,7 @@
 
 #include <orion/ArgumentExceptions.h>
 #include <orion/Log.h>
-#include <orion/ThrowUtils.h>
+#include <orion/Throw.h>
 
 #include <chrono>
 #include <iostream>

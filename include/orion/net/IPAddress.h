@@ -27,6 +27,8 @@
 #include <orion/net/IP.h>
 #include <orion/net/IPv4.h>
 #include <orion/net/IPv6.h>
+
+#include <memory>
 #include <string>
 
 namespace orion

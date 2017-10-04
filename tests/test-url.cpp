@@ -4,7 +4,7 @@
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
 #include <orion/net/Url.h>
-#include <orion/TestUtils.h>
+#include <orion/Test.h>
 
 using namespace orion;
 using namespace orion::net;

@@ -1,4 +1,4 @@
-// SystemInfo.cpp
+// System.cpp
 //
 // Copyright 2013 tomas <tomasp@videotron.ca>
 //
@@ -17,47 +17,15 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <orion/SystemInfo.h>
+#include <orion/System.h>
 
 #include <iomanip>
 #include <sstream>
 
 namespace orion
 {
-namespace systeminfo
+namespace sys
 {
-// class CpuInfo
-
-CpuInfo::CpuInfo(const std::string& model, uint32_t speed, CpuTimes& times)
-   : _model(model)
-   , _speed(speed)
-   , _times(times)
-{
-}
-
-CpuInfo::~CpuInfo()
-{
-}
-
-std::string CpuInfo::model() const
-{
-   return _model;
-}
-
-uint32_t CpuInfo::speed() const
-{
-   return _speed;
-}
-
-CpuTimes CpuInfo::times() const
-{
-   return _times;
-}
-
-std::string CpuInfo::to_string() const
-{
-   return _model;
-}
 
 std::string human_readable(uint64_t value, uint64_t base /* = 1024 */)
 {
@@ -82,5 +50,5 @@ std::string human_readable(uint64_t value, uint64_t base /* = 1024 */)
    return oss.str();
 }
 
-} // namespace systeminfo
+} // namespace sys
 } // namespace orion

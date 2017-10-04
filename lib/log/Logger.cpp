@@ -7,7 +7,7 @@
 
 #include <orion/log/Logger.h>
 
-#include <orion/SystemInfo.h>
+#include <orion/System.h>
 #include <sstream>
 
 namespace orion
@@ -40,14 +40,14 @@ std::string DefaultInfo()
    std::ostringstream stream_info;
 
    stream_info << "System Information\n"
-               << "  Name:       " << systeminfo::get_user_name() << "\n"
-               << "  Host name:  " << systeminfo::get_host_name() << "\n"
-               << "  Process ID: " << systeminfo::get_process_id() << "\n"
-               << "  Sytem:      " << systeminfo::get_os_version() << "\n"
-               << "  CPU:        " << systeminfo::get_cpu_model() << "\n"
+               << "  Name:       " << sys::get_user_name() << "\n"
+               << "  Host name:  " << sys::get_host_name() << "\n"
+               << "  Process ID: " << sys::get_process_id() << "\n"
+               << "  Sytem:      " << sys::get_os_version() << "\n"
+               << "  CPU:        " << sys::get_cpu_model() << "\n"
                << "\n"
                << "Program Information\n"
-               << "  " << systeminfo::get_program_name() << "\n";
+               << "  " << sys::get_program_name() << "\n";
 
    return stream_info.str();
 }

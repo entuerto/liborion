@@ -7,7 +7,7 @@
 #include <orion/net/IPv4.h>
 #include <orion/net/IPv6.h>
 #include <orion/net/IPAddress.h>
-#include <orion/TestUtils.h>
+#include <orion/Test.h>
 
 using namespace orion;
 using namespace orion::net;
