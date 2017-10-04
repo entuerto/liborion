@@ -3,36 +3,35 @@
 //  Created by Tomas Palazuelos on 2016-06-29.
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
-#include <iostream>
 
-#include <orion/Log.h>
 #include <orion/TestUtils.h>
 
 using namespace orion;
-using namespace orion::log;
 using namespace orion::unittest;
 
-#ifdef ORION_TEST_LOGGER
-extern Record output_record;
+#include <crtdbg.h>
+class LeakDetector {
+public:
+   LeakDetector() {
+      int flag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+      flag |= _CRTDBG_LEAK_CHECK_DF;
+      flag |= _CRTDBG_ALLOC_MEM_DF;
+      _CrtSetDbgFlag(flag);
+      _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE | _CRTDBG_MODE_DEBUG);
+      _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
+      // Change this to leaking allocation's number to break there
+      _CrtSetBreakAlloc(-1);
+   }
+};
 
-extern void setup_logger(Record& record);
-#endif
-
+LeakDetector ld;
 //----------------------------------------------------------------------------
 // Main functions
 //----------------------------------------------------------------------------
 
 int main(int argc, char* argv[])
 {
-#ifdef ORION_TEST_LOGGER
-   setup_logger(output_record);
-#endif
-
-   log::start();
-
    auto ret = Runner::runner().run(argc, argv);
-
-   log::shutdown();
 
    return ret ? EXIT_SUCCESS : EXIT_FAILURE;
 }

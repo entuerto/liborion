@@ -11,6 +11,12 @@ project "mod-example"
 
    defines { "ORION_SHARED_EXPORTS" }
 
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
+
    files { 
       "module-example-lib.cpp" 
    }
@@ -39,6 +45,12 @@ project "datetime-example"
 
    dependson "orion"
 
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
+
    files "datetime-example.cpp"
 
    links { "orion" }
@@ -49,15 +61,37 @@ project "log-example"
 
    dependson "orion"
 
+   UseAsio()
+
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
+
    files "log-example.cpp"
 
    links { "orion" }
+
+   filter "system:windows"
+      links { 
+         "ws2_32",
+         "psapi", 
+         "ntdll", 
+         "rpcrt4" 
+      }
 
 
 project "module-example"
    kind "ConsoleApp"
 
    dependson "orion"
+
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
 
    files "module-example.cpp"
 
@@ -69,6 +103,12 @@ project "net-example"
 
    dependson "orion"
 
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
+
    files "net-example.cpp"
 
    links { "orion", "Iphlpapi" }
@@ -78,6 +118,12 @@ project "signal-example"
    kind "ConsoleApp"
 
    dependson "orion"
+
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
 
    files "signal-example.cpp"
 
@@ -89,6 +135,12 @@ project "system-info"
 
    dependson "orion"
 
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
+
    files "system-info.cpp"
 
    links { "orion" }
@@ -97,7 +149,16 @@ project "system-info"
 project "hello-server"
    kind "ConsoleApp"
 
-   dependson { "orion", "orion-net" }
+   dependson { 
+      "orion", 
+      "orion-net" 
+   }
+
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
 
    files "hello-server.cpp"
 
@@ -107,7 +168,16 @@ project "hello-server"
 project "hello-client"
    kind "ConsoleApp"
 
-   dependson { "orion", "orion-net" }
+   dependson { 
+      "orion", 
+      "orion-net" 
+   }
+
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
 
    files "hello-client.cpp"
 
@@ -117,7 +187,16 @@ project "hello-client"
 project "calculator-rpc-server"
    kind "ConsoleApp"
 
-   dependson { "orion", "orion-net" }
+   dependson { 
+      "orion", 
+      "orion-net" 
+   }
+
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
 
    files "calculator-rpc-server.cpp"
 

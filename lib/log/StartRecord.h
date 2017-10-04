@@ -20,6 +20,7 @@
 #ifndef ORION_LOG_STARTRECORD_H
 #define ORION_LOG_STARTRECORD_H
 
+#include <orion/Chrono.h>
 #include <orion/log/Record.h>
 
 #include <string>
@@ -36,18 +37,19 @@ namespace log
 class StartRecord : public Record
 {
 public:
-   StartRecord();
-
-   StartRecord(const StartRecord& rhs);
-   StartRecord(StartRecord&& rhs);
-
-   virtual ~StartRecord();
+   virtual ~StartRecord() = default;
 
    virtual std::string message() const override;
-
-   StartRecord& operator=(const StartRecord& rhs);
-   StartRecord& operator=(StartRecord&& rhs);
 };
+
+//-------------------------------------------------------------------------------------------------
+
+std::string StartRecord::message() const
+{
+   auto now = std::chrono::system_clock::now();
+
+   return "\nLog Start Time - " + orion::to_string(now, "%c");
+}
 
 } // namespace log
 } // namespace orion

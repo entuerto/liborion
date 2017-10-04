@@ -77,6 +77,7 @@ function SetupDefaultConfigurations()
    flags { "NoPCH" }
    cppdialect "C++14"
    rtti "On"
+   warnings "High"
 end
 
 -- exclude platform specific files from the project

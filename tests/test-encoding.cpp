@@ -10,7 +10,7 @@ using namespace orion;
 using namespace orion::encoding;
 using namespace orion::unittest;
 
-TestSuite(OrionCore)
+TestSuite(OrionCore_Encoding)
 {
 //----------------------------------------------------------------------------
 // Tests
@@ -169,12 +169,12 @@ TEST(TestEncVarint64_uint64)
 }
 */
 
-RegisterTestCase(OrionCore, BigEndian_to_uint16);
-RegisterTestCase(OrionCore, BigEndian_put_uint16);
-RegisterTestCase(OrionCore, LittleEndian_to_uint16);
-RegisterTestCase(OrionCore, LittleEndian_put_uint16);
-RegisterTestCase(OrionCore, EncVarint32_uint32);
-RegisterTestCase(OrionCore, EncVarint64_uint64);
-RegisterTestCase(OrionCore, EncVarint64_int64);
+RegisterTestCase(OrionCore_Encoding, BigEndian_to_uint16);
+RegisterTestCase(OrionCore_Encoding, BigEndian_put_uint16);
+RegisterTestCase(OrionCore_Encoding, LittleEndian_to_uint16);
+RegisterTestCase(OrionCore_Encoding, LittleEndian_put_uint16);
+RegisterTestCase(OrionCore_Encoding, EncVarint32_uint32);
+RegisterTestCase(OrionCore_Encoding, EncVarint64_uint64);
+RegisterTestCase(OrionCore_Encoding, EncVarint64_int64);
 
 }

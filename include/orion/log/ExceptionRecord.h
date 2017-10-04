@@ -25,12 +25,12 @@ public:
                    const SourceLocation& thrown_src_loc,
                    const SourceLocation& caught_src_loc);
 
-   ExceptionRecord(const ExceptionRecord& rhs);
+   ExceptionRecord(const ExceptionRecord& rhs) = delete;
    ExceptionRecord(ExceptionRecord&& rhs);
 
    virtual ~ExceptionRecord() = default;
 
-   ExceptionRecord& operator=(const ExceptionRecord& rhs);
+   ExceptionRecord& operator=(const ExceptionRecord& rhs) = delete;
    ExceptionRecord& operator=(ExceptionRecord&& rhs);
 
    //! Returns the source location recorded when the exception is thrown

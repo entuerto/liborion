@@ -65,7 +65,7 @@ bool Runner::parse(int argc, char* argv[])
    return true;
 }
 
-Suite& Runner::add_test_suite(const Suite& suite)
+Suite& Runner::add_test_suite(Suite&& suite)
 {
    _test_suites.push_back(std::move(suite));
    return _test_suites.back();
@@ -91,7 +91,7 @@ void Runner::run_tests(Output& output, const std::string& suite_name /* = "" */)
 
    output.write_header(stats.count);
 
-   auto start = std::chrono::steady_clock::now();
+   auto start = std::chrono::high_resolution_clock::now();
 
    for (auto& item : _test_suites)
    {
@@ -109,7 +109,7 @@ void Runner::run_tests(Output& output, const std::string& suite_name /* = "" */)
       stats.time_elapsed += suite_stats.time_elapsed;
    }
 
-   auto end = std::chrono::steady_clock::now();
+   auto end = std::chrono::high_resolution_clock::now();
 
    stats.time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 

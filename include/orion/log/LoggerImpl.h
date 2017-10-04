@@ -11,6 +11,9 @@
 
 #include <orion/log/OutputHandler.h>
 #include <orion/log/Record.h>
+
+#include <functional>
+#include <memory>
 #include <string>
 
 namespace orion
