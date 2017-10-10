@@ -102,7 +102,7 @@ void Record::level(Level level)
 /*!
    Returns the time stamp of the log record
  */
-std::chrono::system_clock::time_point Record::time_stamp() const
+TimePoint<> Record::time_stamp() const
 {
    return _time_stamp;
 }

@@ -20,20 +20,6 @@ project "test-orion"
       "../deps", 
    }
 
-   libdirs {
-      "%{cfg.linktarget.directory}"
-   }
-
-   links { "orion", "orion-fs"}
-
-   filter "system:windows"
-      links { 
-         "ws2_32",
-         "psapi", 
-         "ntdll", 
-         "rpcrt4" 
-      }
-
    files {
       "test-encoding.cpp",
       "test-logger.cpp",
@@ -42,6 +28,20 @@ project "test-orion"
       "unittest/*.cpp",
       "test-main.cpp"
    }
+
+   libdirs {
+      "%{cfg.linktarget.directory}"
+   }
+
+   links { "orion" }
+
+   filter "system:windows"
+      links { 
+         "ws2_32",
+         "psapi", 
+         "ntdll", 
+         "rpcrt4" 
+      }  
    
 
 project "test-orion-rpc"
@@ -62,12 +62,12 @@ project "test-orion-rpc"
       "../deps", 
    }
 
-   links { "jsoncpp", "orion", "orion-net" }
-
    files {
       "test-jsonrpc.cpp",
       "test-main.cpp"
    }
+
+   links { "jsoncpp", "orion", "orion-net" }
 
 
 project "test-orion-net"
@@ -84,13 +84,14 @@ project "test-orion-net"
       "../deps", 
    }
 
-   links { "orion", "orion-net" }
-
-   filter "system:windows"
-      links { "ws2_32", "mswsock", "psapi", "rpcrt4" }
-
    files {
       "test-net.cpp",
       "test-url.cpp",
       "test-main.cpp"
    }
+
+   links { "orion", "orion-net" }
+
+   filter "system:windows"
+      links { "ws2_32", "mswsock", "psapi", "rpcrt4" }
+

@@ -132,5 +132,10 @@ uint64_t get_total_memory()
    return (uint64_t)info;
 }
 
+void write_stack_trace(std::ostream& os)
+{
+   
+}
+
 } // namespace sys
 } // namespace orion
