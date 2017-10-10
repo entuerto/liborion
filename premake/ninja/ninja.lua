@@ -458,7 +458,21 @@ function ninja.getBuildType()
 end
 
 function ninja.getBuildPlatform()
-   return _OPTIONS["platform"] or ""
+   if _OPTIONS["platform"] then
+      return _OPTIONS["platform"]
+   end
+   
+   if os.ishost("macosx") then
+      return "mac"
+   elseif os.ishost("windows") then
+      if os.getenv("msystem"):lower() == "mingw64" then
+         return "mingw64"
+      end
+
+      return "windows"
+   else
+      return "unix"
+   end
 end
 
 function ninja.getBuildConfig(prj)

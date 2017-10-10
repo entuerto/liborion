@@ -11,7 +11,11 @@ newoption
    trigger     = "build-type",
    value       = "VALUE",
    description = "Build configuration to generate; default is 'debug'",
-   default     = "debug"
+   default     = "debug",
+   allowed     = {
+      { "debug",   "Builds a debug version" },
+      { "release", "Builds a release version" },
+   }
 }
 
 newoption
@@ -19,7 +23,13 @@ newoption
    trigger     = "platform",
    value       = "VALUE",
    description = "Platform configuration to generate",
-}
+   allowed     = {
+      { "mac",     "Apple Mac OS X" },
+      { "mingw64", "Mingw64 for windows platform" },
+      { "unix",    "Unix and linux platforms" },
+      { "windows", "Microsoft Windows" },
+   },
+} 
 
 newaction
 {
