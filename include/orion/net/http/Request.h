@@ -34,10 +34,10 @@ public:
 
    Request();
    Request(const Method& method, const Url& url, const Version& version, const Header& header);
-   Request(Request&& Other);
+   Request(Request&& rhs);
    virtual ~Request();
 
-   Request& operator=(Request&& Rhs);
+   Request& operator=(Request&& rhs);
 
    //! "GET", "POST", etc
    virtual Method method() const;
@@ -48,8 +48,8 @@ public:
    virtual void url(const Url& u);
 
    //! E.g. "1.0", "1.1"
-   virtual Version http_version() const;
-   virtual void http_version(const Version& v);
+   virtual Version version() const;
+   virtual void version(const Version& v);
 
    virtual std::string header(const std::string& name) const;
 
@@ -62,11 +62,15 @@ public:
    virtual bool upgrade() const;
    virtual void upgrade(bool value);
 
-   virtual std::streambuf* rdbuf() const;
+   virtual std::streambuf* header_rdbuf() const;
+   virtual std::streambuf* body_rdbuf() const;
 
    friend API_EXPORT std::ostream& operator<<(std::ostream& o, const Request& r);
 
-protected:
+private:
+   void build_header_buffer();
+
+private:
    Method _method;
    Url _url;
    Version _version;

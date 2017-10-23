@@ -8,6 +8,9 @@
 
 #include <orion/StringUtils.h>
 
+#include <asio.hpp>
+#include <boost/format.hpp>
+
 #include <cstdlib>
 #include <iomanip>
 #include <sstream>
@@ -18,6 +21,7 @@ namespace net
 {
 namespace http
 {
+
 Request::Request()
    : _method(Method::GET)
    , _url()
@@ -25,6 +29,8 @@ Request::Request()
    , _header()
    , _should_keep_alive(false)
    , _upgrade(false)
+   , _header_streambuf(std::make_unique<asio::streambuf>())
+   , _body_streambuf(std::make_unique<asio::streambuf>())
 {
 }
 
@@ -35,6 +41,8 @@ Request::Request(const Method& method, const Url& url, const Version& version, c
    , _header(header)
    , _should_keep_alive(false)
    , _upgrade(false)
+   , _header_streambuf(std::make_unique<asio::streambuf>())
+   , _body_streambuf(std::make_unique<asio::streambuf>())
 {
 }
 
@@ -77,12 +85,12 @@ void Request::url(const Url& u)
 }
 
 //! E.g. "1.0", "1.1"
-Version Request::http_version() const
+Version Request::version() const
 {
    return _version;
 }
 
-void Request::http_version(const Version& v)
+void Request::version(const Version& v)
 {
    _version = v;
 }
@@ -127,7 +135,14 @@ void Request::upgrade(bool value)
    _upgrade = value;
 }
 
-std::streambuf* Request::rdbuf() const
+std::streambuf* Request::header_rdbuf() const
+{
+   const_cast<Request*>(this)->build_header_buffer();
+
+   return _header_streambuf.get();
+}
+
+std::streambuf* Request::body_rdbuf() const
 {
    return _body_streambuf.get();
 }
@@ -144,6 +159,34 @@ Request& Request::operator=(Request&& rhs)
    _header_streambuf = std::move(rhs._header_streambuf);
    _body_streambuf   = std::move(rhs._body_streambuf);
    return *this;
+}
+
+void Request::build_header_buffer() 
+{
+   auto u = url();
+
+   header("Host", u.host());
+
+   std::size_t body_size = static_cast<asio::streambuf*>(_header_streambuf.get())->size();
+
+   if (body_size != 0)
+      header("Content-Length", std::to_string(body_size));
+
+   std::ostream o(_header_streambuf.get());
+
+   auto v = version();
+
+   // request-line = method SP request-target SP HTTP-version CRLF
+   auto request_line = boost::format("%s %s HTTP/%d.%d") % method() % u.path() % v.major % v.minor;
+
+   o << boost::str(request_line) << crlf;
+
+   for (const auto& item : _header)
+   {
+      o << item.first << ": " << item.second << crlf;
+   }
+
+   o << crlf;
 }
 
 std::ostream& operator<<(std::ostream& o, const Request& r)

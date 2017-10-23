@@ -15,7 +15,7 @@ namespace rpc
 {
 
 //-------------------------------------------------------------------------------------------------
-
+/*
 Service::Service(const std::string& name,
                  const std::string& desc,
                  float version,
@@ -25,10 +25,6 @@ Service::Service(const std::string& name,
    , _version(version)
    , _url(url)
    , _methods()
-{
-}
-
-Service::~Service()
 {
 }
 
@@ -63,7 +59,7 @@ std::weak_ptr<Method> Service::get_method(const std::string& name) const
 
    return std::weak_ptr<Method>();
 }
-
+*/
 } // namespace rpc
 } // namespace net
 } // namespace orion

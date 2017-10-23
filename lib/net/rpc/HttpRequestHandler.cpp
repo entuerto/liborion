@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <net/rpc/HttpRequestHandler.h>
+//#include <net/rpc/HttpRequestHandler.h>
 
 #include <orion/ErrorMacros.h>
 #include <orion/Log.h>
@@ -51,10 +51,10 @@ static Json::Value make_response(const Error& error);
 #endif
 //-------------------------------------------------------------------------------------------------
 
-HttpRequestHandler::HttpRequestHandler(std::unique_ptr<Service>&& service)
-   : _service(std::move(service))
-{
-}
+//HttpRequestHandler::HttpRequestHandler(std::unique_ptr<Service>&& service)
+//   : _service(std::move(service))
+//{
+//}
 
 #if 0
 

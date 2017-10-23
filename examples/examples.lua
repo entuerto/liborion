@@ -146,7 +146,7 @@ project "system-info"
    links { "orion" }
 
    
-project "hello-server"
+project "hello-http-server"
    kind "ConsoleApp"
 
    dependson { 
@@ -154,18 +154,31 @@ project "hello-server"
       "orion-net" 
    }
 
+   UseAsio()
+
    includedirs { 
       "../include", 
       "../lib", 
       "../deps", 
    }
 
-   files "hello-server.cpp"
+   files "hello-http-server.cpp"
 
-   links { "jsoncpp", "orion", "orion-net" }
+   links { 
+      "orion", 
+      "orion-net" 
+   }
+
+   filter "system:windows"
+      links { 
+         "ws2_32",
+         "psapi", 
+         "ntdll", 
+         "rpcrt4" 
+      }
 
 
-project "hello-client"
+project "hello-http-client"
    kind "ConsoleApp"
 
    dependson { 
@@ -173,15 +186,92 @@ project "hello-client"
       "orion-net" 
    }
 
+   UseAsio()
+
    includedirs { 
       "../include", 
       "../lib", 
       "../deps", 
    }
 
-   files "hello-client.cpp"
+   files "hello-http-client.cpp"
 
-   links { "jsoncpp", "orion", "orion-net" }
+   links { 
+      "orion", 
+      "orion-net" 
+   }
+
+   filter "system:windows"
+      links { 
+         "ws2_32",
+         "psapi", 
+         "ntdll", 
+         "rpcrt4" 
+      }
+
+
+project "hello-tcp-server"
+   kind "ConsoleApp"
+
+   dependson { 
+      "orion", 
+      "orion-net" 
+   }
+
+   UseAsio()
+
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
+
+   files "hello-tcp-server.cpp"
+
+   links { 
+      "orion", 
+      "orion-net" 
+   }
+
+   filter "system:windows"
+      links { 
+         "ws2_32",
+         "psapi", 
+         "ntdll", 
+         "rpcrt4" 
+      }
+
+
+project "hello-tcp-client"
+   kind "ConsoleApp"
+
+   dependson { 
+      "orion", 
+      "orion-net" 
+   }
+
+   UseAsio()
+
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
+
+   files "hello-tcp-client.cpp"
+
+   links { 
+      "orion", 
+      "orion-net" 
+   }
+
+   filter "system:windows"
+      links { 
+         "ws2_32",
+         "psapi", 
+         "ntdll", 
+         "rpcrt4" 
+      }
 
 
 project "calculator-rpc-server"
@@ -192,6 +282,8 @@ project "calculator-rpc-server"
       "orion-net" 
    }
 
+   UseAsio()
+
    includedirs { 
       "../include", 
       "../lib", 
@@ -200,4 +292,15 @@ project "calculator-rpc-server"
 
    files "calculator-rpc-server.cpp"
 
-   links { "jsoncpp", "orion", "orion-net" }
+   links { 
+      "orion", 
+      "orion-net" 
+   }
+
+   filter "system:windows"
+      links { 
+         "ws2_32",
+         "psapi", 
+         "ntdll", 
+         "rpcrt4" 
+      }

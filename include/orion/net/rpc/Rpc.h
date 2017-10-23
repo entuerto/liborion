@@ -13,5 +13,6 @@
 #include <orion/net/rpc/Params.h>
 #include <orion/net/rpc/Result.h>
 #include <orion/net/rpc/Service.h>
+#include <orion/net/rpc/Traits.h>
 
 #endif // ORION_NET_RPC_RPC_H

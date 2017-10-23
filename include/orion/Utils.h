@@ -14,6 +14,69 @@
 
 namespace orion
 {
+//-------------------------------------------------------------------------------------------------
+
+struct Version
+{
+   int major;
+   int minor;
+};
+
+constexpr bool operator==(const Version& v1, const Version& v2) noexcept
+{
+   return v1.major == v2.major and v1.minor == v2.minor;
+}
+
+constexpr bool operator!=(const Version& v1, const Version& v2) noexcept
+{
+   return not operator==(v1, v2);
+}
+
+constexpr bool operator<(const Version& v1, const Version& v2) noexcept
+{
+   if (v1.major != v2.major)
+      return v1.major < v2.major;
+
+   if (v1.minor != v2.minor)
+      return v1.minor < v2.minor;
+
+   return false;
+}
+
+constexpr bool operator>(const Version& v1, const Version& v2) noexcept
+{
+   if (v1.major != v2.major)
+      return v1.major > v2.major;
+
+   if (v1.minor != v2.minor)
+      return v1.minor > v2.minor;
+
+   return false;
+}
+
+constexpr bool operator<=(const Version& v1, const Version& v2) noexcept
+{
+   if (v1.major != v2.major)
+      return v1.major < v2.major;
+
+   if (v1.minor != v2.minor)
+      return v1.minor < v2.minor;
+
+   return true;
+}
+
+constexpr bool operator>=(const Version& v1, const Version& v2) noexcept
+{
+   if (v1.major != v2.major)
+      return v1.major > v2.major;
+
+   if (v1.minor != v2.minor)
+      return v1.minor > v2.minor;
+
+   return true;
+}
+
+//-------------------------------------------------------------------------------------------------
 
 template<typename... Ts>
 struct List

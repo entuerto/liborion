@@ -24,40 +24,25 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <string>
-
 namespace orion
 {
 namespace net
 {
 namespace rpc
 {
+template <typename T>
+class Method;
 ///
-/// Abstract class to define RPC methods
+/// Class to define RPC methods
 ///
-class API_EXPORT Method
+template <typename Ret, typename... Args>
+class Method<Ret(Args...)>
 {
 public:
-   Method(const std::string& name, const std::string& desc, float version);
-
-   Method(const Method& rhs);
-   Method(Method&& rhs);
-
-   virtual ~Method() = default;
-
-   virtual std::string name() const;
-
-   virtual std::string description() const;
-
-   virtual float version() const;
-
-   Method& operator=(const Method& rhs);
-   Method& operator=(Method&& rhs);
-
-private:
-   std::string _name;
-   std::string _description;
-   float _version;
+   /// User defined function type.
+   using Type = Ret(Args...);
+   /// Return type.
+   using ReturnType = Ret;
 };
 
 } // namespace rpc

@@ -47,19 +47,23 @@ public:
    virtual std::string status() const;
 
    //! E.g. "1.0", "1.1"
-   virtual Version http_version() const;
-   virtual void http_version(const Version& v);
+   virtual Version version() const;
+   virtual void version(const Version& v);
 
    virtual std::string header(const std::string& name) const;
 
    virtual void header(const std::string& name, const std::string& value);
    virtual void header(const Header& header);
 
-   virtual std::streambuf* rdbuf() const;
+   virtual std::streambuf* header_rdbuf() const;
+   virtual std::streambuf* body_rdbuf() const;
 
    friend API_EXPORT std::ostream& operator<<(std::ostream& o, const Response& r);
 
-protected:
+private:
+   void build_header_buffer();
+
+private:
    StatusCode _status_code;
    Version _version;
    Header _header;

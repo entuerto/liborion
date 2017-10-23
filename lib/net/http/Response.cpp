@@ -7,6 +7,7 @@
 
 #include <orion/net/http/Response.h>
 
+#include <asio.hpp>
 #include <boost/format.hpp>
 
 #include <iomanip>
@@ -23,6 +24,8 @@ Response::Response()
    : _status_code(StatusCode::OK)
    , _version({1, 1})
    , _header()
+   , _header_streambuf(std::make_unique<asio::streambuf>())
+   , _body_streambuf(std::make_unique<asio::streambuf>())
 {
 }
 
@@ -30,6 +33,8 @@ Response::Response(StatusCode code)
    : _status_code(code)
    , _version({1, 1})
    , _header()
+   , _header_streambuf(std::make_unique<asio::streambuf>())
+   , _body_streambuf(std::make_unique<asio::streambuf>())
 {
    /*
       if (_status_code >= StatusCode::BadRequest)
@@ -46,6 +51,8 @@ Response::Response(StatusCode code, const Version& version, const Header& header
    : _status_code(code)
    , _version(version)
    , _header(header)
+   , _header_streambuf(std::make_unique<asio::streambuf>())
+   , _body_streambuf(std::make_unique<asio::streambuf>())
 {
 }
 
@@ -89,12 +96,12 @@ std::string Response::status() const
    return boost::str(boost::format("%d %s") % _status_code % StatusText.at(_status_code));
 }
 
-Version Response::http_version() const
+Version Response::version() const
 {
    return _version;
 }
 
-void Response::http_version(const Version& v)
+void Response::version(const Version& v)
 {
    _version = v;
 }
@@ -119,9 +126,42 @@ void Response::header(const Header& header)
    _header = header;
 }
 
-std::streambuf* Response::rdbuf() const
+std::streambuf* Response::header_rdbuf() const
+{
+   const_cast<Response*>(this)->build_header_buffer();
+
+   return _header_streambuf.get();
+}
+
+std::streambuf* Response::body_rdbuf() const
 {
    return _body_streambuf.get();
+}
+
+void Response::build_header_buffer() 
+{
+   std::size_t body_size = static_cast<asio::streambuf*>(_body_streambuf.get())->size();
+
+   if (_status_code == StatusCode::OK and body_size == 0)
+      _status_code = StatusCode::NoContent;
+
+   if (body_size != 0)
+      header("Content-Length", std::to_string(body_size));
+
+   std::ostream o(_header_streambuf.get());
+
+   auto v = version();
+
+   auto status_msg = boost::format("HTTP/%d.%d %s") % v.major % v.minor % status();
+
+   o << boost::str(status_msg) << crlf;
+
+   for (const auto& item : _header)
+   {
+      o << item.first << ": " << item.second << crlf;
+   }
+
+   o << crlf;
 }
 
 std::ostream& operator<<(std::ostream& o, const Response& r)

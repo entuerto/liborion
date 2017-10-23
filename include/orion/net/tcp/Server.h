@@ -1,17 +1,17 @@
 //
 // Server.h
 //
-//  Created by Tomas Palazuelos on 2016-11-07.
+//  Created by Tomas Palazuelos on 2017-10-13.
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
 
-#ifndef ORION_NET_HTTP_SERVER_H
-#define ORION_NET_HTTP_SERVER_H
+#ifndef ORION_NET_TCP_SERVER_H
+#define ORION_NET_TCP_SERVER_H
 
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/net/Server.h>
-#include <orion/net/http/Utils.h>
+#include <orion/net/tcp/Utils.h>
 
 #include <memory>
 #include <string>
@@ -20,14 +20,14 @@ namespace orion
 {
 namespace net
 {
-namespace http
+namespace tcp
 {
 class ServerImpl;
 
-//! This class provides an embedded HTTP Server
+//! This class provides a tcp protocol Server
 /*!
-   This class provides an embedded HTTP Server to handle incoming Requests
-   and send HTTP 1.1 valid responses.
+   This class provides a tcp protocol Server to handle incoming requests
+   and sends valid responses.
  */
 class API_EXPORT Server : public net::Server
 {
@@ -35,6 +35,7 @@ public:
    NO_COPY(Server)
 
    Server();
+   Server(Handler h);
    virtual ~Server();
 
    Server(Server&& other) noexcept;
@@ -42,19 +43,19 @@ public:
 
    virtual int port() const;
 
+   virtual void register_handler(Handler h);
+
    virtual void shutdown() override;
 
    virtual bool is_running() const override;
 
    virtual std::error_code listen_and_serve(const std::string& addr, int port) override;
 
-   virtual void add_handler(const std::string& p, HandlerFunc h);
-
 private:
-   std::unique_ptr<ServerImpl> _impl;
+   std::unique_ptr<ServerImpl> _impl;  
 };
 
-} // http
+} // tcp
 } // net
 } // orion
-#endif
+#endif // ORION_NET_TCP_SERVER_H

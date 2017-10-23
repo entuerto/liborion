@@ -1,22 +1,28 @@
 //
 // Server.cpp
 //
-//  Created by Tomas Palazuelos on 2016-11-07.
+//  Created by Tomas Palazuelos on 2017-10-13.
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
 
-#include <orion/net/http/Server.h>
+#include <orion/net/tcp/Server.h>
 
-#include <net/http/ServerImpl.h>
+#include <net/tcp/ServerImpl.h>
 
 namespace orion
 {
 namespace net
 {
-namespace http
+namespace tcp
 {
+
 Server::Server()
    : _impl(std::make_unique<ServerImpl>())
+{
+}
+
+Server::Server(Handler h)
+   : _impl(std::make_unique<ServerImpl>(std::move(h)))
 {
 }
 
@@ -41,9 +47,9 @@ int Server::port() const
    return _impl->port();
 }
 
-void Server::add_handler(const std::string& p, HandlerFunc h)
+void Server::register_handler(Handler h)
 {
-   _impl->add_handler(p, std::move(h));
+   _impl->register_handler(std::move(h));
 }
 
 void Server::shutdown()
@@ -61,6 +67,6 @@ std::error_code Server::listen_and_serve(const std::string& addr, int port)
    return _impl->listen_and_serve(addr, port);
 }
 
-} // http
+} // tcp
 } // net
 } // orion

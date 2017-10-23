@@ -48,7 +48,6 @@ project "test-orion-rpc"
    kind "ConsoleApp"
 
    dependson { 
-      "jsoncpp", 
       "orion", 
       "orion-net" 
    }
@@ -67,7 +66,7 @@ project "test-orion-rpc"
       "test-main.cpp"
    }
 
-   links { "jsoncpp", "orion", "orion-net" }
+   links { "orion", "orion-net" }
 
 
 project "test-orion-net"

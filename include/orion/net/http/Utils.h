@@ -13,7 +13,6 @@
 #include <orion/StringUtils.h>
 #include <orion/net/http/Error.h>
 
-#include <chrono>
 #include <functional>
 #include <map>
 #include <string>
@@ -129,37 +128,6 @@ Method as_method(const std::string& text);
 //-------------------------------------------------------------------------------------------------
 
 const char crlf[] = {'\r', '\n', '\0'};
-
-//-------------------------------------------------------------------------------------------------
-
-struct Parameter
-{
-   std::string key;
-   std::string value;
-};
-
-class Parameters
-{
-public:
-   Parameters() = default;
-   Parameters(const std::initializer_list<Parameter>& p)
-      : _params(p)
-   {
-   }
-
-   void add(const Parameter& p) { _params.push_back(p); }
-
-   std::vector<Parameter> _params;
-};
-
-//-------------------------------------------------------------------------------------------------
-
-struct Timeout
-{
-   std::chrono::milliseconds ms;
-
-   constexpr operator std::chrono::milliseconds() const noexcept { return ms; }
-};
 
 } // http
 } // net

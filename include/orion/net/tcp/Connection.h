@@ -25,6 +25,7 @@
 #include <orion/Orion-Stddefs.h>
 #include <orion/net/Connection.h>
 
+#include <iosfwd>
 #include <system_error>
 
 namespace orion
@@ -37,28 +38,24 @@ namespace tcp
 class API_EXPORT Connection : public net::Connection
 {
 public:
-   NO_COPY(Connection)
-
-   Connection();
-   virtual ~Connection();
+   virtual ~Connection() = default;
 
    /// Sets whether the operating system should send keepalive messages on the connection.
-   virtual std::error_code keep_alive(bool value);
+   virtual std::error_code keep_alive(bool value) =0;
 
    /// Get the current value of the keepalive property.
-   virtual bool keep_alive() const;
+   virtual bool keep_alive() const =0;
 
    /// Controls whether the operating system should delay packet transmission in hopes of
    /// sending fewer packets (Nagle's algorithm). The default is true (no delay), meaning
    /// that data is sent as soon as possible after a Write.
-   virtual std::error_code no_delay(bool value);
+   virtual std::error_code no_delay(bool value) =0;
 
    /// Get the current value of the nodelay property.
-   virtual bool no_delay() const;
+   virtual bool no_delay() const =0;
 
-private:
-   bool _keep_alive;
-   bool _no_delay;
+   virtual std::error_code on_handler(std::streambuf* in, std::streambuf* out) =0;
+
 };
 
 } // tcp

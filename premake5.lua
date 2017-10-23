@@ -34,35 +34,6 @@ workspace "liborion"
 
 
 group "Libraries"
-   project "mongoose"
-      kind "StaticLib"
-
-      language "C"
-
-      removeincludedirs "*" 
-
-      includedirs "deps/mongoose" 
-                  
-      files "deps/mongoose/mongoose.c"
-
-      filter { "system:windows" }
-         defines { 
-            "_CRT_SECURE_NO_WARNINGS", 
-            "_WINSOCK_DEPRECATED_NO_WARNINGS" 
-         }
-
-
-   project "jsoncpp"
-      kind "StaticLib"
-
-      includedirs "deps/jsoncpp" 
-                  
-      files "deps/jsoncpp/jsoncpp.cpp"
-
-      filter { "system:windows" }
-         defines "_CRT_SECURE_NO_WARNINGS"
-
-
    project "http-parser"
       kind "StaticLib"
 
@@ -141,8 +112,6 @@ group "Libraries"
       UseAsio()
 
       dependson { 
-         "jsoncpp", 
-         "mongoose", 
          "http-parser", 
          "orion" 
       }
@@ -158,8 +127,6 @@ group "Libraries"
       }
 
       links { 
-         "jsoncpp", 
-         "mongoose", 
          "http-parser", 
          "orion" 
       }
@@ -168,7 +135,28 @@ group "Libraries"
          links { "ws2_32", "mswsock", "psapi", "rpcrt4" }
 
       files { 
-         "lib/net/**.cpp" 
+         -- "lib/net/**.cpp" 
+         "lib/net/Connection.cpp",
+         "lib/net/IPAddress.cpp",
+         "lib/net/IPv4.cpp",
+         "lib/net/IPv4-win32.cpp",
+         "lib/net/IPv6.cpp",
+         "lib/net/IPv6-win32.cpp",
+         "lib/net/Url.cpp",
+         "lib/net/tcp/Server.cpp",
+         "lib/net/tcp/ServerImpl.cpp",
+         "lib/net/tcp/ServerConnection.cpp",
+         "lib/net/tcp/Session.cpp",
+         "lib/net/tcp/SessionImpl.cpp",
+         "lib/net/tcp/Utils.cpp",
+         "lib/net/http/Error.cpp",
+         "lib/net/http/Parser.cpp",
+         "lib/net/http/Request.cpp",
+         "lib/net/http/Response.cpp",
+         "lib/net/http/Server.cpp",
+         "lib/net/http/ServerImpl.cpp",
+         "lib/net/http/ServerConnection.cpp",
+         "lib/net/http/Session.cpp",
       }
 
       FilterPlatformSourceFiles()

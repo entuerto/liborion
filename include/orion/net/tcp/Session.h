@@ -3,15 +3,13 @@
 //  Created by Tomas Palazuelos on 2016-12-12.
 //  Copyright © 2016 Tomas Palazuelos. All rights reserved.
 //
-#ifndef ORION_NET_HTTP_SESSION_H
-#define ORION_NET_HTTP_SESSION_H
+#ifndef ORION_NET_TCP_SESSION_H
+#define ORION_NET_TCP_SESSION_H
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/Url.h>
 #include <orion/net/Utils.h>
-#include <orion/net/http/Response.h>
-#include <orion/net/http/Utils.h>
+#include <orion/net/tcp/Utils.h>
 
 #include <string>
 
@@ -19,9 +17,9 @@ namespace orion
 {
 namespace net
 {
-namespace http
+namespace tcp
 {
-
+class SessionImpl;
 ///
 ///
 ///
@@ -34,25 +32,19 @@ public:
 
    template<typename... Ts>
    Session(Ts&&... ts)
-      : _url()
-      , _params()
-      , _header()
-      , _timeout()
+      : Session()
    {
       set_option(std::forward<Ts>(ts)...);
    }
 
-   Session(Session&& rhs);
-   virtual ~Session();
+   Session(Session&& rhs) noexcept;
+   ~Session();
 
-   Session& operator=(Session&& rhs);
-
-   void set_option(const Url& url);
+   Session& operator=(Session&& rhs) noexcept;
 
    void set_option(const Parameters& parameters);
    void set_option(Parameters&& parameters);
 
-   void set_option(const Header& header);
    void set_option(const Timeout& timeout);
     
    template <typename T, typename... Ts>
@@ -62,13 +54,28 @@ public:
       set_option(std::forward<Ts>(ts)...);
    }
 
-   virtual Response operator()(const Method& m);
+   bool connected() const;
+   
+   void on_connect(ConnectHandler h);
+   void on_read(ReadHandler h);
+   void on_write(WriteHandler h);
 
-protected:
-   Url _url;
-   Parameters _params;
-   Header _header;
-   Timeout _timeout;
+   void connect(const std::string& addr, int port);
+
+   void write(std::streambuf* streambuf);
+
+   void write(const uint8_t* data, std::size_t len);
+
+   template<std::size_t N>
+   void write(const std::array<uint8_t, N>& data, std::size_t len)
+   {
+      write(data.data(), len);
+   }
+
+   std::error_code close();
+
+private:
+   std::shared_ptr<SessionImpl> _impl; 
 };
 
     
@@ -85,7 +92,7 @@ void set_option(Session& session, T&& t, Ts&&... ts)
    set_option(session, std::forward<Ts>(ts)...);
 }
     
-} // namespace http
+} // namespace tcp
 } // namespace net
 } // namespace orion
-#endif // ORION_NET_HTTP_SESSION_H
+#endif // ORION_NET_TCP_SESSION_H
