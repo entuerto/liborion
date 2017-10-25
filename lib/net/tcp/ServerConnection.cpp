@@ -7,8 +7,8 @@
 #include <net/tcp/ServerConnection.h>
 
 #include <orion/Log.h>
-#include <orion/net/IPv4.h>
-#include <orion/net/IPv6.h>
+#include <orion/net/AddressV4.h>
+#include <orion/net/AddressV6.h>
 
 #include <boost/format.hpp>
 
@@ -21,21 +21,20 @@ namespace net
 namespace tcp
 {
 //--------------------------------------------------------------------------------------------------
-IPAddress* convert(const asio::ip::tcp::endpoint& ep)
+EndPoint* convert(const asio::ip::tcp::endpoint& ep)
 {
-   int port  = ep.port();
    auto addr = ep.address();
 
    if (addr.is_v4())
    {
       auto addr_v4 = addr.to_v4();
-      return new IPAddress(IPv4(addr_v4.to_bytes()), port);
+      return new EndPoint(AddressV4(addr_v4.to_bytes()), ep.port());
    }
 
    if (addr.is_v6())
    {
       auto addr_v6 = addr.to_v6();
-      return new IPAddress(IPv6(addr_v6.to_bytes()), port);
+      return new EndPoint(AddressV6(addr_v6.to_bytes()), ep.port());
    }
 
    return nullptr;
@@ -123,12 +122,12 @@ asio::ip::tcp::socket& ServerConnection::socket()
 
 void ServerConnection::accept()
 {
-   _local_addr.reset(convert(_socket.local_endpoint()));
-   _remote_addr.reset(convert(_socket.remote_endpoint()));
+   _local_endpoint.reset(convert(_socket.local_endpoint()));
+   _remote_endpoint.reset(convert(_socket.remote_endpoint()));
 
    LOG(Info) << boost::format("(%p) Connection accepted") % this;
-   LOG(Info) << "   Remote address: " << _remote_addr->to_string();
-   LOG(Info) << "   Local address:  " << _local_addr->to_string();
+   LOG(Info) << "   Remote address: " << _remote_endpoint->to_string();
+   LOG(Info) << "   Local address:  " << _local_endpoint->to_string();
 
    if (log::default_logger().is_enabled(log::Level::Debug))
       dump_socket_options();

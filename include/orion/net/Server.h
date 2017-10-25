@@ -24,6 +24,8 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/net/EndPoint.h>
+
 #include <string>
 #include <system_error>
 
@@ -41,7 +43,7 @@ public:
 
    virtual bool is_running() const = 0;
 
-   virtual std::error_code listen_and_serve(const std::string& addr, int port) = 0;
+   virtual std::error_code listen_and_serve(const EndPoint& endpoint) = 0;
 };
 
 } // net

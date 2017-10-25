@@ -132,16 +132,22 @@ group "Libraries"
       }
 
       filter "system:windows"
-         links { "ws2_32", "mswsock", "psapi", "rpcrt4" }
+         links { 
+            "ws2_32", 
+            "mswsock", 
+            "ntdll", 
+            "psapi", 
+            "rpcrt4" 
+         }
 
       files { 
          -- "lib/net/**.cpp" 
          "lib/net/Connection.cpp",
-         "lib/net/IPAddress.cpp",
-         "lib/net/IPv4.cpp",
-         "lib/net/IPv4-win32.cpp",
-         "lib/net/IPv6.cpp",
-         "lib/net/IPv6-win32.cpp",
+         "lib/net/EndPoint.cpp",
+         "lib/net/AddressV4.cpp",
+         "lib/net/AddressV4-win32.cpp",
+         "lib/net/AddressV6.cpp",
+         "lib/net/AddressV6-win32.cpp",
          "lib/net/Url.cpp",
          "lib/net/tcp/Server.cpp",
          "lib/net/tcp/ServerImpl.cpp",

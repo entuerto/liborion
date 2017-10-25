@@ -1,5 +1,5 @@
 /*
- * IPv4-darwin.cpp
+ * IPv6-win32.cpp
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,25 +19,45 @@
  * MA 02110-1301, USA.
  */
 
-#include <orion/net/IPv4.h>
+#include <orion/net/AddressV6.h>
 
 #include <orion/StringUtils.h>
+
+#include <algorithm>
+#include <system_error>
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <mstcpip.h>
 
 namespace orion
 {
 namespace net
 {
 
-uint32_t IPv4::to_ulong() const
+std::string AddressV6::to_string() const
 {
-   return ntohl(_a.l);
+   char buffer[256];
+
+   RtlIpv6AddressToStringA(&_a, buffer); 
+
+   return std::string(buffer);
 }
 
-IPv4 IPv4::parse(const std::string& s)
+AddressV6 AddressV6::parse(const std::string& s)
 {
-   
+   AddressV6 addr;
+   uint16_t port = 0;
 
-   return IPv4();
+   auto str = utf8_to_wstring(s);
+
+   RtlIpv6StringToAddressExW(str.data(), &addr._a, (unsigned long *)&addr._scope_id, &port);
+   
+   auto ec = std::error_code(::GetLastError(), std::system_category());
+   if (ec)
+      throw std::system_error(ec);
+
+   return addr;
 }
 
 } // net

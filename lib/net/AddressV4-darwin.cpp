@@ -1,5 +1,5 @@
 /*
- * IPAddress.h
+ * IPv4-darwin.cpp
  *
  * Copyright 2013 tomas <tomasp@videotron.ca>
  *
@@ -19,50 +19,26 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef ORION_NET_IPADDRESS_H
-#define ORION_NET_IPADDRESS_H
-
-#include <orion/Orion-Stddefs.h>
-
-#include <orion/net/IP.h>
 #include <orion/net/IPv4.h>
-#include <orion/net/IPv6.h>
 
-#include <memory>
-#include <string>
+#include <orion/StringUtils.h>
 
 namespace orion
 {
 namespace net
 {
 
-/// IPAddress represents the address of an IP end point.
-class API_EXPORT IPAddress
+uint32_t IPv4::to_ulong() const
 {
-public:
-   IPAddress(const IPv4& ip, int port);
-   IPAddress(const IPv6& ip, int port, const std::string& zone = "");
-   IPAddress(const IPAddress& Other);
-   IPAddress(IPAddress&& Other);
-   virtual ~IPAddress();
+   return ntohl(_a.s_addr);
+}
 
-   IPAddress& operator=(const IPAddress& Rhs);
-   IPAddress& operator=(IPAddress&& Rhs);
+IPv4 IPv4::parse(const std::string& s)
+{
+   
 
-   virtual IP* ip() const;
-
-   virtual int port() const;
-
-   virtual std::string zone() const;
-
-   virtual std::string to_string() const;
-
-private:
-   std::unique_ptr<IP> _ip;
-   std::string _zone;
-   int _port;
-};
+   return IPv4();
+}
 
 } // net
 } // orion
-#endif

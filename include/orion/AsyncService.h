@@ -9,14 +9,17 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/detail/AsyncTypes.h>
+
 namespace orion 
 {
 ///
 /// A pool of io_service objects.
 /// 
-class AsyncService
+struct API_EXPORT AsyncService
 {
-public:
+   static IOService io_service;
+
    static void run();
 };
 

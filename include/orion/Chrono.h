@@ -53,7 +53,7 @@ inline std::u32string to_u32string(const std::chrono::time_point<Clock>& tp, con
 
 //-------------------------------------------------------------------------------------------------
 
-class API_EXPORT Timer
+class Timer
 {
 public:
    using clock_type = std::chrono::high_resolution_clock;

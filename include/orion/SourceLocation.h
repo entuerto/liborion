@@ -25,7 +25,7 @@ struct API_EXPORT SourceLocation
    std::string function_name;
 };
 
-API_EXPORT inline std::ostream& operator<<(std::ostream& out, const SourceLocation& sl)
+inline std::ostream& operator<<(std::ostream& out, const SourceLocation& sl)
 {
    out << sl.file_name << ":" << sl.line_number;
 

@@ -6,7 +6,7 @@
 //
 #include <net/tcp/SessionImpl.h>
 
-#include <AsyncServicePriv.h>
+#include <orion/AsyncService.h>
 #include <orion/Log.h>
 
 #include <iostream>
@@ -25,7 +25,7 @@ SessionImpl::SessionImpl()
    , _connect_handler()
    , _read_handler()
    , _write_handler()
-   , _io_service(get_main_io_service())
+   , _io_service(AsyncService::io_service)
    , _socket(_io_service)
    , _in_streambuf()
    , _out_streambuf()

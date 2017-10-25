@@ -15,8 +15,8 @@ namespace net
 // Connection
 
 Connection::Connection()
-   : _local_addr()
-   , _remote_addr()
+   : _local_endpoint()
+   , _remote_endpoint()
    , _read_deadline()
    , _write_deadline()
 {
@@ -26,14 +26,14 @@ Connection::~Connection()
 {
 }
 
-IPAddress* Connection::local_addr() const
+EndPoint* Connection::local_endpoint() const
 {
-   return _local_addr.get();
+   return _local_endpoint.get();
 }
 
-IPAddress* Connection::remote_addr() const
+EndPoint* Connection::remote_endpoint() const
 {
-   return _remote_addr.get();
+   return _remote_endpoint.get();
 }
 
 std::error_code Connection::deadline(const std::chrono::seconds& sec)

@@ -9,8 +9,8 @@
 #define ORION_NET_HTTP_REQUEST_H
 
 #include <orion/Orion-Stddefs.h>
+
 #include <orion/log/Record.h>
-#include <orion/net/IPAddress.h>
 #include <orion/net/Url.h>
 #include <orion/net/http/Utils.h>
 

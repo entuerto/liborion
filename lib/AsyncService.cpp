@@ -11,28 +11,18 @@
 
 #include <orion/Log.h>
 
-#include <AsyncServicePriv.h>
-
 #include <asio.hpp>
 
 namespace orion 
 {
 
-namespace detail
-{
-static asio::io_service io_service;
-}
-
-asio::io_service& get_main_io_service()
-{
-   return detail::io_service;
-}
+IOService AsyncService::io_service;
 
 void AsyncService::run()
 {
    std::error_code ec;;
    
-   detail::io_service.run(ec);
+   AsyncService::io_service.run(ec);
 
    if (ec)
       log::error("AsyncService::run() ", ec);

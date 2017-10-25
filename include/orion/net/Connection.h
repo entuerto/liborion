@@ -24,7 +24,7 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/IPAddress.h>
+#include <orion/net/EndPoint.h>
 
 #include <chrono>
 #include <system_error>
@@ -49,10 +49,10 @@ public:
    virtual void close() = 0;
 
    /// Returns the local network address.
-   virtual IPAddress* local_addr() const;
+   virtual EndPoint* local_endpoint() const;
 
    /// Returns the remote network address.
-   virtual IPAddress* remote_addr() const;
+   virtual EndPoint* remote_endpoint() const;
 
    /// Sets the read and write deadlines associated
    /// with the connection. It is equivalent to calling both
@@ -82,8 +82,8 @@ public:
    virtual std::chrono::seconds write_deadline() const;
 
 protected:
-   std::unique_ptr<IPAddress> _local_addr;
-   std::unique_ptr<IPAddress> _remote_addr;
+   std::unique_ptr<EndPoint> _local_endpoint;
+   std::unique_ptr<EndPoint> _remote_endpoint;
 
 private:
    std::chrono::seconds _read_deadline;

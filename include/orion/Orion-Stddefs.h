@@ -20,15 +20,7 @@
 #ifndef ORION_STDDEFS_H
 #define ORION_STDDEFS_H
 
-#ifdef _MSC_VER
-   #ifdef ORION_SHARED_EXPORTS
-      #define API_EXPORT __declspec(dllexport)
-   #else
-      #define API_EXPORT __declspec(dllimport)
-   #endif
-#else
-   #define API_EXPORT
-#endif
+#include <orion/Config.h>
 
 #ifndef NO_COPY
 #define NO_COPY(klass) \
