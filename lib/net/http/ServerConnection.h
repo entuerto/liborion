@@ -31,7 +31,7 @@ namespace http
 ///
 class ServerConnection 
    : public tcp::Connection
-   , public std::enable_shared_from_this<ServerConnection>
+   //, public std::enable_shared_from_this<ServerConnection>
 {
 public:
    NO_COPY(ServerConnection)
@@ -39,41 +39,17 @@ public:
    ServerConnection(asio::io_service& io_service, const Handlers& handlers);
    virtual ~ServerConnection();
 
-   virtual void close() override;
-
-   virtual std::error_code keep_alive(bool value) override;
-   virtual bool keep_alive() const override;
-   virtual std::error_code no_delay(bool value) override;
-   virtual bool no_delay() const override;
-
-   asio::ip::tcp::socket& socket();
-
-   void accept();
-
-   /// Handle timeout
-   void on_read_timeout(const asio::error_code& e);
-   void on_write_timeout(const asio::error_code& e);
-
-private:
-   virtual std::error_code on_handler(std::streambuf* in, std::streambuf* out) override;
-   
 private:
    void dump_socket_options();
 
-   void start_read_timer();
-   void start_write_timer();
-
    /// Perform an asynchronous read operation.
-   void do_read();
+   void do_read() override;
 
    /// Perform an asynchronous write operation.
-   void do_write();
+   void do_write() override;
 
    /// Process the request.
    void do_handler();
-
-   /// Socket for the connection.
-   asio::ip::tcp::socket _socket;
 
    /// Request handlers
    const Handlers& _handlers;
@@ -85,9 +61,6 @@ private:
    std::array<char, 8192> _in_buffer;
 
    Parser _parser;
-
-   asio::steady_timer _read_deadline;
-   asio::steady_timer _write_deadline;
 };
 
 } // http

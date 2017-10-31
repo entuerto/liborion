@@ -23,7 +23,10 @@
 #define ORION_NET_TCP_CONNECTION_H
 
 #include <orion/Orion-Stddefs.h>
+
+#include <orion/detail/AsyncTypes.h>
 #include <orion/net/Connection.h>
+#include <orion/net/tcp/Utils.h>
 
 #include <iosfwd>
 #include <system_error>
@@ -35,27 +38,70 @@ namespace net
 namespace tcp
 {
 /// TCP network connections.
-class API_EXPORT Connection : public net::Connection
+class API_EXPORT Connection 
+   : public net::Connection
+   , public std::enable_shared_from_this<Connection>
 {
 public:
-   virtual ~Connection() = default;
+   Connection(IOService& io_service);
+   virtual ~Connection();
 
-   /// Sets whether the operating system should send keepalive messages on the connection.
-   virtual std::error_code keep_alive(bool value) =0;
-
-   /// Get the current value of the keepalive property.
-   virtual bool keep_alive() const =0;
+   void close() override;
 
    /// Controls whether the operating system should delay packet transmission in hopes of
    /// sending fewer packets (Nagle's algorithm). The default is true (no delay), meaning
    /// that data is sent as soon as possible after a Write.
-   virtual std::error_code no_delay(bool value) =0;
+   std::error_code set_option(const NoDelay& value);
 
-   /// Get the current value of the nodelay property.
-   virtual bool no_delay() const =0;
+   /// Sets whether the operating system should send keepalive messages on the connection.
+   std::error_code set_option(const KeepAlive& value);
 
-   virtual std::error_code on_handler(std::streambuf* in, std::streambuf* out) =0;
+   /// Socket option to permit sending of broadcast messages.
+   std::error_code set_option(const Broadcast& value);
 
+   /// Socket option to enable socket-level debugging.
+   std::error_code set_option(const Debug& value);
+
+   /// Socket option to prevent routing, use local interfaces only.
+   std::error_code set_option(const DoNotRoute& value);
+
+   /// Socket option to report aborted connections on accept.
+   std::error_code set_option(const EnableConnectionAborted& value);
+
+   /// Socket option to specify whether the socket lingers on close if unsent data is present.
+   std::error_code set_option(const Linger& value);
+
+   /// Socket option to allow the socket to be bound to an address that is already in use.
+   std::error_code set_option(const ReuseAddress& value);
+
+   /// Socket option for the receive buffer size of a socket.
+   std::error_code set_option(const ReceiveBufferSize& value);
+
+   /// Socket option for the receive low watermark.
+   std::error_code set_option(const ReceiveLowWatermark& value);
+
+   /// Socket option for the send buffer size of a socket.
+   std::error_code set_option(const SendBufferSize& value);
+
+   /// Socket option for the send low watermark.
+   std::error_code set_option(const SendLowWatermark& value);
+
+   TcpSocket& socket();
+
+   virtual void accept();
+
+protected:
+   /// Perform an asynchronous read operation.
+   virtual void do_read() =0;
+
+   /// Perform an asynchronous write operation.
+   virtual void do_write() =0;
+
+private:
+   void dump_socket_options();
+
+   /// Socket for the connection.
+   TcpSocket _socket;
 };
 
 } // tcp

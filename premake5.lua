@@ -149,6 +149,7 @@ group "Libraries"
          "lib/net/AddressV6.cpp",
          "lib/net/AddressV6-win32.cpp",
          "lib/net/Url.cpp",
+         "lib/net/tcp/Connection.cpp",
          "lib/net/tcp/Server.cpp",
          "lib/net/tcp/ServerImpl.cpp",
          "lib/net/tcp/ServerConnection.cpp",

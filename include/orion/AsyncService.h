@@ -1,8 +1,9 @@
+//
 // AsyncService.h
 //
-// Copyright 2017 The liborion Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// Copyright (c) 2013-2017 Tomas Palazuelos
+//
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 #ifndef ORION_ASYNCSERVICE_H
 #define ORION_ASYNCSERVICE_H
@@ -11,18 +12,35 @@
 
 #include <orion/detail/AsyncTypes.h>
 
-namespace orion 
+namespace orion
 {
-///
-/// A pool of io_service objects.
-/// 
-struct API_EXPORT AsyncService
+class API_EXPORT AsyncService
 {
-   static IOService io_service;
+public:
+   NO_COPY(AsyncService)
 
-   static void run();
+   explicit AsyncService(std::size_t pool_size = 1);
+   ~AsyncService();
+
+   /// Run all IOService objects.
+   void run();
+
+   /// Stop all IOService objects.
+   void stop();
+
+   /// Get an IOService to use.
+   IOService& io_service();
+
+private:
+   /// The pool of io_services.
+   std::vector<std::shared_ptr<IOService>> _io_services;
+
+   /// The work that keeps the io_services running.
+   std::vector<std::shared_ptr<IOService::work>> _work;
+
+   /// The next io_service to use for a connection.
+   std::size_t _next_io_service;
 };
 
-} // namespace orion
-
+} // orion
 #endif // ORION_ASYNCSERVICE_H

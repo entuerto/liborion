@@ -26,6 +26,7 @@ namespace net
 class API_EXPORT EndPoint
 {
 public:
+   EndPoint();
    /// Construct an endpoint using a port number and an IPv4 address.
    EndPoint(const AddressV4& addr, uint16_t port);
    /// Construct an endpoint using a port number and an IPv6 address.

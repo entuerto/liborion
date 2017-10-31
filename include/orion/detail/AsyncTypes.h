@@ -16,6 +16,12 @@ namespace orion
 {
 
 using IOService = asio::io_service;
+using SignalSet = asio::signal_set;
 
+using SteadyTimer = asio::steady_timer;
+
+using StreamBuffer = asio::streambuf;
+
+using TcpSocket = asio::ip::tcp::socket;
 } // orion
 #endif // ORION_ASYNCTYPES_H

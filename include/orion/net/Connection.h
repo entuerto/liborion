@@ -1,28 +1,15 @@
-/*
- * Connection.h
- *
- * Copyright 2013 tomas <tomasp@videotron.ca>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- */
-
+//
+// Connection.h
+//
+//  Created by Tomas Palazuelos on 2016-11-07.
+//  Copyright © 2016 Tomas Palazuelos. All rights reserved.
+//
 #ifndef ORION_NET_CONNECTION_H
 #define ORION_NET_CONNECTION_H
 
 #include <orion/Orion-Stddefs.h>
+
+#include <orion/detail/AsyncTypes.h>
 
 #include <orion/net/EndPoint.h>
 
@@ -33,7 +20,6 @@ namespace orion
 {
 namespace net
 {
-   
 //! This class provides a generic network connection
 /*!
    Connection is a generic stream-oriented network connection.
@@ -41,18 +27,26 @@ namespace net
 class API_EXPORT Connection
 {
 public:
-   Connection();
+   NO_COPY(Connection)
+
+   Connection(IOService& io_service);
    virtual ~Connection();
 
    /// Close closes the connection.
    /// Any blocked Read or Write operations will be unblocked and return errors.
-   virtual void close() = 0;
+   virtual void close() =0;
 
    /// Returns the local network address.
-   virtual EndPoint* local_endpoint() const;
+   const EndPoint& local_endpoint() const;
+
+   /// Set the local network address.
+   void local_endpoint(const EndPoint& value);
 
    /// Returns the remote network address.
-   virtual EndPoint* remote_endpoint() const;
+   const EndPoint& remote_endpoint() const;
+
+   /// Set the remote network address.
+   void remote_endpoint(const EndPoint& value);
 
    /// Sets the read and write deadlines associated
    /// with the connection. It is equivalent to calling both
@@ -62,32 +56,44 @@ public:
    /// fail with a timeout instead of blocking.
    ///
    /// A zero value for t means I/O operations will not time out.
-   virtual std::error_code deadline(const std::chrono::seconds& sec);
+   std::error_code deadline(const std::chrono::seconds& sec);
 
    /// Get the current value of the read and write deadline.
-   virtual std::chrono::seconds deadline() const;
+   std::chrono::seconds deadline() const;
 
    /// Sets the deadline for future Read calls.
    /// A zero value for t means Read will not time out.
-   virtual std::error_code read_deadline(const std::chrono::seconds& sec);
+   std::error_code read_deadline(const std::chrono::seconds& sec);
 
    /// Get the current value of the read deadline.
-   virtual std::chrono::seconds read_deadline() const;
+   std::chrono::seconds read_deadline() const;
 
    /// Sets the deadline for future Write calls.
    /// A zero value for t means Write will not time out.
-   virtual std::error_code write_deadline(const std::chrono::seconds& sec);
+   std::error_code write_deadline(const std::chrono::seconds& sec);
 
    /// Get the current value of the write deadline.
-   virtual std::chrono::seconds write_deadline() const;
+   std::chrono::seconds write_deadline() const;
 
-protected:
-   std::unique_ptr<EndPoint> _local_endpoint;
-   std::unique_ptr<EndPoint> _remote_endpoint;
+   /// Handle timeout
+   void on_read_timeout(const std::error_code& ec);
+   void on_write_timeout(const std::error_code& ec);
+
+   void start_read_timer();
+   void start_write_timer();
+
+   SteadyTimer& read_deadline_timer();
+   SteadyTimer& write_deadline_timer();
 
 private:
+   EndPoint _local_endpoint;
+   EndPoint _remote_endpoint;
+
    std::chrono::seconds _read_deadline;
    std::chrono::seconds _write_deadline;
+
+   SteadyTimer _read_deadline_timer;
+   SteadyTimer _write_deadline_timer;
 };
 
 } // net

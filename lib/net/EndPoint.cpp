@@ -38,6 +38,12 @@ Address* clone(const Address* addr)
 //---------------------------------------------------------------------------------------
 // EndPoint
 
+EndPoint::EndPoint()
+   : _addr()
+   , _port(0)
+{
+}
+
 EndPoint::EndPoint(const AddressV4& addr, uint16_t port)
    : _addr(std::make_unique<AddressV4>(addr))
    , _port(port)

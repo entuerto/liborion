@@ -8,6 +8,8 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/detail/AsyncTypes.h>
+
 #include <orion/net/Utils.h>
 #include <orion/net/tcp/Utils.h>
 
@@ -28,11 +30,11 @@ class API_EXPORT Session
 public:
    NO_COPY(Session);
 
-   Session();
+   Session(IOService& io_service);
 
    template<typename... Ts>
-   Session(Ts&&... ts)
-      : Session()
+   Session(IOService& io_service, Ts&&... ts)
+      : Session(io_service)
    {
       set_option(std::forward<Ts>(ts)...);
    }

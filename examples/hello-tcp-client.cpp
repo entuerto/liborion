@@ -5,6 +5,7 @@
 //
 #include <orion/AsyncService.h>
 #include <orion/Log.h>
+#include <orion/System.h>
 #include <orion/net/tcp/Session.h>
 #include <orion/net/tcp/Utils.h>
 
@@ -35,25 +36,47 @@ int main()
 
    log::start();
 
-   std::unique_ptr<std::streambuf> buf = tcp::make_buffer();
+   AsyncService as(1);
+/*
+   auto& signals = as.signals();
 
-   std::iostream stream(buf.get());
+   signals.add(SIGINT);
+   signals.add(SIGILL);
+   signals.add(SIGFPE);
+   signals.add(SIGSEGV);
+   signals.add(SIGTERM);
 
-   stream << "hello" << "\n";
+   signals.async_wait([&](std::error_code ec, int signo) {
+      if (not ec)
+      {
+         //as.stop();
+         return;
+      }
 
-   tcp::Session s;
+      log::error(ec);
+      sys::write_stack_trace(std::cout);
+   });
+*/
+   tcp::Session s(as.io_service());
 
    s.on_connect([&](const std::error_code& ec)
    {
       if (ec)
       {
          log::error("Connection error: ", ec);
+         as.stop();
          return;
       }
 
       log::info("Connected!");
 
-      s.write(buf.get());
+      StreamBuffer buf;
+
+      std::iostream stream(&buf);
+
+      stream << "hello" << "\n";
+
+      s.write(&buf);
    });
 
    s.on_read([&](const std::error_code& ec, std::streambuf* buf)
@@ -68,6 +91,7 @@ int main()
       std::cout << "Read: " << buf << "\n";
 
       s.close();
+      as.stop();
    });
 
    s.on_write([&](const std::error_code& ec, std::size_t bytes_sent)
@@ -85,9 +109,8 @@ int main()
    try
    {
       s.connect("127.0.0.1", 9090);
-      
- 
-      AsyncService::run();    
+       
+      as.run();    
    }
    catch (const std::system_error& e)
    {

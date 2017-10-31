@@ -6,7 +6,6 @@
 //
 #include <net/tcp/SessionImpl.h>
 
-#include <orion/AsyncService.h>
 #include <orion/Log.h>
 
 #include <iostream>
@@ -18,15 +17,15 @@ namespace net
 namespace tcp
 {
 
-SessionImpl::SessionImpl()
+SessionImpl::SessionImpl(asio::io_service& io_service)
    : _params()
    , _timeout()
    , _connected(false)
    , _connect_handler()
    , _read_handler()
    , _write_handler()
-   , _io_service(AsyncService::io_service)
-   , _socket(_io_service)
+   , _io_service(io_service)
+   , _socket(io_service)
    , _in_streambuf()
    , _out_streambuf()
 {

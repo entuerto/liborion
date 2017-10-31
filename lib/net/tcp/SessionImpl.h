@@ -30,7 +30,7 @@ class SessionImpl : public std::enable_shared_from_this<SessionImpl>
 public:
    NO_COPY(SessionImpl);
 
-   SessionImpl();
+   SessionImpl(asio::io_service& io_service);
    ~SessionImpl();
 
    void set_option(const Parameters& parameters);
