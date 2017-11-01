@@ -18,23 +18,15 @@ namespace net
 {
 //---------------------------------------------------------------------------------------
 // AddressV4
-AddressV4 AddressV4::broadcast   = AddressV4(255, 255, 255, 255);
-AddressV4 AddressV4::all_systems = AddressV4(224, 0, 0, 1);
-AddressV4 AddressV4::all_routers = AddressV4(224, 0, 0, 2);
-AddressV4 AddressV4::zero        = AddressV4(0, 0, 0, 0);
+AddressV4 AddressV4::broadcast   = AddressV4({255, 255, 255, 255});
+AddressV4 AddressV4::all_systems = AddressV4({224, 0, 0, 1});
+AddressV4 AddressV4::all_routers = AddressV4({224, 0, 0, 2});
+AddressV4 AddressV4::zero        = AddressV4({0, 0, 0, 0});
 
 AddressV4::AddressV4()
    : _a()
 {
    _a.s_addr = 0;
-}
-
-AddressV4::AddressV4(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
-   : _a()
-{
-   uint8_t tmp[] = {a, b, c, d};
-
-   std::memcpy(&_a.s_addr, tmp, 4);
 }
 
 AddressV4::AddressV4(const std::array<uint8_t, 4>& b)
@@ -125,6 +117,18 @@ std::array<uint8_t, 4> AddressV4::to_bytes() const
    std::memcpy(bytes.data(), &_a.s_addr, 4);
 
    return bytes;
+}
+
+//--------------------------------------------------------------------------------------------------
+
+AddressV4 make_address_v4(uint32_t value)
+{
+   return AddressV4(value);
+}
+
+AddressV4 make_address_v4(const std::array<uint8_t, 4>& value)
+{
+   return AddressV4(value);
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -29,21 +29,24 @@ public:
    /// Reports whether Address is a multicast address.
    virtual bool is_multicast() const = 0;
    /// Reports whether Address is an unspecified address.
-   virtual bool is_unspecified() const = 0;
-
-   /// Returns the string form of the Address address
-   virtual std::string to_string() const = 0;
+   virtual bool is_unspecified() const = 0;  
 };
 
-inline std::ostream& operator<<(std::ostream& o, const Address& Address)
+/// Returns the string form of the address
+API_EXPORT std::string to_string(const Address& addr);
+
+/// Returns the string form of the address
+API_EXPORT std::string to_string(const Address* addr);
+
+inline std::ostream& operator<<(std::ostream& o, const Address& addr)
 {
-   o << Address.to_string();
+   o << to_string(addr);
    return o;
 }
 
-inline std::ostream& operator<<(std::ostream& o, const Address* Address)
+inline std::ostream& operator<<(std::ostream& o, const Address* addr)
 {
-   o << (Address == nullptr ? "null" : Address->to_string());
+   o << (addr == nullptr ? "null" : to_string(addr));
    return o;
 }
 

@@ -18,34 +18,45 @@ namespace orion
 namespace net
 {
 
+AddressV4::AddressV4(uint32_t value)
+   : _a()
+{
+   _a.s_addr = htonl(value);
+}
+
 uint32_t AddressV4::to_ulong() const
 {
    return ntohl(_a.s_addr);
 }
 
-std::string AddressV4::to_string() const
+std::string to_string(const AddressV4& addr) 
 {
    wchar_t buffer[256];
 
-   RtlIpv4AddressToStringW(&_a, buffer); 
+   RtlIpv4AddressToStringW(&addr._a, buffer); 
 
    return wstring_to_utf8(buffer);
 }
 
-AddressV4 AddressV4::parse(const std::string& s)
+AddressV4 make_address_v4(const std::string& value)
 {
-   AddressV4 addr;
+   in_addr addr;
    uint16_t port = 0;
 
-   auto str = utf8_to_wstring(s);
+   // Get buffer size
+   int len = MultiByteToWideChar(CP_ACP, 0, value.c_str(), -1, NULL, 0);
 
-   RtlIpv4StringToAddressExW(str.data(), TRUE, &addr._a, &port);
+   wchar_t ws_buffer[len];
+
+   MultiByteToWideChar(CP_ACP, 0, value.c_str(), -1, ws_buffer, len);
+
+   RtlIpv4StringToAddressExW(ws_buffer, TRUE, &addr, &port);
    
    auto ec = std::error_code(::GetLastError(), std::system_category());
    if (ec)
       throw std::system_error(ec);
 
-   return addr;
+   return AddressV4({addr.s_net, addr.s_host, addr.s_lh, addr.s_impno});
 }
 
 } // net

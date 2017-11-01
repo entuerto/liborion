@@ -43,16 +43,16 @@ public:
 
    virtual uint16_t port() const;
 
-   virtual std::string to_string() const;
-
 private:
    std::unique_ptr<Address> _addr;
    uint16_t _port;
 };
 
+API_EXPORT std::string to_string(const EndPoint& ep);
+
 inline std::ostream& operator<<(std::ostream& o, const EndPoint& ep)
 {
-   o << ep.to_string();
+   o << to_string(ep);
    return o;
 }
 

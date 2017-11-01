@@ -123,6 +123,13 @@ std::array<uint8_t, 16> AddressV6::to_bytes() const
 
 //--------------------------------------------------------------------------------------------------
 
+AddressV6 make_address_v6(const std::array<uint8_t, 16>& b, uint32_t scope_id /* = 0 */)
+{
+   return AddressV6(b, scope_id);
+}
+
+//--------------------------------------------------------------------------------------------------
+
 bool operator==(const AddressV6& a1, const AddressV6& a2)
 {
    return a1._scope_id == a2._scope_id and

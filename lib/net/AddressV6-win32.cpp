@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <system_error>
+#include <cstring>
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -35,29 +36,38 @@ namespace orion
 namespace net
 {
 
-std::string AddressV6::to_string() const
+std::string to_string(const AddressV6& addr)
 {
-   char buffer[256];
+   wchar_t buffer[256];
 
-   RtlIpv6AddressToStringA(&_a, buffer); 
+   RtlIpv6AddressToStringW(&addr._a, buffer); 
 
-   return std::string(buffer);
+   return wstring_to_utf8(buffer);
 }
 
-AddressV6 AddressV6::parse(const std::string& s)
+AddressV6 make_address_v6(const std::string& s)
 {
-   AddressV6 addr;
+   in6_addr addr;
+   uint32_t scope_id = 0;
    uint16_t port = 0;
 
-   auto str = utf8_to_wstring(s);
+   // Get buffer size
+   int len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, NULL, 0);
 
-   RtlIpv6StringToAddressExW(str.data(), &addr._a, (unsigned long *)&addr._scope_id, &port);
+   wchar_t ws_buffer[len];
+
+   MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, ws_buffer, len);
+
+   RtlIpv6StringToAddressExW(ws_buffer, &addr, (PULONG)&scope_id, &port);
    
    auto ec = std::error_code(::GetLastError(), std::system_category());
    if (ec)
       throw std::system_error(ec);
 
-   return addr;
+   std::array<uint8_t, 16> b; 
+   std::memcpy(b.data(), addr.s6_addr, 16);
+
+   return AddressV6(b, scope_id);
 }
 
 } // net

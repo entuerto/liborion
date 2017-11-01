@@ -144,6 +144,8 @@ group "Libraries"
          -- "lib/net/**.cpp" 
          "lib/net/Connection.cpp",
          "lib/net/EndPoint.cpp",
+         "lib/net/Error.cpp",
+         "lib/net/Address.cpp",
          "lib/net/AddressV4.cpp",
          "lib/net/AddressV4-win32.cpp",
          "lib/net/AddressV6.cpp",

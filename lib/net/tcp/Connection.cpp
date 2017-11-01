@@ -163,8 +163,8 @@ void Connection::accept()
    remote_endpoint(convert(_socket.remote_endpoint()));
 
    LOG(Info) << boost::format("(%p) Connection accepted") % this;
-   LOG(Info) << "   Remote address: " << remote_endpoint().to_string();
-   LOG(Info) << "   Local address:  " << local_endpoint().to_string();
+   LOG(Info) << "   Remote address: " << to_string(remote_endpoint());
+   LOG(Info) << "   Local address:  " << to_string(local_endpoint());
 
    if (log::default_logger().is_enabled(log::Level::Debug))
       dump_socket_options();

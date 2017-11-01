@@ -24,12 +24,20 @@ namespace net
 class API_EXPORT AddressV4 : public Address
 {
 public:
+   /// Default constructor 
    AddressV4();
-   AddressV4(uint8_t a, uint8_t b, uint8_t c, uint8_t d);
+   /// Construct an address from an unsigned integer in host byte order.
+   AddressV4(uint32_t value);
+   /// Construct an address from raw bytes.
    AddressV4(const std::array<uint8_t, 4>& b);
+   /// Construct an address from raw bytes.
    AddressV4(std::initializer_list<uint8_t> l);
+
+   /// Copy constructor
    AddressV4(const AddressV4& other);
+   /// Move constructor
    AddressV4(AddressV4&& other);
+
    virtual ~AddressV4();
 
    AddressV4& operator=(const AddressV4& rhs);
@@ -51,18 +59,17 @@ public:
    /// Reports whether ip is an unspecified address.
    virtual bool is_unspecified() const override;
    
-   /// Returns the string form of the IP address
-   virtual std::string to_string() const override;
-
    /// Get the address in bytes, in network byte order.
    std::array<uint8_t, 4> to_bytes() const;
    /// Get the address as an unsigned long in host byte order.
    uint32_t to_ulong() const;
 
-   static AddressV4 parse(const std::string& s);
-
 public:
+   //
    // Friends:
+   // 
+   friend API_EXPORT std::string to_string(const AddressV4& addr);
+
    friend API_EXPORT bool operator==(const AddressV4& a1, const AddressV4& a2);
    friend API_EXPORT bool operator!=(const AddressV4& a1, const AddressV4& a2);
    friend API_EXPORT bool operator<(const AddressV4& a1, const AddressV4& a2);
@@ -79,6 +86,24 @@ public:
 private:
    in4_addr_type _a;
 };
+
+/// Convert an IPv4 address to a string
+API_EXPORT std::string to_string(const AddressV4& addr);
+
+/// Create an IPv4 address from an unsigned integer in host byte order.
+API_EXPORT AddressV4 make_address_v4(uint32_t value);
+
+/// Create an IPv4 address from raw bytes in network order.
+API_EXPORT AddressV4 make_address_v4(const std::array<uint8_t, 4>& value);
+
+/// Create an IPv4 address from an IP address string in dotted decimal form.
+API_EXPORT AddressV4 make_address_v4(const std::string& value);
+
+/// Convert an IPv4 address to a string
+inline AddressV4 operator"" _ipv4(const char* str, std::size_t)
+{
+   return make_address_v4(str);
+}
 
 /// Compare two addresses for equality.
 API_EXPORT bool operator==(const AddressV4& a1, const AddressV4& a2);

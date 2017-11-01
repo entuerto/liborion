@@ -98,9 +98,9 @@ uint16_t EndPoint::port() const
    return _port;
 }
 
-std::string EndPoint::to_string() const
+std::string to_string(const EndPoint& ep)
 {
-   return _addr->to_string() + ":" + std::to_string(_port);
+   return to_string(ep.address()) + ":" + std::to_string(ep.port());
 }
 
 } // net
