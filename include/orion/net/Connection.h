@@ -50,7 +50,7 @@ public:
 
    /// Sets the read and write deadlines associated
    /// with the connection. It is equivalent to calling both
-   /// set_read_deadline and set_write_deadline.
+   /// read_deadline and write_deadline.
    ///
    /// A deadline is an absolute time after which I/O operations
    /// fail with a timeout instead of blocking.

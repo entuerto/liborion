@@ -185,7 +185,10 @@ function ninja.generateProject(prj)
    local objfiles = {}
 
    table.foreachi(files, function(node)
-      table.insert(objfiles, ninja.buildFiles(cfg, node))
+      local f = ninja.buildFiles(cfg, node)
+      if f ~= nil then
+         table.insert(objfiles, f)
+      end
    end)
 
    -- build final target
@@ -352,6 +355,9 @@ function ninja.buildFiles(cfg, node)
    end
 
    local rule = ninja.ruleFromFile[node.extension]
+   if not rule then
+      return nil
+   end
 
    objfile = p.project.getrelative(cfg.project, path.join(cfg.objdir, node.objname .. ninja.objExt))
 
