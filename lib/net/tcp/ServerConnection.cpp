@@ -20,7 +20,7 @@ namespace tcp
 //--------------------------------------------------------------------------------------------------
 
 ServerConnection::ServerConnection(asio::io_service& io_service, const Handler& handler)
-   : tcp::Connection(io_service)
+   : Connection(io_service)
    , _handler(handler)
    , _in_streambuf()
    , _out_streambuf()

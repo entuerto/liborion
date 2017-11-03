@@ -268,6 +268,7 @@ group "Libraries"
          "include/orion/net/Types.h",
          "include/orion/net/Url.h",
          "include/orion/net/Utils.h",
+         "include/orion/net/impl/Connection.ipp",
          -- Http files
          "include/orion/net/http/Client.h",
          "include/orion/net/http/Cookies.h",
@@ -292,12 +293,12 @@ group "Libraries"
          "include/orion/net/tcp/Server.h",
          "include/orion/net/tcp/Session.h",
          "include/orion/net/tcp/Utils.h",
+         "include/orion/net/tcp/impl/Connection.ipp",
 
          -- Source files 
          "lib/net/Address.cpp",
          "lib/net/AddressV4.cpp",
          "lib/net/AddressV6.cpp",
-         "lib/net/Connection.cpp",
          "lib/net/EndPoint.cpp",
          "lib/net/Error.cpp",
          "lib/net/Url.cpp",
@@ -311,7 +312,6 @@ group "Libraries"
          "lib/net/http/ServerConnection.cpp",
          "lib/net/http/Session.cpp",
          -- TCP files
-         "lib/net/tcp/Connection.cpp",
          "lib/net/tcp/Server.cpp",
          "lib/net/tcp/ServerImpl.cpp",
          "lib/net/tcp/ServerConnection.cpp",

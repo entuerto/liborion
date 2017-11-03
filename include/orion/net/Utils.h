@@ -50,6 +50,37 @@ struct Timeout
    constexpr operator std::chrono::milliseconds() const noexcept { return ms; }
 };
 
+//-------------------------------------------------------------------------------------------------
+template <int idx, typename T>
+struct Option
+{
+   T value;
+
+   constexpr operator T() const noexcept { return value; }   
+};
+
+//-------------------------------------------------------------------------------------------------
+// Socket Options
+
+using KeepAlive               = Option<1, bool>;
+using Broadcast               = Option<2, bool>;
+using Debug                   = Option<3, bool>;
+using DoNotRoute              = Option<4, bool>;
+using EnableConnectionAborted = Option<5, bool>;
+using ReuseAddress            = Option<6, bool>;
+using ReceiveBufferSize       = Option<7, std::size_t>;
+using ReceiveLowWatermark     = Option<8, std::size_t>;
+using SendBufferSize          = Option<9, std::size_t>;
+using SendLowWatermark        = Option<10, std::size_t>;
+
+struct Linger
+{
+   bool value;
+   int  timeout;
+
+   constexpr operator bool() const noexcept { return value; }
+};
+
 } // net
 } // orion
 

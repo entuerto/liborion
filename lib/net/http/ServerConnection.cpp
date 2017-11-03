@@ -22,7 +22,7 @@ namespace http
 //---------------------------------------------------------------------------------------
 
 ServerConnection::ServerConnection(asio::io_service& io_service, const Handlers& handlers)
-   : tcp::Connection(io_service)
+   : Connection(io_service)
    , _handlers(handlers)
    , _request()
    , _response(StatusCode::OK)

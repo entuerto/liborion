@@ -8,6 +8,8 @@
 #include <net/http/ServerImpl.h>
 
 #include <orion/Log.h>
+#include <orion/net/Utils.h>
+#include <orion/net/tcp/Connection.h>
 #include <orion/net/tcp/Utils.h>
 
 #include <net/http/ServerConnection.h>
@@ -122,8 +124,8 @@ void ServerImpl::do_accept(asio::ip::tcp::acceptor& acceptor)
 
       if (not ec)
       {
-         conn->set_option(tcp::KeepAlive{true});
-         conn->set_option(tcp::NoDelay{true});
+         set_option(*conn, KeepAlive{true});
+         tcp::set_option(*conn, tcp::NoDelay{true});
          conn->accept();
       }
 

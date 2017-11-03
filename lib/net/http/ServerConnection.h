@@ -9,10 +9,10 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/net/Connection.h>
 #include <orion/net/http/Request.h>
 #include <orion/net/http/Response.h>
 #include <orion/net/http/Utils.h>
-#include <orion/net/tcp/Connection.h>
 
 #include <net/http/Parser.h>
 
@@ -30,24 +30,20 @@ namespace http
 
 ///
 class ServerConnection 
-   : public tcp::Connection
-   //, public std::enable_shared_from_this<ServerConnection>
+   : public Connection<TcpSocket>
 {
 public:
-   NO_COPY(ServerConnection)
-
    ServerConnection(asio::io_service& io_service, const Handlers& handlers);
    virtual ~ServerConnection();
 
-private:
-   void dump_socket_options();
-
+protected:
    /// Perform an asynchronous read operation.
    void do_read() override;
 
    /// Perform an asynchronous write operation.
    void do_write() override;
 
+private:
    /// Process the request.
    void do_handler();
 

@@ -9,7 +9,7 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/tcp/Connection.h>
+#include <orion/net/Connection.h>
 #include <orion/net/tcp/Utils.h>
 
 #include <memory>
@@ -23,22 +23,20 @@ namespace tcp
 
 ///
 class ServerConnection 
-   : public tcp::Connection
-   //, public std::enable_shared_from_this<ServerConnection>
+   : public Connection<TcpSocket>
 {
 public:
-   NO_COPY(ServerConnection)
-
    ServerConnection(asio::io_service& io_service, const Handler& handler);
    virtual ~ServerConnection();
 
-private:
+protected:
    /// Perform an asynchronous read operation.
    void do_read() override;
 
    /// Perform an asynchronous write operation.
    void do_write() override;
 
+private:
    std::error_code on_handler(std::streambuf* in, std::streambuf* out);
 
    /// Request handler
