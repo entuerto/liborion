@@ -13,6 +13,8 @@
 #include <orion/StringUtils.h>
 #include <orion/net/http/Error.h>
 
+#include <fmt/format.h>
+
 #include <functional>
 #include <map>
 #include <string>
@@ -114,6 +116,8 @@ enum class Method
 };
 
 //-------------------------------------------------------------------------------------------------
+
+void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, const Method m);
 
 std::ostream& operator<<(std::ostream& o, const Method m);
 

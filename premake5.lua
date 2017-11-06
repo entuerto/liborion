@@ -185,7 +185,8 @@ group "Libraries"
 
       links { "fmt" }
 
-      filter "system:windows"
+      filter { "system:windows" }
+         linkoptions { "-Wl,--allow-multiple-definition" }
          links { 
             "dbghelp",
             "ws2_32",
@@ -199,6 +200,8 @@ group "Libraries"
 
       filter { "system:windows", "platforms:mingw64" }
          links { "version" }
+
+      filter {}
 
    
    project "orion-fs"
@@ -253,6 +256,7 @@ group "Libraries"
       }
 
       filter "system:windows"
+         linkoptions { "-Wl,--allow-multiple-definition" }
          links { 
             "ws2_32", 
             "mswsock", 
@@ -260,6 +264,8 @@ group "Libraries"
             "psapi", 
             "rpcrt4" 
          }
+
+      filter {}
 
       files { 
          -- Include files
@@ -284,6 +290,7 @@ group "Libraries"
          "include/orion/net/http/Session.h",
          "include/orion/net/http/StatusCode.h",
          "include/orion/net/http/Utils.h",
+         "include/orion/net/http/impl/StatusCode.ipp",
          "include/orion/net/http/impl/Utils.ipp",
          -- RPC files
          "include/orion/net/rpc/Error.h",
@@ -337,6 +344,8 @@ group "Libraries"
             "lib/net/AddressV4-darwin.cpp",
             "lib/net/AddressV6-darwin.cpp"
          }
+
+      filter {}
 
 
 -- Unit tests

@@ -8,8 +8,6 @@
 
 #include <orion/Log.h>
 
-#include <boost/format.hpp>
-
 namespace orion
 {
 namespace net

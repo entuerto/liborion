@@ -78,7 +78,7 @@ void StdOutput::write(const TestResult& test_result)
 
       _stream << std::setw(_indent) << "" << fmt::format("   Expected: {}\n", item.expected);
 
-      _stream << std::setw(_indent) << "" << fmt::format("   Actual:   %s\n", item.actual);
+      _stream << std::setw(_indent) << "" << fmt::format("   Actual:   {}\n", item.actual);
    }
 }
 

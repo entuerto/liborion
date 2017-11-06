@@ -70,7 +70,7 @@ Connection<SocketT>::~Connection()
 template <typename SocketT>
 void Connection<SocketT>::close()
 {
-   LOG(Info) << fmt::format("({:p}) Connection closed", this);
+   LOG(Info) << fmt::format("({:#x}) Connection closed", reinterpret_cast<uintptr_t>(this));
 
    std::error_code ec;
 
@@ -220,7 +220,7 @@ void Connection<SocketT>::accept()
    local_endpoint(convert(_socket.local_endpoint()));
    remote_endpoint(convert(_socket.remote_endpoint()));
 
-   LOG(Info) << fmt::format("({:p}) Connection accepted", this);
+   LOG(Info) << fmt::format("({:#x}) Connection accepted", reinterpret_cast<uintptr_t>(this));
    LOG(Info) << "   Remote address: " << to_string(remote_endpoint());
    LOG(Info) << "   Local address:  " << to_string(local_endpoint());
 

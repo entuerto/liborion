@@ -93,7 +93,7 @@ void Response::status_code(StatusCode sc)
 
 std::string Response::status() const
 {
-   return boost::str(boost::format("%d %s") % _status_code % StatusText.at(_status_code));
+   return fmt::format("{0} {1}", _status_code, StatusText.at(_status_code));
 }
 
 Version Response::version() const
@@ -152,9 +152,9 @@ void Response::build_header_buffer()
 
    auto v = version();
 
-   auto status_msg = boost::format("HTTP/%d.%d %s") % v.major % v.minor % status();
+   auto status_msg = fmt::format("HTTP/{0}.{1} {2}", v.major, v.minor, status());
 
-   o << boost::str(status_msg) << crlf;
+   o << status_msg << crlf;
 
    for (const auto& item : _header)
    {
@@ -168,11 +168,11 @@ std::ostream& operator<<(std::ostream& o, const Response& r)
 {
    auto v = r._version;
 
-   auto status_msg = boost::format("HTTP/%d.%d %s") % v.major % v.minor % r.status();
+   auto status_msg = fmt::format("HTTP/{0}.{1} {2}", v.major, v.minor, r.status());
 
    o << std::left << std::boolalpha << "\nResponse Header\n";
 
-   o << boost::str(status_msg) << "\n";
+   o << status_msg << "\n";
 
    for (const auto& item : r._header)
    {

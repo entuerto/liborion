@@ -8,8 +8,6 @@
 
 #include <orion/Log.h>
 
-#include <boost/format.hpp>
-
 using namespace orion::log;
 
 namespace orion

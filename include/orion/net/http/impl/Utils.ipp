@@ -54,6 +54,11 @@ static const std::map<Method, std::string> MethodText{{Method::DELETE, "DELETE"}
                                                       {Method::LINK, "LINK"},
                                                       {Method::UNLINK, "UNLINK"}};
 
+inline void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, const Method m) 
+{
+   f.writer().write("{}", to_string(m));
+}
+
 inline std::ostream& operator<<(std::ostream& o, const Method m)
 {
    auto item = MethodText.find(m);
@@ -61,7 +66,7 @@ inline std::ostream& operator<<(std::ostream& o, const Method m)
    if (item != MethodText.end())
       o << item->second;
    else
-      o << "UNKOWN";
+      o << "Method: Unkown";
 
    return o;
 }
@@ -88,7 +93,7 @@ inline std::string to_string(const Method m)
    if (item != MethodText.end())
       return item->second;
 
-   return "UNKOWN";
+   return "Method: Unkown";
 }
 
 inline Method as_method(const std::string& text)

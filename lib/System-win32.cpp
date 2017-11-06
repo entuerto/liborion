@@ -21,7 +21,7 @@
 
 #include <orion/StringUtils.h>
 
-#include <boost/format.hpp>
+#include <fmt/format.h>
 
 #include <lmcons.h> /* For UNLEN */
 #include <process.h>
@@ -103,10 +103,10 @@ std::string get_cpu_model()
 
    const uint64_t cpuThreadCount = sysinfo.dwNumberOfProcessors;
 
-   auto f = (cpuThreadCount == 1) ? boost::format("%s (%d thread)") % cpuName % cpuThreadCount :
-                                    boost::format("%s (%d threads)") % cpuName % cpuThreadCount;
+   return (cpuThreadCount == 1) ? fmt::format("{0} ({1} thread)", cpuName, cpuThreadCount) 
+                                : fmt::format("{0} ({1} threads)", cpuName, cpuThreadCount);
 
-   return boost::str(f);
+
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -261,9 +261,7 @@ std::string get_os_version()
    int hotfix = HIWORD(file_info->dwProductVersionLS);
    int other  = LOWORD(file_info->dwProductVersionLS);
 
-   auto f = boost::format("Microsoft Windows %d.%d.%d.%d") % major % minor % hotfix % other;
-
-   return boost::str(f);
+   return fmt::format("Microsoft Windows {0}.{1}.{2}.{3}", major, minor, hotfix, other);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -392,12 +390,12 @@ static void write_stack_trace_for_thread(std::ostream& os,
       // Print the AddressPC in hexadecimal.
       DWORD64 AddressPC = StackFrame.AddrPC.Offset;
 
-      os << boost::format("0x%016llX") % AddressPC;
+      os << fmt::format("{:#h}", AddressPC);
 
       // Verify the AddressPC belongs to a module in this process.
       if (not SymGetModuleBase64(hProcess, AddressPC)) 
       {
-        os << " <unknown module>\n";
+        os << " <Unknown module>\n";
         continue;
       }
 
@@ -407,7 +405,7 @@ static void write_stack_trace_for_thread(std::ostream& os,
       FoundModule.SizeOfStruct = sizeof(IMAGEHLP_MODULE);
 
       if (SymGetModuleInfo(hProcess, AddressPC, &FoundModule))
-         os << boost::format(" %-15s") % FoundModule.ModuleName;
+         os << fmt::format(" {:<15}", FoundModule.ModuleName);
 
       // Print the symbol name.
       char buffer[512];
@@ -426,9 +424,9 @@ static void write_stack_trace_for_thread(std::ostream& os,
       buffer[511] = 0;
 
       if (dwDisp > 0)
-         os << boost::format(" %s() + 0x%llX byte(s)") % symbol->Name % dwDisp;
+         os << fmt::format(" {0}() + {1:#h} byte(s)", symbol->Name, dwDisp);
       else
-         os << boost::format(" %s") % symbol->Name;
+         os << fmt::format(" {}", symbol->Name);
 
       // Print the source file and line number information.
       IMAGEHLP_LINE64 line;
@@ -438,10 +436,10 @@ static void write_stack_trace_for_thread(std::ostream& os,
 
       if (SymGetLineFromAddr64(hProcess, AddressPC, &dwLineDisp, &line)) 
       {
-        os << boost::format(" %s, line %lu") % line.FileName % line.LineNumber;
+        os << fmt::format(" {0}, line {1}", line.FileName, line.LineNumber);
 
         if (dwLineDisp > 0)
-          os << boost::format(" + 0x%lX byte(s)") % dwLineDisp;
+          os << fmt::format(" + {:#h} byte(s)", dwLineDisp);
       }
       os << '\n';
    }
