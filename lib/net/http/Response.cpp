@@ -8,7 +8,7 @@
 #include <orion/net/http/Response.h>
 
 #include <asio.hpp>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 
 #include <iomanip>
 #include <sstream>

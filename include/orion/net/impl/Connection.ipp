@@ -17,7 +17,7 @@
 
 #include <orion/detail/AsyncTypes.h>
 
-#include <boost/format.hpp>
+#include <fmt/format.h>
 
 using namespace std::chrono_literals;
 
@@ -70,7 +70,7 @@ Connection<SocketT>::~Connection()
 template <typename SocketT>
 void Connection<SocketT>::close()
 {
-   LOG(Info) << boost::format("(%p) Connection closed") % this;
+   LOG(Info) << fmt::format("({:p}) Connection closed", this);
 
    std::error_code ec;
 
@@ -220,7 +220,7 @@ void Connection<SocketT>::accept()
    local_endpoint(convert(_socket.local_endpoint()));
    remote_endpoint(convert(_socket.remote_endpoint()));
 
-   LOG(Info) << boost::format("(%p) Connection accepted") % this;
+   LOG(Info) << fmt::format("({:p}) Connection accepted", this);
    LOG(Info) << "   Remote address: " << to_string(remote_endpoint());
    LOG(Info) << "   Local address:  " << to_string(local_endpoint());
 

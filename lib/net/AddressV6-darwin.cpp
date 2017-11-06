@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <orion/net/IPv6.h>
+#include <orion/net/AddressV6.h>
 
 
 #include <algorithm>
@@ -31,10 +31,14 @@ namespace orion
 namespace net
 {
 
-IPv6 IPv6::parse(const std::string& s)
+std::string to_string(const AddressV6& addr)
+{ 
+   return "";
+}
+
+AddressV6 make_address_v6(const std::string& s)
 {
-   
-   return IPv6();
+   return AddressV6();
 }
 
 } // net

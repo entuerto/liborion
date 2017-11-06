@@ -181,6 +181,10 @@ group "Libraries"
             "lib/Uuid-linux.cpp"
          }
 
+      filter {}
+
+      links { "fmt" }
+
       filter "system:windows"
          links { 
             "dbghelp",
@@ -243,6 +247,7 @@ group "Libraries"
       }
 
       links { 
+         "fmt",
          "http-parser", 
          "orion" 
       }

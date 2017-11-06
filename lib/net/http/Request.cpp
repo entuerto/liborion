@@ -9,7 +9,7 @@
 #include <orion/StringUtils.h>
 
 #include <asio.hpp>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 
 #include <cstdlib>
 #include <iomanip>
@@ -177,9 +177,9 @@ void Request::build_header_buffer()
    auto v = version();
 
    // request-line = method SP request-target SP HTTP-version CRLF
-   auto request_line = boost::format("%s %s HTTP/%d.%d") % method() % u.path() % v.major % v.minor;
+   auto request_line = fmt::format("{0} {1} HTTP/{2}.{3}", method(), u.path(), v.major, v.minor);
 
-   o << boost::str(request_line) << crlf;
+   o << request_line << crlf;
 
    for (const auto& item : _header)
    {

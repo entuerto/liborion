@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <orion/net/IPv4.h>
+#include <orion/net/AddressV4.h>
 
 #include <orion/StringUtils.h>
 
@@ -28,16 +28,27 @@ namespace orion
 namespace net
 {
 
-uint32_t IPv4::to_ulong() const
+AddressV4::AddressV4(uint32_t value)
+   : _a()
+{
+   _a.s_addr = htonl(value);
+}
+
+uint32_t AddressV4::to_ulong() const
 {
    return ntohl(_a.s_addr);
 }
 
-IPv4 IPv4::parse(const std::string& s)
+std::string to_string(const AddressV4& addr) 
 {
    
+   return "";
+}
 
-   return IPv4();
+AddressV4 make_address_v4(const std::string& value)
+{
+   
+   return AddressV4();
 }
 
 } // net
