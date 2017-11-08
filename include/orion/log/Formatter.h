@@ -1,9 +1,10 @@
+//
 // Formatter.h
 //
-// Created by Tomas Palazuelos on 2017-03-17.
-// Copyright © 2017 Tomas Palazuelos. All rights reserved.
+// Copyright (c) 2013-2017 Tomas Palazuelos
 //
-
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
+//
 #ifndef ORION_LOG_FORMATTER_H
 #define ORION_LOG_FORMATTER_H
 

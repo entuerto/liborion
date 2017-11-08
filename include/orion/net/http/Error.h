@@ -1,10 +1,10 @@
 //
 // Error.h
 //
-//  Created by Tomas Palazuelos on 2016-11-07.
-//  Copyright © 2016 Tomas Palazuelos. All rights reserved.
+// Copyright (c) 2013-2017 Tomas Palazuelos
 //
-
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
+//
 #ifndef ORION_NET_HTTP_ERROR_H
 #define ORION_NET_HTTP_ERROR_H
 

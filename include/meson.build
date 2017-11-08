@@ -1,10 +1,13 @@
-
+#
+# Copyright (c) 2013-2017 Tomas Palazuelos
+#
+# Distributed under the MIT Software License. (See accompanying file LICENSE.md)
+#
 #--------------------------------------------------------------------------------------------------
 # Include files
 #
 
 orion_incl = files(
-   'orion/ArgumentExceptions.h',
    'orion/AsyncService.h',
    'orion/Chrono.h',
    'orion/Datetime.h',
@@ -15,8 +18,6 @@ orion_incl = files(
    'orion/impl/Chrono.ipp',
    'orion/impl/Datetime.ipp',
    'orion/Memory.h',
-   'orion/ModuleException.h',
-   'orion/NotImplementedException.h',
    'orion/Object.h',
    'orion/Orion-Stddefs.h',
    'orion/Signal.h',

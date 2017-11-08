@@ -1,23 +1,11 @@
+//
 // log-example.cpp
 //
-// Copyright 2014 tomas <tomasp@videotron.ca>
+// Copyright (c) 2013-2017 Tomas Palazuelos
 //
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-// MA 02110-1301, USA.
-
-#include <orion/ArgumentExceptions.h>
+#include <orion/Exception.h>
 #include <orion/Log.h>
 #include <orion/Throw.h>
 

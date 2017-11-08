@@ -1,4 +1,8 @@
-
+#
+# Copyright (c) 2013-2017 Tomas Palazuelos
+#
+# Distributed under the MIT Software License. (See accompanying file LICENSE.md)
+#
 #--------------------------------------------------------------------------------------------------
 # Example: date-example
 #

@@ -1,15 +1,16 @@
+#
+# Copyright (c) 2013-2017 Tomas Palazuelos
+#
+# Distributed under the MIT Software License. (See accompanying file LICENSE.md)
+#
 #--------------------------------------------------------------------------------------------------
 # Lib orion
 #
 
 # Source files
 orion_src = files(
-   'ArgumentExceptions.cpp',
    'AsyncService.cpp',
    'Encoding.cpp',
-   'Exception.cpp',
-   'ModuleException.cpp',
-   'NotImplementedException.cpp',
    'Object.cpp',
    'StringUtils.cpp',
    'System.cpp',

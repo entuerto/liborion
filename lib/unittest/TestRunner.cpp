@@ -1,8 +1,9 @@
+//
 // TestRunner.cpp
 //
-// Copyright 2017 The liborion Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// Copyright (c) 2013-2017 Tomas Palazuelos
+//
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 #include <orion/unittest/TestRunner.h>
 
@@ -78,12 +79,10 @@ bool Runner::run(int argc, char* argv[])
 
    StdOutput output(std::cout, _level);
 
-   run_tests(output);
-
-   return true;
+   return run_tests(output);
 }
 
-void Runner::run_tests(Output& output, const std::string& suite_name /* = "" */)
+bool Runner::run_tests(Output& output, const std::string& suite_name /* = "" */)
 {
    OutputStats stats{};
 
@@ -114,6 +113,7 @@ void Runner::run_tests(Output& output, const std::string& suite_name /* = "" */)
    stats.time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
    output.write_summary(stats);
+   return stats.failed_count > 0;
 }
 
 Runner& Runner::runner()

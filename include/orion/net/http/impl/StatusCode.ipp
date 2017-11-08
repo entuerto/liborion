@@ -5,7 +5,6 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-
 #ifndef ORION_NET_HTTP_STATUSCODE_IPP
 #define ORION_NET_HTTP_STATUSCODE_IPP
 

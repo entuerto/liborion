@@ -62,7 +62,6 @@ group "Libraries"
 
       files { 
          -- Include files
-         "include/orion/ArgumentExceptions.h",
          "include/orion/AsyncService.h",
          "include/orion/Chrono.h",
          "include/orion/Datetime.h",
@@ -73,8 +72,6 @@ group "Libraries"
          "include/orion/impl/Chrono.ipp",
          "include/orion/impl/Datetime.ipp",
          "include/orion/Memory.h",
-         "include/orion/ModuleException.h",
-         "include/orion/NotImplementedException.h",
          "include/orion/Object.h",
          "include/orion/Orion-Stddefs.h",
          "include/orion/Signal.h",
@@ -127,12 +124,8 @@ group "Libraries"
          "include/orion/unittest/TestSuite.h",
          
          -- Source files
-         "lib/ArgumentExceptions.cpp",
          "lib/AsyncService.cpp",
          "lib/Encoding.cpp",
-         "lib/Exception.cpp",
-         "lib/ModuleException.cpp",
-         "lib/NotImplementedException.cpp",
          "lib/Object.cpp",
          "lib/StringUtils.cpp",
          "lib/System.cpp",

@@ -1,7 +1,9 @@
-//  test-encoding.cpp
 //
-//  Created by Tomas Palazuelos on 2016-06-29.
-//  Copyright © 2016 Tomas Palazuelos. All rights reserved.
+//  test-url.cpp
+//
+// Copyright (c) 2013-2017 Tomas Palazuelos
+//
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 #include <orion/net/Url.h>
 #include <orion/Test.h>

@@ -1,44 +1,29 @@
+//
 // Exception.h
 //
-// Copyright 2013 tomas <tomasp@videotron.ca>
+// Copyright (c) 2013-2017 Tomas Palazuelos
 //
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-// MA 02110-1301, USA.
-
 #ifndef ORION_EXCEPTION_H
 #define ORION_EXCEPTION_H
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/SourceLocation.h>
 
-#include <cstdint>
+#include <exception>
 #include <string>
 
 namespace orion
 {
-//! Generic exception
-/*!
-    Generic exception that all library exceptions inherits.
- */
-class API_EXPORT Exception : public std::exception
+/// Generic exception
+///
+/// Generic exception that all library exceptions inherits.
+///
+class Exception : public std::exception
 {
 public:
    Exception(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
-
-   Exception(const Exception& other);
-   Exception(Exception&& other);
 
    virtual ~Exception() = default;
 
@@ -47,14 +32,73 @@ public:
 
    const char* what() const noexcept override;
 
-   Exception& operator=(const Exception& other);
-   Exception& operator=(Exception&& other);
-
 private:
    std::string _text;
 
    SourceLocation _src_location;
 };
 
+// ------------------------------------------------------------------------------------------------
+// -- ArgumentException 
+
+/// Argument exception
+///
+/// The exception that is thrown when one of the arguments
+/// provided to a method is not valid.
+///
+using ArgumentException = Exception;
+
+// ------------------------------------------------------------------------------------------------
+// -- ArgumentNullException 
+
+/// Argument null exception
+///
+/// The exception that is thrown when a null pointer is passed to a
+/// method that does not accept it as a valid argument.
+///
+using ArgumentNullException = Exception;
+
+// ------------------------------------------------------------------------------------------------
+// -- ArgumentOutOfRangeException 
+
+/// Argument out of range exception
+///
+/// The exception that is thrown when the value of an argument is
+/// outside the allowable range of values as defined by the invoked
+/// method.
+///
+using ArgumentOutOfRangeException = Exception;
+
+// ------------------------------------------------------------------------------------------------
+// -- NotImplementedException 
+
+/// Not implemented exception
+///
+/// The exception that is thrown when a requested method
+/// or operation is not implemented.
+///
+using NotImplementedException = Exception;
+
+// ------------------------------------------------------------------------------------------------
+// -- ModuleException 
+
+/// General module exception
+///
+/// Throw this exception for module errors.
+///
+using ModuleException = Exception;
+
+// ------------------------------------------------------------------------------------------------
+// -- ModuleSymbolNotFoundException 
+
+/// Symbol not found exception
+///
+/// This exception is thrown when loading the modules and we cannot find the symbol in the module.
+///
+using ModuleSymbolNotFoundException = Exception;
+
 } // namespace orion
+
+#include <orion/impl/Exception.ipp>
+
 #endif /* ORION_EXCEPTION_H */

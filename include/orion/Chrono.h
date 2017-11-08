@@ -4,7 +4,6 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-
 #ifndef ORION_CHRONO_H
 #define ORION_CHRONO_H
 
