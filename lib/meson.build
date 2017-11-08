@@ -124,13 +124,15 @@ orion_net_src = files(
    # RPC files
    )
 
+orion_net_libs = []
+
 if host_system == 'windows'
    orion_net_src += [
       'net/AddressV4-win32.cpp',
       'net/AddressV6-win32.cpp'
    ]
 
-   orion_net_libs = [
+   orion_net_libs += [
       compiler.find_library('ws2_32'),
       compiler.find_library('mswsock'),
       compiler.find_library('psapi'), 

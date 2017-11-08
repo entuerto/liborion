@@ -16,8 +16,10 @@
 #else
 # include <sys/ioctl.h>
 # include <sys/socket.h>
+# include <sys/types.h>
 # include <sys/uio.h>
 # include <sys/un.h>
+# include <netdb.h>
 # include <netinet/in.h>
 #endif
 
