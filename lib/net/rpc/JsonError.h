@@ -5,7 +5,6 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-
 #ifndef ORION_NET_RPC_JSONERROR_H
 #define ORION_NET_RPC_JSONERROR_H
 

@@ -1,7 +1,10 @@
-// Copyright (C) 2009 by Tomas Palazuelos, Inc. All rights reserved.
-// Released under the terms of the GNU General Public License version 2.
-// See COPYRIGHT file for more information.
-
+//
+// StringUtils.cpp
+//
+// Copyright (c) 2013-2017 Tomas Palazuelos
+//
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
+//
 #include <orion/StringUtils.h>
 
 #include <codecvt>

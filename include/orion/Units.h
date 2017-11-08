@@ -1,7 +1,9 @@
-//  Units.h
 //
-//  Created by Tomas Palazuelos on 2016-06-29.
-//  Copyright © 2016 Tomas Palazuelos. All rights reserved.
+// Units.h
+//
+// Copyright (c) 2013-2017 Tomas Palazuelos
+//
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 #ifndef ORION_UNITS_H
 #define ORION_UNITS_H

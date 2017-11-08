@@ -1,7 +1,9 @@
-//  Path.h
 //
-//  Created by Tomas Palazuelos on 2016-06-29.
-//  Copyright © 2016 Tomas Palazuelos. All rights reserved.
+// Path.h
+//
+// Copyright (c) 2013-2017 Tomas Palazuelos
+//
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 #ifndef ORION_FS_PATH_H
 #define ORION_FS_PATH_H

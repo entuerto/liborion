@@ -1,10 +1,10 @@
+//
 // ExceptionRecord.h
 //
-// Copyright 2017 Tomas Palazuelos <tomas.plzls@gmail.com>
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// Copyright (c) 2013-2017 Tomas Palazuelos
 //
-
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
+//
 #ifndef ORION_LOG_EXCEPTIONRECORD_H
 #define ORION_LOG_EXCEPTIONRECORD_H
 

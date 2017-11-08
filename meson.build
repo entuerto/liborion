@@ -1,6 +1,11 @@
+#
+# Copyright (c) 2013-2017 Tomas Palazuelos
+#
+# Distributed under the MIT Software License. (See accompanying file LICENSE.md)
+#
 project('liborion', 'c', 'cpp',
    version : '0.1.0',
-   license : 'BSD',
+   license : 'MIT',
    default_options : [
       'b_pch=false',
       'cpp_std=c++14', 

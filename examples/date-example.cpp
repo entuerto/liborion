@@ -5,7 +5,6 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-
 #include <orion/Chrono.h>
 #include <orion/Datetime.h>
 

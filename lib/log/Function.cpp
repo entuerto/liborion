@@ -1,10 +1,10 @@
+//
 // Function.cpp
 //
-// Copyright 2013 tomas <tomasp@videotron.ca>
+// Copyright (c) 2013-2017 Tomas Palazuelos
 //
-// Copyright 2016 The liborion Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
+// 
 #include <orion/log/Function.h>
 
 #include <orion/log/Logger.h>
