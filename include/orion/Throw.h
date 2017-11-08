@@ -11,6 +11,8 @@
 #include <orion/Orion-Stddefs.h>
 #include <orion/SourceLocation.h>
 
+#include <string>
+
 namespace orion
 {
 

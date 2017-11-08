@@ -4,12 +4,8 @@
 
 # Source files
 orion_src = files(
-   'ArgumentExceptions.cpp',
    'AsyncService.cpp',
    'Encoding.cpp',
-   'Exception.cpp',
-   'ModuleException.cpp',
-   'NotImplementedException.cpp',
    'Object.cpp',
    'StringUtils.cpp',
    'System.cpp',

@@ -73,6 +73,8 @@ if host_system == 'windows'
    add_global_link_arguments('-Wl,--allow-multiple-definition', language: 'cpp')
 endif
 
+add_global_arguments('-Wshadow', '-Wundef', language: 'cpp')
+
 #--------------------------------------------------------------------------------------------------
 # Project include paths
 #

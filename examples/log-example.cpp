@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-#include <orion/ArgumentExceptions.h>
+#include <orion/Exception.h>
 #include <orion/Log.h>
 #include <orion/Throw.h>
 

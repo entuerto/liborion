@@ -39,7 +39,7 @@ public:
 
    virtual bool run(int argc, char* argv[]);
 
-   virtual void run_tests(Output& output, const std::string& suite_name = "");
+   virtual bool run_tests(Output& output, const std::string& suite_name = "");
 
    static Runner& runner();
 

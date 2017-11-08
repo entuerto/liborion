@@ -19,9 +19,9 @@
 
 #include <orion/Module.h>
 
+#include <orion/Exception.h>
 #include <orion/ErrorMacros.h>
 #include <orion/Log.h>
-#include <orion/ModuleException.h>
 #include <orion/SourceLocation.h>
 #include <orion/StringUtils.h>
 #include <orion/Throw.h>
