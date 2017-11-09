@@ -8,6 +8,7 @@
 #include <orion/net/AddressV4.h>
 
 #include <orion/StringUtils.h>
+#include <orion/net/Types.h>
 
 namespace orion
 {
@@ -27,14 +28,21 @@ uint32_t AddressV4::to_ulong() const
 
 std::string to_string(const AddressV4& addr) 
 {
+   char buffer[256];
    
-   return "";
+   return inet_ntop(AF_INET, &addr._a.s_addr, buffer, 256);
 }
 
 AddressV4 make_address_v4(const std::string& value)
 {
+   std::array<uint8_t, 4> bytes;
    
-   return AddressV4();
+   if (inet_pton(AF_INET, value.c_str(), &bytes) < 0)
+   {
+      auto ec = std::error_code(errno, std::system_category());
+      throw std::system_error(ec);
+   }
+   return AddressV4(bytes);
 }
 
 } // net

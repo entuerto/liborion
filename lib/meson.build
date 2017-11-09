@@ -82,8 +82,8 @@ orion = shared_library('orion',
                        include_directories: global_includes, 
                        cpp_args: [orion_cflags, boost_cflags],
                        dependencies: [global_deps, orion_libs],
-                       version : meson.project_version(), 
-                       soversion : '0',
+                       version: meson.project_version(), 
+                       soversion: '0',
                        extra_files: orion_incl,
                        install: true)
 #
@@ -161,8 +161,8 @@ orion_net = shared_library('orion-net',
                            include_directories: global_includes, 
                            cpp_args: orion_net_cflags,
                            dependencies: [global_deps, orion_net_libs],
-                           version : meson.project_version(), 
-                           soversion : '0',
+                           version: meson.project_version(), 
+                           soversion: '0',
                            extra_files: orion_net_incl,
                            install: true)
 #

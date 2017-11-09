@@ -19,7 +19,7 @@ namespace orion
 #define _src_loc \
    SourceLocation { __FILE__, __LINE__, __FUNCTION__ }
 
-struct API_EXPORT SourceLocation
+struct SourceLocation
 {
    std::string file_name;
    int line_number;
