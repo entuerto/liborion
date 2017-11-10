@@ -9,9 +9,9 @@
 
 #include <orion/StringUtils.h>
 
+#include <mstcpip.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <mstcpip.h>
 
 namespace orion
 {
@@ -29,11 +29,11 @@ uint32_t AddressV4::to_ulong() const
    return ntohl(_a.s_addr);
 }
 
-std::string to_string(const AddressV4& addr) 
+std::string to_string(const AddressV4& addr)
 {
    wchar_t buffer[256];
 
-   RtlIpv4AddressToStringW(&addr._a, buffer); 
+   RtlIpv4AddressToStringW(&addr._a, buffer);
 
    return wstring_to_utf8(buffer);
 }
@@ -51,7 +51,7 @@ AddressV4 make_address_v4(const std::string& value)
    MultiByteToWideChar(CP_ACP, 0, value.c_str(), -1, ws_buffer, len);
 
    RtlIpv4StringToAddressExW(ws_buffer, TRUE, &addr, &port);
-   
+
    auto ec = std::error_code(::GetLastError(), std::system_category());
    if (ec)
       throw std::system_error(ec);

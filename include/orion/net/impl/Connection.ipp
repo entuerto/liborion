@@ -49,7 +49,7 @@ inline EndPoint convert(const asio::ip::tcp::endpoint& ep)
 
 //--------------------------------------------------------------------------------------------------
 
-template <typename SocketT>
+template<typename SocketT>
 Connection<SocketT>::Connection(asio::io_service& io_service)
    : _local_endpoint()
    , _remote_endpoint()
@@ -61,13 +61,13 @@ Connection<SocketT>::Connection(asio::io_service& io_service)
 {
 }
 
-template <typename SocketT>
+template<typename SocketT>
 Connection<SocketT>::~Connection()
 {
    close();
 }
 
-template <typename SocketT>
+template<typename SocketT>
 void Connection<SocketT>::close()
 {
    LOG(Info) << fmt::format("({:#x}) Connection closed", reinterpret_cast<uintptr_t>(this));
@@ -82,31 +82,31 @@ void Connection<SocketT>::close()
    write_deadline_timer().cancel();
 }
 
-template <typename SocketT>
+template<typename SocketT>
 const EndPoint& Connection<SocketT>::local_endpoint() const
 {
    return _local_endpoint;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 void Connection<SocketT>::local_endpoint(const EndPoint& value)
 {
    _local_endpoint = value;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 const EndPoint& Connection<SocketT>::remote_endpoint() const
 {
    return _remote_endpoint;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 void Connection<SocketT>::remote_endpoint(const EndPoint& value)
 {
    _remote_endpoint = value;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 std::error_code Connection<SocketT>::deadline(const std::chrono::seconds& sec)
 {
    _read_deadline  = sec;
@@ -114,39 +114,39 @@ std::error_code Connection<SocketT>::deadline(const std::chrono::seconds& sec)
    return std::error_code();
 }
 
-template <typename SocketT>
+template<typename SocketT>
 std::chrono::seconds Connection<SocketT>::deadline() const
 {
    return _read_deadline;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 std::error_code Connection<SocketT>::read_deadline(const std::chrono::seconds& sec)
 {
    _read_deadline = sec;
    return std::error_code();
 }
 
-template <typename SocketT>
+template<typename SocketT>
 std::chrono::seconds Connection<SocketT>::read_deadline() const
 {
    return _read_deadline;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 std::error_code Connection<SocketT>::write_deadline(const std::chrono::seconds& sec)
 {
    _write_deadline = sec;
    return std::error_code();
 }
 
-template <typename SocketT>
+template<typename SocketT>
 std::chrono::seconds Connection<SocketT>::write_deadline() const
 {
    return _write_deadline;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 void Connection<SocketT>::on_read_timeout(const std::error_code& ec)
 {
    if (ec == asio::error::operation_aborted)
@@ -159,7 +159,7 @@ void Connection<SocketT>::on_read_timeout(const std::error_code& ec)
    close();
 }
 
-template <typename SocketT>
+template<typename SocketT>
 void Connection<SocketT>::on_write_timeout(const std::error_code& ec)
 {
    if (ec == asio::error::operation_aborted)
@@ -172,7 +172,7 @@ void Connection<SocketT>::on_write_timeout(const std::error_code& ec)
    close();
 }
 
-template <typename SocketT>
+template<typename SocketT>
 void Connection<SocketT>::start_read_timer()
 {
    if (read_deadline() == std::chrono::seconds::zero())
@@ -180,11 +180,11 @@ void Connection<SocketT>::start_read_timer()
 
    _read_deadline_timer.expires_from_now(read_deadline());
 
-   _read_deadline_timer.async_wait(std::bind(
-      &Connection::on_read_timeout, this, std::placeholders::_1));
+   _read_deadline_timer.async_wait(
+      std::bind(&Connection::on_read_timeout, this, std::placeholders::_1));
 }
 
-template <typename SocketT>
+template<typename SocketT>
 void Connection<SocketT>::start_write_timer()
 {
    if (write_deadline() == std::chrono::seconds::zero())
@@ -192,29 +192,29 @@ void Connection<SocketT>::start_write_timer()
 
    _write_deadline_timer.expires_from_now(write_deadline());
 
-   _write_deadline_timer.async_wait(std::bind(
-      &Connection::on_write_timeout, this, std::placeholders::_1));
+   _write_deadline_timer.async_wait(
+      std::bind(&Connection::on_write_timeout, this, std::placeholders::_1));
 }
 
-template <typename SocketT>
+template<typename SocketT>
 SteadyTimer& Connection<SocketT>::read_deadline_timer()
 {
    return _read_deadline_timer;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 SteadyTimer& Connection<SocketT>::write_deadline_timer()
 {
    return _write_deadline_timer;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 SocketT& Connection<SocketT>::socket()
 {
    return _socket;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 void Connection<SocketT>::accept()
 {
    local_endpoint(convert(_socket.local_endpoint()));
@@ -232,7 +232,7 @@ void Connection<SocketT>::accept()
    do_read();
 }
 
-template <typename SocketT>
+template<typename SocketT>
 void Connection<SocketT>::dump_socket_options()
 {
    log::write("Socket options:");
@@ -272,7 +272,7 @@ void Connection<SocketT>::dump_socket_options()
 }
 
 //--------------------------------------------------------------------------------------------------
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const KeepAlive& value)
 {
    asio::error_code ec;
@@ -280,7 +280,7 @@ inline std::error_code set_option(Connection<SocketT>& conn, const KeepAlive& va
    return ec;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const Broadcast& value)
 {
    asio::error_code ec;
@@ -288,7 +288,7 @@ inline std::error_code set_option(Connection<SocketT>& conn, const Broadcast& va
    return ec;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const Debug& value)
 {
    asio::error_code ec;
@@ -296,7 +296,7 @@ inline std::error_code set_option(Connection<SocketT>& conn, const Debug& value)
    return ec;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const DoNotRoute& value)
 {
    asio::error_code ec;
@@ -304,7 +304,7 @@ inline std::error_code set_option(Connection<SocketT>& conn, const DoNotRoute& v
    return ec;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const EnableConnectionAborted& value)
 {
    asio::error_code ec;
@@ -312,7 +312,7 @@ inline std::error_code set_option(Connection<SocketT>& conn, const EnableConnect
    return ec;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const Linger& value)
 {
    asio::error_code ec;
@@ -320,7 +320,7 @@ inline std::error_code set_option(Connection<SocketT>& conn, const Linger& value
    return ec;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const ReuseAddress& value)
 {
    asio::error_code ec;
@@ -328,7 +328,7 @@ inline std::error_code set_option(Connection<SocketT>& conn, const ReuseAddress&
    return ec;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const ReceiveBufferSize& value)
 {
    asio::error_code ec;
@@ -336,7 +336,7 @@ inline std::error_code set_option(Connection<SocketT>& conn, const ReceiveBuffer
    return ec;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const ReceiveLowWatermark& value)
 {
    asio::error_code ec;
@@ -344,7 +344,7 @@ inline std::error_code set_option(Connection<SocketT>& conn, const ReceiveLowWat
    return ec;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const SendBufferSize& value)
 {
    asio::error_code ec;
@@ -352,7 +352,7 @@ inline std::error_code set_option(Connection<SocketT>& conn, const SendBufferSiz
    return ec;
 }
 
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const SendLowWatermark& value)
 {
    asio::error_code ec;

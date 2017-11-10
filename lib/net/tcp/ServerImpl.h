@@ -5,7 +5,6 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-
 #ifndef ORION_NET_TCP_SERVERIMPL_H
 #define ORION_NET_TCP_SERVERIMPL_H
 
@@ -25,7 +24,7 @@ namespace net
 namespace tcp
 {
 /// Implement a tcp server with lib asio
-class ServerImpl 
+class ServerImpl
 {
 public:
    NO_COPY(ServerImpl)

@@ -29,7 +29,7 @@ public:
    /// Reports whether Address is a multicast address.
    virtual bool is_multicast() const = 0;
    /// Reports whether Address is an unspecified address.
-   virtual bool is_unspecified() const = 0;  
+   virtual bool is_unspecified() const = 0;
 };
 
 /// Returns the string form of the address

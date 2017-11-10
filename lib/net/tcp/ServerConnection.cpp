@@ -27,9 +27,7 @@ ServerConnection::ServerConnection(asio::io_service& io_service, const Handler& 
 {
 }
 
-ServerConnection::~ServerConnection()
-{
-}
+ServerConnection::~ServerConnection() {}
 
 std::error_code ServerConnection::on_handler(std::streambuf* in, std::streambuf* out)
 {

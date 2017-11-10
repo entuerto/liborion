@@ -19,12 +19,15 @@ namespace net
 
 //---------------------------------------------------------------------------------------
 // AddressV6
-AddressV6 AddressV6::zero                      = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-AddressV6 AddressV6::unspecified               = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-AddressV6 AddressV6::loopback                  = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-AddressV6 AddressV6::interface_local_all_nodes = {0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01};
-AddressV6 AddressV6::link_local_all_nodes      = {0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01};
-AddressV6 AddressV6::link_local_all_routers    = {0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x02};
+AddressV6 AddressV6::zero        = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+AddressV6 AddressV6::unspecified = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+AddressV6 AddressV6::loopback    = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+AddressV6 AddressV6::interface_local_all_nodes =
+   {0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01};
+AddressV6 AddressV6::link_local_all_nodes =
+   {0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01};
+AddressV6 AddressV6::link_local_all_routers =
+   {0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x02};
 
 AddressV6::AddressV6()
    : _a()
@@ -58,9 +61,7 @@ AddressV6::AddressV6(AddressV6&& other)
 {
 }
 
-AddressV6::~AddressV6()
-{
-}
+AddressV6::~AddressV6() {}
 
 AddressV6& AddressV6::operator=(const AddressV6& rhs)
 {
@@ -76,7 +77,7 @@ AddressV6& AddressV6::operator=(const AddressV6& rhs)
 
 AddressV6& AddressV6::operator=(AddressV6&& rhs)
 {
-   _a = std::move(rhs._a);
+   _a        = std::move(rhs._a);
    _scope_id = std::move(rhs._scope_id);
    return *this;
 }
@@ -109,7 +110,8 @@ bool AddressV6::is_multicast() const
 
 bool AddressV6::is_unspecified() const
 {
-   return std::equal(std::begin(_a.s6_addr), std::end(_a.s6_addr), std::begin(unspecified._a.s6_addr));
+   return std::equal(
+      std::begin(_a.s6_addr), std::end(_a.s6_addr), std::begin(unspecified._a.s6_addr));
 }
 
 std::array<uint8_t, 16> AddressV6::to_bytes() const
@@ -138,19 +140,23 @@ bool operator==(const AddressV6& a1, const AddressV6& a2)
 
 bool operator!=(const AddressV6& a1, const AddressV6& a2)
 {
-   return not (a1 == a2);
+   return not(a1 == a2);
 }
 
 bool operator<(const AddressV6& a1, const AddressV6& a2)
 {
-   return std::lexicographical_compare(std::begin(a1._a.s6_addr), std::end(a1._a.s6_addr), 
-                                       std::begin(a2._a.s6_addr), std::end(a2._a.s6_addr));
+   return std::lexicographical_compare(std::begin(a1._a.s6_addr),
+                                       std::end(a1._a.s6_addr),
+                                       std::begin(a2._a.s6_addr),
+                                       std::end(a2._a.s6_addr));
 }
 
 bool operator>(const AddressV6& a1, const AddressV6& a2)
 {
-   return not std::lexicographical_compare(std::begin(a1._a.s6_addr), std::end(a1._a.s6_addr), 
-                                           std::begin(a2._a.s6_addr), std::end(a2._a.s6_addr));
+   return not std::lexicographical_compare(std::begin(a1._a.s6_addr),
+                                           std::end(a1._a.s6_addr),
+                                           std::begin(a2._a.s6_addr),
+                                           std::end(a2._a.s6_addr));
 }
 
 bool operator<=(const AddressV6& a1, const AddressV6& a2)

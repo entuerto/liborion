@@ -24,7 +24,7 @@ namespace net
 class API_EXPORT AddressV4 : public Address
 {
 public:
-   /// Default constructor 
+   /// Default constructor
    AddressV4();
    /// Construct an address from an unsigned integer in host byte order.
    AddressV4(uint32_t value);
@@ -58,7 +58,7 @@ public:
    virtual bool is_multicast() const override;
    /// Reports whether ip is an unspecified address.
    virtual bool is_unspecified() const override;
-   
+
    /// Get the address in bytes, in network byte order.
    std::array<uint8_t, 4> to_bytes() const;
    /// Get the address as an unsigned long in host byte order.
@@ -67,7 +67,7 @@ public:
 public:
    //
    // Friends:
-   // 
+   //
    friend API_EXPORT std::string to_string(const AddressV4& addr);
 
    friend API_EXPORT bool operator==(const AddressV4& a1, const AddressV4& a2);

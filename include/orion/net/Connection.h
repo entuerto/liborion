@@ -26,9 +26,8 @@ namespace net
 ///
 /// Connection is a generic stream-oriented network connection.
 ///
-template <typename SocketT>
-class Connection
-   : public std::enable_shared_from_this<Connection<SocketT>>
+template<typename SocketT>
+class Connection : public std::enable_shared_from_this<Connection<SocketT>>
 {
 public:
    NO_COPY(Connection)
@@ -92,7 +91,7 @@ public:
 protected:
    void dump_socket_options();
 
-      /// Handle timeout
+   /// Handle timeout
    void on_read_timeout(const std::error_code& ec);
    void on_write_timeout(const std::error_code& ec);
 
@@ -117,47 +116,47 @@ private:
 };
 
 /// Sets whether the operating system should send keepalive messages on the connection.
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const KeepAlive& value);
 
 /// Socket option to permit sending of broadcast messages.
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const Broadcast& value);
 
 /// Socket option to enable socket-level debugging.
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const Debug& value);
 
 /// Socket option to prevent routing, use local interfaces only.
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const DoNotRoute& value);
 
 /// Socket option to report aborted connections on accept.
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const EnableConnectionAborted& value);
 
 /// Socket option to specify whether the socket lingers on close if unsent data is present.
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const Linger& value);
 
 /// Socket option to allow the socket to be bound to an address that is already in use.
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const ReuseAddress& value);
 
 /// Socket option for the receive buffer size of a socket.
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const ReceiveBufferSize& value);
 
 /// Socket option for the receive low watermark.
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const ReceiveLowWatermark& value);
 
 /// Socket option for the send buffer size of a socket.
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const SendBufferSize& value);
 
 /// Socket option for the send low watermark.
-template <typename SocketT>
+template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const SendLowWatermark& value);
 } // net
 } // orion

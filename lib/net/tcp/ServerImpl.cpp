@@ -5,7 +5,6 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-
 #include <net/tcp/ServerImpl.h>
 
 #include <orion/Log.h>
@@ -44,9 +43,7 @@ ServerImpl::ServerImpl(Handler h)
 {
 }
 
-ServerImpl::~ServerImpl()
-{
-}
+ServerImpl::~ServerImpl() {}
 
 int ServerImpl::port() const
 {
@@ -164,7 +161,7 @@ void ServerImpl::setup_signals()
    _signals.add(SIGINT);
    _signals.add(SIGTERM);
 
-#if defined(SIGQUIT)   
+#if defined(SIGQUIT)
    _signals.add(SIGQUIT);
 #endif
 

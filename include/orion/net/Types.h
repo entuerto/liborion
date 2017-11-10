@@ -11,17 +11,17 @@
 #include <orion/Orion-Stddefs.h>
 
 #if defined(ORION_WINDOWS)
-# include <winsock2.h>
-# include <ws2tcpip.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #else
-# include <arpa/inet.h>
-# include <sys/ioctl.h>
-# include <sys/socket.h>
-# include <sys/types.h>
-# include <sys/uio.h>
-# include <sys/un.h>
-# include <netdb.h>
-# include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <sys/un.h>
 #endif
 
 namespace orion
@@ -58,7 +58,6 @@ typedef sockaddr_in6 sockaddr_in6_type;
 
 typedef sockaddr_storage sockaddr_storage_type;
 typedef addrinfo addrinfo_type;
-
 
 #endif
 

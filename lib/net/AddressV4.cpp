@@ -51,9 +51,7 @@ AddressV4::AddressV4(AddressV4&& other)
 {
 }
 
-AddressV4::~AddressV4()
-{
-}
+AddressV4::~AddressV4() {}
 
 AddressV4& AddressV4::operator=(const AddressV4& rhs)
 {
@@ -155,12 +153,12 @@ bool operator>(const AddressV4& a1, const AddressV4& a2)
 
 bool operator<=(const AddressV4& a1, const AddressV4& a2)
 {
-  return a1.to_ulong() <= a2.to_ulong();
+   return a1.to_ulong() <= a2.to_ulong();
 }
 
 bool operator>=(const AddressV4& a1, const AddressV4& a2)
 {
-  return a1.to_ulong() >= a2.to_ulong();
+   return a1.to_ulong() >= a2.to_ulong();
 }
 
 } // net

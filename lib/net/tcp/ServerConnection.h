@@ -23,8 +23,7 @@ namespace tcp
 {
 
 ///
-class ServerConnection 
-   : public Connection<TcpSocket>
+class ServerConnection : public Connection<TcpSocket>
 {
 public:
    ServerConnection(asio::io_service& io_service, const Handler& handler);
@@ -43,10 +42,10 @@ private:
    /// Request handler
    const Handler& _handler;
 
-   /// Buffer for incoming data. 
+   /// Buffer for incoming data.
    StreamBuffer _in_streambuf;
 
-   /// Buffer for outgoing data. 
+   /// Buffer for outgoing data.
    StreamBuffer _out_streambuf;
 
    std::size_t _in_buffer_size;
