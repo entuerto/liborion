@@ -64,7 +64,8 @@ orion_incl = files(
    'orion/unittest/TestResult.h',
    'orion/unittest/TestRunner.h',
    'orion/unittest/TestStdOutput.h',
-   'orion/unittest/TestSuite.h'
+   'orion/unittest/TestSuite.h',
+   'orion/unittest/impl/Test.ipp'
    )
 
 install_headers(orion_incl)

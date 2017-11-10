@@ -131,6 +131,8 @@ struct FindLast<I, T, T, Ts...> : Max<IntType<I>, FindLast<I + 1, T, Ts...>>
 };
 } // namespace detail
 
+//-------------------------------------------------------------------------------------------------
+
 template<typename T, typename U>
 struct Find;
 
@@ -146,6 +148,28 @@ template<typename T, typename... Ts>
 struct FindLast<T, List<Ts...>> : detail::FindLast<0, T, Ts...>
 {
 };
+
+//-------------------------------------------------------------------------------------------------
+
+template<class T,
+         class... Args,
+         typename std::enable_if<Find<T, List<Args...>>() == -1, bool>::type = true>
+bool has_type(std::tuple<Args...>& tup) noexcept
+{
+   return false;
+}
+
+template<class T,
+         class... Args,
+         typename std::enable_if<Find<T, List<Args...>>() != -1, bool>::type = true>
+bool has_type(std::tuple<Args...>& tup) noexcept
+{
+   constexpr int idx = Find<T, List<Args...>>();
+
+   return idx >= 0;
+}
+
+//-------------------------------------------------------------------------------------------------
 
 template<class T,
          class... Args,
@@ -165,6 +189,8 @@ const T& get_value(std::tuple<Args...>& tup, const T& def) noexcept
    return std::get<idx>(tup);
 }
 
+//-------------------------------------------------------------------------------------------------
+
 template<class T,
          class... Args,
          typename std::enable_if<FindLast<T, List<Args...>>() == -1, bool>::type = true>
@@ -183,6 +209,8 @@ const T& get_last_value(std::tuple<Args...>& tup, const T& def) noexcept
    return std::get<idx>(tup);
 }
 
+//-------------------------------------------------------------------------------------------------
+
 template<class... Args, typename Function, std::size_t... Indices>
 constexpr void get_all_impl(Function&& f, std::tuple<Args...>& t, std::index_sequence<Indices...>)
 {
@@ -198,7 +226,7 @@ constexpr void get_all_values(Function&& f, std::tuple<Args...>& t)
                        std::make_index_sequence<std::tuple_size<std::tuple<Args...>>::value>{});
 }
 
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
    
 template <class T, std::size_t N>
 std::ostream& operator<<(std::ostream& o, const std::array<T, N>& arr)

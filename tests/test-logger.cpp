@@ -60,14 +60,14 @@ TestSuite(OrionCore_Logger, SetupFunc{setup_logger})
 //----------------------------------------------------------------------------
 void log_default_level(Test& t)
 {
-   t.assert<std::equal_to<>>(Level::NotSet, logger.level(), _src_loc);
+   t.assert<eq>(Level::NotSet, logger.level(), _src_loc);
 }
 
 void log_level_change(Test& t)
 {
    logger.level(Level::Warning);
 
-   t.assert<std::equal_to<>>(Level::Warning, logger.level(), _src_loc);
+   t.assert<eq>(Level::Warning, logger.level(), _src_loc);
 }
 
 void log_level_output(Test& t)
@@ -78,19 +78,19 @@ void log_level_output(Test& t)
 
    LOG(Debug) << "Debug message";
 
-   t.assert<std::equal_to<>>(Level::NotSet, output_record.level(), _src_loc);
+   t.assert<eq>(Level::NotSet, output_record.level(), _src_loc);
 
    output_record.level(Level::NotSet);
 
    LOG(Warning) << "Warning message";
 
-   t.assert<std::equal_to<>>(Level::Warning, output_record.level(), _src_loc);
+   t.assert<eq>(Level::Warning, output_record.level(), _src_loc);
 
    output_record.level(Level::NotSet);
 
    LOG(Error) << "Error message";
 
-   t.assert<std::equal_to<>>(Level::Error, output_record.level(), _src_loc);
+   t.assert<eq>(Level::Error, output_record.level(), _src_loc);
 }
 
 void log_error_message(Test& t)
@@ -99,8 +99,8 @@ void log_error_message(Test& t)
 
    LOG(Error) << "Error message";
 
-   t.assert<std::equal_to<>>(Level::Error, output_record.level(), _src_loc);
-   t.assert<std::equal_to<>>(std::string{"Error message"}, output_record.message(), _src_loc);
+   t.assert<eq>(Level::Error, output_record.level(), _src_loc);
+   t.assert<eq>(std::string{"Error message"}, output_record.message(), _src_loc);
 }
 
 void log_fail_message(Test& t)
@@ -111,8 +111,8 @@ void log_fail_message(Test& t)
 
    LOG_IF_FAIL(Error, 1 == 0)
 
-   t.assert<std::equal_to<>>(Level::Error, output_record.level(), _src_loc);
-   t.assert<std::equal_to<>>(std::string{"Condition failed ( 1 == 0 )"}, output_record.message(), _src_loc);
+   t.assert<eq>(Level::Error, output_record.level(), _src_loc);
+   t.assert<eq>(std::string{"Condition failed ( 1 == 0 )"}, output_record.message(), _src_loc);
 }
 
 void log_record_output(Test& t)
@@ -121,11 +121,11 @@ void log_record_output(Test& t)
 
    auto sl = output_record.source_location();
 
-   t.assert<std::equal_to<>>(Level::Message, output_record.level(), _src_loc);
-   t.assert<std::equal_to<>>(std::string{"FileName"}, sl.file_name, _src_loc);
-   t.assert<std::equal_to<>>(99, sl.line_number, _src_loc);
-   t.assert<std::equal_to<>>(std::string{"function name"}, sl.function_name, _src_loc);
-   t.assert<std::equal_to<>>(std::string{"message"}, output_record.message(), _src_loc);
+   t.assert<eq>(Level::Message, output_record.level(), _src_loc);
+   t.assert<eq>(std::string{"FileName"}, sl.file_name, _src_loc);
+   t.assert<eq>(99, sl.line_number, _src_loc);
+   t.assert<eq>(std::string{"function name"}, sl.function_name, _src_loc);
+   t.assert<eq>(std::string{"message"}, output_record.message(), _src_loc);
 }
 
 RegisterTestCase(OrionCore_Logger, log_default_level);

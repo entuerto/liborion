@@ -113,7 +113,7 @@ bool Runner::run_tests(Output& output, const std::string& suite_name /* = "" */)
    stats.time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
    output.write_summary(stats);
-   return stats.failed_count > 0;
+   return stats.failed_count == 0;
 }
 
 Runner& Runner::runner()

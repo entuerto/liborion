@@ -26,6 +26,16 @@ class Test;
 
 using TestCaseFunc = std::function<void(Test&)>;
 
+enum
+{
+   lt, // Less then
+   le, // Less equal then
+   eq, // Equals
+   ne, // Not equals
+   ge, // Greater then
+   gt  // Greater equals then
+};
+
 //---------------------------------------------------------------------------------------
 
 ///
@@ -68,13 +78,16 @@ public:
    void set_option(option::Disabled opt);
 
    template<class Func, typename T, typename... Args>
-   bool assert(const T& expected, const T& actual, Args... args);
+   void assert(const T& expected, const T& actual, Args... args);
+
+   template<int op, typename T, typename... Args>
+   void assert(const T& expected, const T& actual, Args... args);
 
    template<bool ExpectedValue, typename... Args>
-   bool assert(const bool value, Args... args);
+   void assert(const bool value, Args... args);
 
    template<typename ExpectedException, typename Func, typename... Args>
-   bool assert_throw(Func f, Args... args);
+   void assert_throw(Func f, Args... args);
 
    template<typename... Args>
    void fail(Args... args);
@@ -101,84 +114,6 @@ private:
    TestCaseFunc _func;
 };
 
-template<class Func, typename T, typename... Args>
-bool Test::assert(const T& expected, const T& actual, Args... args)
-{
-   Func cmp;
-
-   if (cmp(expected, actual))
-   {
-      _test_result.log_success();
-      return true;
-   }
-
-   _test_result.log_failure(expected, actual, args...);
-
-   return false;
-}
-
-template<bool ExpectedValue, typename... Args>
-bool Test::assert(const bool value, Args... args)
-{
-   if (value == ExpectedValue)
-   {
-      _test_result.log_success();
-      return true;
-   }
-
-   _test_result.log_failure(ExpectedValue, value, args...);
-
-   return false;
-}
-
-template<typename ExpectedException, typename Func, typename... Args>
-bool Test::assert_throw(Func f, Args... args)
-{
-   try
-   {
-      f();
-   }
-   catch (const ExpectedException&)
-   {
-      _test_result.log_success();
-      return true;
-   }
-   catch (const std::exception& e)
-   {
-      _test_result.log_exception(e, "An unexpected exception was thrown: ", args...);
-      return false;
-   }
-   catch (...)
-   {
-      _test_result.log_exception(
-         std::current_exception(), "An unexpected, unknown exception was thrown: ", args...);
-      return false;
-   }
-   // Not thrown
-   fail("The exception was not thrown: ", type_name<ExpectedException>(), args...);
-   return false;
-}
-
-template<typename... Args>
-void Test::fail(Args... args)
-{
-   _test_result.log_failure(args...);
-}
-
-template<typename... Args>
-void Test::fail_if(const bool value, Args... args)
-{
-   if (not value)
-   {
-      _test_result.log_success();
-      return;
-   }
-
-   _test_result.log_failure(false, value, args...);
-
-   return;
-}
-
 //---------------------------------------------------------------------------------------
 
 inline void set_options(Test& /* test */)
@@ -200,5 +135,7 @@ void set_options(Test& test, O&& opt, Opts&&... opts)
 
 } // namespace orion
 } // namespace unittest
+
+#include <orion/unittest/impl/Test.ipp>
 
 #endif /* ORION_UNITTEST_TEST_H */

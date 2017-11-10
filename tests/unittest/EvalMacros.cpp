@@ -53,7 +53,7 @@ void check_failure_on_false(Test& t)
 void check_function_failure_on_exception(Test& t)
 {
    Test scope_test("scope test", Suite("testSuite"), [](Test& st) { 
-      st.assert<std::equal_to<>>(calc_throwing_function(), 1); 
+      st.assert<eq>(calc_throwing_function(), 1); 
    });
 
    scope_test.execute_test();

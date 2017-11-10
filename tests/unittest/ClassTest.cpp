@@ -54,7 +54,7 @@ void has_same_name_and_suite_name_as_test_result(Test& t)
 {
    auto test_result = t.test_result();
 
-   t.assert<std::equal_to<>>(t.name(), test_result.name(), _src_loc);
+   t.assert<eq>(t.name(), test_result.name(), _src_loc);
 }
 
 RegisterTestCase(OrionCore, passing_test_has_no_failures);
