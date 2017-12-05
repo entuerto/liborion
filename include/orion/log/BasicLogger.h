@@ -9,6 +9,7 @@
 #define ORION_LOG_BASICLOGGER_H
 
 #include <orion/Orion-Stddefs.h>
+
 #include <orion/Exception.h>
 #include <orion/log/Level.h>
 #include <orion/log/OutputHandler.h>
@@ -44,8 +45,6 @@ public:
       : asio::basic_io_object<Service>(io_service)
    {
    }
-
-   ~BasicLogger() = default;
 
    /// Get the logging level
    Level level() const;

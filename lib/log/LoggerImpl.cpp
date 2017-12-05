@@ -10,6 +10,7 @@
 #include <log/EndRecord.h>
 #include <log/StartRecord.h>
 #include <log/SystemInfoRecord.h>
+
 #include <functional>
 
 namespace orion
@@ -18,14 +19,9 @@ namespace log
 {
 
 LoggerImpl::LoggerImpl(Level level)
-   : _output_handlers()
-   , _level(level)
+   : _level(level)
    , _is_running(false)
    , _scope_depth(0)
-{
-}
-
-LoggerImpl::~LoggerImpl()
 {
 }
 
@@ -74,7 +70,7 @@ void LoggerImpl::write(const Record& record)
 }
 
 /// Starts the logging
-void LoggerImpl::start(SystemInfoFunc system_info)
+void LoggerImpl::start(const SystemInfoFunc& system_info)
 {
    resume();
    write(StartRecord());

@@ -20,15 +20,15 @@ namespace orion
 {
 namespace log
 {
-//! A Record represents an event being logged.
-/*!
-    A Record instance is created every time something is logged. They
-    contain all the information pertinent to the event being logged.
+/// A Record represents an event being logged.
+///
+/// A Record instance is created every time something is logged. They
+/// contain all the information pertinent to the event being logged.
 
-    All usefull information is passed to the Record to log. It is
-    the jog of th Formatter to format the Records information that
-    will be saved by the OutputHandler.
- */
+/// All usefull information is passed to the Record to log. It is
+/// the jog of th Formatter to format the Records information that
+/// will be saved by the OutputHandler.
+///
 class API_EXPORT Record
 {
 public:
@@ -40,18 +40,18 @@ public:
 
    Record(Level level, const std::string& msg, const SourceLocation& src_loc);
 
-   Record(Record&& rhs);
+   Record(Record&& rhs) noexcept;
 
-   virtual ~Record();
+   virtual ~Record() = default;
 
    /// Returns the level of the log record
-   virtual Level level() const;
+   Level level() const;
 
    /// Records the level of the log record
-   virtual void level(Level level);
+   void level(Level level);
 
    /// Returns the time stamp of the log record
-   virtual TimePoint<> time_stamp() const;
+   TimePoint<> time_stamp() const;
 
    /// Returns the message recorded
    virtual std::string message() const;
@@ -63,12 +63,12 @@ public:
    virtual void append_message(const std::string& text);
 
    /// Returns the source location recorded
-   virtual const SourceLocation& source_location() const;
+   const SourceLocation& source_location() const;
 
    /// Records source location
-   virtual void source_location(const SourceLocation& value);
+   void source_location(const SourceLocation& value);
 
-   Record& operator=(Record&& rhs);
+   Record& operator=(Record&& rhs) noexcept;
 
    template<typename T>
    Record& operator<<(const T& value);

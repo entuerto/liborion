@@ -22,14 +22,6 @@ namespace log
 //--------------------------------------------------------------------------
 // Class OnelineWithSourceInfoFormatter
 
-OnelineWithSourceInfoFormatter::OnelineWithSourceInfoFormatter()
-{
-}
-
-OnelineWithSourceInfoFormatter::~OnelineWithSourceInfoFormatter()
-{
-}
-
 std::string OnelineWithSourceInfoFormatter::format(const Record& record)
 {
    if (record.level() == Level::NotSet)

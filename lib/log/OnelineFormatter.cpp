@@ -21,14 +21,6 @@ namespace log
 //--------------------------------------------------------------------------
 // Class OnelineFormatter
 
-OnelineFormatter::OnelineFormatter()
-{
-}
-
-OnelineFormatter::~OnelineFormatter()
-{
-}
-
 std::string OnelineFormatter::format(const Record& record)
 {
    if (record.level() == Level::NotSet)

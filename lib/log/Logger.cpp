@@ -7,6 +7,9 @@
 //
 #include <orion/log/Logger.h>
 
+#include <orion/Log.h>
+#include <orion/Utils.h>
+
 #include <orion/System.h>
 #include <sstream>
 
@@ -14,20 +17,28 @@ namespace orion
 {
 namespace log
 {
-static asio::io_service private_service;
-
 //-------------------------------------------------------------------------------------------------
 
 Logger& default_logger()
 {
-   static Logger logger(private_service);
+   try
+   {
+      static asio::io_service private_service;
+      static Logger logger(private_service);
 
-   return logger;
+      return logger;
+   }
+   catch (...)
+   {
+      log::error(type_name(std::current_exception()), 
+         "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::terminate();
+   }
 }
 
 void start(SystemInfoFunc system_info /* = DefaultInfo */)
 {
-   default_logger().start(system_info);
+   default_logger().start(std::move(system_info));
 }
 
 void shutdown()

@@ -16,8 +16,7 @@ namespace log
 {
 
 StreamOutputHandler::StreamOutputHandler(std::ostream& stream)
-   : OutputHandler()
-   , _ostream(stream)
+   : _ostream(stream)
 {
 }
 
@@ -31,7 +30,6 @@ void StreamOutputHandler::write(const Record& record)
 void StreamOutputHandler::flush()
 {
    _ostream << std::flush;
-   ;
 }
 
 void StreamOutputHandler::close()

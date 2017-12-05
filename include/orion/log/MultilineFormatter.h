@@ -27,8 +27,6 @@ class Record;
 class API_EXPORT MultilineFormatter : public Formatter
 {
 public:
-   MultilineFormatter();
-   virtual ~MultilineFormatter();
 
    virtual std::string format(const Record& record);
 

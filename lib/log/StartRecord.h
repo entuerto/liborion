@@ -17,16 +17,14 @@ namespace orion
 {
 namespace log
 {
-//! First Record sent when logging
-/*!
-    This Record tells the user that the logging
-    process is about to start.
- */
+/// First Record sent when logging
+///
+/// This Record tells the user that the logging
+/// process is about to start.
+///
 class StartRecord : public Record
 {
 public:
-   virtual ~StartRecord() = default;
-
    virtual std::string message() const override;
 };
 

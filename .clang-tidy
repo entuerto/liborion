@@ -1,5 +1,5 @@
 ---
-Checks:          'bugprone-*,cert-*,clang-diagnostic-*,clang-analyzer-*,hicpp-*,llvm-*,misc-*,modernize-*,performance-*,readability-*'
+Checks:          'bugprone-*,cert-*,clang-diagnostic-*,clang-analyzer-*,hicpp-*,llvm-*,misc-*,modernize-*,performance-*,readability-*,-readability-braces-around-statements'
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false

@@ -20,14 +20,6 @@ namespace log
 //--------------------------------------------------------------------------
 // Class MultilineFormatter
 
-MultilineFormatter::MultilineFormatter()
-{
-}
-
-MultilineFormatter::~MultilineFormatter()
-{
-}
-
 std::string MultilineFormatter::format(const Record& record)
 {
    if (record.level() == Level::NotSet)

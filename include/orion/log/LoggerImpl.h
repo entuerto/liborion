@@ -32,7 +32,7 @@ public:
 
    explicit LoggerImpl(Level level);
 
-   ~LoggerImpl();
+   ~LoggerImpl() = default;
 
    /// Get the logging level
    Level level() const;
@@ -53,7 +53,7 @@ public:
    void write(const Record& record);
 
    /// Starts the logging
-   void start(SystemInfoFunc system_info);
+   void start(const SystemInfoFunc& system_info);
 
    /// Shuts down the logger
    void shutdown();

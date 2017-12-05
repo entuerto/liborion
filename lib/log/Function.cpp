@@ -14,9 +14,9 @@ namespace orion
 {
 namespace log
 {
-/*!
-   Constructor
- */
+/// 
+/// Constructor
+/// 
 Function::Function(Level level, const SourceLocation& src_loc)
    : _level(level)
    , _name(src_loc.function_name)
@@ -30,17 +30,8 @@ Function::Function(Level level, const SourceLocation& src_loc)
    logger.push_scope();
 }
 
-/*
-   Copy constructor
- */
-Function::Function(const Function& rhs)
+Function::Function(Function&& rhs) noexcept
    : _level(rhs._level)
-   , _name(rhs._name)
-{
-}
-
-Function::Function(Function&& rhs)
-   : _level(std::move(rhs._level))
    , _name(std::move(rhs._name))
 {
 }
@@ -56,33 +47,33 @@ Function::~Function()
    logger += Record(_level, "") << "Exiting function: " << _name;
 }
 
-/*!
-   Returns the level of the log record
- */
+/// 
+/// Returns the level of the log record
+/// 
 Level Function::level() const
 {
    return _level;
 }
 
-/*!
-   Records the level of the log record
- */
+/// 
+/// Records the level of the log record
+/// 
 void Function::level(Level level)
 {
    _level = level;
 }
 
-/*!
-   Returns the function name recorded
- */
+/// 
+/// Returns the function name recorded
+/// 
 std::string Function::name() const
 {
    return _name;
 }
 
-/*!
-   Records a function name
- */
+/// 
+/// Records a function name
+/// 
 void Function::name(const std::string& value)
 {
    _name = value;
@@ -99,9 +90,9 @@ Function& Function::operator=(const Function& rhs)
    return *this;
 }
 
-Function& Function::operator=(Function&& rhs)
+Function& Function::operator=(Function&& rhs) noexcept
 {
-   _level = std::move(rhs._level);
+   _level = rhs._level;
    _name  = std::move(rhs._name);
 
    return *this;

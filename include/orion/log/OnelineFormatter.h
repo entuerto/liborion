@@ -26,9 +26,6 @@ class Record;
 class API_EXPORT OnelineFormatter : public Formatter
 {
 public:
-   OnelineFormatter();
-   virtual ~OnelineFormatter();
-
    virtual std::string format(const Record& record);
 };
 

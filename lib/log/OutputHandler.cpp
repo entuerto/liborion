@@ -20,9 +20,7 @@ OutputHandler::OutputHandler()
 {
 }
 
-OutputHandler::~OutputHandler()
-{
-}
+OutputHandler::~OutputHandler() = default;
 
 Formatter* OutputHandler::formatter() const
 {
@@ -32,6 +30,7 @@ Formatter* OutputHandler::formatter() const
 ///
 /// the output handler takes ownership of the formatter.
 /// @param formatter  Formatter for the output
+/// 
 void OutputHandler::set_formatter(std::unique_ptr<Formatter>&& formatter)
 {
    _formatter = std::move(formatter);
