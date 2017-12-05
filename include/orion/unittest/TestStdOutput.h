@@ -19,8 +19,9 @@ namespace orion
 namespace unittest
 {
 class Test;
+
 ///
-///
+/// Outputs the test report on the standard stream (stdout).
 ///
 class API_EXPORT StdOutput : public Output
 {

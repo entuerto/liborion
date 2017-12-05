@@ -23,9 +23,10 @@ namespace unittest
 //class Test;
 class Output;
 
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 ///
+/// Runs the defined tests.
 ///
 class API_EXPORT Runner
 {
@@ -33,10 +34,10 @@ public:
    Runner();
    virtual ~Runner() = default;
 
-   virtual uint32_t test_suite_count() const;
-   virtual uint32_t test_case_count() const;
+   uint32_t test_suite_count() const;
+   uint32_t test_case_count() const;
 
-   virtual Suite& add_test_suite(Suite&& suite);
+   Suite& add_test_suite(Suite&& suite);
 
    virtual bool run(int argc, char* argv[]);
 
@@ -53,7 +54,7 @@ private:
    ReportLevel _level;
 };
 
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 ///
 struct API_EXPORT RegisterTestSuiteHelper

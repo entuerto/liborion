@@ -20,12 +20,7 @@ namespace unittest
 Suite::Suite(const std::string& name)
    : _name(name)
    , _label(name)
-   , _description()
    , _is_enabled(true)
-   , _disabled_reason()
-   , _setup_func()
-   , _teardown_func()
-   , _test_cases()
    , _stats()
 {
 }
@@ -91,7 +86,7 @@ void Suite::set_option(TeardownFunc opt)
    _teardown_func = std::move(opt.func);
 }
 
-void Suite::set_option(Enabled opt)
+void Suite::set_option(Enabled /*opt*/)
 {
    _is_enabled = true;
 }
@@ -116,7 +111,6 @@ void Suite::teardown()
       _teardown_func();
 }
 
-///
 Test& Suite::add_test(const std::string& name, TestCaseFunc f)
 {
    Test t(name, *this, std::move(f));
@@ -124,14 +118,12 @@ Test& Suite::add_test(const std::string& name, TestCaseFunc f)
    return add_test(std::move(t));
 }
 
-///
 Test& Suite::add_test(Test&& test)
 {
    _test_cases.push_back(std::move(test));
    return _test_cases.back();
 }
 
-///
 void Suite::add_tests(std::initializer_list<Test> l)
 {
    _test_cases.insert(_test_cases.end(), l);
@@ -179,5 +171,5 @@ const OutputStats& Suite::run_tests(Output& output)
    return _stats;
 }
 
-} // namespace orion
 } // namespace unittest
+} // namespace orion

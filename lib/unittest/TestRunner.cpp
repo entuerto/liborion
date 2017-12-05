@@ -22,8 +22,7 @@ namespace unittest
 {
 
 Runner::Runner()
-   : _test_suites()
-   , _level(ReportLevel::Detailed)
+   : _level(ReportLevel::Detailed)
 {
 }
 
@@ -57,7 +56,7 @@ bool Runner::parse(int argc, char* argv[])
    opts::store(opts::parse_command_line(argc, argv, desc), vm);
    opts::notify(vm);
 
-   if (vm.count("help"))
+   if (vm.count("help") != 0u)
    {
       std::cout << desc << "\n";
       return false;
@@ -82,7 +81,7 @@ bool Runner::run(int argc, char* argv[])
    return run_tests(output);
 }
 
-bool Runner::run_tests(Output& output, const std::string& suite_name /* = "" */)
+bool Runner::run_tests(Output& output, const std::string& /*suite_name*/ /* = "" */)
 {
    OutputStats stats{};
 
@@ -123,5 +122,5 @@ Runner& Runner::runner()
    return s_runner;
 }
 
-} // namespace orion
 } // namespace unittest
+} // namespace orion

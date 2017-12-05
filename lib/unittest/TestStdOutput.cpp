@@ -25,16 +25,13 @@ namespace unittest
 //---------------------------------------------------------------------------------------
 
 StdOutput::StdOutput(std::ostream& stream, ReportLevel report_level /* = Error */)
-   : Output()
-   , _stream(stream)
+   : _stream(stream)
    , _report_level(report_level)
    , _indent(3)
 {
 }
 
-StdOutput::~StdOutput()
-{
-}
+StdOutput::~StdOutput() = default;
 
 void StdOutput::write_header(int test_count)
 {
@@ -181,5 +178,5 @@ void StdOutput::write_test_case(int indent, const Test& test)
    _stream << std::setw(indent) << "" << fmt::format("{:4} ms\n", r.time_elapsed().count());
 }
 
-} // namespace orion
 } // namespace unittest
+} // namespace orion

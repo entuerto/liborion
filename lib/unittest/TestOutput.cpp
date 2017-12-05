@@ -80,5 +80,5 @@ OutputStats& operator+=(OutputStats& lhs, const OutputStats& rhs)
    return lhs;
 }
 
-} // namespace orion
 } // namespace unittest
+} // namespace orion

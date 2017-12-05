@@ -94,7 +94,7 @@ inline void Test::assert(const T& expected, const T& actual, Args... args)
 }
 
 template<bool ExpectedValue, typename... Args>
-inline void Test::assert(const bool value, Args... args)
+inline void Test::assert(bool value, Args... args)
 {
    auto t = std::make_tuple(args...);
 
@@ -152,7 +152,7 @@ inline void Test::fail(Args... args)
 }
 
 template<typename... Args>
-inline void Test::fail_if(const bool value, Args... args)
+inline void Test::fail_if(bool value, Args... args)
 {
    auto t = std::make_tuple(args...);
 

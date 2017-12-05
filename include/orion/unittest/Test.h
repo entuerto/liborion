@@ -84,7 +84,7 @@ public:
    void assert(const T& expected, const T& actual, Args... args);
 
    template<bool ExpectedValue, typename... Args>
-   void assert(const bool value, Args... args);
+   void assert(bool value, Args... args);
 
    template<typename ExpectedException, typename Func, typename... Args>
    void assert_throw(Func f, Args... args);
@@ -93,7 +93,7 @@ public:
    void fail(Args... args);
 
    template<typename... Args>
-   void fail_if(const bool value, Args... args);
+   void fail_if(bool value, Args... args);
 
 protected:
    virtual void do_execute_test() const;
@@ -133,8 +133,8 @@ void set_options(Test& test, O&& opt, Opts&&... opts)
    set_options(test, std::forward<decltype(opts)>(opts)...);
 }
 
-} // namespace orion
 } // namespace unittest
+} // namespace orion
 
 #include <orion/unittest/impl/Test.ipp>
 

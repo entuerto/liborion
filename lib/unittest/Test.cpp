@@ -22,40 +22,25 @@ using namespace orion::unittest::option;
 
 //---------------------------------------------------------------------------------------
 
-/*!
- */
 Test::Test(const std::string& name, const Suite& suite)
    : _name(name)
    , _label(name)
-   , _description()
    , _is_enabled(true)
-   , _disabled_reason()
    , _test_result(name, suite.name())
-   , _setup_func()
-   , _teardown_func()
-   , _func()
 {
 }
 
 Test::Test(const std::string& name, const Suite& suite, TestCaseFunc&& f)
    : _name(name)
    , _label(name)
-   , _description()
    , _is_enabled(true)
-   , _disabled_reason()
    , _test_result(name, suite.name())
-   , _setup_func()
-   , _teardown_func()
    , _func(std::move(f))
 {
 }
 
-/*!
- */
 Test::~Test() = default;
 
-/*!
- */
 std::string Test::name() const
 {
    return _name;
@@ -96,7 +81,7 @@ void Test::set_option(TeardownFunc opt)
    _teardown_func = std::move(opt.func);
 }
 
-void Test::set_option(Enabled opt)
+void Test::set_option(Enabled /*unused*/)
 {
    _is_enabled = true;
 }
@@ -134,16 +119,12 @@ TestCaseFunc& Test::case_func()
    return _func;
 }
 
-/*!
- */
 void Test::do_execute_test() const
 {
    if (_func)
       _func(*const_cast<Test*>(this));
 }
 
-/*!
- */
 TestResult& Test::execute_test()
 {
    if (not enabled())
@@ -173,5 +154,5 @@ TestResult& Test::execute_test()
    return _test_result;
 }
 
-} // namespace orion
 } // namespace unittest
+} // namespace orion

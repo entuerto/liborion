@@ -54,9 +54,9 @@ struct OutputStats
 
 OutputStats& operator+=(OutputStats& lhs, const OutputStats& rhs);
 
-//!
-/*!
- */
+///
+/// Default interface for unit test output.
+///
 class Output
 {
 public:
@@ -78,7 +78,7 @@ public:
    virtual void write_summary(const OutputStats& stats) = 0;
 };
 
-} // namespace orion
 } // namespace unittest
+} // namespace orion
 
 #endif /* TESTOUTPUT_H */
