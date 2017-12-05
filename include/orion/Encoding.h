@@ -21,9 +21,9 @@ namespace encoding
 
 struct API_EXPORT BigEndian
 {
-   static uint16_t to_uint16(uint8_t* b);
-   static uint32_t to_uint32(uint8_t* b);
-   static uint64_t to_uint64(uint8_t* b);
+   static uint16_t to_uint16(const uint8_t* b);
+   static uint32_t to_uint32(const uint8_t* b);
+   static uint64_t to_uint64(const uint8_t* b);
 
    static void put_uint16(uint16_t v, uint8_t* b);
    static void put_uint32(uint32_t v, uint8_t* b);
@@ -34,9 +34,9 @@ struct API_EXPORT BigEndian
 
 struct API_EXPORT LittleEndian
 {
-   static uint16_t to_uint16(uint8_t* b);
-   static uint32_t to_uint32(uint8_t* b);
-   static uint64_t to_uint64(uint8_t* b);
+   static uint16_t to_uint16(const uint8_t* b);
+   static uint32_t to_uint32(const uint8_t* b);
+   static uint64_t to_uint64(const uint8_t* b);
 
    static void put_uint16(uint16_t v, uint8_t* b);
    static void put_uint32(uint32_t v, uint8_t* b);

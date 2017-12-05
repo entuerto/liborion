@@ -50,10 +50,10 @@ int compare_no_case(const std::string& str1, const std::string& str2)
       c2 = *s2++;
 
       if (c1 != c2 and ::tolower(c1) != ::tolower(c2)) // This includes the possibility that one of
-                                                       // the characters is the null-terminator,
+      {                                                // the characters is the null-terminator,
                                                        // which implies a string mismatch.
          return ::tolower(c1) - ::tolower(c2);
-
+      }
    } while (c2 != '\0'); // At this point, we know c1 == c2, so there's no need to test them both.
 
    return 0;
@@ -69,7 +69,9 @@ StringVector split(const std::string& text, char separator)
    StringVector v;
 
    if (text.empty())
+   {
       return v;
+   }
 
    std::string::size_type i = 0;
    std::string::size_type j = text.find(separator);
@@ -82,7 +84,9 @@ StringVector split(const std::string& text, char separator)
       j = text.find(separator, j);
 
       if (j == std::string::npos)
+      {
          v.push_back(text.substr(i, text.length()));
+      }
    }
    return v;
 }
@@ -90,7 +94,9 @@ StringVector split(const std::string& text, char separator)
 std::string& trim_left(std::string& text)
 {
    if (text.empty())
+   {
       return text;
+   }
 
    std::string::iterator it  = text.begin();
    std::string::iterator end = text.end();
@@ -98,20 +104,28 @@ std::string& trim_left(std::string& text)
    for (; it != end; ++it)
    {
       if (not std::isspace(*it, std::locale()))
+      {
          break;
+      }
    }
 
    if (it == text.end())
+   {
       text.clear();
+   }
    else
+   {
       text.erase(text.begin(), it);
+   }
    return text;
 }
 
 std::string& trim_right(std::string& text)
 {
    if (text.empty())
+   {
       return text;
+   }
 
    std::string::iterator it = --(text.end());
 
@@ -150,44 +164,6 @@ std::string& to_lower(std::string& text)
    return text;
 }
 
-uint32_t compute_hash(const std::string& text)
-{
-   const uint32_t BASE = 65521; // largest prime smaller than 65536
-
-   uint32_t checksum = 1;
-
-   //(By Per Bothner)
-   uint32_t s1 = checksum & 0xffff;
-   uint32_t s2 = checksum >> 16;
-
-   int off         = 0;
-   std::size_t len = text.size();
-   
-   const uint8_t* buf = (const uint8_t*)text.data();
-
-   while (len > 0)
-   {
-      // We can defer the modulo operation:
-      // s1 maximally grows from 65521 to 65521 + 255 * 3800
-      // s2 maximally grows by 3800 * median(s1) = 2090079800 < 2^31
-      int n = 3800;
-      if (n > len)
-         n = len;
-      len -= n;
-      while (--n >= 0)
-      {
-         s1 = s1 + (buf[off++] & 0xFF);
-         s2 = s2 + s1;
-      }
-      s1 %= BASE;
-      s2 %= BASE;
-   }
-
-   checksum = (s2 << 16) | s1;
-
-   return checksum & 0xffffffffL;
-}
-
 void tokenize(const std::string& input,
               std::vector<std::string>& tokens,
               const std::string& delimiters)
@@ -208,4 +184,5 @@ void tokenize(const std::string& input,
       pos = input.find_first_of(delimiters, lastPos);
    }
 }
-}
+
+} // namespace orion

@@ -10,22 +10,8 @@
 namespace orion
 {
 
-Object::Object()
-   : _uuid()
-{
-}
-
-Object::Object(const Object& rhs)
-   : _uuid(rhs._uuid)
-{
-}
-
-Object::Object(Object&& rhs)
+Object::Object(Object&& rhs) noexcept
    : _uuid(std::move(rhs._uuid))
-{
-}
-
-Object::~Object()
 {
 }
 
@@ -39,26 +25,16 @@ void Object::id(const Uuid& value)
    _uuid = value;
 }
 
-Object& Object::operator=(const Object& rhs)
-{
-   if (this == &rhs)
-      return *this;
-
-   _uuid = rhs._uuid;
-
-   return *this;
-}
-
-Object& Object::operator=(Object&& rhs)
+Object& Object::operator=(Object&& rhs) noexcept
 {
    _uuid = std::move(rhs._uuid);
 
    return *this;
 }
 
-std::string Object::to_string() const
+std::string to_string(const Object& ob)
 {
-   return _uuid.to_string();
+   return to_string(ob.id());
 }
 
-} // namespace nodus
+} // namespace orion

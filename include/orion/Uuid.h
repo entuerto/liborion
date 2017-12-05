@@ -14,36 +14,39 @@
 
 namespace orion
 {
-//! Universally Unique Identifier (uuid).
-/*! An uuid provides a unique designation for objects such as interfaces
- *  and client objects.
- *
- *  Implementation note:
- *    On win32 platform the RPC API is used to create uuids.
- *    On linux the libuuid is used.
- */
+/// Universally Unique Identifier (uuid).
+/// An uuid provides a unique designation for objects such as interfaces
+/// and client objects.
+///
+/// Implementation note:
+///   On win32 platform the RPC API is used to create uuids.
+///   On linux the libuuid is used.
+///
 class API_EXPORT Uuid
 {
 public:
    Uuid();
    Uuid(const Uuid& rhs);
-   Uuid(Uuid&& rhs);
+   Uuid(Uuid&& rhs) noexcept;
    Uuid(const std::string& value);
    ~Uuid();
 
    bool is_null() const;
 
-   std::string to_string() const;
-
    Uuid& operator=(const Uuid& rhs);
-   Uuid& operator=(Uuid&& rhs);
+   Uuid& operator=(Uuid&& rhs) noexcept;
 
    bool operator==(const Uuid& rhs) const;
    bool operator!=(const Uuid& rhs) const;
+
+   friend API_EXPORT std::string to_string(const Uuid& id);
 
 private:
    struct Private;
    std::unique_ptr<Private> _impl;
 };
+
+API_EXPORT std::string to_string(const Uuid& id);
+
 }
 #endif /* UUID_H */

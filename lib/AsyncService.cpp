@@ -22,12 +22,12 @@ namespace orion
 {
 
 AsyncService::AsyncService(std::size_t pool_size /* = 1 */)
-   : _io_services()
-   , _work()
-   , _next_io_service(0)
+   : _next_io_service(0)
 {
    if (pool_size == 0)
+   {
       throw std::runtime_error("AsyncService pool size is 0");
+   }
 
    // Give all the io_services work to do so that their run() functions will not
    // exit until they are explicitly stopped.
@@ -53,22 +53,24 @@ void AsyncService::run()
    // Create a pool of threads to run all of the io_services.
    std::vector<std::shared_ptr<std::thread>> threads;
 
-   for (std::size_t i = 0; i < _io_services.size(); ++i)
+   for (auto& service : _io_services)
    {
-      auto service = _io_services[i];
-
       auto thread = std::make_shared<std::thread>([service]() {
          std::error_code ec;
          service->run(ec);
          if (ec)
+         {
             log::error(ec);
+         }
       });
       threads.push_back(thread);
    }
 
    // Wait for all threads in the pool to exit.
    for (auto& t : threads)
+   {
       t->join();
+   }
 }
 
 void AsyncService::stop()
@@ -85,7 +87,9 @@ IOService& AsyncService::io_service()
    ++_next_io_service;
 
    if (_next_io_service == _io_services.size())
+   {
       _next_io_service = 0;
+   }
 
    return io_service;
 }

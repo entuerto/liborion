@@ -60,9 +60,6 @@ API_EXPORT std::string& to_lower(std::string& text);
 //! Upper case a string
 API_EXPORT std::string& to_upper(std::string& text);
 
-//! Hash a string
-API_EXPORT uint32_t compute_hash(const std::string& text);
-
 // Speperate a string into different tokens
 API_EXPORT void tokenize(const std::string& input,
                          std::vector<std::string>& tokens,

@@ -17,13 +17,6 @@ namespace orion
 struct Uuid::Private
 {
    uuid_t _uuid;
-
-   Private()
-      : _uuid()
-   {
-   }
-
-   ~Private() {}
 };
 
 Uuid::Uuid()
@@ -58,15 +51,6 @@ bool Uuid::is_null() const
    return uuid_is_null(_impl->_uuid);
 }
 
-std::string Uuid::to_string() const
-{
-   char str_uuid[40];
-
-   uuid_unparse(_impl->_uuid, str_uuid);
-
-   return std::string(str_uuid);
-}
-
 Uuid& Uuid::operator=(const Uuid& rhs)
 {
    if (this == &rhs)
@@ -93,4 +77,14 @@ bool Uuid::operator!=(const Uuid& rhs) const
 {
    return not operator==(rhs);
 }
+
+std::string to_string(const Uuid& id)
+{
+   char str_uuid[40];
+
+   uuid_unparse(id._impl->_uuid, str_uuid);
+
+   return std::string(str_uuid);
 }
+
+} // namespace orion

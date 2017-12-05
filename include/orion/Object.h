@@ -14,28 +14,28 @@
 
 namespace orion
 {
-//! Base object
-/*!
- */
+/// 
+/// Base object
+///
 class API_EXPORT Object
 {
 public:
-   Object();
-   Object(const Object& rhs);
-   Object(Object&& rhs);
-   virtual ~Object();
+   Object() = default;
+   Object(const Object& rhs) = default;
+   Object(Object&& rhs) noexcept;
+   virtual ~Object() = default;
 
    virtual Uuid id() const;
    virtual void id(const Uuid& value);
 
-   virtual std::string to_string() const;
-
-   Object& operator=(const Object& rhs);
-   Object& operator=(Object&& rhs);
+   Object& operator=(const Object& rhs) = default;
+   Object& operator=(Object&& rhs) noexcept;
 
 private:
    Uuid _uuid;
 };
+
+API_EXPORT std::string to_string(const Object& ob);
 
 } // namespace orion
 #endif
