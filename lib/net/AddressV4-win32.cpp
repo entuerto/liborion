@@ -40,11 +40,11 @@ std::string to_string(const AddressV4& addr)
 
 AddressV4 make_address_v4(const std::string& value)
 {
-   in_addr addr;
+   in_addr addr{};
    uint16_t port = 0;
 
    // Get buffer size
-   int len = MultiByteToWideChar(CP_ACP, 0, value.c_str(), -1, NULL, 0);
+   int len = MultiByteToWideChar(CP_ACP, 0, value.c_str(), -1, nullptr, 0);
 
    wchar_t ws_buffer[len];
 
@@ -54,10 +54,12 @@ AddressV4 make_address_v4(const std::string& value)
 
    auto ec = std::error_code(::GetLastError(), std::system_category());
    if (ec)
+   {
       throw std::system_error(ec);
+   }
 
    return AddressV4({addr.s_net, addr.s_host, addr.s_lh, addr.s_impno});
 }
 
-} // net
-} // orion
+} // namespace net
+} // namespace orion

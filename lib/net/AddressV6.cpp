@@ -7,7 +7,9 @@
 //
 #include <orion/net/AddressV6.h>
 
+#include <orion/Log.h>
 #include <orion/StringUtils.h>
+#include <orion/Utils.h>
 
 #include <algorithm>
 #include <cstring>
@@ -16,18 +18,101 @@ namespace orion
 {
 namespace net
 {
+//--------------------------------------------------------------------------------------------------
+// Static global AddressV6 adresses
 
-//---------------------------------------------------------------------------------------
+AddressV6& AddressV6::zero()
+{  
+   try
+   { 
+      static AddressV6 addr{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      return addr;
+   }
+   catch (...)
+   {
+      log::error(type_name(std::current_exception()), 
+         "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::terminate();
+   }
+}
+
+AddressV6& AddressV6::unspecified()
+{  
+   try
+   { 
+      static AddressV6 addr{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      return addr;
+   }
+   catch (...)
+   {
+      log::error(type_name(std::current_exception()), 
+         "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::terminate();
+   }
+}
+
+AddressV6& AddressV6::loopback()
+{  
+   try
+   { 
+      static AddressV6 addr{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+      return addr;
+   }
+   catch (...)
+   {
+      log::error(type_name(std::current_exception()), 
+         "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::terminate();
+   }
+}
+
+AddressV6& AddressV6::interface_local_all_nodes()
+{  
+   try
+   { 
+      static AddressV6 addr{0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01};
+      return addr;
+   }
+   catch (...)
+   {
+      log::error(type_name(std::current_exception()), 
+         "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::terminate();
+   }
+}
+
+AddressV6& AddressV6::link_local_all_nodes()
+{  
+   try
+   { 
+      static AddressV6 addr{0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01};
+      return addr;
+   }
+   catch (...)
+   {
+      log::error(type_name(std::current_exception()), 
+         "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::terminate();
+   }
+}
+
+AddressV6& AddressV6::link_local_all_routers()
+{  
+   try
+   { 
+      static AddressV6 addr{0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x02};
+      return addr;
+   }
+   catch (...)
+   {
+      log::error(type_name(std::current_exception()), 
+         "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::terminate();
+   }
+}
+
+//----------___________-----------------------------------------------------------------------------
 // AddressV6
-AddressV6 AddressV6::zero        = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-AddressV6 AddressV6::unspecified = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-AddressV6 AddressV6::loopback    = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-AddressV6 AddressV6::interface_local_all_nodes =
-   {0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01};
-AddressV6 AddressV6::link_local_all_nodes =
-   {0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01};
-AddressV6 AddressV6::link_local_all_routers =
-   {0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x02};
 
 AddressV6::AddressV6()
    : _a()
@@ -55,18 +140,20 @@ AddressV6::AddressV6(const AddressV6& other)
 {
 }
 
-AddressV6::AddressV6(AddressV6&& other)
-   : _a(std::move(other._a))
-   , _scope_id(std::move(other._scope_id))
+AddressV6::AddressV6(AddressV6&& other) noexcept
+   : _a(other._a)
+   , _scope_id(other._scope_id)
 {
 }
 
-AddressV6::~AddressV6() {}
+AddressV6::~AddressV6() = default;
 
 AddressV6& AddressV6::operator=(const AddressV6& rhs)
 {
    if (this == &rhs)
+   {
       return *this;
+   }
 
    std::memcpy(_a.s6_addr, rhs._a.s6_addr, 16);
 
@@ -75,10 +162,10 @@ AddressV6& AddressV6::operator=(const AddressV6& rhs)
    return *this;
 }
 
-AddressV6& AddressV6::operator=(AddressV6&& rhs)
+AddressV6& AddressV6::operator=(AddressV6&& rhs) noexcept
 {
-   _a        = std::move(rhs._a);
-   _scope_id = std::move(rhs._scope_id);
+   _a        = rhs._a;
+   _scope_id = rhs._scope_id;
    return *this;
 }
 
@@ -100,7 +187,7 @@ void AddressV6::scope_id(uint32_t value)
 
 bool AddressV6::is_loopback() const
 {
-   return std::equal(std::begin(_a.s6_addr), std::end(_a.s6_addr), std::begin(loopback._a.s6_addr));
+   return std::equal(std::begin(_a.s6_addr), std::end(_a.s6_addr), std::begin(loopback()._a.s6_addr));
 }
 
 bool AddressV6::is_multicast() const
@@ -111,12 +198,12 @@ bool AddressV6::is_multicast() const
 bool AddressV6::is_unspecified() const
 {
    return std::equal(
-      std::begin(_a.s6_addr), std::end(_a.s6_addr), std::begin(unspecified._a.s6_addr));
+      std::begin(_a.s6_addr), std::end(_a.s6_addr), std::begin(unspecified()._a.s6_addr));
 }
 
 std::array<uint8_t, 16> AddressV6::to_bytes() const
 {
-   std::array<uint8_t, 16> bytes;
+   std::array<uint8_t, 16> bytes{};
 
    std::memcpy(bytes.data(), _a.s6_addr, 16);
 
@@ -169,5 +256,5 @@ bool operator>=(const AddressV6& a1, const AddressV6& a2)
    return a1 == a2 or a1 > a2;
 }
 
-} // net
-} // orion
+} // namespace net
+} // namespace orion

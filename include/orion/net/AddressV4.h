@@ -36,12 +36,12 @@ public:
    /// Copy constructor
    AddressV4(const AddressV4& other);
    /// Move constructor
-   AddressV4(AddressV4&& other);
+   AddressV4(AddressV4&& other) noexcept;
 
    virtual ~AddressV4();
 
    AddressV4& operator=(const AddressV4& rhs);
-   AddressV4& operator=(AddressV4&& rhs);
+   AddressV4& operator=(AddressV4&& rhs) noexcept;
 
    AddressV4& operator=(std::initializer_list<uint8_t> l);
 
@@ -78,10 +78,10 @@ public:
    friend API_EXPORT bool operator>=(const AddressV4& a1, const AddressV4& a2);
 
 public:
-   static AddressV4 broadcast;
-   static AddressV4 all_systems;
-   static AddressV4 all_routers;
-   static AddressV4 zero;
+   static AddressV4& broadcast();
+   static AddressV4& all_systems();
+   static AddressV4& all_routers();
+   static AddressV4& zero();
 
 private:
    in4_addr_type _a;

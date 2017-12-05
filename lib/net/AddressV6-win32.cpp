@@ -33,12 +33,12 @@ std::string to_string(const AddressV6& addr)
 
 AddressV6 make_address_v6(const std::string& s)
 {
-   in6_addr addr;
+   in6_addr addr{};
    uint32_t scope_id = 0;
    uint16_t port     = 0;
 
    // Get buffer size
-   int len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, NULL, 0);
+   int len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, nullptr, 0);
 
    wchar_t ws_buffer[len];
 
@@ -48,13 +48,15 @@ AddressV6 make_address_v6(const std::string& s)
 
    auto ec = std::error_code(::GetLastError(), std::system_category());
    if (ec)
+   {
       throw std::system_error(ec);
+   }
 
-   std::array<uint8_t, 16> b;
+   std::array<uint8_t, 16> b{};
    std::memcpy(b.data(), addr.s6_addr, 16);
 
    return AddressV6(b, scope_id);
 }
 
-} // net
-} // orion
+} // namespace net
+} // namespace orion

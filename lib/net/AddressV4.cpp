@@ -7,7 +7,9 @@
 //
 #include <orion/net/AddressV4.h>
 
+#include <orion/Log.h>
 #include <orion/StringUtils.h>
+#include <orion/Utils.h>
 
 #include <algorithm>
 #include <cstring>
@@ -16,12 +18,71 @@ namespace orion
 {
 namespace net
 {
-//---------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+// Static global AddressV4 adresses
+
+AddressV4& AddressV4::broadcast()
+{  
+   try
+   { 
+      static AddressV4 addr{255, 255, 255, 255};
+      return addr;
+   }
+   catch (...)
+   {
+      log::error(type_name(std::current_exception()), 
+         "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::terminate();
+   }
+}
+
+AddressV4& AddressV4::all_systems()
+{  
+   try
+   { 
+      static AddressV4 addr{224, 0, 0, 1};
+      return addr;
+   }
+   catch (...)
+   {
+      log::error(type_name(std::current_exception()), 
+         "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::terminate();
+   }
+}
+
+AddressV4& AddressV4::all_routers()
+{  
+   try
+   { 
+      static AddressV4 addr{224, 0, 0, 2};
+      return addr;
+   }
+   catch (...)
+   {
+      log::error(type_name(std::current_exception()), 
+         "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::terminate();
+   }
+}
+
+AddressV4& AddressV4::zero()
+{  
+   try
+   { 
+      static AddressV4 addr{0, 0, 0, 0};
+      return addr;
+   }
+   catch (...)
+   {
+      log::error(type_name(std::current_exception()), 
+         "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::terminate();
+   }
+}
+
+//--------------------------------------------------------------------------------------------------
 // AddressV4
-AddressV4 AddressV4::broadcast   = AddressV4({255, 255, 255, 255});
-AddressV4 AddressV4::all_systems = AddressV4({224, 0, 0, 1});
-AddressV4 AddressV4::all_routers = AddressV4({224, 0, 0, 2});
-AddressV4 AddressV4::zero        = AddressV4({0, 0, 0, 0});
 
 AddressV4::AddressV4()
    : _a()
@@ -46,26 +107,28 @@ AddressV4::AddressV4(const AddressV4& other)
 {
 }
 
-AddressV4::AddressV4(AddressV4&& other)
-   : _a(std::move(other._a))
+AddressV4::AddressV4(AddressV4&& other) noexcept
+   : _a(other._a)
 {
 }
 
-AddressV4::~AddressV4() {}
+AddressV4::~AddressV4() = default;
 
 AddressV4& AddressV4::operator=(const AddressV4& rhs)
 {
    if (this == &rhs)
+   {
       return *this;
+   }
 
    _a = rhs._a;
 
    return *this;
 }
 
-AddressV4& AddressV4::operator=(AddressV4&& rhs)
+AddressV4& AddressV4::operator=(AddressV4&& rhs) noexcept
 {
-   _a = std::move(rhs._a);
+   _a = rhs._a;
    return *this;
 }
 
@@ -110,7 +173,7 @@ bool AddressV4::is_unspecified() const
 
 std::array<uint8_t, 4> AddressV4::to_bytes() const
 {
-   std::array<uint8_t, 4> bytes;
+   std::array<uint8_t, 4> bytes{};
 
    std::memcpy(bytes.data(), &_a.s_addr, 4);
 
@@ -161,5 +224,5 @@ bool operator>=(const AddressV4& a1, const AddressV4& a2)
    return a1.to_ulong() >= a2.to_ulong();
 }
 
-} // net
-} // orion
+} // namespace net
+} // namespace orion

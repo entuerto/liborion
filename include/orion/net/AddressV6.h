@@ -33,12 +33,12 @@ public:
    /// Copy constructor
    AddressV6(const AddressV6& other);
    /// Move constructor
-   AddressV6(AddressV6&& other);
+   AddressV6(AddressV6&& other) noexcept;
 
    virtual ~AddressV6();
 
    AddressV6& operator=(const AddressV6& rhs);
-   AddressV6& operator=(AddressV6&& rhs);
+   AddressV6& operator=(AddressV6&& rhs) noexcept;
 
    AddressV6& operator=(std::initializer_list<uint8_t> l);
 
@@ -70,12 +70,12 @@ public:
    friend API_EXPORT bool operator>=(const AddressV6& a1, const AddressV6& a2);
 
 public:
-   static AddressV6 zero;
-   static AddressV6 unspecified;
-   static AddressV6 loopback;
-   static AddressV6 interface_local_all_nodes;
-   static AddressV6 link_local_all_nodes;
-   static AddressV6 link_local_all_routers;
+   static AddressV6& zero();
+   static AddressV6& unspecified();
+   static AddressV6& loopback();
+   static AddressV6& interface_local_all_nodes();
+   static AddressV6& link_local_all_nodes();
+   static AddressV6& link_local_all_routers();
 
 private:
    in6_addr_type _a;

@@ -121,8 +121,9 @@ orion_net_src = files(
    'net/tcp/ServerConnection.cpp',
    'net/tcp/Session.cpp',
    'net/tcp/SessionImpl.cpp',
-   'net/tcp/Utils.cpp'
+   'net/tcp/Utils.cpp',
    # RPC files
+   'net/rpc/Error.cpp'
    )
 
 orion_net_libs = []

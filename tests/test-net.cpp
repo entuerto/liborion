@@ -24,46 +24,46 @@ TestSuite(OrionNet)
 //----------------------------------------------------------------------------
 void AddressV4_is_unspecified(Test& t)
 {
-   t.assert<true>(AddressV4::zero.is_unspecified(), _src_loc);
-   t.assert<false>(AddressV4({127, 0, 0, 1}).is_unspecified(), _src_loc);
+   t.assert<true>(AddressV4::zero().is_unspecified(), _src_loc);
+   t.assert<false>(AddressV4{127, 0, 0, 1}.is_unspecified(), _src_loc);
 }
 
 void AddressV6_is_unspecified(Test& t)
 {
-   t.assert<true>(AddressV6::unspecified.is_unspecified(), _src_loc);
-   t.assert<false>(AddressV6::interface_local_all_nodes.is_unspecified(), _src_loc);
+   t.assert<true>(AddressV6::unspecified().is_unspecified(), _src_loc);
+   t.assert<false>(AddressV6::interface_local_all_nodes().is_unspecified(), _src_loc);
 }
 
 void AddressV4_is_loopback(Test& t)
 {
-   t.assert<true>(AddressV4({127, 0, 0, 1}).is_loopback(), _src_loc);
-   t.assert<true>(AddressV4({127, 255, 255, 254}).is_loopback(), _src_loc);
-   t.assert<false>(AddressV4({128, 1, 2, 3}).is_loopback(), _src_loc);
+   t.assert<true>(AddressV4{127, 0, 0, 1}.is_loopback(), _src_loc);
+   t.assert<true>(AddressV4{127, 255, 255, 254}.is_loopback(), _src_loc);
+   t.assert<false>(AddressV4{128, 1, 2, 3}.is_loopback(), _src_loc);
 }
 
 void AddressV6_is_loopback(Test& t)
 {
-   t.assert<true>(AddressV6::loopback.is_loopback(), _src_loc);
-   t.assert<false>(AddressV6::link_local_all_routers.is_loopback(), _src_loc);
+   t.assert<true>(AddressV6::loopback().is_loopback(), _src_loc);
+   t.assert<false>(AddressV6::link_local_all_routers().is_loopback(), _src_loc);
 }
 
 void AddressV4_is_multicast(Test& t)
 {
-   t.assert<true>(AddressV4({224, 0, 0, 0}).is_multicast(), _src_loc);
-   t.assert<true>(AddressV4({239, 0, 0, 0}).is_multicast(), _src_loc);
-   t.assert<false>(AddressV4({240, 0, 0, 0}).is_multicast(), _src_loc);
+   t.assert<true>(AddressV4{224, 0, 0, 0}.is_multicast(), _src_loc);
+   t.assert<true>(AddressV4{239, 0, 0, 0}.is_multicast(), _src_loc);
+   t.assert<false>(AddressV4{240, 0, 0, 0}.is_multicast(), _src_loc);
 }
 
 void AddressV6_is_multicast(Test& t)
 {
-   t.assert<true>(AddressV6::link_local_all_nodes.is_multicast(), _src_loc);
-   t.assert<true>(AddressV6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}).is_multicast(), _src_loc);
-   t.assert<false>(AddressV6(std::array<uint8_t, 16>{{0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}).is_multicast(), _src_loc);
+   t.assert<true>(AddressV6::link_local_all_nodes().is_multicast(), _src_loc);
+   t.assert<true>(AddressV6{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}}.is_multicast(), _src_loc);
+   t.assert<false>(AddressV6{std::array<uint8_t, 16>{{0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}}.is_multicast(), _src_loc);
 }
 
 void AddressV4_to_string(Test& t)
 {
-   t.assert<eq>(to_string(AddressV4({127, 0, 0, 1})), "127.0.0.1"s, _src_loc);
+   t.assert<eq>(to_string(AddressV4{127, 0, 0, 1}), "127.0.0.1"s, _src_loc);
 
    Address* inv_addr = nullptr;
 
@@ -80,56 +80,56 @@ void AddressV4_to_string(Test& t)
 
 void AddressV6_to_string(Test& t)
 {
-   t.assert<eq>(to_string(AddressV6::loopback), "::1"s, _src_loc);
+   t.assert<eq>(to_string(AddressV6::loopback()), "::1"s, _src_loc);
 }
 
 void AddressV4_copy(Test& t)
 {
-   AddressV4 addr(AddressV4::broadcast);
+   AddressV4 addr(AddressV4::broadcast());
 
-   t.assert<eq>(addr, AddressV4::broadcast, _src_loc);
+   t.assert<eq>(addr, AddressV4::broadcast(), _src_loc);
 
-   addr = AddressV4::all_systems;
+   addr = AddressV4::all_systems();
 
-   t.assert<eq>(addr, AddressV4::all_systems, _src_loc);
+   t.assert<eq>(addr, AddressV4::all_systems(), _src_loc);
 }
 
 void AddressV6_copy(Test& t)
 {
-   AddressV6 addr(AddressV6::link_local_all_routers);
+   AddressV6 addr(AddressV6::link_local_all_routers());
 
-   t.assert<eq>(addr, AddressV6::link_local_all_routers, _src_loc);
+   t.assert<eq>(addr, AddressV6::link_local_all_routers(), _src_loc);
 
-   addr = AddressV6::interface_local_all_nodes;
+   addr = AddressV6::interface_local_all_nodes();
 
-   t.assert<eq>(addr, AddressV6::interface_local_all_nodes, _src_loc);
+   t.assert<eq>(addr, AddressV6::interface_local_all_nodes(), _src_loc);
 }
 
 void AddressV4_move(Test& t)
 {
-   AddressV4 addr(AddressV4({255, 255, 255, 255}));
+   AddressV4 addr(AddressV4{255, 255, 255, 255});
 
-   t.assert<eq>(addr, AddressV4::broadcast, _src_loc);
+   t.assert<eq>(addr, AddressV4::broadcast(), _src_loc);
 
-   addr = AddressV4({224, 0, 0, 1});
+   addr = AddressV4{224, 0, 0, 1};
 
-   t.assert<eq>(addr, AddressV4::all_systems, _src_loc);
+   t.assert<eq>(addr, AddressV4::all_systems(), _src_loc);
 }
 
 void AddressV6_move(Test& t)
 {
-   AddressV6 addr(AddressV6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}));
+   AddressV6 addr(AddressV6{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}});
 
-   t.assert<eq>(addr, AddressV6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}), _src_loc);
+   t.assert<eq>(addr, AddressV6{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}}, _src_loc);
 
-   addr = AddressV6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}});
+   addr = AddressV6{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}};
 
-   t.assert<eq>(addr, AddressV6(std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}), _src_loc);
+   t.assert<eq>(addr, AddressV6{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}}, _src_loc);
 }
 
 void AddressV4_ipv4_literal(Test& t)
 {
-   t.assert<eq>(AddressV4({224, 0, 0, 1}), "224.0.0.1"_ipv4, _src_loc);
+   t.assert<eq>(AddressV4{224, 0, 0, 1}, "224.0.0.1"_ipv4, _src_loc);
 }
 
 void AddressV6_ipv6_literal(Test& t)
