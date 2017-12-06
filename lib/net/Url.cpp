@@ -7,7 +7,7 @@
 //
 #include <orion/net/Url.h>
 
-#include <orion/StringUtils.h>
+#include <orion/String.h>
 
 #include <http-parser/http_parser.h>
 

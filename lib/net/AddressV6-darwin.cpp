@@ -7,7 +7,7 @@
 //
 #include <orion/net/AddressV6.h>
 
-#include <orion/StringUtils.h>
+#include <orion/String.h>
 #include <orion/net/Types.h>
 
 namespace orion

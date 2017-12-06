@@ -76,7 +76,7 @@ group "Libraries"
          "include/orion/Orion-Stddefs.h",
          "include/orion/Signal.h",
          "include/orion/SourceLocation.h",
-         "include/orion/StringUtils.h",
+         "include/orion/String.h",
          "include/orion/System.h",
          "include/orion/Throw.h",
          "include/orion/Units.h",
@@ -127,7 +127,7 @@ group "Libraries"
          "lib/AsyncService.cpp",
          "lib/Encoding.cpp",
          "lib/Object.cpp",
-         "lib/StringUtils.cpp",
+         "lib/String.cpp",
          "lib/System.cpp",
          -- Logger files
          "lib/log/EndRecord.h", 

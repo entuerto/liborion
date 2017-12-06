@@ -8,7 +8,7 @@
 #include <orion/net/AddressV4.h>
 
 #include <orion/Log.h>
-#include <orion/StringUtils.h>
+#include <orion/String.h>
 #include <orion/Utils.h>
 
 #include <algorithm>

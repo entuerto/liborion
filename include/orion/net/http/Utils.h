@@ -10,12 +10,13 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/StringUtils.h>
+#include <orion/String.h>
 #include <orion/net/http/Error.h>
 
 #include <fmt/format.h>
 
 #include <functional>
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>

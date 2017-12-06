@@ -7,7 +7,7 @@
 // 
 #include <orion/unittest/TestStdOutput.h>
 
-#include <orion/StringUtils.h>
+#include <orion/String.h>
 #include <orion/unittest/Test.h>
 #include <orion/unittest/TestSuite.h>
 

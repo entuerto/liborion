@@ -7,7 +7,7 @@
 //
 #include <orion/fs/Path.h>
 
-#include <orion/StringUtils.h>
+#include <orion/String.h>
 
 #include <boost/format.hpp>
 

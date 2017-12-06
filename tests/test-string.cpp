@@ -5,7 +5,7 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-#include <orion/StringUtils.h>
+#include <orion/String.h>
 #include <orion/Test.h>
 
 using namespace std::string_literals;

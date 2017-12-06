@@ -7,7 +7,9 @@
 //
 #include <orion/net/AddressV4.h>
 
-#include <orion/StringUtils.h>
+#include <orion/String.h>
+
+#include <system_error>
 
 #include <mstcpip.h>
 #include <winsock2.h>

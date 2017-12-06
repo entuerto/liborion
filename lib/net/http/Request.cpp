@@ -7,7 +7,7 @@
 //
 #include <orion/net/http/Request.h>
 
-#include <orion/StringUtils.h>
+#include <orion/String.h>
 
 #include <asio.hpp>
 #include <fmt/format.h>

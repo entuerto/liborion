@@ -22,7 +22,7 @@ orion_incl = files(
    'orion/Orion-Stddefs.h',
    'orion/Signal.h',
    'orion/SourceLocation.h',
-   'orion/StringUtils.h',
+   'orion/String.h',
    'orion/System.h',
    'orion/Throw.h',
    'orion/Units.h',

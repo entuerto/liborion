@@ -7,7 +7,7 @@
 //
 #include <orion/System.h>
 
-#include <orion/StringUtils.h>
+#include <orion/String.h>
 
 #include <fmt/format.h>
 

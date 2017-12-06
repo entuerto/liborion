@@ -11,7 +11,7 @@
 #include <orion/ErrorMacros.h>
 #include <orion/Log.h>
 #include <orion/SourceLocation.h>
-#include <orion/StringUtils.h>
+#include <orion/String.h>
 #include <orion/Throw.h>
 
 #include <windows.h>

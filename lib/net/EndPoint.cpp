@@ -7,7 +7,7 @@
 //
 #include <orion/net/EndPoint.h>
 
-#include <orion/StringUtils.h>
+#include <orion/String.h>
 #include <cstdio>
 
 namespace orion
