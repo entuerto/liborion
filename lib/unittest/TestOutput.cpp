@@ -16,6 +16,8 @@ namespace orion
 namespace unittest
 {
 
+using namespace std::string_literals;
+
 std::string to_string(ReportLevel rl)
 {
    switch (rl)
@@ -37,15 +39,15 @@ std::istream& operator>>(std::istream& in, ReportLevel& report_level)
    std::string token;
    in >> token;
 
-   if (equals_no_case(token, "Error"))
+   if (iequals(token, "Error"s))
    {
       report_level = ReportLevel::Error;
    }
-   else if (equals_no_case(token, "Short"))
+   else if (iequals(token, "Short"s))
    {
       report_level = ReportLevel::Short;
    }
-   else if (equals_no_case(token, "Detailed"))
+   else if (iequals(token, "Detailed"s))
    {
       report_level = ReportLevel::Detailed;
    }

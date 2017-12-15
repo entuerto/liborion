@@ -40,6 +40,15 @@ executable('signal-example',
            cpp_args: boost_cflags)
 
 #--------------------------------------------------------------------------------------------------
+# Example: string-examples
+#
+executable('string-examples', 
+           'string-examples.cpp',
+           dependencies: orion_dep,
+           include_directories: global_includes,
+           cpp_args: boost_cflags)
+
+#--------------------------------------------------------------------------------------------------
 # Example: system-info
 #
 executable('system-info', 
@@ -84,3 +93,11 @@ executable('hello-tcp-client',
            include_directories: global_includes,
            cpp_args: boost_cflags)
 
+#--------------------------------------------------------------------------------------------------
+# Example: calculator-rpc-server.cpp
+#
+executable('calculator-rpc-server', 
+           'calculator-rpc-server.cpp',
+           dependencies: [orion_dep, orion_net_dep],
+           include_directories: global_includes,
+           cpp_args: boost_cflags)

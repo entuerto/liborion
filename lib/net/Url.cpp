@@ -620,22 +620,28 @@ void Url::parse(const std::string& value)
       std::string p = priv::percent_decode(value.c_str() + u.field_data[UF_QUERY].off,
                                            u.field_data[UF_QUERY].len);
 
-      auto query_items = split(p, '&');
+      std::vector<std::string> query_items = split(p, by_char{'&'});
 
       if (not query_items.empty())
       {
          for (const auto& item : query_items)
          {
-            auto q = split(item, '=');
+            std::vector<std::string> q = split(item, by_char{'='});
             if (not q.empty())
-               query(q.front(), q.back());
+            {
+               std::string v = q.size() == 1 ? "" : q.back();
+               query(q.front(), v);
+            }
          }
       }
       else
       {
-         auto q = split(p, '=');
+         std::vector<std::string> q = split(p, by_char{'='});
          if (not q.empty())
-            query(q.front(), q.back());
+         {
+            std::string v = q.size() == 1 ? "" : q.back();
+            query(q.front(), v);
+         }
       }
    }
    to_lower(_protocol);

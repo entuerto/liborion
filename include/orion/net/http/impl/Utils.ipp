@@ -99,7 +99,7 @@ inline Method as_method(const std::string& text)
 {
    for (auto& item : MethodText)
    {
-      if (not equals_no_case(item.second, text))
+      if (not iequals(item.second, text))
          continue;
 
       return item.first;

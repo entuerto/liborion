@@ -15,12 +15,13 @@
 
 #include <iomanip>
 
-using namespace std::chrono_literals;
-
 namespace orion
 {
 namespace unittest
 {
+
+using namespace std::chrono_literals;
+using namespace std::string_literals;
 
 //---------------------------------------------------------------------------------------
 
@@ -36,7 +37,7 @@ StdOutput::~StdOutput() = default;
 void StdOutput::write_header(int test_count)
 {
    _stream << "\n"
-           << fmt::format("Running {0} test {1}...\n", test_count, plural(test_count, "case", "cases"))
+           << fmt::format("Running {0} test {1}...\n", test_count, plural(test_count, "case"s, "cases"s))
            << "\n";
 }
 
@@ -90,15 +91,15 @@ void StdOutput::write_suite_summary(const Suite& suite)
    auto s = suite.stats();
 
    _stream << fmt::format("{0:4} {1} out of {2} passed\n", s.passed_count,
-                 plural(s.passed_count, "Test", "Tests"), s.count);
+                 plural(s.passed_count, "Test"s, "Tests"s), s.count);
 
    if (s.failed_item_count > 0)
       _stream << fmt::format("{0:4} {1} out of {2} failed\n", s.failed_count,
-                    plural(s.failed_count, "Test", "Tests"), s.count);
+                    plural(s.failed_count, "Test"s, "Tests"s), s.count);
 
    if (s.skipped_count > 0)
       _stream << fmt::format("{0:4} {1} out of {2} skipped\n", s.skipped_count,
-                    plural(s.skipped_count, "Test", "Tests"), s.count);
+                    plural(s.skipped_count, "Test"s, "Tests"s), s.count);
 
    _stream << fmt::format("{0:4} ms", s.time_elapsed.count()) << "\n";
 

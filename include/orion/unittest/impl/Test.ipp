@@ -63,7 +63,7 @@ inline void Test::assert(const T& expected, const T& actual, Args... args)
       case lt:
          success = expected < actual;
          break;
-      case le: 
+      case le:
          success = expected <= actual;
          break;
       case eq:
@@ -163,7 +163,7 @@ inline void Test::fail_if(bool value, Args... args)
       _test_result.log_skipped(disabled_reason());
       return;
    }
-   
+
    if (not value)
    {
       _test_result.log_success();
