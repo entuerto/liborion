@@ -25,9 +25,7 @@ namespace orion
 namespace sys
 {
 
-void get_loaded_modules(unsigned long /* process_id */, ModuleList& /* modules */)
-{
-}
+void get_loaded_modules(unsigned long /* process_id */, ModuleList& /* modules */) {}
 
 std::string get_cpu_model()
 {
@@ -41,7 +39,7 @@ std::string get_cpu_model()
 
 std::vector<CpuInfo> get_cpu_info()
 {
-    return std::vector<CpuInfo>();
+   return std::vector<CpuInfo>();
 }
 
 std::string get_os_version()
@@ -120,10 +118,7 @@ uint64_t get_total_memory()
    return (uint64_t)info;
 }
 
-void write_stack_trace(std::ostream& os)
-{
-   
-}
+void write_stack_trace(std::ostream& os) {}
 
 } // namespace sys
 } // namespace orion

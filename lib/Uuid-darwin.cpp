@@ -12,39 +12,37 @@
 namespace orion
 {
 //--------------------------------------------------------------------------
-// Win32 class declaration
+// Darwin class declaration
 
 struct Uuid::Private
 {
    uuid_t _uuid;
 };
 
-Uuid::Uuid() :
-   _impl(new Private)
+Uuid::Uuid()
+   : _impl(new Private)
 {
    uuid_generate(_impl->_uuid);
 }
 
-Uuid::Uuid(const Uuid& rhs) :
-   _impl(new Private)
+Uuid::Uuid(const Uuid& rhs)
+   : _impl(new Private)
 {
    uuid_copy(_impl->_uuid, rhs._impl->_uuid);
 }
 
-Uuid::Uuid(Uuid&& rhs) :
-   _impl(std::move(rhs._impl))
+Uuid::Uuid(Uuid&& rhs) noexcept
+   : _impl(std::move(rhs._impl))
 {
 }
 
-Uuid::Uuid(const std::string& value) :
-   _impl(new Private)
+Uuid::Uuid(const std::string& value)
+   : _impl(new Private)
 {
    uuid_parse(value.c_str(), _impl->_uuid);
 }
 
-Uuid::~Uuid()
-{
-}
+Uuid::~Uuid() = default;
 
 bool Uuid::is_null() const
 {
@@ -61,7 +59,7 @@ Uuid& Uuid::operator=(const Uuid& rhs)
    return *this;
 }
 
-Uuid& Uuid::operator=(Uuid&& rhs)
+Uuid& Uuid::operator=(Uuid&& rhs) noexcept
 {
    _impl = std::move(rhs._impl);
 
@@ -87,4 +85,4 @@ std::string to_string(const Uuid& id)
    return std::string(str_uuid);
 }
 
-} // // namespace orion
+} // namespace orion

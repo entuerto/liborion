@@ -16,30 +16,30 @@ using namespace orion::log;
 
 struct Module::Private
 {
-    bool is_open;
-    std::string name;
+   bool is_open;
+   std::string name;
 };
 
-Module::Module() :
-   _impl(new Private{false, ""})
+Module::Module()
+   : _impl(new Private{false, ""})
 {
 }
 
-Module::Module(const std::string& file_name) :
-   _impl(new Private{false, file_name})
+Module::Module(const std::string& file_name)
+   : _impl(new Private{false, file_name})
 {
 }
-   
-Module::Module(Module&& rhs) :
-   _impl(std::move(rhs._impl))
+
+Module::Module(Module&& rhs)
+   : _impl(std::move(rhs._impl))
 {
 }
-   
+
 Module::~Module()
 {
    close();
 }
-    
+
 /*!
  Module name
  */
@@ -62,7 +62,7 @@ bool Module::is_open() const
 void Module::open(const std::string& file_name)
 {
    _impl->is_open = true;
-   _impl->name = file_name;
+   _impl->name    = file_name;
 }
 
 /*!
@@ -72,7 +72,7 @@ void Module::close()
 {
    if (not _impl->is_open)
       return;
-    
+
    _impl->is_open = false;
 }
 
@@ -82,16 +82,15 @@ void Module::close()
 void* Module::find_symbol_address(const std::string& symbol_name)
 {
    RETURN_VALUE_IF_FAIL(is_open(), nullptr);
-   
+
    return nullptr;
 }
 
 Module& Module::operator=(Module&& rhs)
 {
    _impl = std::move(rhs._impl);
-        
+
    return *this;
 }
-    
-} // namespace orion
 
+} // namespace orion
