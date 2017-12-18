@@ -43,9 +43,9 @@ public:
    explicit constexpr Year(int y) noexcept;
 
    constexpr Year& operator++() noexcept;
-   constexpr Year operator++(int)noexcept;
+   constexpr Year operator++(int) noexcept;
    constexpr Year& operator--() noexcept;
-   constexpr Year operator--(int)noexcept;
+   constexpr Year operator--(int) noexcept;
 
    constexpr Year& operator+=(const years& y) noexcept;
    constexpr Year& operator-=(const years& y) noexcept;
@@ -91,9 +91,9 @@ public:
    explicit constexpr Month(value_type m) noexcept;
 
    constexpr Month& operator++() noexcept;
-   constexpr Month operator++(int)noexcept;
+   constexpr Month operator++(int) noexcept;
    constexpr Month& operator--() noexcept;
-   constexpr Month operator--(int)noexcept;
+   constexpr Month operator--(int) noexcept;
 
    constexpr Month& operator+=(const months& m) noexcept;
    constexpr Month& operator-=(const months& m) noexcept;
@@ -131,9 +131,9 @@ public:
    explicit constexpr Day(uint32_t d) noexcept;
 
    constexpr Day& operator++() noexcept;
-   constexpr Day operator++(int)noexcept;
+   constexpr Day operator++(int) noexcept;
    constexpr Day& operator--() noexcept;
-   constexpr Day operator--(int)noexcept;
+   constexpr Day operator--(int) noexcept;
 
    constexpr Day& operator+=(const days& d) noexcept;
    constexpr Day& operator-=(const days& d) noexcept;
@@ -201,17 +201,6 @@ constexpr days operator/(const std::pair<Day, Month>& dm, const Year& y) noexcep
 
 //---------------------------------------------------------------------------------------
 //
-static std::unordered_map<std::type_index, std::string> unit_names{
-   {std::type_index(typeid(std::chrono::hours::period)), "h"},
-   {std::type_index(typeid(std::chrono::minutes::period)), "min"},
-   {std::type_index(typeid(std::chrono::seconds::period)), "s"},
-   {std::type_index(typeid(std::chrono::milliseconds::period)), "ms"},
-   {std::type_index(typeid(std::chrono::microseconds::period)), "\xB5s"},
-   {std::type_index(typeid(std::chrono::nanoseconds::period)), "ns"},
-   {std::type_index(typeid(days::period)), "days"},
-   {std::type_index(typeid(weeks::period)), "weeks"},
-   {std::type_index(typeid(months::period)), "months"},
-   {std::type_index(typeid(years::period)), "years"}};
 
 template<class CharT, class Traits, class Rep, class Period>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,

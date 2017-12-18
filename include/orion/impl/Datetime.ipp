@@ -404,7 +404,7 @@ constexpr IntT from_days(IntT y, unsigned m, unsigned d) noexcept
 
    const IntT era = (y >= 0 ? y : y - 399) / 400;
 
-   const unsigned year_of_era = static_cast<unsigned>(y - era * 400); // [0, 399]
+   const auto year_of_era = static_cast<unsigned>(y - era * 400); // [0, 399]
 
    const unsigned day_of_year = (153 * (m + (m > 2 ? -3 : 9)) + 2) / 5 + d - 1; // [0, 365]
 
@@ -431,7 +431,7 @@ constexpr std::tuple<IntT, unsigned, unsigned> to_days(IntT z) noexcept
 
    const IntT era = (z >= 0 ? z : z - 146096) / 146097;
 
-   const unsigned day_of_era = static_cast<unsigned>(z - era * 146097); // [0, 146096]
+   const auto day_of_era = static_cast<unsigned>(z - era * 146097); // [0, 146096]
 
    const unsigned year_of_era =
       (day_of_era - day_of_era / 1460 + day_of_era / 36524 - day_of_era / 146096) / 365; // [0, 399]
@@ -542,12 +542,29 @@ constexpr days operator/(const std::pair<Day, Month>& dm, const Year& y) noexcep
 
 //---------------------------------------------------------------------------------------
 //
+std::string unit_names(std::type_index i)
+{
+   static std::unordered_map<std::type_index, std::string> names{
+      {std::type_index(typeid(std::chrono::hours::period)), "h"},
+      {std::type_index(typeid(std::chrono::minutes::period)), "min"},
+      {std::type_index(typeid(std::chrono::seconds::period)), "s"},
+      {std::type_index(typeid(std::chrono::milliseconds::period)), "ms"},
+      {std::type_index(typeid(std::chrono::microseconds::period)), "\xB5s"},
+      {std::type_index(typeid(std::chrono::nanoseconds::period)), "ns"},
+      {std::type_index(typeid(days::period)), "days"},
+      {std::type_index(typeid(weeks::period)), "weeks"},
+      {std::type_index(typeid(months::period)), "months"},
+      {std::type_index(typeid(years::period)), "years"}};
+
+   return names[i];
+}
+
 template<class CharT, class Traits, class Rep, class Period>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
                                               const std::chrono::duration<Rep, Period>& d)
 {
    using namespace std::chrono;
-   return os << d.count() << unit_names[std::type_index(typeid(typename Period::type))];
+   return os << d.count() << unit_names(std::type_index(typeid(typename Period::type)));
 }
 
 } // namespace orion

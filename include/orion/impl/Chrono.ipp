@@ -112,12 +112,12 @@ inline std::u32string to_u32string(const TimePoint<>& tp, const char32_t* fmt)
 
 inline void Timer::start()
 {
-   _start = clock_type::now();
+   _start = ClockType::now();
 }
 
 inline void Timer::stop()
 {
-   _end = clock_type::now();
+   _end = ClockType::now();
 }
 
 inline void Timer::reset()

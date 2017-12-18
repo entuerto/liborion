@@ -25,7 +25,7 @@ constexpr const char* RFC1123Z = "%a, %d %b %Y %T %z"; // RFC1123Z = "Mon, 02 Ja
 constexpr const char* RFC3339  = "%FT%TZ%z";           // RFC3339  = "2006-01-02T15:04:05Z07:00"
 constexpr const char* ISO8601  = "%FT%TZ%z";           // ISO8601  = "2006-01-02T15:04:05Z0700"
 
-template <typename D = std::chrono::nanoseconds>
+template<typename D = std::chrono::nanoseconds>
 using TimePoint = std::chrono::time_point<std::chrono::system_clock, D>;
 
 //-------------------------------------------------------------------------------------------------
@@ -43,20 +43,20 @@ inline std::wstring to_wstring(const TimePoint<>& tp, const wchar_t* fmt);
 template<typename Clock>
 inline std::u16string to_u16string(const std::chrono::time_point<Clock>& tp, const char16_t* fmt);
 
-//inline std::u16string to_u16string(const TimePoint<>& tp, const char16_t* fmt);
+// inline std::u16string to_u16string(const TimePoint<>& tp, const char16_t* fmt);
 
 template<typename Clock>
 inline std::u32string to_u32string(const std::chrono::time_point<Clock>& tp, const char32_t* fmt);
 
-//inline std::u32string to_u32string(const TimePoint<>& tp, const char32_t* fmt);
+// inline std::u32string to_u32string(const TimePoint<>& tp, const char32_t* fmt);
 
 //-------------------------------------------------------------------------------------------------
 
 class Timer
 {
 public:
-   using clock_type = std::chrono::high_resolution_clock;
-   using time_point_type = std::chrono::time_point<clock_type>;
+   using ClockType     = std::chrono::high_resolution_clock;
+   using TimePointType = std::chrono::time_point<ClockType>;
 
    void start();
    void stop();
@@ -67,8 +67,8 @@ public:
    std::chrono::nanoseconds elapsed() const;
 
 private:
-   time_point_type _start;
-   time_point_type _end;
+   TimePointType _start;
+   TimePointType _end;
 };
 
 } // namespace orion
