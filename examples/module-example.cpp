@@ -7,8 +7,8 @@
 //
 #include "module-example-lib.h"
 
+#include <orion/Exception.h>
 #include <orion/Module.h>
-#include <orion/ModuleException.h>
 
 #include <functional>
 #include <iostream>

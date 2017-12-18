@@ -17,12 +17,6 @@
 namespace orion
 {
 
-/// convert UTF-8 string to wstring
-API_EXPORT std::wstring utf8_to_wstring(const std::string& str);
-
-/// convert wstring to UTF-8 string
-API_EXPORT std::string wstring_to_utf8(const std::wstring& str);
-
 /// Convert to upper case
 ///
 /// Each element of the input string is converted to upper case.

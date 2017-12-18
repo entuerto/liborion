@@ -7,7 +7,7 @@
 //
 #include <orion/net/AddressV6.h>
 
-#include <orion/String.h>
+#include <UtilWin32.h>
 
 #include <algorithm>
 #include <cstring>
@@ -28,7 +28,7 @@ std::string to_string(const AddressV6& addr)
 
    RtlIpv6AddressToStringW(&addr._a, buffer);
 
-   return wstring_to_utf8(buffer);
+   return win32::wstring_to_utf8(buffer);
 }
 
 AddressV6 make_address_v6(const std::string& s)
@@ -37,14 +37,9 @@ AddressV6 make_address_v6(const std::string& s)
    uint32_t scope_id = 0;
    uint16_t port     = 0;
 
-   // Get buffer size
-   int len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, nullptr, 0);
+   std::wstring ws_value = win32::utf8_to_wstring(s);
 
-   wchar_t ws_buffer[len];
-
-   MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, ws_buffer, len);
-
-   RtlIpv6StringToAddressExW(ws_buffer, &addr, (PULONG)&scope_id, &port);
+   RtlIpv6StringToAddressExW(ws_value.c_str(), &addr, (PULONG)&scope_id, &port);
 
    auto ec = std::error_code(::GetLastError(), std::system_category());
    if (ec)

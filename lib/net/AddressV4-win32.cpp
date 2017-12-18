@@ -7,7 +7,7 @@
 //
 #include <orion/net/AddressV4.h>
 
-#include <orion/String.h>
+#include <UtilWin32.h>
 
 #include <system_error>
 
@@ -37,7 +37,7 @@ std::string to_string(const AddressV4& addr)
 
    RtlIpv4AddressToStringW(&addr._a, buffer);
 
-   return wstring_to_utf8(buffer);
+   return win32::wstring_to_utf8(buffer);
 }
 
 AddressV4 make_address_v4(const std::string& value)
@@ -45,14 +45,9 @@ AddressV4 make_address_v4(const std::string& value)
    in_addr addr{};
    uint16_t port = 0;
 
-   // Get buffer size
-   int len = MultiByteToWideChar(CP_ACP, 0, value.c_str(), -1, nullptr, 0);
+   std::wstring ws_value = win32::utf8_to_wstring(value);
 
-   wchar_t ws_buffer[len];
-
-   MultiByteToWideChar(CP_ACP, 0, value.c_str(), -1, ws_buffer, len);
-
-   RtlIpv4StringToAddressExW(ws_buffer, TRUE, &addr, &port);
+   RtlIpv4StringToAddressExW(ws_value.c_str(), TRUE, &addr, &port);
 
    auto ec = std::error_code(::GetLastError(), std::system_category());
    if (ec)

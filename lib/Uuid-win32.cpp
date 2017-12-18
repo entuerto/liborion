@@ -7,7 +7,7 @@
 //
 #include <orion/Uuid.h>
 
-#include <orion/String.h>
+#include <UtilWin32.h>
 
 #include <cstdint>
 #include <rpc.h>
@@ -47,14 +47,12 @@ Uuid::Uuid(Uuid&& rhs) noexcept
 Uuid::Uuid(const std::string& value)
    : _impl(new Private)
 {
-   std::wstring str_uuid = utf8_to_wstring(value);
+   std::wstring str_uuid = win32::utf8_to_wstring(value);
 
    RPC_STATUS ret = UuidFromStringW((RPC_WSTR)str_uuid.data(), &(_impl->_uuid));
 
    if (ret != RPC_S_OK)
-   {
       UuidCreateNil(&(_impl->_uuid));
-   }
 }
 
 Uuid::~Uuid() = default;
@@ -65,9 +63,7 @@ bool Uuid::is_null() const
    int ret = UuidIsNil(&(_impl->_uuid), &status);
 
    if (status != RPC_S_OK)
-   {
       return false;
-   }
 
    return ret == TRUE;
 }
@@ -75,9 +71,7 @@ bool Uuid::is_null() const
 Uuid& Uuid::operator=(const Uuid& rhs)
 {
    if (this == &rhs)
-   {
       return *this;
-   }
 
    _impl->_uuid = rhs._impl->_uuid;
 
@@ -118,7 +112,7 @@ std::string to_string(const Uuid& id)
       return "";
    }
 
-   return wstring_to_utf8((wchar_t*)str_uuid);
+   return win32::wstring_to_utf8((wchar_t*)str_uuid);
 }
 
 } // namespace orion

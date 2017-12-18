@@ -16,41 +16,41 @@
 
 namespace orion
 {
-/*!
-   Dynamic Loading of Modules These functions provide a portable way to
-   dynamically load object files.
- */
+/// 
+/// Dynamic Loading of Modules These functions provide a portable way to
+/// dynamically load object files.
+/// 
 class API_EXPORT Module
 {
 public:
    NO_COPY(Module)
 
    Module();
-   Module(const std::string& file_name);
+   explicit Module(const std::string& file_name);
 
-   Module(Module&& rhs);
+   Module(Module&& rhs) noexcept;
 
    ~Module();
 
-   //! Module name
+   /// Module name
    std::string name() const;
 
-   //! Is module open (loaded)
+   /// Is module open (loaded)
    bool is_open() const;
 
-   //! Load library
+   /// Load library
    void open(const std::string& file_name);
 
-   //! Close library
+   /// Close library
    void close();
 
-   //! Finds a symbol pointer in the library.
+   /// Finds a symbol pointer in the library.
    void* find_symbol_address(const std::string& symbol_name);
 
    template<class T>
    std::function<T> import(const std::string& name);
 
-   Module& operator=(Module&& rhs);
+   Module& operator=(Module&& rhs) noexcept;
 
 private:
    struct Private;

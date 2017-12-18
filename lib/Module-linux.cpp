@@ -33,7 +33,7 @@ Module::Module(const std::string& file_name)
 {
 }
 
-Module::Module(Module&& rhs)
+Module::Module(Module&& rhs) noexcept
    : _impl(std::move(rhs._impl))
 {
 }
@@ -104,7 +104,7 @@ void* Module::find_symbol_address(const std::string& symbol_name)
    return symbol;
 }
 
-Module& Module::operator=(Module&& rhs)
+Module& Module::operator=(Module&& rhs) noexcept
 {
    _impl = std::move(rhs._impl);
 

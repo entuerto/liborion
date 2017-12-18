@@ -7,7 +7,9 @@
 //
 #include <orion/System.h>
 
-#include <orion/String.h>
+#include <orion/Log.h>
+
+#include <UtilWin32.h>
 
 #include <fmt/format.h>
 
@@ -37,30 +39,28 @@ void get_loaded_modules(unsigned long process_id, ModuleList& modules)
    DWORD cbNeeded;
 
    // Get a list of all the modules in this process.
-   HANDLE process_handle =
-      OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, process_id);
-   if (process_handle == nullptr)
+   HANDLE handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, process_id);
+   if (handle == nullptr)
       return;
 
    HMODULE module_handles[1024];
 
    if (EnumProcessModulesEx(
-          process_handle, module_handles, sizeof(module_handles), &cbNeeded, LIST_MODULES_ALL))
+          handle, module_handles, sizeof(module_handles), &cbNeeded, LIST_MODULES_ALL))
    {
       for (int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++)
       {
          wchar_t module_name[MAX_PATH];
 
          // Get the full path to the module's file.
-         if (GetModuleFileNameExW(
-                process_handle, module_handles[i], module_name, sizeof(module_name)))
+         if (GetModuleFileNameExW(handle, module_handles[i], module_name, sizeof(module_name)))
          {
             // Print the module name and handle value.
-            modules.push_back(wstring_to_utf8(module_name));
+            modules.push_back(win32::wstring_to_utf8(module_name));
          }
       }
    }
-   CloseHandle(process_handle);
+   CloseHandle(handle);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -76,25 +76,23 @@ std::string get_cpu_model()
 
    ZeroMemory(value, max_length);
 
-   const wchar_t* keyToOpen   = L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
-   const wchar_t* valueToFind = L"ProcessorNameString";
+   const wchar_t* key_to_open   = L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
+   const wchar_t* value_to_find = L"ProcessorNameString";
 
-   RegOpenKeyExW(HKEY_LOCAL_MACHINE, keyToOpen, 0, KEY_READ, &hKey);
-   RegQueryValueExW(hKey, valueToFind, nullptr, &type, (LPBYTE)&value, &length);
+   RegOpenKeyExW(HKEY_LOCAL_MACHINE, key_to_open, 0, KEY_READ, &hKey);
+   RegQueryValueExW(hKey, value_to_find, nullptr, &type, (LPBYTE)&value, &length);
    RegCloseKey(hKey);
 
-   std::string cpuName = wstring_to_utf8(value);
+   std::string cpu_name = win32::wstring_to_utf8(value);
 
    SYSTEM_INFO sysinfo;
    ZeroMemory(&sysinfo, sizeof(SYSTEM_INFO));
    GetSystemInfo(&sysinfo);
 
-   const uint64_t cpuThreadCount = sysinfo.dwNumberOfProcessors;
+   const uint64_t cpu_thread_count = sysinfo.dwNumberOfProcessors;
 
-   return (cpuThreadCount == 1) ? fmt::format("{0} ({1} thread)", cpuName, cpuThreadCount) 
-                                : fmt::format("{0} ({1} threads)", cpuName, cpuThreadCount);
-
-
+   return (cpu_thread_count == 1) ? fmt::format("{0} ({1} thread)", cpu_name, cpu_thread_count)
+                                  : fmt::format("{0} ({1} threads)", cpu_name, cpu_thread_count);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -132,44 +130,60 @@ std::vector<CpuInfo> get_cpu_info()
       WCHAR key_name[128];
       HKEY processor_key;
 
-      int len = _snwprintf_s(key_name,
-                             sizeof(key_name),
-                             ARRAY_SIZE(key_name),
-                             L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\%d",
-                             i);
+      _snwprintf_s(key_name,
+                   sizeof(key_name),
+                   ARRAY_SIZE(key_name),
+                   L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\%d",
+                   i);
 
       DWORD ret = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key_name, 0, KEY_QUERY_VALUE, &processor_key);
 
       if (ret != ERROR_SUCCESS)
       {
-         // err = GetLastError();
-         // free(sppi);
+         std::string error_message;
+
+         win32::format_error_message(GetLastError(), error_message);
+         log::error(error_message);
+
+         free(sppi);
       }
 
       DWORD cpu_speed;
       DWORD cpu_speed_size = sizeof(cpu_speed);
 
-      ret =
-         RegQueryValueExW(processor_key, L"~MHz", NULL, NULL, (BYTE*)&cpu_speed, &cpu_speed_size);
+      ret = RegQueryValueExW(
+         processor_key, L"~MHz", nullptr, nullptr, (BYTE*)&cpu_speed, &cpu_speed_size);
 
       if (ret != ERROR_SUCCESS)
       {
-         // err = GetLastError();
-         // free(sppi);
-         // RegCloseKey(processor_key);
+         std::string error_message;
+
+         win32::format_error_message(GetLastError(), error_message);
+         log::error(error_message);
+         
+         free(sppi);
+         RegCloseKey(processor_key);
       }
 
       WCHAR cpu_brand[256];
       DWORD cpu_brand_size = sizeof(cpu_brand);
 
-      ret = RegQueryValueExW(
-         processor_key, L"ProcessorNameString", NULL, NULL, (BYTE*)&cpu_brand, &cpu_brand_size);
+      ret = RegQueryValueExW(processor_key,
+                             L"ProcessorNameString",
+                             nullptr,
+                             nullptr,
+                             (BYTE*)&cpu_brand,
+                             &cpu_brand_size);
 
       if (ret != ERROR_SUCCESS)
       {
-         // err = GetLastError();
-         // free(sppi);
-         // RegCloseKey(processor_key);
+         std::string error_message;
+
+         win32::format_error_message(GetLastError(), error_message);
+         log::error(error_message);
+
+         free(sppi);
+         RegCloseKey(processor_key);
       }
 
       RegCloseKey(processor_key);
@@ -186,29 +200,9 @@ std::vector<CpuInfo> get_cpu_info()
       cpu_times.irq = sppi[i].Reserved1[0].QuadPart / 10000;
 #endif
 
-      len = WideCharToMultiByte(
-         CP_UTF8, 0, cpu_brand, cpu_brand_size / sizeof(WCHAR), NULL, 0, NULL, NULL);
-
-      if (len == 0)
-      {
-         // err = GetLastError();
-         // free(sppi);
-      }
-
-      char* model = new char[len];
-
-      len = WideCharToMultiByte(
-         CP_UTF8, 0, cpu_brand, cpu_brand_size / sizeof(WCHAR), model, len, NULL, NULL);
-
-      if (len == 0)
-      {
-         // err = GetLastError();
-         // free(sppi);
-      }
+      std::string model = win32::wstring_to_utf8(cpu_brand);
 
       cpu_infos.push_back(CpuInfo{model, cpu_speed, cpu_times});
-
-      delete[] model;
    }
 
    free(sppi);
@@ -260,7 +254,7 @@ std::string get_host_name()
    DWORD size         = sizeof(hostname);
    bool hostname_fail = not GetComputerNameW(hostname, &size);
 
-   return hostname_fail ? "localhost" : wstring_to_utf8(hostname);
+   return hostname_fail ? "localhost" : win32::wstring_to_utf8(hostname);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -274,7 +268,7 @@ std::string get_user_name()
 
    if (GetUserNameW(buffer, (LPDWORD)&len))
    {
-      user_name = wstring_to_utf8(buffer);
+      user_name = win32::wstring_to_utf8(buffer);
    }
    return user_name;
 }
@@ -290,18 +284,17 @@ int get_process_id()
 
 std::string get_program_name()
 {
-   HANDLE process_handle =
-      OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, get_process_id());
-   if (process_handle == nullptr)
+   HANDLE ph = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, get_process_id());
+   if (ph == nullptr)
       return "";
 
    wchar_t module_name[MAX_PATH];
 
-   GetModuleFileNameExW(process_handle, nullptr, module_name, sizeof(module_name));
+   GetModuleFileNameExW(ph, nullptr, module_name, sizeof(module_name));
 
-   CloseHandle(process_handle);
+   CloseHandle(ph);
 
-   return wstring_to_utf8(module_name);
+   return win32::wstring_to_utf8(module_name);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -378,7 +371,7 @@ static void write_stack_trace_for_thread(std::ostream& os,
       // Print the AddressPC in hexadecimal.
       DWORD64 AddressPC = StackFrame.AddrPC.Offset;
 
-      os << fmt::format("{:#h}", AddressPC);
+      os << fmt::format("{:#x}", AddressPC);
 
       // Verify the AddressPC belongs to a module in this process.
       if (not SymGetModuleBase64(hProcess, AddressPC)) 
@@ -397,9 +390,9 @@ static void write_stack_trace_for_thread(std::ostream& os,
 
       // Print the symbol name.
       char buffer[512];
-      IMAGEHLP_SYMBOL64 *symbol = reinterpret_cast<IMAGEHLP_SYMBOL64 *>(buffer);
+      IMAGEHLP_SYMBOL64* symbol = reinterpret_cast<IMAGEHLP_SYMBOL64*>(buffer);
       memset(symbol, 0, sizeof(IMAGEHLP_SYMBOL64));
-      symbol->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL64);
+      symbol->SizeOfStruct  = sizeof(IMAGEHLP_SYMBOL64);
       symbol->MaxNameLength = 512 - sizeof(IMAGEHLP_SYMBOL64);
 
       DWORD64 dwDisp;
@@ -412,7 +405,7 @@ static void write_stack_trace_for_thread(std::ostream& os,
       buffer[511] = 0;
 
       if (dwDisp > 0)
-         os << fmt::format(" {0}() + {1:#h} byte(s)", symbol->Name, dwDisp);
+         os << fmt::format(" {0}() + {1:#x} byte(s)", symbol->Name, dwDisp);
       else
          os << fmt::format(" {}", symbol->Name);
 
@@ -427,7 +420,7 @@ static void write_stack_trace_for_thread(std::ostream& os,
         os << fmt::format(" {0}, line {1}", line.FileName, line.LineNumber);
 
         if (dwLineDisp > 0)
-          os << fmt::format(" + {:#h} byte(s)", dwLineDisp);
+          os << fmt::format(" + {:#x} byte(s)", dwLineDisp);
       }
       os << '\n';
    }

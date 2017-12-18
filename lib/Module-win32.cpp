@@ -7,38 +7,18 @@
 //
 #include <orion/Module.h>
 
-#include <orion/Exception.h>
 #include <orion/ErrorMacros.h>
+#include <orion/Exception.h>
 #include <orion/Log.h>
 #include <orion/SourceLocation.h>
-#include <orion/String.h>
 #include <orion/Throw.h>
+
+#include <UtilWin32.h>
 
 #include <windows.h>
 
 namespace orion
 {
-
-static void get_last_error_message(DWORD last_error_code, std::string& error_message)
-{
-   wchar_t* buffer;
-
-   FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-                     FORMAT_MESSAGE_IGNORE_INSERTS,
-                  nullptr,
-                  last_error_code,
-                  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                  (LPWSTR)&buffer,
-                  0,
-                  nullptr);
-
-   if (buffer)
-   {
-      error_message = wstring_to_utf8(buffer);
-
-      LocalFree(buffer);
-   }
-}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -61,7 +41,7 @@ Module::Module(const std::string& file_name)
 {
 }
 
-Module::Module(Module&& rhs)
+Module::Module(Module&& rhs) noexcept
    : _impl(std::move(rhs._impl))
 {
 }
@@ -71,35 +51,36 @@ Module::~Module()
    close();
 }
 
-/*!
-   Module name
-*/
+///
+/// Module name
+///
 std::string Module::name() const
 {
    return _impl->name;
 }
 
-/*!
-   Is module open (loaded)
-*/
+///
+/// Is module open (loaded)
+///
 bool Module::is_open() const
 {
    return _impl->is_open;
 }
 
-/*!
-   Load library
-*/
+///
+/// Load library
+///
 void Module::open(const std::string& file_name)
 {
-   _impl->handle =
-      LoadLibraryExW(utf8_to_wstring(file_name).c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
+   std::wstring ws_file_name = win32::utf8_to_wstring(file_name);
+
+   _impl->handle = LoadLibraryExW(ws_file_name.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
 
    if (_impl->handle == nullptr)
    {
       std::string error_message;
 
-      get_last_error_message(GetLastError(), error_message);
+      win32::format_error_message(GetLastError(), error_message);
       throw_exception<ModuleException>(error_message, _src_loc);
    }
 
@@ -107,9 +88,9 @@ void Module::open(const std::string& file_name)
    _impl->name    = file_name;
 }
 
-/*!
-   Close library
-*/
+///
+/// Close library
+///
 void Module::close()
 {
    if (not _impl->is_open)
@@ -119,9 +100,9 @@ void Module::close()
    _impl->is_open = false;
 }
 
-/*!
-   Finds a symbol pointer in the library.
- */
+///
+/// Finds a symbol pointer in the library.
+///
 void* Module::find_symbol_address(const std::string& symbol_name)
 {
    RETURN_VALUE_IF_FAIL(is_open(), nullptr);
@@ -133,14 +114,14 @@ void* Module::find_symbol_address(const std::string& symbol_name)
    {
       std::string error_message;
 
-      get_last_error_message(GetLastError(), error_message);
+      win32::format_error_message(GetLastError(), error_message);
       throw_exception<ModuleSymbolNotFoundException>(error_message, _src_loc);
    }
 
    return symbol;
 }
 
-Module& Module::operator=(Module&& rhs)
+Module& Module::operator=(Module&& rhs) noexcept
 {
    _impl = std::move(rhs._impl);
 

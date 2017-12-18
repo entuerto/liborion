@@ -12,7 +12,6 @@ orion_src = files(
    'AsyncService.cpp',
    'Encoding.cpp',
    'Object.cpp',
-   'String.cpp',
    'System.cpp',
    # Logger files
    'log/EndRecord.h', 
