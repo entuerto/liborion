@@ -5,14 +5,17 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 // 
-#include <orion/log/OnelineFormatter.h>
 #include <orion/log/OutputHandler.h>
+
+#include <orion/log/Formatter.h>
+
+#include <iostream>
 
 namespace orion
 {
 namespace log
 {
-//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 // Class OutputHandler
 
 OutputHandler::OutputHandler()
@@ -34,6 +37,36 @@ Formatter* OutputHandler::formatter() const
 void OutputHandler::set_formatter(std::unique_ptr<Formatter>&& formatter)
 {
    _formatter = std::move(formatter);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Class StreamOutputHandler
+
+StreamOutputHandler::StreamOutputHandler(std::ostream& stream)
+   : _ostream(stream)
+{
+}
+
+StreamOutputHandler::~StreamOutputHandler() = default;
+
+void StreamOutputHandler::write(const Record& record)
+{
+   _ostream << formatter()->format(record) << std::endl;
+}
+
+void StreamOutputHandler::flush()
+{
+   _ostream << std::flush;
+}
+
+void StreamOutputHandler::close()
+{
+   // Do not close stream in case cout or cerr is used.
+}
+
+std::unique_ptr<StreamOutputHandler> make_stream_output_handler(std::ostream& stream)
+{
+   return std::make_unique<StreamOutputHandler>(stream);
 }
 
 } // namespace log

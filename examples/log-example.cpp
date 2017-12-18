@@ -40,10 +40,10 @@ void function_c()
 
 void setup_logger()
 {
-   auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
+   auto cout_handler = make_stream_output_handler(std::cout);
 
-   // cout_handler->set_formatter(std::make_unique<MultilineFormatter>());
-   // cout_handler->set_formatter(std::make_unique<OnelineWithSourceInfoFormatter>());
+   // cout_handler->set_formatter(make_multiline_formatter());
+   // cout_handler->set_formatter(make_one_line_formatter(true));
 
    auto& logger = default_logger();
 

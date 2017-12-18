@@ -49,12 +49,8 @@ orion_incl = files(
    'orion/log/LoggerImpl.h',
    'orion/log/LoggerService.h',
    'orion/log/Macros.h',
-   'orion/log/MultilineFormatter.h',
-   'orion/log/OnelineFormatter.h',
-   'orion/log/OnelineWithSourceInfoFormatter.h',
    'orion/log/OutputHandler.h',
    'orion/log/Record.h',
-   'orion/log/StreamOutputHandler.h',
    # Unit test files
    'orion/Test.h',
    'orion/unittest/Test.h',

@@ -13,10 +13,9 @@
 namespace orion
 {
 
-inline Exception::Exception(const std::string& text, const SourceLocation& src_loc)
-   : std::exception()
-   , _text(text)
-   , _src_location(src_loc)
+inline Exception::Exception(std::string text, SourceLocation src_loc)
+   : _text(std::move(text))
+   , _src_location(std::move(src_loc))
 {
 }
 

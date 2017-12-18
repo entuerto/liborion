@@ -24,7 +24,7 @@ using namespace std::chrono_literals;
 
 void setup_logger()
 {
-   auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
+   auto cout_handler = make_stream_output_handler(std::cout);
 
    Logger& logger = default_logger();
 

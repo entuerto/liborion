@@ -31,7 +31,7 @@ public:
    static asio::io_service::id id;
 
    /// The type for an implementation of the logger.
-   typedef std::shared_ptr<LoggerImplementation> implementation_type;
+   using implementation_type = std::shared_ptr<LoggerImplementation>;
 
    explicit LoggerService(asio::io_service& io_service)
       : asio::io_service::service(io_service)
@@ -41,7 +41,10 @@ public:
    {
    }
 
-   ~LoggerService()
+   LoggerService(const LoggerService&) = default;
+   LoggerService(LoggerService&&) = default;
+
+   ~LoggerService() override
    {
       // The work thread will finish when _work is reset as all asynchronous
       // operations have been aborted and were discarded before (in destroy).
@@ -54,6 +57,9 @@ public:
       /// io_service::run() function will exit once all other work has completed.
       _work_thread.join();
    }
+
+   LoggerService& operator=(const LoggerService&) = default;
+   LoggerService& operator=(LoggerService&&) = default;
 
    void construct(implementation_type& impl)
    {
@@ -106,7 +112,7 @@ public:
 
 private:
    /// Destroy all user-defined handler objects owned by the service.
-   void shutdown_service() {}
+   void shutdown_service() override {}
 
 private:
    /// Private io_service used for performing logging operations.

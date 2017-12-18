@@ -23,9 +23,15 @@ namespace orion
 class Exception : public std::exception
 {
 public:
-   Exception(const std::string& text, const SourceLocation& src_loc = SourceLocation{});
+   explicit Exception(std::string text, SourceLocation src_loc = SourceLocation{});
+
+   Exception(const Exception&) = default;
+   Exception(Exception&&) noexcept = default;
 
    virtual ~Exception() = default;
+
+   Exception& operator=(const Exception&) = default;
+   Exception& operator=(Exception&&) noexcept = default;
 
    //! Returns the recorded source location
    virtual const SourceLocation& source_location() const;

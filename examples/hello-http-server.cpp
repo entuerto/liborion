@@ -45,10 +45,10 @@ std::error_code world(const http::Request& request, http::Response& response)
 
 void setup_logger(std::fstream& file_stream)
 {
-   auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
-   auto file_handler = std::make_unique<StreamOutputHandler>(file_stream);
+   auto cout_handler = make_stream_output_handler(std::cout);
+   auto file_handler = make_stream_output_handler(file_stream);
 
-   file_handler->set_formatter(std::make_unique<MultilineFormatter>());
+   file_handler->set_formatter(make_multiline_formatter());
 
    Logger& logger = default_logger();
 

@@ -82,7 +82,7 @@ constexpr bool operator>=(const Version& v1, const Version& v2) noexcept
 template<typename... Ts>
 struct List
 {
-   typedef List<Ts...> Type;
+   using Type = List<Ts...>;
 
    enum
    {
@@ -154,7 +154,7 @@ struct FindLast<T, List<Ts...>> : detail::FindLast<0, T, Ts...>
 template<class T,
          class... Args,
          typename std::enable_if<Find<T, List<Args...>>() == -1, bool>::type = true>
-bool has_type(std::tuple<Args...>& tup) noexcept
+bool has_type(std::tuple<Args...>& /* tup */) noexcept
 {
    return false;
 }
@@ -162,7 +162,7 @@ bool has_type(std::tuple<Args...>& tup) noexcept
 template<class T,
          class... Args,
          typename std::enable_if<Find<T, List<Args...>>() != -1, bool>::type = true>
-bool has_type(std::tuple<Args...>& tup) noexcept
+bool has_type(std::tuple<Args...>& /* tup */) noexcept
 {
    constexpr int idx = Find<T, List<Args...>>();
 
@@ -174,7 +174,7 @@ bool has_type(std::tuple<Args...>& tup) noexcept
 template<class T,
          class... Args,
          typename std::enable_if<Find<T, List<Args...>>() == -1, bool>::type = true>
-const T& get_value(std::tuple<Args...>& tup, const T& def) noexcept
+const T& get_value(std::tuple<Args...>& /* tup */, const T& def) noexcept
 {
    return def;
 }
@@ -182,7 +182,7 @@ const T& get_value(std::tuple<Args...>& tup, const T& def) noexcept
 template<class T,
          class... Args,
          typename std::enable_if<Find<T, List<Args...>>() != -1, bool>::type = true>
-const T& get_value(std::tuple<Args...>& tup, const T& def) noexcept
+const T& get_value(std::tuple<Args...>& tup, const T& /* def */) noexcept
 {
    constexpr int idx = Find<T, List<Args...>>();
 
@@ -194,7 +194,7 @@ const T& get_value(std::tuple<Args...>& tup, const T& def) noexcept
 template<class T,
          class... Args,
          typename std::enable_if<FindLast<T, List<Args...>>() == -1, bool>::type = true>
-const T& get_last_value(std::tuple<Args...>& tup, const T& def) noexcept
+const T& get_last_value(std::tuple<Args...>& /* tup */, const T& def) noexcept
 {
    return def;
 }
@@ -202,7 +202,7 @@ const T& get_last_value(std::tuple<Args...>& tup, const T& def) noexcept
 template<class T,
          class... Args,
          typename std::enable_if<FindLast<T, List<Args...>>() != -1, bool>::type = true>
-const T& get_last_value(std::tuple<Args...>& tup, const T& def) noexcept
+const T& get_last_value(std::tuple<Args...>& tup, const T& /* def */) noexcept
 {
    constexpr int idx = FindLast<T, List<Args...>>();
 
@@ -212,7 +212,9 @@ const T& get_last_value(std::tuple<Args...>& tup, const T& def) noexcept
 //-------------------------------------------------------------------------------------------------
 
 template<class... Args, typename Function, std::size_t... Indices>
-constexpr void get_all_impl(Function&& f, std::tuple<Args...>& t, std::index_sequence<Indices...>)
+constexpr void get_all_impl(Function&& f,
+                            std::tuple<Args...>& t,
+                            std::index_sequence<Indices...> /*unused*/)
 {
    using swallow = int[];
    static_cast<void>(swallow{0, (std::forward<Function>(f)(std::get<Indices>(t)), void(), 0)...});
@@ -244,7 +246,7 @@ std::ostream& operator<<(std::ostream& o, const std::array<T, N>& arr)
    
 //-------------------------------------------------------------------------------------------------
 
-inline void write_to_stream(std::ostream& stream)
+inline void write_to_stream(std::ostream& /* stream */)
 {
 }
 
