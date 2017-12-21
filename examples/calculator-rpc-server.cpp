@@ -12,7 +12,7 @@
 #include <orion/net/rpc/Rpc.h>
 
 #include <cstdio>
-#include <fstream>
+#include <sstream>
 #include <iostream>
 #include <tuple>
 
@@ -23,27 +23,6 @@ using namespace orion::net;
 //-----------------------------------------------------------------------------------
 // Creating a rpc methods
 //-----------------------------------------------------------------------------------
-/*
-class CalculatorService : public rpc::Service
-{
-public:
-   CalculatorService()
-      : rpc::Service("Calculator", "", 1.0, "/")
-   {
-      register_method(rpc::Method{"add", "", 1.0});
-      register_method(rpc::Method{"substract", "", 1.0});
-   }
-
-   virtual ~CalculatorService() = default;
-
-   void add(const AddParams& params, AddResult& result) { result.value = params.a + params.b; }
-
-   void substract(const SubstractParams& params, SubstractResult& result)
-   {
-      result.value = params.a - params.b;
-   }
-};
-*/
 
 class Add : public rpc::Method<int(int, int)> 
 {
@@ -65,7 +44,7 @@ int add_int(int x, int y)
 //-----------------------------------------------------------------------------------
 void setup_logger()
 {
-   auto cout_handler = std::make_unique<StreamOutputHandler>(std::cout);
+   auto cout_handler = make_stream_output_handler(std::cout);
 
    Logger& logger = default_logger();
 
@@ -99,13 +78,13 @@ int main()
    {
       log::exception(e);
    }
-
+*/
    rpc::Service<std::iostream> s("Calculator", Version{1, 0});
 
    s.register_method<Add>(add_int);
 
-   log::debug("Value: ");
-*/
+   //log::debug("Value: ");
+   
    auto server = std::make_unique<tcp::Server>();
 
    server->register_handler([&](std::streambuf* in, std::streambuf* out) {
@@ -120,7 +99,7 @@ int main()
       return std::error_code();
    });
 
-   std::cout << "Server listening on port: 9000\n";
+   log::write("Server listening on port: 9000");
 
    try
    {
