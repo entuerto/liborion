@@ -101,3 +101,12 @@ executable('calculator-rpc-server',
            dependencies: [orion_dep, orion_net_dep],
            include_directories: global_includes,
            cpp_args: boost_cflags)
+
+#--------------------------------------------------------------------------------------------------
+# Example: art-example.cpp
+#
+executable('art-example', 
+           'art-example.cpp',
+           dependencies: orion_dep,
+           include_directories: global_includes,
+           cpp_args: boost_cflags)
