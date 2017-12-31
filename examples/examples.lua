@@ -304,3 +304,20 @@ project "calculator-rpc-server"
          "ntdll", 
          "rpcrt4" 
       }
+
+
+project "art-example"
+   kind "ConsoleApp"
+
+   dependson "orion"
+
+   includedirs { 
+      "../include", 
+      "../lib", 
+      "../deps", 
+   }
+
+   files "art-example.cpp"
+
+   links { "orion" }
+

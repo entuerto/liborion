@@ -63,6 +63,7 @@ group "Libraries"
       files { 
          -- Include files
          "include/orion/AsyncService.h",
+         "include/orion/ART.h",
          "include/orion/Chrono.h",
          "include/orion/Datetime.h",
          "include/orion/detail/AsyncTypes.h",

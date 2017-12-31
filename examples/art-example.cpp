@@ -22,6 +22,8 @@ int main()
 
    std::cout << "Minimum value: " << tree.minimum() << "\n";
    std::cout << "Maximum value: " << tree.maximum() << "\n";
+   
+   tree.dump(std::cout);
 
    return EXIT_SUCCESS;
 }

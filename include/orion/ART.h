@@ -9,9 +9,12 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <fmt/format.h>
+
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <ostream>
 #include <string>
 
 namespace orion
@@ -25,6 +28,30 @@ enum class Kind
    Node48  = 3,
    Node256 = 4
 };
+
+inline void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, Kind k) 
+{
+   auto& w = f.writer();
+
+   switch (k)
+   {
+      case Kind::Node4:
+         w.write("Node4");
+         break;
+      case Kind::Node16:
+         w.write("Node16");
+         break;
+      case Kind::Node48:
+         w.write("Node48");
+         break;
+      case Kind::Node256:
+         w.write("Node256");
+         break;
+      case Kind::Leaf:
+         w.write("Leaf");
+         break;
+   }
+}
 
 constexpr int MAX_PREFIX_LEN = 10; /// The maximum prefix length for internal nodes.
 
@@ -309,6 +336,21 @@ const Node256* as_node256(const Node* n)
    return static_cast<const Node256*>(n->inode.get());
 }
 
+// Prefix formatter
+inline void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, const std::array<uint8_t, MAX_PREFIX_LEN>& arr)
+{
+   f.writer().write("[");
+
+   for (auto i : arr)
+      f.writer().write("{}", i);
+   
+   f.writer().write("]");
+}
+//--------------------------------------------------------------------------------------------------
+
+template<typename ValueT>
+class TreeDumper;
+   
 //--------------------------------------------------------------------------------------------------
 
 //
@@ -345,7 +387,7 @@ public:
    {
       auto ret = recursive_insert(_root, std::move(key), std::move(value), 0);
 
-      if (ret.second)
+      if (not ret.second)
          _size++;
 
       return ret.first;
@@ -404,8 +446,16 @@ public:
 
       return leaf->value;
    }
+    
+   void dump(std::ostream& o) const
+   {
+      TreeDumper<ValueType> td{_root.get()};
+
+      o << td.str();
+   }
 
 private:
+   
    std::pair<ValueType, bool> recursive_insert(std::unique_ptr<Node>& node,
                                                KeyType key,
                                                ValueType&& value,
@@ -424,7 +474,7 @@ private:
          Leaf<ValueType>* leaf = as_leaf<ValueType>(node.get());
 
          // Check if we are updating an existing value
-         if (not leaf->match(key, depth))
+         if (leaf->match(key, depth))
          {
             ValueType old_value = std::move(leaf->value);
             leaf->value         = std::move(value);
@@ -526,7 +576,7 @@ private:
    std::unique_ptr<Node> _root;
    uint64_t _size;
 };
-
+   
 //--------------------------------------------------------------------------------------------------
 // InnerNode
 
@@ -973,6 +1023,254 @@ void Node::add_child256(uint8_t c, std::unique_ptr<Node> child)
    node->num_children++;
 }
 
+template<typename ValueT>
+class TreeDumper
+{
+public:
+   TreeDumper(Node* node)
+   {
+      if (node != nullptr)
+         base_node(node, 0, 0, 0);
+   }
+
+   const char* str() const
+   {
+      return _writer.c_str();
+   }
+   
+private:
+   struct DepthPos  
+   {
+      int child_num;
+      int children_total;
+   };
+
+   void generate_padding(int depth, int child_num, int total, std::string& pad1, std::string& pad2)
+   {
+      _depth_array[depth] = DepthPos{child_num, total};
+      
+      for (int d = 0; d <= depth; ++d)
+      {
+         if (d < depth)
+         {
+            pad1 += (_depth_array[d].child_num + 1 < _depth_array[d].children_total)
+               ? "│   "
+               : "    ";
+            continue;
+         }
+         
+         if (total == 0) 
+         {
+            pad1 += "─";
+         } 
+         else 
+         {
+            pad1 += (_depth_array[d].child_num + 1 < _depth_array[d].children_total)
+               ? "├"
+               : "└";
+         }
+         pad1 += "──";
+      }
+      pad1 += " ";
+      
+      for (int d = 0; d <= depth; ++d)
+      {
+         if ((child_num + 1 < total) and (total > 0)) 
+         {
+            pad2 += (_depth_array[d].child_num + 1 < _depth_array[d].children_total)
+               ? "│   "
+               : "    ";
+            continue;
+         } 
+
+         pad2 += (d < depth and _depth_array[d].child_num + 1 < _depth_array[d].children_total)
+            ? "│   "
+            : "    ";
+      }
+   }
+
+   template <class T, std::size_t N>
+   void write_array(const std::array<T, N>& arr)
+   {
+      _writer.write("[ ");
+
+      for (auto i : arr)
+      {
+         if (i == 0)
+         {
+            _writer.write("{} ", i);
+            continue;
+         }
+         _writer.write("{} ", static_cast<char>(i));
+      }
+   
+      _writer.write("]");
+   }
+
+   template <class T, std::size_t N>
+   void write_pointers(const std::array<T, N>& arr)
+   {
+      _writer.write("[ ");
+
+      for (auto& i : arr)
+      {
+         if (i == nullptr)
+         {
+            _writer.write("nullptr ");
+            continue;
+         }
+         _writer.write("{:#x} ", reinterpret_cast<uintptr_t>(i.get()));
+      }
+   
+      _writer.write("]");
+   }
+   
+   void base_node(Node* node, int depth, int child_num, int total)
+   {
+      std::string pad_header;
+      std::string pad;
+
+      generate_padding(depth, child_num, total, pad_header, pad);
+      if (node == nullptr)
+      {
+         _writer.write(pad_header + "nullptr\n");
+         return;
+      }
+      
+      _writer.write(pad_header);
+      _writer.write("{0} ({1:#x})\n", node->kind, reinterpret_cast<uintptr_t>(node));
+      
+      switch (node->kind)
+      {
+         case Kind::Node4:
+         {
+            Node4* n = as_node4(node);
+
+            // Prefix
+            _writer.write(pad);
+            _writer.write("prefix({0}): ", n->prefix_len);
+            write_array(n->prefix);
+            _writer.write("\n");
+
+            // Keys
+            _writer.write(pad);
+            _writer.write("keys: ");
+            write_array(n->keys);
+            _writer.write("\n");
+
+            // Children
+            _writer.write(pad);
+            _writer.write("children({0}): ", n->num_children);
+            write_pointers(n->children);
+            _writer.write("\n");
+            
+            int i = 0;
+            for (auto& child : n->children) 
+            {
+               base_node(child.get(), depth + 1, i, n->children.size());
+               ++i;
+            }
+            break;
+         }
+         case Kind::Node16:
+         {
+            Node16* n = as_node16(node);
+
+            // Prefix
+            _writer.write(pad);
+            _writer.write("prefix({0}): ", n->prefix_len);
+            write_array(n->prefix);
+            _writer.write("\n");
+
+            // Keys
+            _writer.write(pad);
+            _writer.write("keys: ");
+            write_array(n->keys);
+            _writer.write("\n");
+
+            // Children
+            _writer.write(pad);
+            _writer.write("children({0}): \n", n->num_children);
+            
+            int i = 0;
+            for (auto& child : n->children) 
+            {
+               base_node(child.get(), depth + 1, i, n->children.size());
+               ++i;
+            }
+            break;
+         }   
+         case Kind::Node48:
+         {
+            Node48* n = as_node48(node);
+
+            // Prefix
+            _writer.write(pad);
+            _writer.write("prefix({0}): ", n->prefix_len);
+            write_array(n->prefix);
+            _writer.write("\n");
+
+            // Keys
+            _writer.write(pad);
+            _writer.write("keys: ");
+            write_array(n->keys);
+            _writer.write("\n");
+
+            // Children
+            _writer.write(pad);
+            _writer.write("children({0}): \n", n->num_children);
+            
+            int i = 0;
+            for (auto& child : n->children) 
+            {
+               base_node(child.get(), depth + 1, i, n->children.size());
+               ++i;
+            }
+            break;
+         }     
+         case Kind::Node256:
+         {
+            Node256* n = as_node256(node);
+
+            // Prefix
+            _writer.write(pad);
+            _writer.write("prefix({0}): ", n->prefix_len);
+            write_array(n->prefix);
+            _writer.write("\n");
+
+            // Children
+            _writer.write(pad);
+            _writer.write("children({0}): \n", n->num_children);
+            
+            int i = 0;
+            for (auto& child : n->children) 
+            {
+               base_node(child.get(), depth + 1, i, n->children.size());
+               ++i;
+            }
+            break;
+         }   
+         case Kind::Leaf:
+         {
+            Leaf<ValueT>* l = as_leaf<ValueT>(node);
+
+            // Key
+            _writer.write(pad);
+            _writer.write("key: {}\n", l->key);
+
+            // Value
+            _writer.write(pad);
+            _writer.write("val: {}\n", l->value);
+         }   
+      }
+      _writer.write(pad + "\n");
+   }
+   
+private:
+   std::array<DepthPos, 4096> _depth_array;
+   fmt::MemoryWriter _writer;
+};
+   
 } // namespace orion
 
 #endif // ORION_ART_H
