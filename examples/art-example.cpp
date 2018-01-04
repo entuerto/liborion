@@ -14,14 +14,19 @@ using namespace orion;
 
 int main()
 {
-   ARTree<std::string> tree;
+   ARTree<std::string, std::string> tree;
 
    tree.insert("A", "A");
    tree.insert("a", "a");
    tree.insert("aa", "aa");
 
-   std::cout << "Minimum value: " << tree.minimum() << "\n";
-   std::cout << "Maximum value: " << tree.maximum() << "\n";
+   auto min = tree.minimum();
+   if (min != tree.cend())
+      std::cout << "Minimum value: " << *min << "\n";
+
+   auto max = tree.maximum();
+   if (max != tree.cend())
+      std::cout << "Maximum value: " << *max << "\n\n\n";
    
    tree.dump(std::cout);
 
