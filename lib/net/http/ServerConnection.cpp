@@ -20,8 +20,8 @@ namespace http
 
 //---------------------------------------------------------------------------------------
 
-ServerConnection::ServerConnection(asio::io_service& io_service, const Handlers& handlers)
-   : Connection(io_service)
+ServerConnection::ServerConnection(asio::io_context& io_context, const Handlers& handlers)
+   : Connection(io_context)
    , _handlers(handlers)
    , _request()
    , _response(StatusCode::OK)

@@ -32,7 +32,7 @@ class Connection : public std::enable_shared_from_this<Connection<SocketT>>
 public:
    NO_COPY(Connection)
 
-   Connection(asio::io_service& io_service);
+   Connection(asio::io_context& io_context);
    virtual ~Connection();
 
    /// Close closes the connection.

@@ -27,8 +27,8 @@ ServerImpl::ServerImpl()
    : _port(-1)
    , _is_running(false)
    , _handler()
-   , _io_service()
-   , _signals(_io_service)
+   , _io_context()
+   , _signals(_io_context)
    , _acceptors()
 {
 }
@@ -37,8 +37,8 @@ ServerImpl::ServerImpl(Handler h)
    : _port(-1)
    , _is_running(false)
    , _handler(std::move(h))
-   , _io_service()
-   , _signals(_io_service)
+   , _io_context()
+   , _signals(_io_context)
    , _acceptors()
 {
 }
@@ -78,7 +78,7 @@ std::error_code ServerImpl::listen_and_serve(const std::string& addr, int port)
    setup_signals();
 
    // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
-   asio::ip::tcp::resolver resolver(_io_service);
+   asio::ip::tcp::resolver resolver(_io_context);
    asio::ip::tcp::resolver::query query(addr, std::to_string(port));
 
    std::error_code ec;
@@ -91,7 +91,7 @@ std::error_code ServerImpl::listen_and_serve(const std::string& addr, int port)
    {
       asio::ip::tcp::endpoint endpoint = *it;
 
-      auto acceptor = asio::ip::tcp::acceptor(_io_service);
+      auto acceptor = asio::ip::tcp::acceptor(_io_context);
 
       if (acceptor.open(endpoint.protocol(), ec))
          continue;
@@ -115,14 +115,14 @@ std::error_code ServerImpl::listen_and_serve(const std::string& addr, int port)
       do_accept(acceptor);
    }
 
-   _io_service.run();
+   _io_context.run();
 
    return std::error_code();
 }
 
 void ServerImpl::do_accept(asio::ip::tcp::acceptor& acceptor)
 {
-   auto conn = std::make_shared<ServerConnection>(_io_service, _handler);
+   auto conn = std::make_shared<ServerConnection>(_io_context, _handler);
 
    acceptor.async_accept(conn->socket(), [this, &acceptor, conn](std::error_code ec) {
       // Check whether the server was stopped by a signal before this
@@ -148,7 +148,7 @@ void ServerImpl::do_close()
          log::error(ec);
 
       // The server is stopped by cancelling all outstanding asynchronous
-      // operations. Once all operations have finished the io_service::run()
+      // operations. Once all operations have finished the io_context::run()
       // call will exit.
       for (auto& acceptor : _acceptors)
          acceptor.close();

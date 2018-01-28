@@ -59,7 +59,7 @@ int main()
       sys::write_stack_trace(std::cout);
    });
 */
-   tcp::Session s(as.io_service());
+   tcp::Session s(as.io_context());
 
    s.on_connect([&](const std::error_code& ec)
    {

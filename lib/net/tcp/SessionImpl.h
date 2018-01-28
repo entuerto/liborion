@@ -32,7 +32,7 @@ class SessionImpl : public std::enable_shared_from_this<SessionImpl>
 public:
    NO_COPY(SessionImpl);
 
-   SessionImpl(asio::io_service& io_service);
+   SessionImpl(asio::io_context& io_context);
    ~SessionImpl();
 
    void set_option(const Parameters& parameters);
@@ -68,8 +68,8 @@ private:
    ReadHandler    _read_handler;
    WriteHandler   _write_handler;
 
-   /// The io_service used to perform asynchronous operations.
-   asio::io_service& _io_service;
+   /// The io_context used to perform asynchronous operations.
+   asio::io_context& _io_context;
 
    /// Socket for the connection.
    asio::ip::tcp::socket _socket;

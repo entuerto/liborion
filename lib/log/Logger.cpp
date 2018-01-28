@@ -23,7 +23,7 @@ Logger& default_logger()
 {
    try
    {
-      static asio::io_service private_service;
+      static asio::io_context private_service;
       static Logger logger(private_service);
 
       return logger;

@@ -26,7 +26,7 @@ namespace tcp
 class ServerConnection : public Connection<asio::ip::tcp::socket>
 {
 public:
-   ServerConnection(asio::io_service& io_service, const Handler& handler);
+   ServerConnection(asio::io_context& io_context, const Handler& handler);
    virtual ~ServerConnection();
 
 protected:

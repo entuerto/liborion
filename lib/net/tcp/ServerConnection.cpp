@@ -18,8 +18,8 @@ namespace tcp
 
 //--------------------------------------------------------------------------------------------------
 
-ServerConnection::ServerConnection(asio::io_service& io_service, const Handler& handler)
-   : Connection(io_service)
+ServerConnection::ServerConnection(asio::io_context& io_context, const Handler& handler)
+   : Connection(io_context)
    , _handler(handler)
    , _in_streambuf()
    , _out_streambuf()

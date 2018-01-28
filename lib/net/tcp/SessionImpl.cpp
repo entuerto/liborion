@@ -18,15 +18,15 @@ namespace net
 namespace tcp
 {
 
-SessionImpl::SessionImpl(asio::io_service& io_service)
+SessionImpl::SessionImpl(asio::io_context& io_context)
    : _params()
    , _timeout()
    , _connected(false)
    , _connect_handler()
    , _read_handler()
    , _write_handler()
-   , _io_service(io_service)
-   , _socket(io_service)
+   , _io_context(io_context)
+   , _socket(io_context)
    , _in_streambuf()
    , _out_streambuf()
 {
@@ -77,7 +77,7 @@ void SessionImpl::on_write(WriteHandler h)
 void SessionImpl::connect(const std::string& addr, int port)
 {
    // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
-   asio::ip::tcp::resolver resolver(_io_service);
+   asio::ip::tcp::resolver resolver(_io_context);
    asio::ip::tcp::resolver::query query(addr, std::to_string(port));
 
    std::error_code ec;

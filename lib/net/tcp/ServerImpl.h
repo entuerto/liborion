@@ -54,8 +54,8 @@ private:
    bool _is_running;
    Handler _handler;
 
-   // The io_service used to perform asynchronous operations.
-   asio::io_service _io_service;
+   // The io_context used to perform asynchronous operations.
+   asio::io_context _io_context;
 
    // The signal_set is used to register for process termination notifications.
    asio::signal_set _signals;

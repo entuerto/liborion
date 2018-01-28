@@ -79,18 +79,18 @@ void Session::set_option(const Timeout& timeout)
 
 Response Session::operator()(const Method& m)
 {
-   asio::io_service io_service;
+   asio::io_context io_context;
 
    auto req = Request(m, _url, Version{1, 1}, _header);
 
    // Get a list of endpoints corresponding to the server name.
-   asio::ip::tcp::resolver resolver(io_service);
+   asio::ip::tcp::resolver resolver(io_context);
    asio::ip::tcp::resolver::query query(_url.hostname(), std::to_string(_url.port()));
 
    auto endpoint_iterator = resolver.resolve(query);
 
    // Try each endpoint until we successfully establish a connection.
-   asio::ip::tcp::socket socket(io_service);
+   asio::ip::tcp::socket socket(io_context);
    asio::connect(socket, endpoint_iterator);
 
    // Form the request. We specify the "Connection: close" header so that the

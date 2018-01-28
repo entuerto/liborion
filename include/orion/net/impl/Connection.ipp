@@ -48,14 +48,14 @@ inline EndPoint convert(const asio::ip::tcp::endpoint& ep)
 //--------------------------------------------------------------------------------------------------
 
 template<typename SocketT>
-Connection<SocketT>::Connection(asio::io_service& io_service)
+Connection<SocketT>::Connection(asio::io_context& io_context)
    : _local_endpoint()
    , _remote_endpoint()
-   , _socket(io_service)
+   , _socket(io_context)
    , _read_deadline()
    , _write_deadline()
-   , _read_deadline_timer(io_service)
-   , _write_deadline_timer(io_service)
+   , _read_deadline_timer(io_context)
+   , _write_deadline_timer(io_context)
 {
 }
 

@@ -22,21 +22,21 @@ namespace orion
 {
 
 AsyncService::AsyncService(std::size_t pool_size /* = 1 */)
-   : _next_io_service(0)
+   : _next_io_context(0)
 {
    if (pool_size == 0)
    {
       throw std::runtime_error("AsyncService pool size is 0");
    }
 
-   // Give all the io_services work to do so that their run() functions will not
+   // Give all the io_contexts work to do so that their run() functions will not
    // exit until they are explicitly stopped.
    for (std::size_t i = 0; i < pool_size; ++i)
    {
-      auto io_service = std::make_shared<asio::io_service>();
-      auto work       = std::make_shared<asio::io_service::work>(*io_service);
+      auto io_context = std::make_shared<asio::io_context>();
+      auto work       = std::make_shared<asio::io_context::work>(*io_context);
 
-      _io_services.push_back(io_service);
+      _io_contexts.push_back(io_context);
       _work.push_back(work);
    }
 }
@@ -50,10 +50,10 @@ void AsyncService::run()
 {
    log::debug2("AsyncService::run()");
 
-   // Create a pool of threads to run all of the io_services.
+   // Create a pool of threads to run all of the io_contexts.
    std::vector<std::shared_ptr<std::thread>> threads;
 
-   for (auto& service : _io_services)
+   for (auto& service : _io_contexts)
    {
       auto thread = std::make_shared<std::thread>([service]() {
          std::error_code ec;
@@ -79,19 +79,19 @@ void AsyncService::stop()
    _work.clear();
 }
 
-asio::io_service& AsyncService::io_service()
+asio::io_context& AsyncService::io_context()
 {
-   // Use a round-robin scheme to choose the next io_service to use.
-   asio::io_service& io_service = *_io_services[_next_io_service];
+   // Use a round-robin scheme to choose the next io_context to use.
+   asio::io_context& io_context = *_io_contexts[_next_io_context];
 
-   ++_next_io_service;
+   ++_next_io_context;
 
-   if (_next_io_service == _io_services.size())
+   if (_next_io_context == _io_contexts.size())
    {
-      _next_io_service = 0;
+      _next_io_context = 0;
    }
 
-   return io_service;
+   return io_context;
 }
 
 } // namespace orion

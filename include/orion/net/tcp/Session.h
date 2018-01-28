@@ -32,11 +32,11 @@ class API_EXPORT Session
 public:
    NO_COPY(Session);
 
-   Session(asio::io_service& io_service);
+   Session(asio::io_context& io_context);
 
    template<typename... Ts>
-   Session(asio::io_service& io_service, Ts&&... ts)
-      : Session(io_service)
+   Session(asio::io_context& io_context, Ts&&... ts)
+      : Session(io_context)
    {
       set_option(std::forward<Ts>(ts)...);
    }

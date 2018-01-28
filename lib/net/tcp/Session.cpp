@@ -16,8 +16,8 @@ namespace net
 namespace tcp
 {
 
-Session::Session(asio::io_service& io_service)
-   : _impl(std::make_shared<SessionImpl>(io_service))
+Session::Session(asio::io_context& io_context)
+   : _impl(std::make_shared<SessionImpl>(io_context))
 {
 }
 

@@ -29,17 +29,17 @@ public:
    void stop();
 
    /// Get an IOService to use.
-   asio::io_service& io_service();
+   asio::io_context& io_context();
 
 private:
-   /// The pool of io_services.
-   std::vector<std::shared_ptr<asio::io_service>> _io_services;
+   /// The pool of io_contexts.
+   std::vector<std::shared_ptr<asio::io_context>> _io_contexts;
 
-   /// The work that keeps the io_services running.
-   std::vector<std::shared_ptr<asio::io_service::work>> _work;
+   /// The work that keeps the io_contexts running.
+   std::vector<std::shared_ptr<asio::io_context::work>> _work;
 
-   /// The next io_service to use for a connection.
-   std::size_t _next_io_service;
+   /// The next io_context to use for a connection.
+   std::size_t _next_io_context;
 };
 
 } // orion
