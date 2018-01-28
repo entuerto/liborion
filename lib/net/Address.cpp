@@ -36,5 +36,17 @@ std::string to_string(const Address* addr)
    throw std::system_error(make_error_code(ErrorCode::InvalidAddress));
 }
 
+std::ostream& operator<<(std::ostream& o, const Address& addr)
+{
+   o << to_string(addr);
+   return o;
+}
+
+std::ostream& operator<<(std::ostream& o, const Address* addr)
+{
+   o << (addr == nullptr ? "null" : to_string(addr));
+   return o;
+}
+
 } // net
 } // orion

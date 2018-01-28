@@ -33,11 +33,11 @@ public:
    EndPoint(const AddressV6& addr, uint16_t port);
 
    EndPoint(const EndPoint& other);
-   EndPoint(EndPoint&& other);
+   EndPoint(EndPoint&& other) noexcept;
    virtual ~EndPoint();
 
    EndPoint& operator=(const EndPoint& rhs);
-   EndPoint& operator=(EndPoint&& rhs);
+   EndPoint& operator=(EndPoint&& rhs) noexcept;
 
    virtual Address* address() const;
 
@@ -50,11 +50,7 @@ private:
 
 API_EXPORT std::string to_string(const EndPoint& ep);
 
-inline std::ostream& operator<<(std::ostream& o, const EndPoint& ep)
-{
-   o << to_string(ep);
-   return o;
-}
+API_EXPORT std::ostream& operator<<(std::ostream& o, const EndPoint& ep);
 
 } // net
 } // orion

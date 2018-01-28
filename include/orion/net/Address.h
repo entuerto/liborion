@@ -38,17 +38,9 @@ API_EXPORT std::string to_string(const Address& addr);
 /// Returns the string form of the address
 API_EXPORT std::string to_string(const Address* addr);
 
-inline std::ostream& operator<<(std::ostream& o, const Address& addr)
-{
-   o << to_string(addr);
-   return o;
-}
+API_EXPORT std::ostream& operator<<(std::ostream& o, const Address& addr);
 
-inline std::ostream& operator<<(std::ostream& o, const Address* addr)
-{
-   o << (addr == nullptr ? "null" : to_string(addr));
-   return o;
-}
+API_EXPORT std::ostream& operator<<(std::ostream& o, const Address* addr);
 
 } // net
 } // orion

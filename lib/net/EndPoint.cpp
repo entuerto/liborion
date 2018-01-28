@@ -62,7 +62,7 @@ EndPoint::EndPoint(const EndPoint& other)
 {
 }
 
-EndPoint::EndPoint(EndPoint&& other)
+EndPoint::EndPoint(EndPoint&& other) noexcept
    : _addr(std::move(other._addr))
    , _port(std::move(other._port))
 {
@@ -81,7 +81,7 @@ EndPoint& EndPoint::operator=(const EndPoint& rhs)
    return *this;
 }
 
-EndPoint& EndPoint::operator=(EndPoint&& rhs)
+EndPoint& EndPoint::operator=(EndPoint&& rhs) noexcept
 {
    _addr = std::move(rhs._addr);
    _port = std::move(rhs._port);
@@ -101,6 +101,12 @@ uint16_t EndPoint::port() const
 std::string to_string(const EndPoint& ep)
 {
    return to_string(ep.address()) + ":" + std::to_string(ep.port());
+}
+
+std::ostream& operator<<(std::ostream& o, const EndPoint& ep)
+{
+   o << to_string(ep);
+   return o;
 }
 
 } // net
