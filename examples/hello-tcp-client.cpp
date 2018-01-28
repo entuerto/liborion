@@ -72,7 +72,7 @@ int main()
 
       log::info("Connected!");
 
-      StreamBuffer buf;
+      asio::streambuf buf;
 
       std::iostream stream(&buf);
 

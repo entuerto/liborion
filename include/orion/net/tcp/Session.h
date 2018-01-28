@@ -10,10 +10,10 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/detail/AsyncTypes.h>
-
 #include <orion/net/Utils.h>
 #include <orion/net/tcp/Utils.h>
+
+#include <asio.hpp>
 
 #include <string>
 
@@ -32,10 +32,10 @@ class API_EXPORT Session
 public:
    NO_COPY(Session);
 
-   Session(IOService& io_service);
+   Session(asio::io_service& io_service);
 
    template<typename... Ts>
-   Session(IOService& io_service, Ts&&... ts)
+   Session(asio::io_service& io_service, Ts&&... ts)
       : Session(io_service)
    {
       set_option(std::forward<Ts>(ts)...);

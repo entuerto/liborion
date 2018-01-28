@@ -13,6 +13,8 @@
 #include <orion/net/Connection.h>
 #include <orion/net/tcp/Utils.h>
 
+#include <asio.hpp>
+
 #include <system_error>
 
 namespace orion
@@ -25,7 +27,7 @@ namespace tcp
 /// Controls whether the operating system should delay packet transmission in hopes of
 /// sending fewer packets (Nagle's algorithm). The default is true (no delay), meaning
 /// that data is sent as soon as possible after a Write.
-inline std::error_code set_option(Connection<TcpSocket>& conn, const NoDelay& value);
+inline std::error_code set_option(Connection<asio::ip::tcp::socket>& conn, const NoDelay& value);
 
 } // tcp
 } // net

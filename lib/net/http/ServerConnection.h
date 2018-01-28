@@ -30,8 +30,7 @@ namespace http
 {
 
 ///
-class ServerConnection 
-   : public Connection<TcpSocket>
+class ServerConnection : public Connection<asio::ip::tcp::socket>
 {
 public:
    ServerConnection(asio::io_service& io_service, const Handlers& handlers);

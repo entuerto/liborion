@@ -15,8 +15,6 @@
 #include <orion/net/AddressV6.h>
 #include <orion/net/Utils.h>
 
-#include <orion/detail/AsyncTypes.h>
-
 #include <fmt/format.h>
 
 using namespace std::chrono_literals;
@@ -197,13 +195,13 @@ void Connection<SocketT>::start_write_timer()
 }
 
 template<typename SocketT>
-SteadyTimer& Connection<SocketT>::read_deadline_timer()
+asio::steady_timer& Connection<SocketT>::read_deadline_timer()
 {
    return _read_deadline_timer;
 }
 
 template<typename SocketT>
-SteadyTimer& Connection<SocketT>::write_deadline_timer()
+asio::steady_timer& Connection<SocketT>::write_deadline_timer()
 {
    return _write_deadline_timer;
 }

@@ -10,8 +10,6 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/detail/AsyncTypes.h>
-
 namespace orion
 {
 namespace net
@@ -19,7 +17,7 @@ namespace net
 namespace tcp
 {
 
-inline std::error_code set_option(Connection<TcpSocket>& conn, const NoDelay& value)
+inline std::error_code set_option(Connection<asio::ip::tcp::socket>& conn, const NoDelay& value)
 {
    asio::error_code ec;
    conn.socket().set_option(asio::ip::tcp::no_delay(value), ec);

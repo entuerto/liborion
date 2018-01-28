@@ -94,7 +94,7 @@ void SessionImpl::connect(const std::string& addr, int port)
    auto self = shared_from_this();
 
    asio::async_connect(_socket, it,
-      [self](std::error_code ec, asio::ip::tcp::resolver::iterator)
+      [self](const std::error_code& ec, const asio::ip::tcp::endpoint& endpoint)
       {
          if (not ec)
             self->_connected = true;
@@ -156,7 +156,7 @@ void SessionImpl::do_read()
    auto self = shared_from_this();
 
    _socket.async_read_some(_in_streambuf.prepare(1024),
-      [self](std::error_code ec, std::size_t bytes_transferred)
+      [self](const std::error_code& ec, std::size_t bytes_transferred)
       {
          log::debug("Bytes read: ", bytes_transferred);
 
@@ -178,7 +178,7 @@ void SessionImpl::do_write()
    auto self = shared_from_this();
 
    asio::async_write(_socket, _out_streambuf, 
-      [self](std::error_code ec, std::size_t bytes_written)
+      [self](const std::error_code& ec, std::size_t bytes_written)
       {
          self->_write_handler(ec, bytes_written);
 

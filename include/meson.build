@@ -11,7 +11,6 @@ orion_incl = files(
    'orion/AsyncService.h',
    'orion/Chrono.h',
    'orion/Datetime.h',
-   'orion/detail/AsyncTypes.h',
    'orion/Encoding.h',
    'orion/ErrorMacros.h',
    'orion/Exception.h',

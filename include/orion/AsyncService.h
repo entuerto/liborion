@@ -10,7 +10,7 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/detail/AsyncTypes.h>
+#include <asio.hpp>
 
 namespace orion
 {
@@ -29,14 +29,14 @@ public:
    void stop();
 
    /// Get an IOService to use.
-   IOService& io_service();
+   asio::io_service& io_service();
 
 private:
    /// The pool of io_services.
-   std::vector<std::shared_ptr<IOService>> _io_services;
+   std::vector<std::shared_ptr<asio::io_service>> _io_services;
 
    /// The work that keeps the io_services running.
-   std::vector<std::shared_ptr<IOService::work>> _work;
+   std::vector<std::shared_ptr<asio::io_service::work>> _work;
 
    /// The next io_service to use for a connection.
    std::size_t _next_io_service;

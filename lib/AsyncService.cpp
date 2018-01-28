@@ -79,7 +79,7 @@ void AsyncService::stop()
    _work.clear();
 }
 
-IOService& AsyncService::io_service()
+asio::io_service& AsyncService::io_service()
 {
    // Use a round-robin scheme to choose the next io_service to use.
    asio::io_service& io_service = *_io_services[_next_io_service];

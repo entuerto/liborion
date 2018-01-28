@@ -10,10 +10,10 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/detail/AsyncTypes.h>
-
 #include <orion/net/EndPoint.h>
 #include <orion/net/Utils.h>
+
+#include <asio.hpp>
 
 #include <chrono>
 #include <system_error>
@@ -32,7 +32,7 @@ class Connection : public std::enable_shared_from_this<Connection<SocketT>>
 public:
    NO_COPY(Connection)
 
-   Connection(IOService& io_service);
+   Connection(asio::io_service& io_service);
    virtual ~Connection();
 
    /// Close closes the connection.
@@ -85,8 +85,8 @@ public:
    void start_read_timer();
    void start_write_timer();
 
-   SteadyTimer& read_deadline_timer();
-   SteadyTimer& write_deadline_timer();
+   asio::steady_timer& read_deadline_timer();
+   asio::steady_timer& write_deadline_timer();
 
 protected:
    void dump_socket_options();
@@ -111,8 +111,8 @@ private:
    std::chrono::seconds _read_deadline;
    std::chrono::seconds _write_deadline;
 
-   SteadyTimer _read_deadline_timer;
-   SteadyTimer _write_deadline_timer;
+   asio::steady_timer _read_deadline_timer;
+   asio::steady_timer _write_deadline_timer;
 };
 
 /// Sets whether the operating system should send keepalive messages on the connection.
