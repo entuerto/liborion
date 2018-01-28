@@ -13,7 +13,6 @@
 #include <asio.hpp>
 
 #include <string>
-#include <thread>
 
 namespace orion
 {
@@ -23,112 +22,101 @@ class OutputHandler;
 class Record;
 
 /// Service implementation for the logger.
-template<typename LoggerImplementation>
-class LoggerService : public asio::io_service::service
+template<typename LoggerImpl>
+class LoggerService : public asio::io_context::service
 {
 public:
    /// The unique service identifier.
-   static asio::io_service::id id;
+   static asio::io_context::id id;
 
    /// The type for an implementation of the logger.
-   using implementation_type = std::shared_ptr<LoggerImplementation>;
+   using ImplType = std::shared_ptr<LoggerImpl>;
 
-   explicit LoggerService(asio::io_service& io_service)
-      : asio::io_service::service(io_service)
-      , _work_io_service()
-      , _work(std::make_unique<asio::io_service::work>(_work_io_service))
-      , _work_thread([&]() { _work_io_service.run(); })
+   explicit LoggerService(asio::io_context& io_context)
+      : asio::io_context::service(io_context)
+      , _work_io_context()
+      , _work(asio::make_work_guard(_work_io_context))
+      , _work_thread([&]() { _work_io_context.run(); })
    {
    }
 
    LoggerService(const LoggerService&) = default;
-   LoggerService(LoggerService&&) = default;
+   LoggerService(LoggerService&&)      = default;
 
    ~LoggerService() override
    {
-      // The work thread will finish when _work is reset as all asynchronous
-      // operations have been aborted and were discarded before (in destroy).
-      _work.reset(nullptr);
-
-      // Event processing is stopped to discard queued operations.
-      _work_io_service.stop();
-
-      /// Indicate that we have finished with the private io_service. Its
-      /// io_service::run() function will exit once all other work has completed.
+      /// Indicate that we have finished with the private io_context. Its
+      /// io_context::run() function will exit once all other work has completed.
+      _work.reset();
       _work_thread.join();
    }
 
    LoggerService& operator=(const LoggerService&) = default;
    LoggerService& operator=(LoggerService&&) = default;
 
-   void construct(implementation_type& impl)
-   {
-      impl.reset(new LoggerImplementation(Level::Warning));
-   }
+   /// Create a new logger implementation.
+   void create(ImplType& impl) { impl.reset(new LoggerImpl(Level::Warning)); }
 
-   void destroy(implementation_type& impl) { impl.reset(); }
+   void destroy(ImplType& impl) { impl.reset(); }
 
    /// Get the logging level
-   Level level(const implementation_type& impl) const { return impl->level(); }
+   Level level(const ImplType& impl) const { return impl->level(); }
 
    /// Set the logging level
-   void level(implementation_type& impl, Level value) { impl->level(value); }
+   void level(ImplType& impl, Level value) { impl->level(value); }
 
-   bool is_enabled(const implementation_type& impl, Level level) const
-   {
-      return impl->is_enabled(level);
-   }
+   bool is_enabled(const ImplType& impl, Level level) const { return impl->is_enabled(level); }
 
    /// Indicates if the service is suspended
-   bool is_running(const implementation_type& impl) const { return impl->is_running(); }
+   bool is_running(const ImplType& impl) const { return impl->is_running(); }
 
-   void is_running(implementation_type& impl, bool value) { impl->is_running(value); }
+   void is_running(ImplType& impl, bool value) { impl->is_running(value); }
 
-   void add_output_handler(implementation_type& impl, std::unique_ptr<OutputHandler>&& hdl)
+   void add_output_handler(ImplType& impl, std::unique_ptr<OutputHandler>&& hdl)
    {
       impl->add_output_handler(std::move(hdl));
    }
 
    /// Write a record to the output handlers
-   void write(implementation_type& impl, const Record& record) { impl->write(record); }
+   void write(ImplType& impl, const Record& record) { impl->write(record); }
 
    /// Starts the logging
-   void start(implementation_type& impl, SystemInfoFunc system_info) { impl->start(system_info); }
+   void start(ImplType& impl, SystemInfoFunc system_info) { impl->start(system_info); }
 
    /// Shuts down the logger
-   void shutdown(implementation_type& impl) { impl->shutdown(); }
+   void shutdown_logger(ImplType& impl) { impl->shutdown(); }
 
    /// Suspend logging
-   void suspend(implementation_type& impl) { impl->suspend(); }
+   void suspend(ImplType& impl) { impl->suspend(); }
 
    /// Resume logging
-   void resume(implementation_type& impl) { impl->resume(); }
+   void resume(ImplType& impl) { impl->resume(); }
 
-   void push_scope(implementation_type& impl) { impl->push_scope(); }
+   void push_scope(ImplType& impl) { impl->push_scope(); }
 
-   void pop_scope(implementation_type& impl) { impl->pop_scope(); }
+   void pop_scope(ImplType& impl) { impl->pop_scope(); }
 
-   uint32_t scope_depth(const implementation_type& impl) const { return impl->scope_depth(); }
+   uint32_t scope_depth(const ImplType& impl) const { return impl->scope_depth(); }
 
 private:
    /// Destroy all user-defined handler objects owned by the service.
    void shutdown_service() override {}
 
 private:
-   /// Private io_service used for performing logging operations.
-   asio::io_service _work_io_service;
+   /// Private io_context used for performing logging operations.
+   asio::io_context _work_io_context;
 
-   /// Work for the private io_service to perform. If we do not give the
-   /// io_service some work to do then the io_service::run() function will exit
+   /// Work for the private io_context to perform. If we do not give the
+   /// io_context some work to do then the io_context::run() function will exit
    /// immediately.
-   std::unique_ptr<asio::io_service::work> _work;
+   asio::executor_work_guard<asio::io_context::executor_type> _work;
 
-   /// Thread used for running the work io_service's run loop.
-   std::thread _work_thread;
+   /// Thread used for running the work io_context's run loop.
+   asio::thread _work_thread;
 };
 
-template<typename LoggerImplementation>
-asio::io_service::id LoggerService<LoggerImplementation>::id;
+template<typename LoggerImpl>
+asio::io_context::id LoggerService<LoggerImpl>::id;
 
 } // namespace log
 } // namespace orion

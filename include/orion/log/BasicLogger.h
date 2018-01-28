@@ -38,12 +38,22 @@ class Record;
 /// Formatter class.
 ///
 template<typename Service>
-class BasicLogger : public asio::basic_io_object<Service>
+class BasicLogger 
 {
 public:
-   explicit BasicLogger(asio::io_service& io_service)
-      : asio::basic_io_object<Service>(io_service)
+   NO_COPY(BasicLogger)
+
+   /// The type of the service that will be used to provide operations.
+   using ServiceType = Service;
+
+   /// The native implementation type of the timer.
+   using ImplType = typename ServiceType::ImplType;
+
+   explicit BasicLogger(asio::io_context& io_context)
+      : _service(asio::use_service<Service>(io_context))
+      , _impl()
    {
+      _service.create(_impl);
    }
 
    /// Get the logging level
@@ -110,6 +120,13 @@ public:
 
    /// Log a character
    BasicLogger& operator+=(const Record& record);
+
+private:
+   /// The backend service implementation.
+   ServiceType& _service;
+
+   /// The underlying native implementation.
+   ImplType _impl;
 };
 
 } // namespace log
