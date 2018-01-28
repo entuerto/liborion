@@ -12,8 +12,6 @@
 #include <orion/net/tcp/Connection.h>
 #include <orion/net/tcp/Utils.h>
 
-#include <net/tcp/ServerConnection.h>
-
 #include <future>
 
 namespace orion
@@ -29,7 +27,7 @@ ServerImpl::ServerImpl()
    , _handler()
    , _io_context()
    , _signals(_io_context)
-   , _acceptors()
+   , _acceptor(_io_context)
 {
 }
 
@@ -39,7 +37,7 @@ ServerImpl::ServerImpl(Handler h)
    , _handler(std::move(h))
    , _io_context()
    , _signals(_io_context)
-   , _acceptors()
+   , _acceptor(_io_context)
 {
 }
 
@@ -64,13 +62,10 @@ void ServerImpl::shutdown()
 {
    asio::error_code ec;
 
-   for (auto& acceptor : _acceptors)
-   {
-      acceptor.close(ec);
+   _acceptor.close(ec);
 
-      if (ec)
-         log::error(ec);
-   }
+   if (ec)
+      log::error(ec);
 }
 
 std::error_code ServerImpl::listen_and_serve(const std::string& addr, int port)
@@ -79,65 +74,53 @@ std::error_code ServerImpl::listen_and_serve(const std::string& addr, int port)
 
    // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
    asio::ip::tcp::resolver resolver(_io_context);
-   asio::ip::tcp::resolver::query query(addr, std::to_string(port));
+
+   asio::ip::tcp::endpoint endpoint = *resolver.resolve(addr, std::to_string(port)).begin();
 
    std::error_code ec;
 
-   auto it = resolver.resolve(query, ec);
+   // Open the acceptor
+   _acceptor.open(endpoint.protocol(), ec);
    if (ec)
       return ec;
 
-   for (; it != asio::ip::tcp::resolver::iterator(); ++it)
-   {
-      asio::ip::tcp::endpoint endpoint = *it;
+   _acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
 
-      auto acceptor = asio::ip::tcp::acceptor(_io_context);
-
-      if (acceptor.open(endpoint.protocol(), ec))
-         continue;
-
-      acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
-
-      if (acceptor.bind(endpoint, ec))
-         continue;
-
-      if (acceptor.listen(asio::socket_base::max_connections, ec))
-         continue;
-
-      _acceptors.push_back(std::move(acceptor));
-   }
-
-   if (_acceptors.empty())
+   // Bind to the server address
+   _acceptor.bind(endpoint, ec);
+   if (ec)
       return ec;
 
-   for (auto& acceptor : _acceptors)
-   {
-      do_accept(acceptor);
-   }
+   // Start listening for connections
+   _acceptor.listen(asio::socket_base::max_listen_connections, ec);
+   if (ec)
+      return ec;
+
+   do_accept();
 
    _io_context.run();
 
    return std::error_code();
 }
 
-void ServerImpl::do_accept(asio::ip::tcp::acceptor& acceptor)
+void ServerImpl::do_accept()
 {
-   auto conn = std::make_shared<ServerConnection>(_io_context, _handler);
+   _new_connection = std::make_shared<ServerConnection>(_io_context, _handler);
 
-   acceptor.async_accept(conn->socket(), [this, &acceptor, conn](std::error_code ec) {
+   _acceptor.async_accept(_new_connection->socket(), [this](std::error_code ec) {
       // Check whether the server was stopped by a signal before this
       // completion handler had a chance to run.
-      if (not acceptor.is_open())
+      if (not _acceptor.is_open())
          return;
 
       if (not ec)
       {
-         set_option(*conn, KeepAlive{true});
-         set_option(*conn, tcp::NoDelay{true});
-         conn->accept();
+         set_option(*_new_connection, KeepAlive{true});
+         set_option(*_new_connection, tcp::NoDelay{true});
+         _new_connection->accept();
       }
 
-      do_accept(acceptor);
+      do_accept();
    });
 }
 
@@ -150,8 +133,7 @@ void ServerImpl::do_close()
       // The server is stopped by cancelling all outstanding asynchronous
       // operations. Once all operations have finished the io_context::run()
       // call will exit.
-      for (auto& acceptor : _acceptors)
-         acceptor.close();
+      _acceptor.close();
    });
 }
 

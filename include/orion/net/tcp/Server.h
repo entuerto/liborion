@@ -24,11 +24,11 @@ namespace tcp
 {
 class ServerImpl;
 
-//! This class provides a tcp protocol Server
-/*!
-   This class provides a tcp protocol Server to handle incoming requests
-   and sends valid responses.
- */
+/// This class provides a tcp protocol Server
+///
+/// This class provides a tcp protocol Server to handle incoming requests
+/// and sends valid responses.
+///
 class API_EXPORT Server : public net::Server
 {
 public:
@@ -36,23 +36,26 @@ public:
 
    Server();
    Server(Handler h);
-   virtual ~Server();
+   ~Server() override;
 
-   Server(Server&& other) noexcept;
-   Server& operator=(Server&& other) noexcept;
+   Server(Server&& other) noexcept  = default;
+   Server& operator=(Server&& other) noexcept  = default;
 
-   virtual int port() const;
+   int port() const;
 
-   virtual void register_handler(Handler h);
+   void register_handler(Handler h);
 
-   virtual void shutdown() override;
+   void shutdown() override;
 
-   virtual bool is_running() const override;
+   bool is_running() const override;
 
-   virtual std::error_code listen_and_serve(const std::string& addr, int port) override;
+   std::error_code listen_and_serve(const std::string& addr, int port) override;
 
 private:
-   std::unique_ptr<ServerImpl> _impl;  
+   const ServerImpl* impl() const { return _impl.get(); }
+   ServerImpl* impl() { return _impl.get(); }
+
+   std::unique_ptr<ServerImpl> _impl;
 };
 
 } // tcp

@@ -26,45 +26,31 @@ Server::Server(Handler h)
 {
 }
 
-Server::Server(Server&& other) noexcept
-   : _impl(std::move(other._impl))
-{
-}  
-
-Server::~Server()
-{
-}
-
-Server& Server::operator=(Server&& other) noexcept
-{
-   _impl = std::move(other._impl);
-
-   return *this;
-}
+Server::~Server() = default;
 
 int Server::port() const
 {
-   return _impl->port();
+   return impl()->port();
 }
 
 void Server::register_handler(Handler h)
 {
-   _impl->register_handler(std::move(h));
+   impl()->register_handler(std::move(h));
 }
 
 void Server::shutdown()
 {
-   _impl->shutdown();
+   impl()->shutdown();
 }
 
 bool Server::is_running() const
 {
-   return _impl->is_running();
+   return impl()->is_running();
 }
 
 std::error_code Server::listen_and_serve(const std::string& addr, int port)
 {
-   return _impl->listen_and_serve(addr, port);
+   return impl()->listen_and_serve(addr, port);
 }
 
 } // tcp

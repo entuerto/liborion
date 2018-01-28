@@ -12,6 +12,8 @@
 
 #include <orion/net/tcp/Utils.h>
 
+#include <net/tcp/ServerConnection.h>
+
 #include <asio.hpp>
 
 #include <string>
@@ -28,6 +30,7 @@ class ServerImpl
 {
 public:
    NO_COPY(ServerImpl)
+   NO_MOVE(ServerImpl)
 
    ServerImpl();
    ServerImpl(Handler h);
@@ -44,7 +47,7 @@ public:
    std::error_code listen_and_serve(const std::string& addr, int port);
 
 protected:
-   void do_accept(asio::ip::tcp::acceptor& acceptor);
+   void do_accept();
    void do_close();
 
 private:
@@ -61,7 +64,10 @@ private:
    asio::signal_set _signals;
 
    // Acceptor used to listen for incoming connections.
-   std::vector<asio::ip::tcp::acceptor> _acceptors;
+   asio::ip::tcp::acceptor _acceptor;
+
+   /// The connection to be accepted.
+   std::shared_ptr<ServerConnection> _new_connection;
 };
 
 } // tcp
