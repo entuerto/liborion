@@ -49,7 +49,7 @@ public:
 
    bool is_running() const override;
 
-   std::error_code listen_and_serve(const std::string& addr, int port) override;
+   std::error_code listen_and_serve(const net::EndPoint& endpoint) override;
 
 private:
    const ServerImpl* impl() const { return _impl.get(); }

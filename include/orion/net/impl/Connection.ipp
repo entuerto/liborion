@@ -48,14 +48,14 @@ inline EndPoint convert(const asio::ip::tcp::endpoint& ep)
 //--------------------------------------------------------------------------------------------------
 
 template<typename SocketT>
-Connection<SocketT>::Connection(asio::io_context& io_context)
+Connection<SocketT>::Connection(SocketT socket)
    : _local_endpoint()
    , _remote_endpoint()
-   , _socket(io_context)
+   , _socket(std::move(socket))
    , _read_deadline()
    , _write_deadline()
-   , _read_deadline_timer(io_context)
-   , _write_deadline_timer(io_context)
+   , _read_deadline_timer(_socket.get_executor().context())
+   , _write_deadline_timer(_socket.get_executor().context())
 {
 }
 
@@ -72,7 +72,8 @@ void Connection<SocketT>::close()
 
    std::error_code ec;
 
-   _socket.close(ec);
+   // Send a TCP shutdown
+   _socket.shutdown(asio::ip::tcp::socket::shutdown_send, ec);
    if (ec)
       log::error(ec);
 

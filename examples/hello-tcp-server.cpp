@@ -6,7 +6,7 @@
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 #include <orion/Log.h>
-#include <orion/net/tcp/Server.h>
+#include <orion/net/tcp/Listener.h>
 
 #include <cstdio>
 #include <iostream>
@@ -31,28 +31,28 @@ int main()
 
    log::start();
 
-   auto server = std::make_unique<tcp::Server>();
-
-   server->register_handler([&](std::streambuf* in, std::streambuf* out) {
+   auto handler = [&](std::streambuf* in, std::streambuf* out) {
       std::cout << "Received :\n";
 
       std::cout << in << "\n";
 
       std::ostream o(out);
 
-      o << "Welcome" << "\n";
+      o << "Welcome"
+        << "\n";
 
       return std::error_code();
-   });
+   };
 
    std::cout << "Server listening on port: 9090\n";
 
    try
    {
-      std::error_code ec = server->listen_and_serve("", 9090);
+      asio::io_context io_context;
 
-      if (ec)
-         log::error(ec);
+      std::make_shared<tcp::Listener>(io_context, EndPoint{"0.0.0.0"_ipv4, 9090}, handler)->start();
+
+      io_context.run();
    }
    catch (const std::system_error& e)
    {

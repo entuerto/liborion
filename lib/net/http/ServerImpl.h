@@ -43,7 +43,7 @@ public:
 
    void add_handler(const std::string& p, HandlerFunc h);
 
-   std::error_code listen_and_serve(const std::string& addr, int port);
+   std::error_code listen_and_serve(asio::ip::tcp::endpoint endpoint);
 
    void do_accept();
    void do_close();
@@ -52,7 +52,6 @@ private:
    void setup_signals();
 
    int _port;
-   bool _is_running;
    Handlers _handlers;
 
    // The io_context used to perform asynchronous operations.

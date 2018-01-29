@@ -1,0 +1,65 @@
+//
+// Listener.h
+//
+// Copyright (c) 2013-2018 Tomas Palazuelos
+//
+// Distributed under the MIT Software License. (See accompanying file LICENSE.md)
+//
+#ifndef ORION_NET_TCP_LISTENER_H
+#define ORION_NET_TCP_LISTENER_H
+
+#include <orion/Orion-Stddefs.h>
+
+#include <orion/net/EndPoint.h>
+#include <orion/net/Listener.h>
+#include <orion/net/tcp/Utils.h>
+
+#include <asio.hpp>
+
+#include <system_error>
+
+namespace orion
+{
+namespace net
+{
+namespace tcp
+{
+///
+/// Accepts incoming connections 
+///
+class Listener 
+   : public std::enable_shared_from_this<Listener>
+   , public net::Listener
+{
+public:
+   NO_COPY(Listener)
+
+   //DEFAULT_MOVE(Listener)
+
+   Listener(asio::io_context& io_context, const EndPoint& ep, Handler handler);
+   ~Listener() override;
+
+   /// Start accepting incoming connections
+   void start() override;
+
+   /// Close closes the listener.
+   std::error_code close() override;
+
+protected:
+   void do_accept();
+   void on_accept(const std::error_code& ec);
+
+private:
+   asio::ip::tcp::acceptor _acceptor;
+   asio::ip::tcp::socket _socket;
+
+   Handler _handler;
+};
+
+} // tcp
+} // net
+} // orion
+
+#include <orion/net/tcp/impl/Listener.ipp>
+
+#endif // ORION_NET_TCP_LISTENER_H

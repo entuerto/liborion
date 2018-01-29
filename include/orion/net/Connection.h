@@ -32,12 +32,12 @@ class Connection : public std::enable_shared_from_this<Connection<SocketT>>
 public:
    NO_COPY(Connection)
 
-   Connection(asio::io_context& io_context);
+   Connection(SocketT socket);
    virtual ~Connection();
 
    /// Close closes the connection.
    /// Any blocked Read or Write operations will be unblocked and return errors.
-   virtual void close();
+   void close();
 
    /// Returns the local network address.
    const EndPoint& local_endpoint() const;

@@ -73,7 +73,6 @@ orion_net_incl = files(
    'orion/net/Connection.h',
    'orion/net/EndPoint.h',
    'orion/net/Error.h',
-   'orion/net/Server.h',
    'orion/net/Types.h',
    'orion/net/Url.h',
    'orion/net/Utils.h',

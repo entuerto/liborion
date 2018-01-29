@@ -8,6 +8,7 @@
 #include <net/http/ServerImpl.h>
 
 #include <orion/Log.h>
+#include <orion/net/EndPoint.h>
 #include <orion/net/Utils.h>
 #include <orion/net/tcp/Connection.h>
 #include <orion/net/tcp/Utils.h>
@@ -23,7 +24,6 @@ namespace http
 
 ServerImpl::ServerImpl()
    : _port(-1)
-   , _is_running(false)
    , _handlers()
    , _io_context()
    , _signals(_io_context)
@@ -45,7 +45,7 @@ void ServerImpl::add_handler(const std::string& p, HandlerFunc h)
 
 bool ServerImpl::is_running() const
 {
-   return _is_running;
+   return _acceptor.is_open();
 }
 
 void ServerImpl::shutdown()
@@ -58,14 +58,9 @@ void ServerImpl::shutdown()
       log::error(ec);
 }
 
-std::error_code ServerImpl::listen_and_serve(const std::string& addr, int port)
+std::error_code ServerImpl::listen_and_serve(asio::ip::tcp::endpoint endpoint)
 {
    setup_signals();
-
-   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
-   asio::ip::tcp::resolver resolver(_io_context);
-
-   asio::ip::tcp::endpoint endpoint = *resolver.resolve(addr, std::to_string(port)).begin();
 
    std::error_code ec;
 
@@ -105,8 +100,8 @@ void ServerImpl::do_accept()
 
       if (not ec)
       {
-         set_option(*_new_connection, KeepAlive{true});
-         tcp::set_option(*_new_connection, tcp::NoDelay{true});
+         //set_option(*_new_connection, KeepAlive{true});
+         //tcp::set_option(*_new_connection, tcp::NoDelay{true});
          _new_connection->accept();
       }
 

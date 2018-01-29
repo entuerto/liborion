@@ -6,7 +6,7 @@
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 #include <orion/Log.h>
-#include <orion/net/Server.h>
+#include <orion/net/http/Server.h>
 #include <orion/net/http/Request.h>
 #include <orion/net/http/Response.h>
 #include <orion/net/http/Server.h>
@@ -79,7 +79,7 @@ int main()
 
    try
    {
-      std::error_code ec = server->listen_and_serve("", 9080);
+      std::error_code ec = server->listen_and_serve({"0.0.0.0"_ipv4, 9080});
 
       if (ec)
          LOG(Error) << ec;

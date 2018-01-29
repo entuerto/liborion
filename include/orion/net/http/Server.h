@@ -10,7 +10,7 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/Server.h>
+#include <orion/net/EndPoint.h>
 #include <orion/net/http/Utils.h>
 
 #include <memory>
@@ -29,24 +29,24 @@ class ServerImpl;
 /// This class provides an embedded HTTP Server to handle incoming Requests
 /// and send HTTP 1.1 valid responses.
 ///
-class API_EXPORT Server : public net::Server
+class API_EXPORT Server 
 {
 public:
    NO_COPY(Server)
 
    Server();
-   ~Server() override;
+   virtual ~Server();
 
    Server(Server&& other) noexcept  = default;
    Server& operator=(Server&& other) noexcept  = default;
 
    int port() const;
 
-   void shutdown() override;
+   void shutdown();
 
-   bool is_running() const override;
+   bool is_running() const;
 
-   std::error_code listen_and_serve(const std::string& addr, int port) override;
+   std::error_code listen_and_serve(const EndPoint& endpoint);
 
    virtual void add_handler(const std::string& p, HandlerFunc h);
 

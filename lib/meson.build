@@ -112,9 +112,6 @@ orion_net_src = files(
    'net/http/ServerConnection.cpp',
    'net/http/Session.cpp',
    # TCP files
-   'net/tcp/Server.cpp',
-   'net/tcp/ServerImpl.cpp',
-   'net/tcp/ServerConnection.cpp',
    'net/tcp/Session.cpp',
    'net/tcp/SessionImpl.cpp',
    'net/tcp/Utils.cpp',

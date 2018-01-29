@@ -21,7 +21,7 @@ namespace http
 //---------------------------------------------------------------------------------------
 
 ServerConnection::ServerConnection(asio::io_context& io_context, const Handlers& handlers)
-   : Connection(io_context)
+   : Connection(asio::ip::tcp::socket(io_context))
    , _handlers(handlers)
    , _request()
    , _response(StatusCode::OK)

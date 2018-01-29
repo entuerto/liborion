@@ -7,7 +7,6 @@
 //
 #include <orion/Log.h>
 #include <orion/Utils.h>
-#include <orion/net/Server.h>
 #include <orion/net/tcp/Server.h>
 #include <orion/net/rpc/Rpc.h>
 
@@ -103,7 +102,7 @@ int main()
 
    try
    {
-      std::error_code ec = server->listen_and_serve("", 9000);
+      std::error_code ec = server->listen_and_serve({"0.0.0.0"_ipv4, 9000});
 
       if (ec)
          log::error(ec);

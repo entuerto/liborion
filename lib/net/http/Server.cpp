@@ -42,9 +42,12 @@ bool Server::is_running() const
    return impl()->is_running();
 }
 
-std::error_code Server::listen_and_serve(const std::string& addr, int port)
+std::error_code Server::listen_and_serve(const net::EndPoint& ep)
 {
-   return impl()->listen_and_serve(addr, port);
+   auto addr = asio::ip::make_address(to_string(ep.address()));
+   asio::ip::tcp::endpoint endpoint{addr, ep.port()};
+
+   return impl()->listen_and_serve(std::move(endpoint));
 }
 
 } // http
