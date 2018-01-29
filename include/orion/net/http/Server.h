@@ -24,33 +24,36 @@ namespace http
 {
 class ServerImpl;
 
-//! This class provides an embedded HTTP Server
-/*!
-   This class provides an embedded HTTP Server to handle incoming Requests
-   and send HTTP 1.1 valid responses.
- */
+/// This class provides an embedded HTTP Server
+///
+/// This class provides an embedded HTTP Server to handle incoming Requests
+/// and send HTTP 1.1 valid responses.
+///
 class API_EXPORT Server : public net::Server
 {
 public:
    NO_COPY(Server)
 
    Server();
-   virtual ~Server();
+   ~Server() override;
 
-   Server(Server&& other) noexcept;
-   Server& operator=(Server&& other) noexcept;
+   Server(Server&& other) noexcept  = default;
+   Server& operator=(Server&& other) noexcept  = default;
 
-   virtual int port() const;
+   int port() const;
 
-   virtual void shutdown() override;
+   void shutdown() override;
 
-   virtual bool is_running() const override;
+   bool is_running() const override;
 
-   virtual std::error_code listen_and_serve(const std::string& addr, int port) override;
+   std::error_code listen_and_serve(const std::string& addr, int port) override;
 
    virtual void add_handler(const std::string& p, HandlerFunc h);
 
 private:
+   const ServerImpl* impl() const { return _impl.get(); }
+   ServerImpl* impl() { return _impl.get(); }
+   
    std::unique_ptr<ServerImpl> _impl;
 };
 

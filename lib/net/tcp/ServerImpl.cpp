@@ -41,7 +41,7 @@ ServerImpl::ServerImpl(Handler h)
 {
 }
 
-ServerImpl::~ServerImpl() {}
+ServerImpl::~ServerImpl() = default;
 
 int ServerImpl::port() const
 {

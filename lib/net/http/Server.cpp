@@ -20,45 +20,31 @@ Server::Server()
 {
 }
 
-Server::Server(Server&& other) noexcept
-   : _impl(std::move(other._impl))
-{
-}  
-
-Server::~Server()
-{
-}
-
-Server& Server::operator=(Server&& other) noexcept
-{
-   _impl = std::move(other._impl);
-
-   return *this;
-}
+Server::~Server() = default;
 
 int Server::port() const
 {
-   return _impl->port();
+   return impl()->port();
 }
 
 void Server::add_handler(const std::string& p, HandlerFunc h)
 {
-   _impl->add_handler(p, std::move(h));
+   impl()->add_handler(p, std::move(h));
 }
 
 void Server::shutdown()
 {
-   _impl->shutdown();
+   impl()->shutdown();
 }
 
 bool Server::is_running() const
 {
-   return _impl->is_running();
+   return impl()->is_running();
 }
 
 std::error_code Server::listen_and_serve(const std::string& addr, int port)
 {
-   return _impl->listen_and_serve(addr, port);
+   return impl()->listen_and_serve(addr, port);
 }
 
 } // http
