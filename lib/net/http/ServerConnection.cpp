@@ -20,17 +20,18 @@ namespace http
 
 //---------------------------------------------------------------------------------------
 
-ServerConnection::ServerConnection(asio::io_context& io_context, const Handlers& handlers)
-   : Connection(asio::ip::tcp::socket(io_context))
-   , _handlers(handlers)
+ServerConnection::ServerConnection(asio::ip::tcp::socket socket, RequestMux& mux)
+   : Connection(std::move(socket))
+   , _mux(mux)
    , _request()
    , _response(StatusCode::OK)
    , _parser()
 {
 }
 
-ServerConnection::~ServerConnection()
+ServerConnection::~ServerConnection() 
 {
+   log::debug2("~ServerConnection()");
 }
 
 void ServerConnection::do_read()
@@ -41,20 +42,21 @@ void ServerConnection::do_read()
       asio::buffer(_in_buffer), [this, self](std::error_code ec, std::size_t bytes_transferred) {
          if (ec)
          {
-            LOG(Error) << ec;
+            log::error(ec, _src_loc);
             close();
             return;
          }
 
-         LOG(Debug2) << "ServerConnection::do_read() " << int(bytes_transferred);
+         log::debug2("Connection::do_read() ", int(bytes_transferred));
 
          ec = _parser.parse(_request, _in_buffer.data(), bytes_transferred);
          if (ec)
          {
-            LOG(Error) << ec;
+            log::error(ec, _src_loc);
             close();
             return;
          }
+         log::debug2("After parse");
 
          if (_parser.message_complete())
          {
@@ -62,7 +64,7 @@ void ServerConnection::do_read()
             do_write();
             return;
          }
-
+         log::debug2("Before do_read()");
          do_read();
       });
 }
@@ -71,27 +73,22 @@ void ServerConnection::do_write()
 {
    auto self = this->shared_from_this();
 
-   std::vector<asio::const_buffer> buffers;
-   buffers.push_back(static_cast<asio::streambuf*>(_response.header_rdbuf())->data());
-   buffers.push_back(static_cast<asio::streambuf*>(_response.body_rdbuf())->data());
+   auto buffers = _response.to_buffers();
+
+   std::size_t bytes_to_write = asio::buffer_size(buffers);
 
    asio::async_write(
-      socket(), buffers, [this, self, &buffers](std::error_code ec, std::size_t bytes_written) {
+      socket(), buffers, [this, self, bytes_to_write](std::error_code ec, std::size_t bytes_written) {
          if (ec)
          {
-            LOG(Error) << ec;
+            log::error(ec, _src_loc);
             close();
             return;
          }
-         std::size_t bytes_to_write = asio::buffer_size(buffers);
 
-         LOG(Debug2) << "ServerConnection::do_write() " << int(bytes_to_write) << " "
-                     << int(bytes_written);
+         log::debug2("Connection::do_write() ", int(bytes_to_write), " ", int(bytes_written));
 
-         // if (bytes_to_write == bytes_written)
-         //   return;
-
-         // do_write();
+         close();
       });
 }
 
@@ -99,28 +96,16 @@ void ServerConnection::do_handler()
 {
    LOG_FUNCTION(Debug2, "ServerConnection::do_handler()")
 
-   LOG(Debug2) << _request;
+   log::debug2(_request);
 
-   auto it = _handlers.find(_request.url().pathname());
+   _mux(_request, _response);
 
-   if (it != _handlers.end())
-   {
-      auto& h = it->second;
+   log::debug2(_response);
 
-      auto ec = h(_request, _response);
-      if (ec)
-      {
-         LOG(Error) << ec;
 
-         _response = Response(static_cast<StatusCode>(ec.value()));
-         _response.header("Connection", "close");
-         _response.header("X-Content-Type-Options", "nosniff");
-      }
-      return;
-   }
-   _response = Response(StatusCode::BadRequest);
-   _response.header("Connection", "close");
-   _response.header("X-Content-Type-Options", "nosniff");
+   ///_response = Response(StatusCode::BadRequest);
+   ///_response.header("Connection", "close");
+   ///_response.header("X-Content-Type-Options", "nosniff");
 }
 
 } // http

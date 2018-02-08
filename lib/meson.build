@@ -106,6 +106,7 @@ orion_net_src = files(
    'net/http/Error.cpp',
    'net/http/Parser.cpp',
    'net/http/Request.cpp',
+   'net/http/RequestMux.cpp',
    'net/http/Response.cpp',
    'net/http/Server.cpp',
    'net/http/ServerImpl.cpp',

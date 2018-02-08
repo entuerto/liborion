@@ -54,7 +54,7 @@ void Connection::do_read()
             close();
             return;
          }
-         log::debug2("ServerConnection::do_read() ", int(bytes_transferred));
+         log::debug2("Connection::do_read() ", int(bytes_transferred));
 
          _in_streambuf.commit(bytes_transferred);
 
@@ -87,7 +87,7 @@ void Connection::do_write()
 
          _out_streambuf.consume(bytes_written);
 
-         log::debug2("ServerConnection::do_write() ", int(bytes_to_write), " ", int(bytes_written));
+         log::debug2("Connection::do_write() ", int(bytes_to_write), " ", int(bytes_written));
 
          if (bytes_to_write == bytes_written)
             return;

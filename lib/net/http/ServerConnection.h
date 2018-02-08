@@ -12,6 +12,7 @@
 
 #include <orion/net/Connection.h>
 #include <orion/net/http/Request.h>
+#include <orion/net/http/RequestMux.h>
 #include <orion/net/http/Response.h>
 #include <orion/net/http/Utils.h>
 
@@ -33,7 +34,7 @@ namespace http
 class ServerConnection : public Connection<asio::ip::tcp::socket>
 {
 public:
-   ServerConnection(asio::io_context& io_context, const Handlers& handlers);
+   ServerConnection(asio::ip::tcp::socket socket, RequestMux& mux);
    virtual ~ServerConnection();
 
 protected:
@@ -48,7 +49,7 @@ private:
    void do_handler();
 
    /// Request handlers
-   const Handlers& _handlers;
+   RequestMux& _mux;
 
    Request _request;
    Response _response;

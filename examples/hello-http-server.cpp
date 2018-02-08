@@ -8,8 +8,8 @@
 #include <orion/Log.h>
 #include <orion/net/http/Server.h>
 #include <orion/net/http/Request.h>
+#include <orion/net/http/RequestMux.h>
 #include <orion/net/http/Response.h>
-#include <orion/net/http/Server.h>
 
 #include <cstdio>
 #include <fstream>
@@ -68,18 +68,20 @@ int main()
 
    if (server == nullptr)
    {
-      LOG(Info) << "Server error...";
+      log::error("Server error...");
       return EXIT_FAILURE;
    }
 
-   server->add_handler("/world", world);
-   server->add_handler("/hello", hello);
+   http::RequestMux mux;
 
-   std::cout << "Server listening on port: 9080\n";
+   mux.handle(http::Method::GET, "/world", world);
+   mux.handle(http::Method::GET, "/hello", hello);
+
+   log::write("Server listening on port: 9080\n");
 
    try
    {
-      std::error_code ec = server->listen_and_serve({"0.0.0.0"_ipv4, 9080});
+      std::error_code ec = server->listen_and_serve({"0.0.0.0"_ipv4, 9080}, std::move(mux));
 
       if (ec)
          LOG(Error) << ec;

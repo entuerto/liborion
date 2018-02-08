@@ -24,8 +24,8 @@ Response::Response()
    : _status_code(StatusCode::OK)
    , _version({1, 1})
    , _header()
-   , _header_streambuf(std::make_unique<asio::streambuf>())
-   , _body_streambuf(std::make_unique<asio::streambuf>())
+   , _header_streambuf()
+   , _body_streambuf()
 {
 }
 
@@ -33,50 +33,40 @@ Response::Response(StatusCode code)
    : _status_code(code)
    , _version({1, 1})
    , _header()
-   , _header_streambuf(std::make_unique<asio::streambuf>())
-   , _body_streambuf(std::make_unique<asio::streambuf>())
+   , _header_streambuf()
+   , _body_streambuf()
 {
-   /*
-      if (_status_code >= StatusCode::BadRequest)
-      {
-         header("Connection", "close");
-         header("X-Content-Type-Options", "nosniff");
-      }
-      else
-         header("Content-Type", "text/plain; charset=utf-8");
-   */
 }
 
 Response::Response(StatusCode code, const Version& version, const Header& header)
    : _status_code(code)
    , _version(version)
    , _header(header)
-   , _header_streambuf(std::make_unique<asio::streambuf>())
-   , _body_streambuf(std::make_unique<asio::streambuf>())
+   , _header_streambuf()
+   , _body_streambuf()
 {
 }
 
-Response::Response(Response&& rhs)
+Response::Response(Response&& rhs) noexcept
    : _status_code(std::move(rhs._status_code))
    , _version(std::move(rhs._version))
    , _header(std::move(rhs._header))
-   , _header_streambuf(std::move(rhs._header_streambuf))
-   , _body_streambuf(std::move(rhs._body_streambuf))
+   , _header_streambuf()
 {
+   std::ostream o(&_body_streambuf);
+   o << &rhs._body_streambuf;
 }
 
-Response::~Response()
-{
-}
+Response::~Response() = default;
 
-Response& Response::operator=(Response&& rhs)
+Response& Response::operator=(Response&& rhs) noexcept
 {
    _status_code = std::move(rhs._status_code);
    _version     = std::move(rhs._version);
    _header      = std::move(rhs._header);
 
-   _header_streambuf = std::move(rhs._header_streambuf);
-   _body_streambuf   = std::move(rhs._body_streambuf);
+   std::ostream o(&_body_streambuf);
+   o << &rhs._body_streambuf;
 
    return *this;
 }
@@ -126,21 +116,28 @@ void Response::header(const Header& header)
    _header = header;
 }
 
-std::streambuf* Response::header_rdbuf() const
+std::streambuf* Response::header_rdbuf() 
 {
-   const_cast<Response*>(this)->build_header_buffer();
+   build_header_buffer();
 
-   return _header_streambuf.get();
+   return &_header_streambuf;
 }
 
-std::streambuf* Response::body_rdbuf() const
+std::streambuf* Response::body_rdbuf() 
 {
-   return _body_streambuf.get();
+   return &_body_streambuf;
+}
+
+std::vector<asio::const_buffer> Response::to_buffers()
+{
+   build_header_buffer();
+
+   return {_header_streambuf.data(), _body_streambuf.data()};
 }
 
 void Response::build_header_buffer() 
 {
-   std::size_t body_size = static_cast<asio::streambuf*>(_body_streambuf.get())->size();
+   std::size_t body_size = _body_streambuf.size();
 
    if (_status_code == StatusCode::OK and body_size == 0)
       _status_code = StatusCode::NoContent;
@@ -148,7 +145,7 @@ void Response::build_header_buffer()
    if (body_size != 0)
       header("Content-Length", std::to_string(body_size));
 
-   std::ostream o(_header_streambuf.get());
+   std::ostream o(&_header_streambuf);
 
    auto v = version();
 

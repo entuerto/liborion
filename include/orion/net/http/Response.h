@@ -13,6 +13,8 @@
 #include <orion/net/http/StatusCode.h>
 #include <orion/net/http/Utils.h>
 
+#include <asio.hpp>
+
 #include <memory>
 #include <ostream>
 #include <streambuf>
@@ -36,10 +38,10 @@ public:
    Response();
    Response(StatusCode code);
    Response(StatusCode code, const Version& version, const Header& header);
-   Response(Response&& rhs);
+   Response(Response&& rhs) noexcept;
    virtual ~Response();
 
-   Response& operator=(Response&& rhs);
+   Response& operator=(Response&& rhs) noexcept;
 
    virtual StatusCode status_code() const;
    virtual void status_code(StatusCode sc);
@@ -55,8 +57,10 @@ public:
    virtual void header(const std::string& name, const std::string& value);
    virtual void header(const Header& header);
 
-   virtual std::streambuf* header_rdbuf() const;
-   virtual std::streambuf* body_rdbuf() const;
+   virtual std::streambuf* header_rdbuf();
+   virtual std::streambuf* body_rdbuf();
+
+   std::vector<asio::const_buffer> to_buffers();
 
    friend API_EXPORT std::ostream& operator<<(std::ostream& o, const Response& r);
 
@@ -68,8 +72,8 @@ private:
    Version _version;
    Header _header;
 
-   std::unique_ptr<std::streambuf> _header_streambuf;
-   std::unique_ptr<std::streambuf> _body_streambuf;
+   asio::streambuf _header_streambuf;
+   asio::streambuf _body_streambuf;
 };
 
 API_EXPORT std::ostream& operator<<(std::ostream& o, const Response& r);

@@ -82,6 +82,7 @@ orion_net_incl = files(
    'orion/net/http/Cookies.h',
    'orion/net/http/Error.h',
    'orion/net/http/Request.h',
+   'orion/net/http/RequestMux.h',
    'orion/net/http/Response.h',
    'orion/net/http/Server.h',
    'orion/net/http/Session.h',
@@ -99,10 +100,11 @@ orion_net_incl = files(
    'orion/net/rpc/Traits.h',
    # TCP files
    'orion/net/tcp/Connection.h',
-   'orion/net/tcp/Server.h',
+   'orion/net/tcp/Listener.h',
    'orion/net/tcp/Session.h',
    'orion/net/tcp/Utils.h',
-   'orion/net/tcp/impl/Connection.ipp'
+   'orion/net/tcp/impl/Connection.ipp',
+   'orion/net/tcp/impl/Listener.ipp'
    )
 
 install_headers(orion_net_incl)

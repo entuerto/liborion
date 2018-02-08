@@ -11,6 +11,7 @@
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/net/EndPoint.h>
+#include <orion/net/http/RequestMux.h>
 #include <orion/net/http/Utils.h>
 
 #include <memory>
@@ -37,18 +38,19 @@ public:
    Server();
    virtual ~Server();
 
-   Server(Server&& other) noexcept  = default;
-   Server& operator=(Server&& other) noexcept  = default;
+   DEFAULT_MOVE(Server)
 
-   int port() const;
+   uint16_t port() const;
 
    void shutdown();
 
    bool is_running() const;
 
-   std::error_code listen_and_serve(const EndPoint& endpoint);
+   RequestMux& request_mux();
 
-   virtual void add_handler(const std::string& p, HandlerFunc h);
+   std::error_code listen_and_serve(EndPoint endpoint);
+
+   std::error_code listen_and_serve(EndPoint endpoint, RequestMux mux);
 
 private:
    const ServerImpl* impl() const { return _impl.get(); }

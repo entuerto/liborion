@@ -116,5 +116,23 @@ inline bool iless(const StringT& str1, const StringT& str2, const std::locale& l
           std::lexicographical_compare(str1.begin(), str1.end(), str2.begin(), is_iless{loc});
 }
 
+template<typename StringT>
+inline bool starts_with(const StringT& str1, const StringT& str2)
+{
+   if (str1.end() - str1.begin() < str2.end() - str2.begin())
+      return false;
+
+   return std::equal(str2.begin(), str2.end(), str1.begin(), is_equal{});
+}
+
+template<typename StringT>
+inline bool istarts_with(const StringT& str1, const StringT& str2)
+{
+   if (str1.end() - str1.begin() < str2.end() - str2.begin())
+      return false;
+
+   return std::equal(str2.begin(), str2.end(), str1.begin(), is_iequal{});
+}
+
 } // namespace orion
 #endif // ORION_COMPARE_H

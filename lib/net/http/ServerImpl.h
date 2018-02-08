@@ -10,9 +10,10 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/net/http/RequestMux.h>
 #include <orion/net/http/Utils.h>
 
-#include <net/http/ServerConnection.h>
+#include <net/http/Listener.h>
 
 #include <asio.hpp>
 
@@ -35,24 +36,24 @@ public:
    ServerImpl();
    ~ServerImpl();
 
-   int port() const;
+   uint16_t port() const;
 
    bool is_running() const;
 
    void shutdown();
 
-   void add_handler(const std::string& p, HandlerFunc h);
+   RequestMux& request_mux();
 
-   std::error_code listen_and_serve(asio::ip::tcp::endpoint endpoint);
+   std::error_code listen_and_serve(EndPoint endpoint);
+   std::error_code listen_and_serve(EndPoint endpoint, RequestMux mux);
 
-   void do_accept();
-   void do_close();
+   void do_await_close();
 
 private:
    void setup_signals();
 
-   int _port;
-   Handlers _handlers;
+   uint16_t _port;
+   RequestMux _mux;
 
    // The io_context used to perform asynchronous operations.
    asio::io_context _io_context;
@@ -60,11 +61,7 @@ private:
    // The signal_set is used to register for process termination notifications.
    asio::signal_set _signals;
 
-   // Acceptor used to listen for incoming connections.
-   asio::ip::tcp::acceptor _acceptor;
-
-   /// The connection to be accepted.
-   std::shared_ptr<ServerConnection> _new_connection;
+   std::shared_ptr<Listener> _listener;
 };
 
 } // http

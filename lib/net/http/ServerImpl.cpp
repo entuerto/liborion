@@ -10,8 +10,6 @@
 #include <orion/Log.h>
 #include <orion/net/EndPoint.h>
 #include <orion/net/Utils.h>
-#include <orion/net/tcp/Connection.h>
-#include <orion/net/tcp/Utils.h>
 
 #include <future>
 
@@ -23,93 +21,63 @@ namespace http
 {
 
 ServerImpl::ServerImpl()
-   : _port(-1)
-   , _handlers()
+   : _port(0)
+   , _mux()
    , _io_context()
    , _signals(_io_context)
-   , _acceptor(_io_context)
+   , _listener()
 {
 }
 
 ServerImpl::~ServerImpl() = default;
 
-int ServerImpl::port() const
+uint16_t ServerImpl::port() const
 {
    return _port;
 }
 
-void ServerImpl::add_handler(const std::string& p, HandlerFunc h)
+RequestMux& ServerImpl::request_mux()
 {
-   _handlers.insert(std::make_pair(p, std::move(h)));
+   return _mux;
 }
 
 bool ServerImpl::is_running() const
 {
-   return _acceptor.is_open();
+   return true; //_acceptor.is_open();
 }
 
 void ServerImpl::shutdown()
 {
-   asio::error_code ec;
+   if (_listener == nullptr)
+      return;
 
-   _acceptor.close(ec);
+   std::error_code ec = _listener->close();
 
    if (ec)
       log::error(ec);
 }
 
-std::error_code ServerImpl::listen_and_serve(asio::ip::tcp::endpoint endpoint)
+std::error_code ServerImpl::listen_and_serve(EndPoint endpoint)
 {
    setup_signals();
 
-   std::error_code ec;
+   _listener = std::make_shared<http::Listener>(_io_context, std::move(endpoint), _mux);
 
-   // Open the acceptor
-   _acceptor.open(endpoint.protocol(), ec);
-   if (ec)
-      return ec;
-
-   _acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
-
-   // Bind to the server address
-   _acceptor.bind(endpoint, ec);
-   if (ec)
-      return ec;
-
-   // Start listening for connections
-   _acceptor.listen(asio::socket_base::max_listen_connections, ec);
-   if (ec)
-      return ec;
-
-   do_accept();
+   _listener->start();
 
    _io_context.run();
 
    return std::error_code();
 }
 
-void ServerImpl::do_accept()
+std::error_code ServerImpl::listen_and_serve(EndPoint endpoint, RequestMux mux)
 {
-   _new_connection = std::make_shared<ServerConnection>(_io_context, _handlers);
+   _mux = std::move(mux);
 
-   _acceptor.async_accept(_new_connection->socket(), [this](std::error_code ec) {
-      // Check whether the server was stopped by a signal before this
-      // completion handler had a chance to run.
-      if (not _acceptor.is_open())
-         return;
-
-      if (not ec)
-      {
-         //set_option(*_new_connection, KeepAlive{true});
-         //tcp::set_option(*_new_connection, tcp::NoDelay{true});
-         _new_connection->accept();
-      }
-
-      do_accept();
-   });
+   return listen_and_serve(std::move(endpoint));
 }
 
-void ServerImpl::do_close()
+void ServerImpl::do_await_close()
 {
    _signals.async_wait([this](std::error_code ec, int /*signo*/) {
       if (ec)
@@ -118,7 +86,8 @@ void ServerImpl::do_close()
       // The server is stopped by cancelling all outstanding asynchronous
       // operations. Once all operations have finished the io_context::run()
       // call will exit.
-      _acceptor.close();
+      if (_listener != nullptr)
+         _listener->close();
    });
 }
 
@@ -132,7 +101,7 @@ void ServerImpl::setup_signals()
    _signals.add(SIGQUIT);
 #endif
 
-   do_close();
+   do_await_close();
 }
 
 } // http

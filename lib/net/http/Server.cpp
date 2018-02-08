@@ -22,14 +22,9 @@ Server::Server()
 
 Server::~Server() = default;
 
-int Server::port() const
+uint16_t Server::port() const
 {
    return impl()->port();
-}
-
-void Server::add_handler(const std::string& p, HandlerFunc h)
-{
-   impl()->add_handler(p, std::move(h));
 }
 
 void Server::shutdown()
@@ -42,12 +37,19 @@ bool Server::is_running() const
    return impl()->is_running();
 }
 
-std::error_code Server::listen_and_serve(const net::EndPoint& ep)
+RequestMux& Server::request_mux()
 {
-   auto addr = asio::ip::make_address(to_string(ep.address()));
-   asio::ip::tcp::endpoint endpoint{addr, ep.port()};
+   return impl()->request_mux();
+}
 
+std::error_code Server::listen_and_serve(EndPoint endpoint)
+{
    return impl()->listen_and_serve(std::move(endpoint));
+}
+
+std::error_code Server::listen_and_serve(EndPoint endpoint, RequestMux mux)
+{
+   return impl()->listen_and_serve(std::move(endpoint), std::move(mux));
 }
 
 } // http
