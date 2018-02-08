@@ -36,11 +36,17 @@ public:
 
    //DEFAULT_MOVE(Listener)
 
-   Listener(asio::io_context& io_context, const EndPoint& ep, Handler handler);
+   Listener(asio::io_context& io_context, EndPoint ep, Handler handler);
    ~Listener() override;
 
+   /// Endpoint where it will accepts incoming connections. 
+   EndPoint endpoint() const override;
+
+   /// Indicates if we are still listening for incoming connections.
+   bool is_listening() const override;
+
    /// Start accepting incoming connections
-   void start() override;
+   std::error_code start() override;
 
    /// Close closes the listener.
    std::error_code close() override;
@@ -50,6 +56,8 @@ protected:
    void on_accept(const std::error_code& ec);
 
 private:
+   EndPoint _endpoint;
+
    asio::ip::tcp::acceptor _acceptor;
    asio::ip::tcp::socket _socket;
 

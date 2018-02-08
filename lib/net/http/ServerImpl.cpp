@@ -21,7 +21,7 @@ namespace http
 {
 
 ServerImpl::ServerImpl()
-   : _port(0)
+   : _endpoint()
    , _mux()
    , _io_context()
    , _signals(_io_context)
@@ -31,9 +31,9 @@ ServerImpl::ServerImpl()
 
 ServerImpl::~ServerImpl() = default;
 
-uint16_t ServerImpl::port() const
+EndPoint ServerImpl::endpoint() const
 {
-   return _port;
+   return _listener->endpoint();
 }
 
 RequestMux& ServerImpl::request_mux()
@@ -43,7 +43,7 @@ RequestMux& ServerImpl::request_mux()
 
 bool ServerImpl::is_running() const
 {
-   return true; //_acceptor.is_open();
+   return _listener->is_listening();
 }
 
 void ServerImpl::shutdown()
@@ -63,11 +63,13 @@ std::error_code ServerImpl::listen_and_serve(EndPoint endpoint)
 
    _listener = std::make_shared<http::Listener>(_io_context, std::move(endpoint), _mux);
 
-   _listener->start();
+   auto ec = _listener->start();
+   if (ec)
+      return ec;
 
-   _io_context.run();
+   _io_context.run(ec);
 
-   return std::error_code();
+   return ec;
 }
 
 std::error_code ServerImpl::listen_and_serve(EndPoint endpoint, RequestMux mux)

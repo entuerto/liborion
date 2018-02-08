@@ -38,14 +38,17 @@ public:
 
    // DEFAULT_MOVE(Listener)
 
-   Listener(asio::io_context& io_context, const EndPoint& ep, RequestMux& mux)
-      : _acceptor(io_context)
+   Listener(asio::io_context& io_context, EndPoint ep, RequestMux& mux)
+      : _endpoint(std::move(ep))
+      , _acceptor(io_context)
       , _socket(io_context)
       , _mux(mux)
    {
       std::error_code ec;
 
-      asio::ip::tcp::endpoint endpoint{asio::ip::make_address(to_string(ep.address())), ep.port()};
+      auto addr = asio::ip::make_address(to_string(_endpoint.address()));
+
+      asio::ip::tcp::endpoint endpoint{addr, _endpoint.port()};
 
       // Open the acceptor
       _acceptor.open(endpoint.protocol(), ec);
@@ -76,19 +79,31 @@ public:
 
    ~Listener() override = default;
 
+   EndPoint endpoint() const override
+   {
+      return _endpoint;
+   }
+
+   bool is_listening() const override
+   {
+      return _acceptor.is_open();
+   }
+
    /// Start accepting incoming connections
-   void start() override
+   std::error_code start() override
    {
       if (not _acceptor.is_open())
-         return;
+         return std::error_code();
 
       do_accept();
+
+      return std::error_code();
    }
 
    /// Close closes the listener.
    std::error_code close() override
    {
-      asio::error_code ec;
+      std::error_code ec;
 
       _acceptor.close(ec);
 
@@ -125,6 +140,8 @@ protected:
    }
 
 private:
+   EndPoint _endpoint;
+
    // Acceptor used to listen for incoming connections.
    asio::ip::tcp::acceptor _acceptor;
 

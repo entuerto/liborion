@@ -18,15 +18,21 @@ namespace net
 {
 
 ///
-/// Accepts incoming connections 
+/// Accepts incoming connections. 
 ///
 class Listener 
 {
 public:
    virtual ~Listener() = default;
 
-   /// Start accepting incoming connections
-   virtual void start() =0;
+   /// Endpoint where it will accepts incoming connections. 
+   virtual EndPoint endpoint() const =0;
+
+   /// Indicates if we are still listening for incoming connections.
+   virtual bool is_listening() const =0;
+
+   /// Start accepting incoming connections.
+   virtual std::error_code start() =0;
 
    /// Close closes the listener.
    virtual std::error_code close() =0;

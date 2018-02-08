@@ -40,7 +40,7 @@ public:
 
    DEFAULT_MOVE(Server)
 
-   uint16_t port() const;
+   EndPoint endpoint() const;
 
    void shutdown();
 

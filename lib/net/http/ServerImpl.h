@@ -36,7 +36,7 @@ public:
    ServerImpl();
    ~ServerImpl();
 
-   uint16_t port() const;
+   EndPoint endpoint() const;
 
    bool is_running() const;
 
@@ -52,7 +52,7 @@ public:
 private:
    void setup_signals();
 
-   uint16_t _port;
+   EndPoint _endpoint;
    RequestMux _mux;
 
    // The io_context used to perform asynchronous operations.

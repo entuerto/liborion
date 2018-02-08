@@ -22,14 +22,17 @@ namespace net
 namespace tcp
 {
 
-Listener::Listener(asio::io_context& io_context, const EndPoint& ep, Handler handler) 
-   : _acceptor(io_context)
+Listener::Listener(asio::io_context& io_context, EndPoint ep, Handler handler) 
+   : _endpoint(std::move(ep))
+   , _acceptor(io_context)
    , _socket(io_context)
    , _handler(std::move(handler))
 {
    std::error_code ec;
 
-   asio::ip::tcp::endpoint endpoint{asio::ip::make_address(to_string(ep.address())), ep.port()};
+   auto addr = asio::ip::make_address(to_string(_endpoint.address()));
+
+   asio::ip::tcp::endpoint endpoint{addr, _endpoint.port()};
 
    // Open the acceptor
    _acceptor.open(endpoint.protocol(), ec);
@@ -61,19 +64,31 @@ Listener::Listener(asio::io_context& io_context, const EndPoint& ep, Handler han
 
 Listener::~Listener() = default;
 
+EndPoint Listener::endpoint() const
+{
+   return _endpoint;
+}
+
+bool Listener::is_listening() const
+{
+   return _acceptor.is_open();
+}
+
 /// Start accepting incoming connections
-void Listener::start()
+std::error_code Listener::start()
 {
    if (not _acceptor.is_open())
-      return;
+      return std::error_code();
 
    do_accept();
+
+   return std::error_code();
 }
 
 /// Close closes the listener.
 std::error_code Listener::close()
 {
-   asio::error_code ec;
+   std::error_code ec;
 
    _acceptor.close(ec);
 

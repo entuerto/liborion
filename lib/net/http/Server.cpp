@@ -22,9 +22,9 @@ Server::Server()
 
 Server::~Server() = default;
 
-uint16_t Server::port() const
+EndPoint Server::endpoint() const
 {
-   return impl()->port();
+   return impl()->endpoint();
 }
 
 void Server::shutdown()
