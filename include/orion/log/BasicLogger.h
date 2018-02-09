@@ -56,6 +56,9 @@ public:
       _service.create(_impl);
    }
 
+   BasicLogger(BasicLogger&&) noexcept = default;
+   BasicLogger& operator=(BasicLogger&&) noexcept = default;
+
    /// Get the logging level
    Level level() const;
 

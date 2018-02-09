@@ -47,7 +47,7 @@ Request::Request(const Method& method, const Url& url, const Version& version, c
 {
 }
 
-Request::Request(Request&& rhs)
+Request::Request(Request&& rhs) noexcept
    : _method(std::move(rhs._method))
    , _url(std::move(rhs._url))
    , _version(std::move(rhs._version))
@@ -59,9 +59,7 @@ Request::Request(Request&& rhs)
 {
 }
 
-Request::~Request()
-{
-}
+Request::~Request() = default;
 
 //! "GET", "POST", etc
 Method Request::method() const
@@ -148,7 +146,7 @@ std::streambuf* Request::body_rdbuf() const
    return _body_streambuf.get();
 }
 
-Request& Request::operator=(Request&& rhs)
+Request& Request::operator=(Request&& rhs) noexcept
 {
    _method            = std::move(rhs._method);
    _url               = std::move(rhs._url);
@@ -192,28 +190,31 @@ void Request::build_header_buffer()
 
 std::ostream& operator<<(std::ostream& o, const Request& r)
 {
-   static const int w = 18;
+   static const std::string text = R"(
+Request Record
+Method             : {}
+URL                : {}
+Version            : {}.{}
+Should keep alive  : {}
+Upgrade            : {})";
 
    Version v = r._version;
 
-   o << std::left << std::boolalpha << "Request Record\n";
+   o << std::left;
 
-   o << std::setw(w) << "Method"
-     << " : " << r._method << "\n"
-     << std::setw(w) << "URL"
-     << " : " << r._url.href() << "\n"
-     << std::setw(w) << "Version"
-     << " : " << v.major << "." << v.minor << "\n";
+   o << fmt::format(text,
+                    r._method,
+                    r._url.href(),
+                    v.major,
+                    v.minor,
+                    r._should_keep_alive,
+                    r._upgrade);
 
    for (const auto& item : r._header)
    {
-      o << std::setw(w) << item.first << " : " << item.second << "\n";
+      o << std::setw(18) << item.first << " : " << item.second << "\n";
    }
-
-   o << std::setw(w) << "Should keep alive"
-     << " : " << r._should_keep_alive << "\n"
-     << std::setw(w) << "Upgrade"
-     << " : " << r._upgrade << "\n";
+    
    return o;
 }
 

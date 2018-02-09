@@ -133,7 +133,7 @@ std::error_code Parser::parse(Request& request, const char* data, std::size_t le
    {
       request.method(as_method(http_method_str(static_cast<http_method>(_parser.method))));
       request.version(Version{_parser.http_major, _parser.http_minor});
-      request.url(_url);
+      request.url(Url{_url});
       request.header(_header);
       request.should_keep_alive(http_should_keep_alive(&_parser) == 1);
       request.upgrade(_parser.upgrade == 1);

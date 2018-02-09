@@ -62,6 +62,6 @@ template<>
 struct is_error_condition_enum<orion::net::ErrorCode> : true_type
 {
 };
-}
+} // namespace std
 
 #endif // ORION_NET_ERROR_H

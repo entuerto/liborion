@@ -118,6 +118,6 @@ API_EXPORT bool operator<=(const AddressV4& a1, const AddressV4& a2);
 /// Compare addresses for ordering.
 API_EXPORT bool operator>=(const AddressV4& a1, const AddressV4& a2);
 
-} // net
-} // orion
+} // namespace net
+} // namespace orion
 #endif // ORION_NET_ADDRESSV4_H

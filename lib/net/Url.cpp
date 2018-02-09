@@ -378,7 +378,7 @@ Url::Url(const Url& rhs)
 {
 }
 
-Url::Url(Url&& rhs)
+Url::Url(Url&& rhs) noexcept
    : _userinfo(std::move(rhs._userinfo))
    , _port(std::move(rhs._port))
    , _protocol(std::move(rhs._protocol))
@@ -409,7 +409,7 @@ Url& Url::operator=(const Url& rhs)
    return *this;
 }
 
-Url& Url::operator=(Url&& rhs)
+Url& Url::operator=(Url&& rhs) noexcept
 {
    _userinfo = std::move(rhs._userinfo);
    _port     = std::move(rhs._port);

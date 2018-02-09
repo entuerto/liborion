@@ -83,7 +83,7 @@ void Response::status_code(StatusCode sc)
 
 std::string Response::status() const
 {
-   return fmt::format("{0} {1}", _status_code, StatusText.at(_status_code));
+   return fmt::format("{0} {1}", _status_code, status_text().at(_status_code));
 }
 
 Version Response::version() const

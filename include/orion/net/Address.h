@@ -42,6 +42,6 @@ API_EXPORT std::ostream& operator<<(std::ostream& o, const Address& addr);
 
 API_EXPORT std::ostream& operator<<(std::ostream& o, const Address* addr);
 
-} // net
-} // orion
+} // namespace net
+} // namespace orion
 #endif // ORION_NET_ADDRESS_H

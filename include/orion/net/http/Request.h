@@ -34,10 +34,10 @@ public:
 
    Request();
    Request(const Method& method, const Url& url, const Version& version, const Header& header);
-   Request(Request&& rhs);
+   Request(Request&& rhs) noexcept;
    virtual ~Request();
 
-   Request& operator=(Request&& rhs);
+   Request& operator=(Request&& rhs) noexcept;
 
    //! "GET", "POST", etc
    virtual Method method() const;
@@ -82,12 +82,10 @@ private:
    std::unique_ptr<std::streambuf> _body_streambuf;
 };
 
-API_EXPORT std::ostream& operator<<(std::ostream& o, const Request& r);
-
 API_EXPORT const orion::log::Record& operator<<(const orion::log::Record& rec, const Request& r);
 
-} // http
-} // net
-} // orion
+} // namespace http
+} // namespace net
+} // namespace orion
 
 #endif

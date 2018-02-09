@@ -158,8 +158,8 @@ inline std::error_code set_option(Connection<SocketT>& conn, const SendBufferSiz
 /// Socket option for the send low watermark.
 template<typename SocketT>
 inline std::error_code set_option(Connection<SocketT>& conn, const SendLowWatermark& value);
-} // net
-} // orion
+} // namespace net
+} // namespace orion
 
 #include <orion/net/impl/Connection.ipp>
 

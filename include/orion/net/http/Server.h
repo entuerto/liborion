@@ -59,7 +59,7 @@ private:
    std::unique_ptr<ServerImpl> _impl;
 };
 
-} // http
-} // net
-} // orion
+} // namespace http
+} // namespace net
+} // namespace orion
 #endif

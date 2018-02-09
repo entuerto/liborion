@@ -52,6 +52,6 @@ API_EXPORT std::string to_string(const EndPoint& ep);
 
 API_EXPORT std::ostream& operator<<(std::ostream& o, const EndPoint& ep);
 
-} // net
-} // orion
+} // namespace net
+} // namespace orion
 #endif // ORION_NET_ENDPOINT_H

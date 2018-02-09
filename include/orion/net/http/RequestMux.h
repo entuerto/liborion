@@ -29,6 +29,9 @@ namespace http
 class API_EXPORT RequestMux
 {
 public:
+   DEFAULT_COPY(RequestMux)
+   DEFAULT_MOVE(RequestMux)
+
    RequestMux();
    ~RequestMux();
 
@@ -58,7 +61,7 @@ private:
    std::map<StatusCode, HandlerFunc> _status_handlers;
 };
 
-} // http
-} // net
-} // orion
+} // namespace http
+} // namespace net
+} // namespace orion
 #endif // ORION_NET_HTTP_REQUESTMUX_H

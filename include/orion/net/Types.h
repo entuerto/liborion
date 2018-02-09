@@ -61,6 +61,6 @@ typedef addrinfo addrinfo_type;
 
 #endif
 
-} // net
-} // orion
+} // namespace net
+} // namespace orion
 #endif // ORION_NET_TYPES_H

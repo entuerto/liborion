@@ -234,40 +234,42 @@ void Connection<SocketT>::accept()
 template<typename SocketT>
 void Connection<SocketT>::dump_socket_options()
 {
-   log::write("Socket options:");
+   static const std::string text = R"(
+Socket options:
+   keep alive          : {}
+   no delay            : {}
+   linger              : {}, timeout: {}
+   reuse address       : {}
+   receive buffer size : {}
+   send buffer size    : {}
+)";
 
    asio::ip::tcp::socket::keep_alive keep_alive_option;
    _socket.get_option(keep_alive_option);
 
-   log::write("   keep alive          : ", (keep_alive_option.value() ? "true" : "false"));
-
    asio::ip::tcp::no_delay no_delay_option;
    _socket.get_option(no_delay_option);
-
-   log::write("   no delay            : ", (no_delay_option.value() ? "true" : "false"));
 
    asio::socket_base::linger linger_option;
    _socket.get_option(linger_option);
 
-   log::write("   linger              : ",
-              (linger_option.enabled() ? "true" : "false"),
-              ", timeout: ",
-              linger_option.timeout());
-
    asio::socket_base::reuse_address reuse_address_option;
    _socket.get_option(reuse_address_option);
-
-   log::write("   reuse address       : ", (reuse_address_option.value() ? "true" : "false"));
 
    asio::socket_base::receive_buffer_size recv_buf_size_option;
    _socket.get_option(recv_buf_size_option);
 
-   log::write("   receive buffer size : ", recv_buf_size_option.value());
-
    asio::socket_base::send_buffer_size send_buf_size_option;
    _socket.get_option(send_buf_size_option);
 
-   log::write("   send buffer size    : ", send_buf_size_option.value());
+   log::write(fmt::format(text,
+                          keep_alive_option.value(),
+                          no_delay_option.value(),
+                          linger_option.enabled(),
+                          linger_option.timeout(),
+                          reuse_address_option.value(),
+                          recv_buf_size_option.value(),
+                          send_buf_size_option.value()));
 }
 
 //--------------------------------------------------------------------------------------------------

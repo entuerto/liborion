@@ -38,7 +38,7 @@ public:
    virtual std::error_code close() =0;
 };
 
-} // net
-} // orion
+} // namespace net
+} // namespace orion
 
 #endif // ORION_NET_LISTENER_H

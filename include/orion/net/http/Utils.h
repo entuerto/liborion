@@ -118,15 +118,15 @@ enum class Method
 
 //-------------------------------------------------------------------------------------------------
 
-void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, const Method m);
+void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, Method m);
 
-std::ostream& operator<<(std::ostream& o, const Method m);
+std::ostream& operator<<(std::ostream& o, Method m);
 
-bool operator==(const Method m, const std::string& text);
+bool operator==(Method m, const std::string& text);
 
-bool operator==(const std::string& text, const Method m);
+bool operator==(const std::string& text, Method m);
 
-std::string to_string(const Method m);
+std::string to_string(Method m);
 
 Method as_method(const std::string& text);
 
@@ -134,9 +134,9 @@ Method as_method(const std::string& text);
 
 const char crlf[] = {'\r', '\n', '\0'};
 
-} // http
-} // net
-} // orion
+} // namespace http
+} // namespace net
+} // namespace orion
 
 #include <orion/net/http/impl/Utils.ipp>
 

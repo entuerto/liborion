@@ -35,10 +35,16 @@ class API_EXPORT Response
 public:
    NO_COPY(Response);
 
+   /// Default constructor
    Response();
-   Response(StatusCode code);
+
+   explicit Response(StatusCode code);
+
    Response(StatusCode code, const Version& version, const Header& header);
+
+   /// Move constructor
    Response(Response&& rhs) noexcept;
+
    virtual ~Response();
 
    Response& operator=(Response&& rhs) noexcept;
@@ -76,12 +82,10 @@ private:
    asio::streambuf _body_streambuf;
 };
 
-API_EXPORT std::ostream& operator<<(std::ostream& o, const Response& r);
-
 API_EXPORT const log::Record& operator<<(const log::Record& rec, const Response& r);
 
-} // http
-} // net
-} // orion
+} // namespace http
+} // namespace net
+} // namespace orion
 
 #endif

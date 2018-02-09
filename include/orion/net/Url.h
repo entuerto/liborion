@@ -43,14 +43,21 @@ struct API_EXPORT UserInfo
 class API_EXPORT Url
 {
 public:
+   /// Default constructor
    Url();
-   Url(const std::string& value);
+
+   explicit Url(const std::string& value);
+
+   /// Copy constructor
    Url(const Url& rhs);
-   Url(Url&& rhs);
+
+   /// Move constructor
+   Url(Url&& rhs) noexcept;
+
    ~Url();
 
    Url& operator=(const Url& rhs);
-   Url& operator=(Url&& rhs);
+   Url& operator=(Url&& rhs) noexcept;
 
    /// Identifies the URL's lower-cased protocol scheme.
    ///

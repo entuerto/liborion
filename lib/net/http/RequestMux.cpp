@@ -54,7 +54,7 @@ static HandlerFunc redirect_handler(StatusCode status_code, const std::string& p
 
 //--------------------------------------------------------------------------------------------------
 
-RequestMux::RequestMux() {}
+RequestMux::RequestMux() = default;
 
 RequestMux::~RequestMux() = default;
 
@@ -89,7 +89,7 @@ void RequestMux::handle(Method method, const std::string& pattern, HandlerFunc h
          {
             Entry entry{false, pattern};
 
-            entry.handlers.emplace(method, redirect_handler(StatusCode::MovedPermanently, std::move(path)));
+            entry.handlers.emplace(method, redirect_handler(StatusCode::MovedPermanently, path));
 
             _mux.emplace(std::move(redirect_pattern), std::move(entry));
          }
@@ -97,7 +97,7 @@ void RequestMux::handle(Method method, const std::string& pattern, HandlerFunc h
          {
             Entry entry{false, pattern};
 
-            entry.handlers.emplace(method, redirect_handler(StatusCode::MovedPermanently, std::move(path)));
+            entry.handlers.emplace(method, redirect_handler(StatusCode::MovedPermanently, path));
 
             it->second = entry;
          }
@@ -153,7 +153,7 @@ HandlerFunc RequestMux::match(Method method, const std::string& path) const
       if (not path_match(entry.pattern, path))
          continue;
 
-      if (not best_entry and best < entry.pattern.size())
+      if (best_entry == nullptr and best < entry.pattern.size())
       {
          best       = entry.pattern.size();
          best_entry = &entry;
@@ -186,6 +186,6 @@ HandlerFunc RequestMux::status_handler(StatusCode status_code) const
    return it->second;
 }
 
-} // http
-} // net
-} // orion
+} // namespace http
+} // namespace net
+} // namespace orion

@@ -29,7 +29,7 @@ public:
 
    ExceptionRecord(ExceptionRecord&& rhs) noexcept;
 
-   virtual ~ExceptionRecord() = default;
+   ~ExceptionRecord() override = default;
 
    ExceptionRecord& operator=(ExceptionRecord&& rhs) noexcept;
 

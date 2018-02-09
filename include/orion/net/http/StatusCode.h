@@ -92,15 +92,15 @@ enum class StatusCode
 
 //-------------------------------------------------------------------------------------------------
 
-std::string to_string(const StatusCode code);
+std::string to_string(StatusCode code);
 
-void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, const StatusCode code);
+void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, StatusCode code);
 
-std::ostream& operator<<(std::ostream& o, const StatusCode code);
+std::ostream& operator<<(std::ostream& o, StatusCode code);
 
-} // http
-} // net
-} // orion
+} // namespace http
+} // namespace net
+} // namespace orion
 
 #include <orion/net/http/impl/StatusCode.ipp>
 
