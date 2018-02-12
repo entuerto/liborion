@@ -32,38 +32,57 @@ class API_EXPORT Request
 public:
    NO_COPY(Request)
 
+   /// Default constructor
    Request();
+
    Request(const Method& method, const Url& url, const Version& version, const Header& header);
+
+   /// Move constructor
    Request(Request&& rhs) noexcept;
+
+   /// Default destructor
    virtual ~Request();
 
+   /// Move assignment
    Request& operator=(Request&& rhs) noexcept;
 
-   //! "GET", "POST", etc
-   virtual Method method() const;
-   virtual void method(const Method& value);
+   /// method specifies the HTTP method (GET, POST, PUT, etc.).
+   Method method() const;
+
+   /// Set the HTTP method (GET, POST, PUT, etc.).
+   void method(Method value);
 
    //! URL-decoded URI
-   virtual Url url() const;
-   virtual void url(const Url& u);
+   Url url() const;
+   void url(const Url& u);
 
-   //! E.g. "1.0", "1.1"
-   virtual Version version() const;
-   virtual void version(const Version& v);
+   /// The protocol version for incoming server requests.
+   Version version() const;
 
-   virtual std::string header(const std::string& name) const;
+   /// Sets the protocol version for a request.
+   void version(const Version& v);
 
-   virtual void header(const std::string& name, const std::string& value);
-   virtual void header(const Header& header);
+   /// Gets the value associated with the given key.
+   std::string header(const std::string& name) const;
 
-   virtual bool should_keep_alive() const;
-   virtual void should_keep_alive(bool value);
+   /// Adds the key, value pair to the header.
+   void header(const std::string& name, const std::string& value);
 
-   virtual bool upgrade() const;
-   virtual void upgrade(bool value);
+   /// Sets the header of the request.
+   void header(const Header& header);
 
-   virtual std::streambuf* header_rdbuf() const;
+   /// Enables should keep alive. By default, keep-alive is always enabled.
+   bool should_keep_alive() const;
+
+   /// Returns should keep alive value.
+   void should_keep_alive(bool value);
+
+   bool upgrade() const;
+   void upgrade(bool value);
+
    virtual std::streambuf* body_rdbuf() const;
+
+   std::vector<asio::const_buffer> to_buffers();
 
    friend API_EXPORT std::ostream& operator<<(std::ostream& o, const Request& r);
 
@@ -78,11 +97,11 @@ private:
    bool _should_keep_alive;
    bool _upgrade;
 
-   std::unique_ptr<std::streambuf> _header_streambuf;
-   std::unique_ptr<std::streambuf> _body_streambuf;
+   std::unique_ptr<asio::streambuf> _header_streambuf;
+   std::unique_ptr<asio::streambuf> _body_streambuf;
 };
 
-API_EXPORT const orion::log::Record& operator<<(const orion::log::Record& rec, const Request& r);
+API_EXPORT orion::log::Record& operator<<(orion::log::Record& rec, const Request& r);
 
 } // namespace http
 } // namespace net

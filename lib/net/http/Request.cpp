@@ -28,7 +28,7 @@ Request::Request()
    , _url()
    , _version()
    , _header()
-   , _should_keep_alive(false)
+   , _should_keep_alive(true)
    , _upgrade(false)
    , _header_streambuf(std::make_unique<asio::streambuf>())
    , _body_streambuf(std::make_unique<asio::streambuf>())
@@ -40,7 +40,7 @@ Request::Request(const Method& method, const Url& url, const Version& version, c
    , _url(url)
    , _version(version)
    , _header(header)
-   , _should_keep_alive(false)
+   , _should_keep_alive(true)
    , _upgrade(false)
    , _header_streambuf(std::make_unique<asio::streambuf>())
    , _body_streambuf(std::make_unique<asio::streambuf>())
@@ -67,12 +67,11 @@ Method Request::method() const
    return _method;
 }
 
-void Request::method(const Method& value)
+void Request::method(Method value)
 {
    _method = value;
 }
 
-//! URL-decoded URI
 Url Request::url() const
 {
    return _url;
@@ -83,7 +82,6 @@ void Request::url(const Url& u)
    _url = u;
 }
 
-//! E.g. "1.0", "1.1"
 Version Request::version() const
 {
    return _version;
@@ -134,16 +132,16 @@ void Request::upgrade(bool value)
    _upgrade = value;
 }
 
-std::streambuf* Request::header_rdbuf() const
-{
-   const_cast<Request*>(this)->build_header_buffer();
-
-   return _header_streambuf.get();
-}
-
 std::streambuf* Request::body_rdbuf() const
 {
    return _body_streambuf.get();
+}
+
+std::vector<asio::const_buffer> Request::to_buffers()
+{
+   build_header_buffer();
+
+   return {_header_streambuf->data(), _body_streambuf->data()};
 }
 
 Request& Request::operator=(Request&& rhs) noexcept
@@ -166,7 +164,7 @@ void Request::build_header_buffer()
 
    header("Host", u.host());
 
-   std::size_t body_size = static_cast<asio::streambuf*>(_header_streambuf.get())->size();
+   std::size_t body_size = _header_streambuf->size();
 
    if (body_size != 0)
       header("Content-Length", std::to_string(body_size));
@@ -196,7 +194,8 @@ Method             : {}
 URL                : {}
 Version            : {}.{}
 Should keep alive  : {}
-Upgrade            : {})";
+Upgrade            : {}
+)";
 
    Version v = r._version;
 
@@ -218,13 +217,13 @@ Upgrade            : {})";
    return o;
 }
 
-const orion::log::Record& operator<<(const orion::log::Record& rec, const Request& r)
+orion::log::Record& operator<<(orion::log::Record& rec, const Request& r)
 {
    std::ostringstream outs;
 
    outs << "\n" << r;
 
-   const_cast<orion::log::Record&>(rec).message(outs.str());
+   rec.message(outs.str());
 
    return rec;
 }

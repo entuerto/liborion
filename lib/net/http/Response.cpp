@@ -116,13 +116,6 @@ void Response::header(const Header& header)
    _header = header;
 }
 
-std::streambuf* Response::header_rdbuf() 
-{
-   build_header_buffer();
-
-   return &_header_streambuf;
-}
-
 std::streambuf* Response::body_rdbuf() 
 {
    return &_body_streambuf;
@@ -181,13 +174,13 @@ std::ostream& operator<<(std::ostream& o, const Response& r)
    return o;
 }
 
-const log::Record& operator<<(const log::Record& rec, const Response& r)
+log::Record& operator<<(log::Record& rec, const Response& r)
 {
    std::ostringstream outs;
 
    outs << r;
 
-   const_cast<log::Record&>(rec).message(outs.str());
+   rec.message(outs.str());
 
    return rec;
 }

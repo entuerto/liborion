@@ -45,25 +45,32 @@ public:
    /// Move constructor
    Response(Response&& rhs) noexcept;
 
+   /// Default destructor
    virtual ~Response();
 
+   /// Move assignment
    Response& operator=(Response&& rhs) noexcept;
 
-   virtual StatusCode status_code() const;
-   virtual void status_code(StatusCode sc);
+   StatusCode status_code() const;
+   void status_code(StatusCode sc);
 
-   virtual std::string status() const;
+   std::string status() const;
 
-   //! E.g. "1.0", "1.1"
-   virtual Version version() const;
-   virtual void version(const Version& v);
+    /// The protocol version for outgoing server response.
+   Version version() const;
 
-   virtual std::string header(const std::string& name) const;
+   /// Sets the protocol version for a response.
+   void version(const Version& v);
 
-   virtual void header(const std::string& name, const std::string& value);
-   virtual void header(const Header& header);
+   /// Gets the value associated with the given key.
+   std::string header(const std::string& name) const;
 
-   virtual std::streambuf* header_rdbuf();
+   /// Adds the key, value pair to the header.
+   void header(const std::string& name, const std::string& value);
+
+   /// Sets the header of the request.
+   void header(const Header& header);
+
    virtual std::streambuf* body_rdbuf();
 
    std::vector<asio::const_buffer> to_buffers();
@@ -82,7 +89,7 @@ private:
    asio::streambuf _body_streambuf;
 };
 
-API_EXPORT const log::Record& operator<<(const log::Record& rec, const Response& r);
+API_EXPORT log::Record& operator<<(log::Record& rec, const Response& r);
 
 } // namespace http
 } // namespace net

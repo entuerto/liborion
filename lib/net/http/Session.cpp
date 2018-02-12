@@ -99,9 +99,7 @@ Response Session::operator()(const Method& m)
    req.header("Accept", "*/*");
    req.header("Connection", "close");
 
-   std::vector<asio::const_buffer> buffers;
-   buffers.push_back(static_cast<asio::streambuf*>(req.header_rdbuf())->data());
-   buffers.push_back(static_cast<asio::streambuf*>(req.body_rdbuf())->data());
+   auto buffers = req.to_buffers();
 
    // Send the request.
    asio::write(socket, buffers);
