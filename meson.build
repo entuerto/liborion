@@ -23,7 +23,7 @@ host_system = host_machine.system()
 # Asio
 #
 if compiler.has_header('asio.hpp', required: true) 
-   asio_cflags = ['-DASIO_STANDALONE -DASIO_NO_DEPRECATED']
+   asio_cflags = ['-DASIO_STANDALONE -DASIO_NO_DEPRECATED -DASIO_HAS_MOVE']
 
    if host_system == 'windows'
       asio_cflags += ['-D_WIN32_WINNT=0x0603', '-Wno-microsoft-enum-value']

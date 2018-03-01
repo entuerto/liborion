@@ -5,6 +5,7 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
+#include <orion/AsyncService.h>
 #include <orion/Log.h>
 #include <orion/Utils.h>
 #include <orion/net/rpc/Rpc.h>
@@ -34,12 +35,6 @@ public:
    static Version version() { return Version{1, 0}; }
 };
 
-int add_int(int x, int y)
-{
-   log::debug("add_int(", x, ", ", y, ")");
-   return x + y;
-}
-
 class Multiply : public rpc::Method<Multiply, int(int, int)>
 {
 public:
@@ -49,12 +44,6 @@ public:
 
    static Version version() { return Version{1, 0}; }
 };
-
-int multiply_int(int x, int y)
-{
-   log::debug("multiply_int(", x, ", ", y, ")");
-   return x * y;
-}
 
 //--------------------------------------------------------------------------------------------------
 // Tcp Service
@@ -82,24 +71,17 @@ int main()
 
    log::start();
 
-   rpc::Service<rpc::Tcp<rpc::StringCodec>> calculator("Calculator", Version{1, 0});
-
-   calculator.register_method<Add>(add_int);
-   calculator.register_method<Multiply>(multiply_int);
-
-   calculator.dump();
-
-   
-
-   //rpc::Dispatch<Tcp> disp;
-
-   //disp.call<Add>(4, 5);
-
-   log::write("Server listening on port: 9000");
+   AsyncService as(1);
 
    try
    {
-      calculator.listen_and_serve(EndPoint{"0.0.0.0"_ipv4, 9000});
+      rpc::Dispatch<rpc::TcpString> disp{as.io_context(), EndPoint{"127.0.0.1"_ipv4, 9000}};
+
+      log::write("Sending...");
+
+      disp.call<Add>(4, 5);
+
+      as.run();
    }
    catch (const std::exception& e)
    {

@@ -76,7 +76,7 @@ int main()
 
       std::iostream stream(&buf);
 
-      stream << "hello" << "\n";
+      stream << "RPC-MSG 1.0 Char Request 1 1 add 4 5" << "\n";
 
       s.write(&buf);
    });
@@ -110,7 +110,8 @@ int main()
 
    try
    {
-      s.connect("127.0.0.1", 9090);
+      //s.connect("127.0.0.1", 9090);
+      s.connect("127.0.0.1", 9000);
        
       as.run();    
    }

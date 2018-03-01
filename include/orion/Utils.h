@@ -8,10 +8,14 @@
 #ifndef ORION_UTILS_H
 #define ORION_UTILS_H
 
+#include <fmt/format.h>
+
 #include <iomanip>
 #include <sstream>
 #include <tuple>
 #include <typeinfo>
+
+#undef assert
 
 namespace orion
 {
@@ -75,6 +79,32 @@ constexpr bool operator>=(const Version& v1, const Version& v2) noexcept
       return v1.minor > v2.minor;
 
    return true;
+}
+
+inline void format_arg(fmt::BasicFormatter<char>& f, const char*& /*fmt_str*/, const Version& v)
+{
+   f.writer().write("{}.{}", v.major, v.minor);
+}
+
+inline std::istream& operator>>(std::istream& s, Version& v)
+{
+   float tmp;
+
+   s >> tmp;
+
+   v.major = static_cast<int>(tmp);
+   v.minor = (tmp - v.major) * 100;
+
+   return s;
+}
+
+inline std::ostream& operator<<(std::ostream& s, const Version& v)
+{
+   s << v.major
+     << "."
+     << v.minor;
+
+   return s;
 }
 
 //-------------------------------------------------------------------------------------------------

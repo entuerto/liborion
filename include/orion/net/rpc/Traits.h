@@ -11,6 +11,7 @@
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/net/rpc/Error.h>
+#include <orion/net/rpc/Serializer.h>
 
 #include <tuple>
 #include <utility>
@@ -103,6 +104,103 @@ struct index_sequence_for : build_index_impl<sizeof...(Ts)> {};
 
 //-------------------------------------------------------------------------------------------------
 
+// Checks that predicate P holds for each corresponding pair of type arguments
+// from T1 and T2 tuple.
+template<template<class, class> class P, typename T1Tuple, typename T2Tuple>
+class ArgTypeCheckHelper;
+
+template<template<class, class> class P>
+class ArgTypeCheckHelper<P, std::tuple<>, std::tuple<>>
+{
+public:
+   static const bool value = true;
+};
+
+template<template<class, class> class P, typename T, typename... Ts, typename U, typename... Us>
+class ArgTypeCheckHelper<P, std::tuple<T, Ts...>, std::tuple<U, Us...>>
+{
+public:
+   static const bool value =
+      P<T, U>::value and ArgTypeCheckHelper<P, std::tuple<Ts...>, std::tuple<Us...>>::value;
+};
+
+template<template<class, class> class P, typename T1Sig, typename T2Sig>
+class ArgTypeCheck
+{
+public:
+   using T1Tuple = typename MethodArgsTuple<T1Sig>::Type;
+   using T2Tuple = typename MethodArgsTuple<T2Sig>::Type;
+
+   static_assert(std::tuple_size<T1Tuple>::value >= std::tuple_size<T2Tuple>::value,
+                 "Too many arguments to RPC call");
+   static_assert(std::tuple_size<T1Tuple>::value <= std::tuple_size<T2Tuple>::value,
+                 "Too few arguments to RPC call");
+
+   static const bool value = ArgTypeCheckHelper<P, T1Tuple, T2Tuple>::value;
+};
+
+template<typename Protocol, typename Type1>
+class CanSerialize
+{
+private:
+   using S = Serializer<Protocol>;
+   using R = typename Protocol::Request;
+
+   template<typename T>
+   static std::true_type check(
+      typename std::enable_if<std::is_same<decltype(S::serialize(std::declval<R&>(),
+                                                                 std::declval<const Type1&>())),
+                                           Error>::value,
+                              void*>::type);
+
+   template<typename>
+   static std::false_type check(...);
+
+public:
+   static const bool value = decltype(check<S>(0))::value;
+};
+
+template<typename Protocol, typename Type1>
+class CanDeserialize
+{
+private:
+   using S = Serializer<Protocol>;
+   using R = typename Protocol::Response;
+
+   template<typename T>
+   static std::true_type check(
+      typename std::enable_if<
+         std::is_same<decltype(S::deserialize(std::declval<R&>(), std::declval<Type1&>())),
+                      Error>::value,
+         void*>::type);
+
+   template<typename>
+   static std::false_type check(...);
+
+public:
+   static const bool value = decltype(check<S>(0))::value;
+};
+
+template<typename Protocol, typename T>
+class TypeSerializerCheck : CanSerialize<Protocol, T>
+{
+public:
+   using CanSerialize<Protocol, T>::value;
+
+   static_assert(value, "Missing serializer for Type");
+};
+
+template<typename Protocol, typename T>
+class TypeDeserializerCheck : CanDeserialize<Protocol, T>
+{
+public:
+   using CanDeserialize<Protocol, T>::value;
+
+   static_assert(value, "Missing deserializer for type");
+};
+
+//-------------------------------------------------------------------------------------------------
+
 // The base case applies to non-function types (the template class is
 // specialized for function types) and inherits from the appropriate
 // specialization for the given non-function type's call operator.
@@ -124,8 +222,7 @@ public:
    // Call the given handler with the given arguments.
    template <typename HandlerT, typename... TArgTs>
    //static typename WrappedHandlerReturn<RetT>::Type
-   static ReturnType
-   unpack_and_invoke(HandlerT& handler, std::tuple<TArgTs...>& args) 
+   static ReturnType unpack_and_invoke(HandlerT& handler, std::tuple<TArgTs...>& args) 
    {
       return unpack_and_invoke_impl(handler, args, index_sequence_for<TArgTs...>());
    }
@@ -150,27 +247,25 @@ public:
       return handler(std::move(args)...);
    }
 
-   // Serialize arguments to the stream.
-   template <typename StreamT, typename... StreamArgTs>
-   static Error serialize_args(StreamT& s, const StreamArgTs... stream_args) 
+   // Serialize arguments.
+   template <typename Protocol, typename... ProtocolArgTs>
+   static Error serialize_args(Protocol& p, const ProtocolArgTs... proto_args) 
    {
-      //return SequenceSerialization<StreamT, ArgTs...>::serialize(s, stream_args...);
-      return Error();
+      return ArgsSerializer<Protocol>::serialize(p, proto_args...);
    }
 
-   // Deserialize arguments from the stream.
-   template <typename StreamT, typename... StreamArgTs>
-   static Error deserialize_args(StreamT& s, std::tuple<StreamArgTs...>& args) 
+   // Deserialize arguments.
+   template <typename Protocol, typename Msg, typename... MArgTs>
+   static Error deserialize_args(Msg& msg, std::tuple<MArgTs...>& args) 
    {
-      return deserialize_args_impl(s, args, index_sequence_for<StreamArgTs...>());
+      return deserialize_args_impl<Protocol>(msg, args, index_sequence_for<MArgTs...>());
    }
 
 private:
-   template <typename StreamT, typename... StreamArgTs, size_t... Indexes>
-   static Error deserialize_args_impl(StreamT& s, std::tuple<StreamArgTs...>& args, std::index_sequence<Indexes...> _) 
+   template <typename Protocol, typename Msg, typename... MArgTs, size_t... Indexes>
+   static Error deserialize_args_impl(Msg& msg, std::tuple<MArgTs...>& args, std::index_sequence<Indexes...> _) 
    {
-      //return SequenceSerialization<StreamT, ArgTs...>::deserialize(s, std::get<Indexes>(args)...);
-      return Error();
+      return ArgsSerializer<Protocol>::deserialize(msg, std::get<Indexes>(args)...);
    }
 
    template <typename HandlerT, typename ArgTuple, size_t... Indexes>

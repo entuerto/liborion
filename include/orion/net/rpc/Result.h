@@ -17,7 +17,8 @@ namespace net
 namespace rpc
 {
 
-class API_EXPORT Result
+template <typename T>
+class Result
 {
 };
 

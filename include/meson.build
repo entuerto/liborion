@@ -93,11 +93,15 @@ orion_net_incl = files(
    # RPC files
    'orion/net/rpc/Error.h',
    'orion/net/rpc/Method.h',
-   'orion/net/rpc/Params.h',
+   'orion/net/rpc/Protocol.h',
    'orion/net/rpc/Result.h',
    'orion/net/rpc/Rpc.h',
+   'orion/net/rpc/Serializer.h',
    'orion/net/rpc/Service.h',
    'orion/net/rpc/Traits.h',
+   'orion/net/rpc/Types.h',
+   'orion/net/rpc/impl/Protocol.ipp',
+   'orion/net/rpc/impl/Service.ipp',
    # TCP files
    'orion/net/tcp/Connection.h',
    'orion/net/tcp/Listener.h',

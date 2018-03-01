@@ -94,13 +94,22 @@ executable('hello-tcp-client',
            cpp_args: boost_cflags)
 
 #--------------------------------------------------------------------------------------------------
+# Example: calculator-rpc-client.cpp
+#
+executable('calculator-rpc-client', 
+           'calculator-rpc-client.cpp',
+           dependencies: [orion_dep, orion_net_dep],
+           include_directories: global_includes,
+           cpp_args: boost_cflags)
+
+#--------------------------------------------------------------------------------------------------
 # Example: calculator-rpc-server.cpp
 #
-#executable('calculator-rpc-server', 
-#           'calculator-rpc-server.cpp',
-#           dependencies: [orion_dep, orion_net_dep],
-#           include_directories: global_includes,
-#           cpp_args: boost_cflags)
+executable('calculator-rpc-server', 
+           'calculator-rpc-server.cpp',
+           dependencies: [orion_dep, orion_net_dep],
+           include_directories: global_includes,
+           cpp_args: boost_cflags)
 
 #--------------------------------------------------------------------------------------------------
 # Example: art-example.cpp

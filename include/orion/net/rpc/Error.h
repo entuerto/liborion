@@ -19,10 +19,9 @@ namespace net
 {
 namespace rpc
 {
-//! Abstract class to define RPC errors
-/*!
-
- */
+///
+/// Abstract class to define RPC errors
+///
 class API_EXPORT Error
 {
 public:
@@ -40,13 +39,13 @@ public:
 
    explicit operator bool() const;
 
-   //! A Number that indicates the error type that occurred.
+   /// A Number that indicates the error type that occurred.
    virtual int32_t code() const;
 
-   //! A String providing a short description of the error.
+   /// A String providing a short description of the error.
    virtual std::string message() const;
 
-   //! A Primitive or Structured value that contains additional information about the error.
+   /// A Primitive or Structured value that contains additional information about the error.
    virtual std::string data() const;
 
 private:
