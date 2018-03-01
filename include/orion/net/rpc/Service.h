@@ -218,7 +218,7 @@ public:
 
       _requests.emplace_back(std::move(request));
 
-      _session.connect("127.0.0.1", 9000);
+      _session.connect(EndPoint{"127.0.0.1"_ipv4, 9000});
 
       //std::future<Response> value = _read_promise.get_future();
 

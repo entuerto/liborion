@@ -74,15 +74,17 @@ void SessionImpl::on_write(WriteHandler h)
    _write_handler = std::move(h);
 }
 
-void SessionImpl::connect(const std::string& addr, int port)
+void SessionImpl::connect(EndPoint endpoint)
 {
-   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
+   auto addr = asio::ip::make_address(to_string(endpoint.address()));
+
+   asio::ip::tcp::endpoint ep{addr, endpoint.port()};
+
    asio::ip::tcp::resolver resolver(_io_context);
-   asio::ip::tcp::resolver::query query(addr, std::to_string(port));
 
    std::error_code ec;
 
-   auto it = resolver.resolve(query, ec);
+   auto it = resolver.resolve(ep, ec);
    if (ec)
    {
       _connect_handler(ec);

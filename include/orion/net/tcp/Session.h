@@ -10,6 +10,7 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/net/EndPoint.h>
 #include <orion/net/Utils.h>
 #include <orion/net/tcp/Utils.h>
 
@@ -64,7 +65,7 @@ public:
    void on_read(ReadHandler h);
    void on_write(WriteHandler h);
 
-   void connect(const std::string& addr, int port);
+   void connect(EndPoint endpoint);
 
    void write(std::streambuf* streambuf);
 

@@ -72,9 +72,9 @@ void Session::on_write(WriteHandler h)
    _impl->on_write(std::move(h));
 }
 
-void Session::connect(const std::string& addr, int port)
+void Session::connect(EndPoint endpoint)
 {
-   _impl->connect(addr, port);
+   _impl->connect(std::move(endpoint));
 }
 
 void Session::write(std::streambuf* streambuf)

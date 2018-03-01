@@ -110,8 +110,7 @@ int main()
 
    try
    {
-      //s.connect("127.0.0.1", 9090);
-      s.connect("127.0.0.1", 9000);
+      s.connect(EndPoint{"127.0.0.1"_ipv4, 9000});
        
       as.run();    
    }
