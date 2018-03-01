@@ -38,8 +38,6 @@ protected:
    void do_write() override;
 
 private:
-   std::error_code on_handler(std::streambuf* in, std::streambuf* out);
-
    /// Request handler
    const Handler& _handler;
 

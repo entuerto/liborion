@@ -37,38 +37,34 @@ Connection::Connection(asio::ip::tcp::socket socket, const Handler& handler)
 
 Connection::~Connection() = default;
 
-std::error_code Connection::on_handler(std::streambuf* in, std::streambuf* out)
-{
-   return _handler(in, out);
-}
-
 void Connection::do_read()
 {
    auto self = this->shared_from_this();
 
-   socket().async_read_some(
-      _in_streambuf.prepare(_in_buffer_size), [this, self](std::error_code ec, std::size_t bytes_transferred) {
-         if (ec)
-         {
-            log::error(ec);
-            close();
-            return;
-         }
-         log::debug2("Connection::do_read() ", int(bytes_transferred));
+   auto b = _in_streambuf.prepare(_in_buffer_size);
 
-         _in_streambuf.commit(bytes_transferred);
+   socket().async_read_some(b, [this, self](std::error_code ec, std::size_t bytes_transferred) {
+      if (ec)
+      {
+         log::error(ec);
+         close();
+         return;
+      }
+      log::debug2("Connection::do_read() ", int(bytes_transferred));
 
-         ec = on_handler(&_in_streambuf, &_out_streambuf);
-         if (ec)
-         {
-            log::error(ec);
-            close();
-            return;
-         }
-         do_write();
+      _in_streambuf.commit(bytes_transferred);
 
-         do_read();
-      });
+      ec = _handler(_in_streambuf, _out_streambuf);
+      if (ec)
+      {
+         log::error(ec);
+         close();
+         return;
+      }
+      do_write();
+
+      do_read();
+   });
 }
 
 void Connection::do_write()

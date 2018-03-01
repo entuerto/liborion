@@ -162,7 +162,7 @@ void SessionImpl::do_read()
 
          self->_in_streambuf.commit(bytes_transferred);
 
-         self->_read_handler(ec, &(self->_in_streambuf));
+         self->_read_handler(ec, self->_in_streambuf);
 
          self->do_read();
       });

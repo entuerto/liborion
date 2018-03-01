@@ -31,12 +31,12 @@ int main()
 
    log::start();
 
-   auto handler = [&](std::streambuf* in, std::streambuf* out) {
+   auto handler = [&](asio::streambuf& in, asio::streambuf& out) {
       std::cout << "Received :\n";
 
-      std::cout << in << "\n";
+      std::cout << &in << "\n";
 
-      std::ostream o(out);
+      std::ostream o(&out);
 
       o << "Welcome"
         << "\n";
@@ -50,7 +50,7 @@ int main()
    {
       asio::io_context io_context;
 
-      std::make_shared<tcp::Listener>(io_context, EndPoint{"0.0.0.0"_ipv4, 9090}, handler)->start();
+      std::make_shared<tcp::Listener>(io_context, EndPoint{"0.0.0.0"_ipv4, 9000}, handler)->start();
 
       io_context.run();
    }

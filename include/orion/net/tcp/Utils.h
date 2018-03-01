@@ -12,6 +12,8 @@
 
 #include <orion/net/Utils.h>
 
+#include <asio.hpp>
+
 #include <functional>
 #include <memory>
 #include <streambuf>
@@ -24,11 +26,11 @@ namespace tcp
 {
 //-------------------------------------------------------------------------------------------------
 
-using Handler = std::function<std::error_code(std::streambuf*, std::streambuf*)>;
+using Handler = std::function<std::error_code(asio::streambuf&, asio::streambuf&)>;
 
 using ConnectHandler = std::function<void(const std::error_code&)>;
 using AcceptHandler  = std::function<void(const std::error_code&)>;
-using ReadHandler    = std::function<void(const std::error_code&, std::streambuf*)>;
+using ReadHandler    = std::function<void(const std::error_code&, asio::streambuf&)>;
 using WriteHandler   = std::function<void(const std::error_code&, std::size_t)>;
 
 std::unique_ptr<std::streambuf> make_buffer(std::size_t max_size = 0);

@@ -81,7 +81,7 @@ int main()
       s.write(&buf);
    });
 
-   s.on_read([&](const std::error_code& ec, std::streambuf* buf)
+   s.on_read([&](const std::error_code& ec, asio::streambuf& buf)
    {
       if (ec)
       {
@@ -90,7 +90,7 @@ int main()
          return;
       }
 
-      std::cout << "Read: " << buf << "\n";
+      std::cout << "Read: " << &buf << "\n";
 
       s.close();
       as.stop();

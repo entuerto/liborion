@@ -86,7 +86,7 @@ public:
 
    std::error_code listen_and_serve(EndPoint endpoint)
    {
-      auto handler = [&](std::streambuf* in, std::streambuf* out) {
+      auto handler = [&](asio::streambuf& in, asio::streambuf& out) {
          log::debug("handler", _src_loc);
 
          typename Protocol::Requests requests;
@@ -242,12 +242,12 @@ private:
 
       asio::streambuf buf;
 
-      Serializer<Protocol>::serialize(&buf, _requests);
+      Serializer<Protocol>::serialize(buf, _requests);
 
       _session.write(&buf);
    }
 
-   void on_read(const std::error_code& ec, std::streambuf* buf)
+   void on_read(const std::error_code& ec, asio::streambuf& buf)
    {
       if (ec)
       {

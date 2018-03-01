@@ -187,9 +187,9 @@ struct StringCodec
       return rpc::Error{};
    }
 
-   static rpc::Error decode(std::streambuf* in_buf, Message& msg)
+   static rpc::Error decode(asio::streambuf& in_buf, Message& msg)
    {
-      std::istream input{in_buf};
+      std::istream input{&in_buf};
 
       input >> msg.tag;
       input >> msg.version;
@@ -241,9 +241,9 @@ struct StringCodec
       return rpc::Error{};
    }
 
-   static rpc::Error encode(std::streambuf* out_buf, const Message& msg)
+   static rpc::Error encode(asio::streambuf& out_buf, const Message& msg)
    {
-      std::ostream output{out_buf};
+      std::ostream output{&out_buf};
 
       output << msg.tag
              << " "
@@ -432,7 +432,7 @@ public:
       return CodecType::encode(buf, value);
    }
 
-   static rpc::Error serialize(std::streambuf* out_buf, RequestsType& requests)
+   static rpc::Error serialize(asio::streambuf& out_buf, RequestsType& requests)
    {
       Message msg = TcpString::make_message(requests);
 
@@ -441,7 +441,7 @@ public:
       return CodecType::encode(out_buf, msg);
    }
 
-   static rpc::Error serialize(std::streambuf* out_buf, ResponseType& response)
+   static rpc::Error serialize(asio::streambuf& out_buf, ResponseType& response)
    {
       Message msg = TcpString::make_message(response);
 
@@ -455,7 +455,7 @@ public:
       return CodecType::decode(buf, value);
    }
 
-   static rpc::Error deserialize(std::streambuf* in_buf, RequestsType& requests)
+   static rpc::Error deserialize(asio::streambuf& in_buf, RequestsType& requests)
    {
       Message msg;
 
@@ -466,7 +466,7 @@ public:
       return error;
    }
 
-   static rpc::Error deserialize(std::streambuf* in_buf, ResponseType& response)
+   static rpc::Error deserialize(asio::streambuf& in_buf, ResponseType& response)
    {
       Message msg;
 
