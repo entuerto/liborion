@@ -128,6 +128,14 @@ void BasicLogger<Service>::exception(const orion::Exception& e, Args&&... args)
 
 template<typename Service>
 template<typename... Args>
+void BasicLogger<Service>::fatal(Args&&... args)
+{
+   write(Level::Error, args...);
+   std::abort();
+}
+
+template<typename Service>
+template<typename... Args>
 void BasicLogger<Service>::write(Level level, Args&&... args)
 {
    auto t = std::forward_as_tuple(args...);

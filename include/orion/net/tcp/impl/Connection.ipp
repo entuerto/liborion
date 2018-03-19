@@ -46,7 +46,7 @@ void Connection::do_read()
    socket().async_read_some(b, [this, self](std::error_code ec, std::size_t bytes_transferred) {
       if (ec)
       {
-         log::error(ec);
+         log::error(ec, _src_loc);
          close();
          return;
       }
@@ -57,7 +57,7 @@ void Connection::do_read()
       ec = _handler(_in_streambuf, _out_streambuf);
       if (ec)
       {
-         log::error(ec);
+         log::error(ec, _src_loc);
          close();
          return;
       }
@@ -75,7 +75,7 @@ void Connection::do_write()
       socket(), _out_streambuf.data(), [this, self](std::error_code ec, std::size_t bytes_written) {
          if (ec)
          {
-            log::error(ec);
+            log::error(ec, _src_loc);
             close();
             return;
          }

@@ -38,7 +38,7 @@ Listener::Listener(asio::io_context& io_context, EndPoint ep, Handler handler)
    _acceptor.open(endpoint.protocol(), ec);
    if (ec)
    {
-      log::error("Openning the acceptor. ", ec);
+      log::error("Openning the acceptor. ", ec, _src_loc);
       return;
    }
 
@@ -48,7 +48,7 @@ Listener::Listener(asio::io_context& io_context, EndPoint ep, Handler handler)
    _acceptor.bind(endpoint, ec);
    if (ec)
    {
-      log::error("Binding the endpoint. ", ec);
+      log::error("Binding the endpoint. ", ec, _src_loc);
       return;
    }
 
@@ -56,7 +56,7 @@ Listener::Listener(asio::io_context& io_context, EndPoint ep, Handler handler)
    _acceptor.listen(asio::socket_base::max_listen_connections, ec);
    if (ec)
    {
-      log::error("Listening for connections. ", ec);
+      log::error("Listening for connections. ", ec, _src_loc);
       return;
    }
 
@@ -110,7 +110,7 @@ void Listener::on_accept(const std::error_code& ec)
 
    if (ec)
    {
-      log::error("Listener::on_accept() ", ec);
+      log::error("Listener::on_accept() ", ec, _src_loc);
       return;
    }
 

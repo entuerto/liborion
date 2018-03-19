@@ -54,7 +54,7 @@ public:
       _acceptor.open(endpoint.protocol(), ec);
       if (ec)
       {
-         log::error("Openning the acceptor. ", ec);
+         log::error("Openning the acceptor. ", ec, _src_loc);
          return;
       }
 
@@ -64,7 +64,7 @@ public:
       _acceptor.bind(endpoint, ec);
       if (ec)
       {
-         log::error("Binding the endpoint. ", ec);
+         log::error("Binding the endpoint. ", ec, _src_loc);
          return;
       }
 
@@ -72,7 +72,7 @@ public:
       _acceptor.listen(asio::socket_base::max_listen_connections, ec);
       if (ec)
       {
-         log::error("Listening for connections. ", ec);
+         log::error("Listening for connections. ", ec, _src_loc);
          return;
       }
    }

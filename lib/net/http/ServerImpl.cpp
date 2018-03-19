@@ -54,7 +54,7 @@ void ServerImpl::shutdown()
    std::error_code ec = _listener->close();
 
    if (ec)
-      log::error(ec);
+      log::error(ec, _src_loc);
 }
 
 std::error_code ServerImpl::listen_and_serve(EndPoint endpoint)
@@ -83,7 +83,7 @@ void ServerImpl::do_await_close()
 {
    _signals.async_wait([this](std::error_code ec, int /*signo*/) {
       if (ec)
-         log::error(ec);
+         log::error(ec, _src_loc);
 
       // The server is stopped by cancelling all outstanding asynchronous
       // operations. Once all operations have finished the io_context::run()

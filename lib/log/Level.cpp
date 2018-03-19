@@ -36,6 +36,8 @@ std::string to_string(Level level)
          return "Error     ";
       case Level::Exception:
          return "Exception ";
+      case Level::Fatal:
+         return "Fatal     ";
       default:
          break;
    }

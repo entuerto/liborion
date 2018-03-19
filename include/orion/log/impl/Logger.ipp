@@ -76,6 +76,12 @@ void exception(const orion::Exception& e, Args&&... args)
 }
 
 template<typename... Args>
+void fatal(Args&&... args)
+{
+   default_logger().write(Level::Fatal, args...);
+}
+
+template<typename... Args>
 void write(Level level, Args&&... args)
 {
    default_logger().write(level, args...);

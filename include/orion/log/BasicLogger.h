@@ -97,6 +97,10 @@ public:
    template<typename... Args>
    void exception(const orion::Exception& e, Args&&... args);
 
+   /// Writes a fatal message and aborts the application.
+   template<typename... Args>
+   void fatal(Args&&... args);
+
    /// Writes a message the with a specified logging level
    template<typename... Args>
    void write(Level level, Args&&... args);

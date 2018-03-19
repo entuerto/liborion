@@ -30,9 +30,8 @@ AddressV4& AddressV4::broadcast()
    }
    catch (...)
    {
-      log::error(type_name(std::current_exception()), 
+      log::fatal(type_name(std::current_exception()), 
          "An unexpected, unknown exception was thrown: ", _src_loc);
-      std::terminate();
    }
 }
 
@@ -45,9 +44,8 @@ AddressV4& AddressV4::all_systems()
    }
    catch (...)
    {
-      log::error(type_name(std::current_exception()), 
+      log::fatal(type_name(std::current_exception()), 
          "An unexpected, unknown exception was thrown: ", _src_loc);
-      std::terminate();
    }
 }
 
@@ -60,9 +58,8 @@ AddressV4& AddressV4::all_routers()
    }
    catch (...)
    {
-      log::error(type_name(std::current_exception()), 
+      log::fatal(type_name(std::current_exception()), 
          "An unexpected, unknown exception was thrown: ", _src_loc);
-      std::terminate();
    }
 }
 
@@ -75,9 +72,8 @@ AddressV4& AddressV4::zero()
    }
    catch (...)
    {
-      log::error(type_name(std::current_exception()), 
+      log::fatal(type_name(std::current_exception()), 
          "An unexpected, unknown exception was thrown: ", _src_loc);
-      std::terminate();
    }
 }
 

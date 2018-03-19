@@ -59,6 +59,9 @@ template<typename... Args>
 void exception(const orion::Exception& e, Args&&... args);
 
 template<typename... Args>
+[[noreturn]] void fatal(Args&&... args);
+
+template<typename... Args>
 void write(Level level, Args&&... args);
 
 template<typename... Args>

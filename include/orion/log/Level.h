@@ -28,7 +28,8 @@ enum class Level : uint16_t
    Message   = 50,
    Warning   = 60,
    Error     = 70,
-   Exception = 80
+   Exception = 80,
+   Fatal     = 90
 };
 
 API_EXPORT std::string to_string(Level level);

@@ -75,7 +75,7 @@ void Connection<SocketT>::close()
    // Send a TCP shutdown
    _socket.shutdown(asio::ip::tcp::socket::shutdown_send, ec);
    if (ec)
-      log::error(ec);
+      log::error(ec, _src_loc);
 
    read_deadline_timer().cancel();
    write_deadline_timer().cancel();
