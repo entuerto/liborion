@@ -12,6 +12,9 @@
 
 #include <asio.hpp>
 
+#include <list>
+#include <vector>
+
 namespace orion
 {
 class API_EXPORT AsyncService
@@ -32,11 +35,13 @@ public:
    asio::io_context& io_context();
 
 private:
+   using io_context_work = asio::executor_work_guard<asio::io_context::executor_type>;
+   
    /// The pool of io_contexts.
    std::vector<std::shared_ptr<asio::io_context>> _io_contexts;
 
    /// The work that keeps the io_contexts running.
-   std::vector<std::shared_ptr<asio::io_context::work>> _work;
+   std::list<io_context_work> _work;
 
    /// The next io_context to use for a connection.
    std::size_t _next_io_context;

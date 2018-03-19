@@ -34,7 +34,7 @@ AsyncService::AsyncService(std::size_t pool_size /* = 1 */)
    for (std::size_t i = 0; i < pool_size; ++i)
    {
       auto io_context = std::make_shared<asio::io_context>();
-      auto work       = std::make_shared<asio::io_context::work>(*io_context);
+      auto work       = asio::make_work_guard(*io_context);
 
       _io_contexts.push_back(io_context);
       _work.push_back(work);
@@ -56,12 +56,7 @@ void AsyncService::run()
    for (auto& service : _io_contexts)
    {
       auto thread = std::make_shared<std::thread>([service]() {
-         std::error_code ec;
-         service->run(ec);
-         if (ec)
-         {
-            log::error(ec);
-         }
+         service->run();
       });
       threads.push_back(thread);
    }

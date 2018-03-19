@@ -100,7 +100,7 @@ public:
 
 private:
    /// Destroy all user-defined handler objects owned by the service.
-   void shutdown_service() override {}
+   //void shutdown_service() override {}
 
 private:
    /// Private io_context used for performing logging operations.
