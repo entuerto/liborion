@@ -3,7 +3,7 @@
 #
 # Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 #
-project('liborion', 'c', 'cpp',
+project('orion', 'c', 'cpp',
    version : '0.1.0',
    license : 'MIT',
    default_options : [
