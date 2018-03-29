@@ -26,7 +26,7 @@ orion_src = files(
    'log/SystemInfoRecord.h', 
    # Unit test files
    'unittest/Test.cpp', 
-   'unittest/TestOutput.cpp', 
+   'unittest/TestUtils.cpp', 
    'unittest/TestResult.cpp', 
    'unittest/TestRunner.cpp', 
    'unittest/TestStdOutput.cpp', 

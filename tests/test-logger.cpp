@@ -53,7 +53,7 @@ static void setup_logger()
    logger.start([] { return ""; });
 }
 
-TestSuite(OrionCore_Logger, SetupFunc{setup_logger})
+TestSuite(OrionCore_Logger, Label{"Logger"}, SetupFunc{setup_logger})
 {
 //----------------------------------------------------------------------------
 // Tests
@@ -128,10 +128,10 @@ void log_record_output(Test& t)
    t.assert<eq>(std::string{"message"}, output_record.message(), _src_loc);
 }
 
-RegisterTestCase(OrionCore_Logger, log_default_level);
-RegisterTestCase(OrionCore_Logger, log_level_change);
-RegisterTestCase(OrionCore_Logger, log_level_output);
-RegisterTestCase(OrionCore_Logger, log_error_message);
-RegisterTestCase(OrionCore_Logger, log_fail_message);
-RegisterTestCase(OrionCore_Logger, log_record_output);
-} // TEST_SUITE(OrionCore_Logger)
+RegisterTestCase(OrionCore_Logger, log_default_level, Label{"Log default level"});
+RegisterTestCase(OrionCore_Logger, log_level_change, Label{"Log level changed"});
+RegisterTestCase(OrionCore_Logger, log_level_output, Label{"Log level output"});
+RegisterTestCase(OrionCore_Logger, log_error_message, Label{"Log error message"});
+RegisterTestCase(OrionCore_Logger, log_fail_message, Label{"Log fail message"});
+RegisterTestCase(OrionCore_Logger, log_record_output, Label{"Log output record"});
+} // TestSuite(OrionCore_Logger)

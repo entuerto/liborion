@@ -10,49 +10,15 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <chrono>
-#include <istream>
-#include <string>
+#include <cstdint>
 
 namespace orion
 {
 namespace unittest
 {
+struct Stats;
 class Suite;
 class TestResult;
-
-//---------------------------------------------------------------------------------------
-
-enum class ReportLevel
-{
-   Error    = 0,
-   Short    = 1,
-   Detailed = 2
-};
-
-std::string to_string(ReportLevel rl);
-
-std::istream& operator>>(std::istream& in, ReportLevel& report_level);
-std::ostream& operator<<(std::ostream& out, ReportLevel report_level);
-
-//---------------------------------------------------------------------------------------
-
-struct OutputStats
-{
-   std::size_t count;
-   std::size_t passed_count;
-   std::size_t failed_count;
-   std::size_t skipped_count;
-
-   std::size_t item_count;
-   std::size_t passed_item_count;
-   std::size_t failed_item_count;
-   std::size_t skipped_item_count; 
-   
-   std::chrono::milliseconds time_elapsed;
-};
-
-OutputStats& operator+=(OutputStats& lhs, const OutputStats& rhs);
 
 ///
 /// Default interface for unit test output.
@@ -63,19 +29,19 @@ public:
    virtual ~Output() = default;
 
    /// Global test report header
-   virtual void write_header(int test_count) = 0;
+   virtual void write_header(uint64_t test_count) = 0;
 
-   /// Test suite header
-   virtual void write_suite_header(const Suite& suite) = 0;
+   /// New test suite section
+   virtual void suite_start(const Suite& suite) = 0;
 
    /// Test results information
    virtual void write(const TestResult& test_result) = 0;
 
-   /// Summary of the test suite
-   virtual void write_suite_summary(const Suite& suite) = 0;
+   /// End of test suite section
+   virtual void suite_end(const Suite& suite) = 0;
 
-   /// Summary of all tests
-   virtual void write_summary(const OutputStats& stats) = 0;
+   /// Footer of the output report
+   virtual void write_footer(const Stats& stats) = 0;
 };
 
 } // namespace unittest

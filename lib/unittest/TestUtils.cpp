@@ -1,14 +1,15 @@
 //
-// TestOutput.cpp
+// TestUtils.cpp
 //
 // Copyright (c) 2013-2017 Tomas Palazuelos
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-#include <orion/unittest/TestOutput.h>
+#include <orion/unittest/TestUtils.h>
 
 #include <orion/String.h>
 
+#include <iostream>
 #include <stdexcept>
 
 namespace orion
@@ -65,7 +66,7 @@ std::ostream& operator<<(std::ostream& out, ReportLevel report_level)
    return out;
 }
 
-OutputStats& operator+=(OutputStats& lhs, const OutputStats& rhs)
+Stats& operator+=(Stats& lhs, const Stats& rhs)
 {
    lhs.count += rhs.count;
    lhs.passed_count += rhs.passed_count;

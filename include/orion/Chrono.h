@@ -28,6 +28,8 @@ constexpr const char* ISO8601  = "%FT%TZ%z";           // ISO8601  = "2006-01-02
 template<typename D = std::chrono::nanoseconds>
 using TimePoint = std::chrono::time_point<std::chrono::system_clock, D>;
 
+using HighResTimePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
+
 //-------------------------------------------------------------------------------------------------
 
 template<typename Clock>

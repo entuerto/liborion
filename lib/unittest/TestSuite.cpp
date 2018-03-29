@@ -23,6 +23,7 @@ Suite::Suite(const std::string& name)
    , _is_enabled(true)
    , _stats()
 {
+   _stats.label = name;
 }
 
 /// Name of the test suite
@@ -51,7 +52,7 @@ std::string Suite::disabled_reason() const
    return _disabled_reason;
 }
 
-const OutputStats& Suite::stats() const
+const Stats& Suite::stats() const
 {
    return _stats;
 }
@@ -61,7 +62,7 @@ const std::vector<Test>& Suite::test_cases() const
    return _test_cases;
 }
 
-std::size_t Suite::test_count() const
+uint64_t Suite::test_count() const
 {
    return _test_cases.size();
 }
@@ -69,6 +70,7 @@ std::size_t Suite::test_count() const
 void Suite::set_option(Label opt)
 {
    _label = opt.text;
+   _stats.label = opt.text;
 }
 
 void Suite::set_option(Description opt)
@@ -130,11 +132,11 @@ void Suite::add_tests(std::initializer_list<Test> l)
 }
 
 /// Executes the tests and logs then to output.
-const OutputStats& Suite::run_tests(Output& output)
+const Stats& Suite::run_tests(Output& output)
 {
    _stats.count = _test_cases.size();
 
-   output.write_suite_header(*this);
+   output.suite_start(*this);
 
    setup();
 
@@ -166,7 +168,7 @@ const OutputStats& Suite::run_tests(Output& output)
 
    teardown();
 
-   output.write_suite_summary(*this);
+   output.suite_end(*this);
 
    return _stats;
 }

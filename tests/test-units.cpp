@@ -12,7 +12,7 @@ using namespace orion;
 using namespace orion::unittest;
 using namespace orion::unittest::option;
 
-TestSuite(OrionCore_Units)
+TestSuite(OrionCore_Units, Label{"Units"})
 {
 //----------------------------------------------------------------------------
 // Tests
@@ -53,8 +53,8 @@ void units_SI_int_double(Test& t)
    t.assert<true>(m == dm, _src_loc);
 }
 
-RegisterTestCase(OrionCore_Units, units_SI_kilo_bytes);
-RegisterTestCase(OrionCore_Units, units_SI_kilo_mega);
-RegisterTestCase(OrionCore_Units, units_SI_mega_literal);
-RegisterTestCase(OrionCore_Units, units_SI_int_double);
+RegisterTestCase(OrionCore_Units, units_SI_kilo_bytes, Label{"SI KB neq Bytes"});
+RegisterTestCase(OrionCore_Units, units_SI_kilo_mega, Label{"SI KB MB"});
+RegisterTestCase(OrionCore_Units, units_SI_mega_literal, Label{"SI MB literal"});
+RegisterTestCase(OrionCore_Units, units_SI_int_double, Label{"SI MB as double"});
 } // TEST_SUITE(OrionCore)

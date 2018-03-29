@@ -13,8 +13,9 @@
 using namespace orion;
 using namespace orion::encoding;
 using namespace orion::unittest;
+using namespace orion::unittest::option;
 
-TestSuite(OrionCore_Encoding)
+TestSuite(OrionCore_Encoding, Label{"Encoding"})
 {
 //----------------------------------------------------------------------------
 // Tests
@@ -173,12 +174,12 @@ TEST(TestEncVarint64_uint64)
 }
 */
 
-RegisterTestCase(OrionCore_Encoding, BigEndian_to_uint16);
-RegisterTestCase(OrionCore_Encoding, BigEndian_put_uint16);
-RegisterTestCase(OrionCore_Encoding, LittleEndian_to_uint16);
-RegisterTestCase(OrionCore_Encoding, LittleEndian_put_uint16);
-RegisterTestCase(OrionCore_Encoding, EncVarint32_uint32);
-RegisterTestCase(OrionCore_Encoding, EncVarint64_uint64);
-RegisterTestCase(OrionCore_Encoding, EncVarint64_int64);
+RegisterTestCase(OrionCore_Encoding, BigEndian_to_uint16, Label{"BigEndian to_uint16()"});
+RegisterTestCase(OrionCore_Encoding, BigEndian_put_uint16, Label{"BigEndian put_uint16()"});
+RegisterTestCase(OrionCore_Encoding, LittleEndian_to_uint16, Label{"LittleEndian to_uint16()"});
+RegisterTestCase(OrionCore_Encoding, LittleEndian_put_uint16, Label{"LittleEndian put_uint16()"});
+RegisterTestCase(OrionCore_Encoding, EncVarint32_uint32, Label{"Encode varint32 (unsigned)"});
+RegisterTestCase(OrionCore_Encoding, EncVarint64_uint64, Label{"Encoce varint64 (unsigned)"});
+RegisterTestCase(OrionCore_Encoding, EncVarint64_int64, Label{"Encode varint64 (signed)"});
 
 }
