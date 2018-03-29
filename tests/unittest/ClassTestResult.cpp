@@ -11,8 +11,9 @@ using namespace std::string_literals;
 
 using namespace orion;
 using namespace orion::unittest;
+using namespace orion::unittest::option;
 
-TestSuite(OrionCore)
+TestSuite(OrionCore_Test, Label{"Test"})
 {
 
 void initial_values(Test& t)
@@ -49,7 +50,7 @@ void number_of_passed_items(Test& t)
    t.assert<eq>(std::size_t(3), tr.passed_item_count(), _src_loc);
 }
 
-RegisterTestCase(OrionCore, initial_values);
-RegisterTestCase(OrionCore, number_of_failed_items);
-RegisterTestCase(OrionCore, number_of_passed_items);
+RegisterTestCase(OrionCore_Test, initial_values, Label{"Initial values"});
+RegisterTestCase(OrionCore_Test, number_of_failed_items, Label{"Number of failed items"});
+RegisterTestCase(OrionCore_Test, number_of_passed_items, Label{"Number of passed items"});
 } 

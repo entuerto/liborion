@@ -11,8 +11,9 @@ using namespace std::string_literals;
 
 using namespace orion;
 using namespace orion::unittest;
+using namespace orion::unittest::option;
 
-TestSuite(OrionCore)
+TestSuite(OrionCore_Test, Label{"Test"})
 {
 
 void passing_test_has_no_failures(Test& t)
@@ -57,8 +58,8 @@ void has_same_name_and_suite_name_as_test_result(Test& t)
    t.assert<eq>(t.name(), test_result.name(), _src_loc);
 }
 
-RegisterTestCase(OrionCore, passing_test_has_no_failures);
-RegisterTestCase(OrionCore, failing_test_has_failures);
-RegisterTestCase(OrionCore, throwing_tests_are_reported_as_failures);
-RegisterTestCase(OrionCore, has_same_name_and_suite_name_as_test_result);
-} // TestSuite(OrionCore)
+RegisterTestCase(OrionCore_Test, passing_test_has_no_failures, Label{"Passing with no failure"});
+RegisterTestCase(OrionCore_Test, failing_test_has_failures, Label{"Failing with no failure"});
+RegisterTestCase(OrionCore_Test, throwing_tests_are_reported_as_failures, Label{"Throwing  reported as failure"});
+RegisterTestCase(OrionCore_Test, has_same_name_and_suite_name_as_test_result, Label{"Same Test name and Suite name as TestResult"});
+} // TestSuite(OrionCore_Test)

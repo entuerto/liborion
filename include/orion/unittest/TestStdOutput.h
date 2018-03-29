@@ -10,6 +10,7 @@
 
 #include <orion/Orion-Stddefs.h>
 #include <orion/unittest/TestOutput.h>
+#include <orion/unittest/TestUtils.h>
 
 #include <map>
 #include <ostream>
@@ -33,27 +34,31 @@ public:
    virtual ~StdOutput();
 
    /// Global test report header
-   void write_header(int test_count) override;
+   void write_header(uint64_t test_count) override;
 
-   /// Test suite header
-   void write_suite_header(const Suite& suite) override;
+   /// New test suite section
+   void suite_start(const Suite& suite) override;
 
    /// Test results information
    void write(const TestResult& test_result) override;
 
-   /// Summary of the test suite
-   void write_suite_summary(const Suite& suite) override;
+   /// End of test suite section
+   void suite_end(const Suite& suite) override;
 
-   /// Summary of all tests
-   void write_summary(const OutputStats& stats) override;
+   /// Footer of the output report
+   void write_footer(const Stats& stats) override;
 
 private:
-   void write_test_case(int indent, const Test& test);
+   void write_sections();
+
+   std::string fit_text(const std::string& text, int len);
 
 private:
    std::ostream& _stream;
    ReportLevel _report_level;
-   int _indent;
+
+   std::map<std::string, Stats> _test_suite_stats;
+   std::multimap<std::string, ItemStats> _test_item_stats;
 };
 
 } // namespace orion

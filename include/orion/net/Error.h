@@ -10,7 +10,6 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <string>
 #include <system_error>
 
 namespace orion
@@ -18,7 +17,7 @@ namespace orion
 namespace net
 {
 ///
-///
+/// Error codes for the networking namespace.
 ///
 enum class ErrorCode
 {
@@ -28,28 +27,12 @@ enum class ErrorCode
 };
 
 ///
-///
-///
-class ErrorCodeCategory : public std::error_category
-{
-public:
-   const char* name() const noexcept override;
-
-   std::string message(int err_code) const override;
-};
-
-///
-///
-///
-const std::error_category& get_error_category();
-
-///
-///
+/// Make an error code object
 ///
 std::error_code make_error_code(ErrorCode code) noexcept;
 
 ///
-///
+/// Make an error condition object
 ///
 std::error_condition make_error_condition(ErrorCode code) noexcept;
 

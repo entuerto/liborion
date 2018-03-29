@@ -15,7 +15,7 @@ using namespace orion;
 using namespace orion::unittest;
 using namespace orion::unittest::option;
 
-TestSuite(OrionCore)
+TestSuite(OrionCore_Test, Label{"Test"})
 {
 
 int calc_throwing_function()
@@ -137,13 +137,13 @@ void check_test_result_log_failure(Test& t)
    t.assert<true>(test_result.failed(), _src_loc);
 }
 
-RegisterTestCase(OrionCore, check_success_on_true);
-RegisterTestCase(OrionCore, check_failure_on_false);
-RegisterTestCase(OrionCore, check_function_failure_on_exception);
-RegisterTestCase(OrionCore, check_close_success_on_equal, Disabled{"Not implemented"});
-RegisterTestCase(OrionCore, check_close_fails_on_not_equal, Disabled{"Not implemented"});
-RegisterTestCase(OrionCore, check_not_expected_exception);
-RegisterTestCase(OrionCore, check_expected_exception);
-RegisterTestCase(OrionCore, check_test_result_log_success);
-RegisterTestCase(OrionCore, check_test_result_log_failure);
+RegisterTestCase(OrionCore_Test, check_success_on_true, Label{"Success on true"});
+RegisterTestCase(OrionCore_Test, check_failure_on_false, Label{"Failure on false"});
+RegisterTestCase(OrionCore_Test, check_function_failure_on_exception, Label{"Function failure with exception"});
+RegisterTestCase(OrionCore_Test, check_close_success_on_equal, Label{"Close success on equal"}, Disabled{"Not implemented"});
+RegisterTestCase(OrionCore_Test, check_close_fails_on_not_equal, Label{"Close fails on not equal"}, Disabled{"Not implemented"});
+RegisterTestCase(OrionCore_Test, check_not_expected_exception, Label{"Not expected exception"});
+RegisterTestCase(OrionCore_Test, check_expected_exception, Label{"Expected exception"});
+RegisterTestCase(OrionCore_Test, check_test_result_log_success, Label{"TestResult::log_success()"});
+RegisterTestCase(OrionCore_Test, check_test_result_log_failure, Label{"TestResult::log_failure()"});
 } 

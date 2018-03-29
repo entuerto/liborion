@@ -9,6 +9,7 @@
 #define ORION_UNITTEST_TESTRESULT_H
 
 #include <orion/Orion-Stddefs.h>
+#include <orion/Chrono.h>
 #include <orion/SourceLocation.h>
 #include <orion/Utils.h>
 
@@ -59,12 +60,12 @@ public:
    bool passed() const;
    bool failed() const;
 
-   std::size_t item_count() const;
-   std::size_t failed_item_count() const;
-   std::size_t passed_item_count() const;
-   std::size_t skipped_item_count() const;
+   uint64_t item_count() const;
+   uint64_t failed_item_count() const;
+   uint64_t passed_item_count() const;
+   uint64_t skipped_item_count() const;
 
-   std::chrono::milliseconds time_elapsed() const;
+   std::chrono::nanoseconds time_elapsed() const;
 
    const std::vector<ResultItem>& result_items() const;
 
@@ -93,12 +94,12 @@ private:
    std::string _name;
    std::string _suite_name;
    
-   std::size_t _failed_item_count;
-   std::size_t _passed_item_count;
-   std::size_t _skipped_item_count;
+   uint64_t _failed_item_count;
+   uint64_t _passed_item_count;
+   uint64_t _skipped_item_count;
 
-   std::chrono::time_point<std::chrono::steady_clock> _time_point_start;
-   std::chrono::time_point<std::chrono::steady_clock> _time_point_end;
+   HighResTimePoint _time_point_start;
+   HighResTimePoint _time_point_end;
 
    std::vector<ResultItem> _result_items;
 };

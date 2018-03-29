@@ -83,7 +83,7 @@ bool Runner::run(int argc, char* argv[])
 
 bool Runner::run_tests(Output& output, const std::string& /*suite_name*/ /* = "" */)
 {
-   OutputStats stats{};
+   Stats stats{};
 
    stats.count = test_case_count();
 
@@ -109,9 +109,9 @@ bool Runner::run_tests(Output& output, const std::string& /*suite_name*/ /* = ""
 
    auto end = std::chrono::high_resolution_clock::now();
 
-   stats.time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+   stats.time_elapsed = end - start;
 
-   output.write_summary(stats);
+   output.write_footer(stats);
    return stats.failed_count == 0;
 }
 

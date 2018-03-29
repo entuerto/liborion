@@ -61,6 +61,12 @@ inline Range<IteratorT> make_range(IteratorT begin, IteratorT end)
    return {begin, end};
 }
 
+template<typename IteratorT>
+inline Range<IteratorT> make_range(std::pair<IteratorT, IteratorT> p)
+{
+   return {p.first, p.second};
+}
+
 template<class Container>
 inline auto make_range(Container& c) -> decltype(c.begin())
 {

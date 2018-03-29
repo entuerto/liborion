@@ -11,6 +11,7 @@
 #include <orion/Orion-Stddefs.h>
 #include <orion/unittest/Test.h>
 #include <orion/unittest/TestOutput.h>
+#include <orion/unittest/TestUtils.h>
 
 #include <functional>
 #include <string>
@@ -39,11 +40,11 @@ public:
 
    std::string disabled_reason() const;
 
-   const OutputStats& stats() const;
+   const Stats& stats() const;
 
    const std::vector<Test>& test_cases() const;
 
-   std::size_t test_count() const;
+   uint64_t test_count() const;
 
    /// Sets up the test suite.
    void setup();
@@ -59,7 +60,7 @@ public:
    void set_option(option::Disabled opt);
 
    /// Executes the tests and logs then to output.
-   const OutputStats& run_tests(Output& output);
+   const Stats& run_tests(Output& output);
 
    Test& add_test(Test&& test);
 
@@ -80,7 +81,7 @@ private:
 
    std::vector<Test> _test_cases;
 
-   OutputStats _stats;
+   Stats _stats;
 };
 
 //-------------------------------------------------------------------------------------------------

@@ -8,6 +8,7 @@
 #include <orion/net/Error.h>
 
 #include <map>
+#include <string>
 
 namespace orion
 {
@@ -22,19 +23,26 @@ static const std::map<ErrorCode, std::string> ErrorText{
 
 //--------------------------------------------------------------------------------------------------
 
-const char* ErrorCodeCategory::name() const noexcept
+///
+///
+///
+class ErrorCodeCategory : public std::error_category
 {
-   return "liborion-net errors";
-}
+public:
+   const char* name() const noexcept override
+   {
+      return "orion-net errors";
+   }
 
-std::string ErrorCodeCategory::message(int err_code) const
-{
-   auto text = ErrorText.find(static_cast<ErrorCode>(err_code));
-   if (text != ErrorText.end())
-      return text->second;
-
-   return "Unknown code";
-}
+   std::string message(int err_code) const override
+   {
+      auto text = ErrorText.find(static_cast<ErrorCode>(err_code));
+      if (text != ErrorText.end())
+         return text->second;
+   
+      return "Unknown code";
+   }
+};
 
 //--------------------------------------------------------------------------------------------------
 

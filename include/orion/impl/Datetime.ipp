@@ -15,12 +15,13 @@
 
 namespace orion
 {
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 // Implementation
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------
 // Year
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 constexpr inline Year::Year(int y) noexcept
    : _value(static_cast<decltype(_value)>(y))
@@ -150,8 +151,9 @@ constexpr inline years operator-(const Year& x, const Year& y) noexcept
    return years{static_cast<Year::value_type>(x) - static_cast<Year::value_type>(y)};
 }
 
+//-------------------------------------------------------------------------------------------------
 // Month
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 constexpr inline Month::Month(Month::value_type m) noexcept
    : _value(m)
@@ -263,8 +265,9 @@ constexpr months inline operator-(const Month& lhs, const Month& rhs) noexcept
    return months{d <= 11 ? d : d + 12};
 }
 
+//-------------------------------------------------------------------------------------------------
 // Day
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 constexpr inline Day::Day(uint32_t d) noexcept
    : _value(static_cast<Day::value_type>(d))
@@ -375,7 +378,7 @@ constexpr inline days operator-(const Day& lhs, const Day& rhs) noexcept
                                       static_cast<Day::value_type>(rhs))};
 }
 
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 // chrono-Compatible Low-Level Date Algorithms
 // 2016 Howard Hinnant
@@ -393,10 +396,10 @@ constexpr inline days operator-(const Day& lhs, const Day& rhs) noexcept
 //                 [civil_from_days(numeric_limits<IntT>::min()),
 //                  civil_from_days(numeric_limits<IntT>::max()-719468)]
 template<class IntT>
-constexpr IntT from_days(IntT y, unsigned m, unsigned d) noexcept
+constexpr IntT from_days(IntT y, uint32_t m, uint32_t d) noexcept
 {
-   static_assert(std::numeric_limits<unsigned>::digits >= 18,
-                 "This algorithm has not been ported to a 16 bit unsigned Integer");
+   static_assert(std::numeric_limits<uint32_t>::digits >= 18,
+                 "This algorithm has not been ported to a 16 bit uint32_t Integer");
    static_assert(std::numeric_limits<IntT>::digits >= 20,
                  "This algorithm has not been ported to a 16 bit signed Integer");
 
@@ -404,11 +407,11 @@ constexpr IntT from_days(IntT y, unsigned m, unsigned d) noexcept
 
    const IntT era = (y >= 0 ? y : y - 399) / 400;
 
-   const auto year_of_era = static_cast<unsigned>(y - era * 400); // [0, 399]
+   const auto year_of_era = static_cast<uint32_t>(y - era * 400); // [0, 399]
 
-   const unsigned day_of_year = (153 * (m + (m > 2 ? -3 : 9)) + 2) / 5 + d - 1; // [0, 365]
+   const uint32_t day_of_year = (153 * (m + (m > 2 ? -3 : 9)) + 2) / 5 + d - 1; // [0, 365]
 
-   const unsigned day_of_era =
+   const uint32_t day_of_era =
       year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year; // [0, 146096]
 
    return era * 146097 + static_cast<IntT>(day_of_era) - unix_epoch;
@@ -419,10 +422,10 @@ constexpr IntT from_days(IntT y, unsigned m, unsigned d) noexcept
 // Preconditions:  z is number of days since 1970-01-01 and is in the range:
 //                   [numeric_limits<IntT>::min(), numeric_limits<IntT>::max()-719468].
 template<class IntT>
-constexpr std::tuple<IntT, unsigned, unsigned> to_days(IntT z) noexcept
+constexpr std::tuple<IntT, uint32_t, uint32_t> to_days(IntT z) noexcept
 {
-   static_assert(std::numeric_limits<unsigned>::digits >= 18,
-                 "This algorithm has not been ported to a 16 bit unsigned Integer");
+   static_assert(std::numeric_limits<uint32_t>::digits >= 18,
+                 "This algorithm has not been ported to a 16 bit uint32_t Integer");
 
    static_assert(std::numeric_limits<IntT>::digits >= 20,
                  "This algorithm has not been ported to a 16 bit signed Integer");
@@ -431,23 +434,23 @@ constexpr std::tuple<IntT, unsigned, unsigned> to_days(IntT z) noexcept
 
    const IntT era = (z >= 0 ? z : z - 146096) / 146097;
 
-   const auto day_of_era = static_cast<unsigned>(z - era * 146097); // [0, 146096]
+   const auto day_of_era = static_cast<uint32_t>(z - era * 146097); // [0, 146096]
 
-   const unsigned year_of_era =
+   const uint32_t year_of_era =
       (day_of_era - day_of_era / 1460 + day_of_era / 36524 - day_of_era / 146096) / 365; // [0, 399]
 
    const IntT y = static_cast<IntT>(year_of_era) + era * 400;
 
-   const unsigned day_of_year =
+   const uint32_t day_of_year =
       day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100); // [0, 365]
 
-   const unsigned mp = (5 * day_of_year + 2) / 153; // [0, 11]
+   const uint32_t mp = (5 * day_of_year + 2) / 153; // [0, 11]
 
-   const unsigned d = day_of_year - (153 * mp + 2) / 5 + 1; // [1, 31]
+   const uint32_t d = day_of_year - (153 * mp + 2) / 5 + 1; // [1, 31]
 
-   const unsigned m = mp + (mp < 10 ? 3 : -9); // [1, 12]
+   const uint32_t m = mp + (mp < 10 ? 3 : -9); // [1, 12]
 
-   return std::tuple<IntT, unsigned, unsigned>(y + (m <= 2), m, d);
+   return std::tuple<IntT, uint32_t, uint32_t>(y + (m <= 2), m, d);
 }
 
 // Preconditions: m is in [1, 12]
@@ -502,7 +505,7 @@ constexpr uint32_t prev_weekday(uint32_t wd) noexcept
    return (wd > 0) ? wd - 1 : 6;
 }
 
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 constexpr std::pair<Year, Month> operator/(const Year& y, const Month& m) noexcept
 {
@@ -540,7 +543,7 @@ constexpr days operator/(const std::pair<Day, Month>& dm, const Year& y) noexcep
                          static_cast<Day::value_type>(dm.first)));
 }
 
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 //
 std::string unit_names(std::type_index i)
 {
