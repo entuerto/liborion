@@ -5,10 +5,18 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
+//-------------------------------------------------------------------------------------------------
+// This Code is based on:
+//   chrono-Compatible Low-Level Date Algorithms
+//   2016 Howard Hinnant
+//   http://howardhinnant.github.io/date_algorithms.html
+// ------------------------------------------------------------------------------------------------
 #ifndef ORION_DATETIME_H
 #define ORION_DATETIME_H
 
 #include <orion/Orion-Stddefs.h>
+
+#include <orion/Chrono.h>
 
 #include <chrono>
 #include <string>
@@ -20,23 +28,14 @@
 namespace orion
 {
 
-///
-/// Durations
-///
-using days = std::chrono::duration<int, std::ratio_multiply<std::ratio<24>, std::chrono::hours::period>>;
-using weeks = std::chrono::duration<int, std::ratio_multiply<std::ratio<7>, days::period>>;
-using years = std::chrono::duration<int, std::ratio_multiply<std::ratio<146097, 400>, days::period>>;
-using months = std::chrono::duration<int, std::ratio_divide<years::period, std::ratio<12>>>;
+//-------------------------------------------------------------------------------------------------
 
 ///
 /// Year
 ///
-// template<typename T = int16_t>
 class API_EXPORT Year
 {
 public:
-   // using value_type = T;
-   // using value_type = int16_t;
    using value_type = int32_t;
 
    Year() = default;
@@ -77,15 +76,15 @@ constexpr Year operator+(const years& x, const Year& y) noexcept;
 constexpr Year operator-(const Year& x, const years& y) noexcept;
 constexpr years operator-(const Year& x, const Year& y) noexcept;
 
+//-------------------------------------------------------------------------------------------------
+
 ///
 /// Month
 ///
-// template<typename T = uint32_t>
 class API_EXPORT Month
 {
 public:
-   // using value_type = T;
-   using value_type = uint32_t;
+   using value_type = uint8_t;
 
    Month() = default;
    explicit constexpr Month(value_type m) noexcept;
@@ -117,14 +116,14 @@ constexpr Month operator+(const months& lhs, const Month& rhs) noexcept;
 constexpr Month operator-(const Month& lhs, const months& rhs) noexcept;
 constexpr months operator-(const Month& lhs, const Month& rhs) noexcept;
 
+//-------------------------------------------------------------------------------------------------
+
 ///
 /// Day
 ///
-// template<typename T = uint8_t>
 class API_EXPORT Day
 {
 public:
-   // using value_type = T;
    using value_type = uint8_t;
 
    Day() = default;
@@ -158,18 +157,16 @@ constexpr Day operator+(const days& lhs, const Day& rhs) noexcept;
 constexpr Day operator-(const Day& lhs, const days& rhs) noexcept;
 constexpr days operator-(const Day& lhs, const Day& rhs) noexcept;
 
-// chrono-Compatible Low-Level Date Algorithms
-// 2016 Howard Hinnant
-// http://howardhinnant.github.io/date_algorithms.html
+//-------------------------------------------------------------------------------------------------
 
 // Used to shift the serial date from 0 to 1970-01-01 instead of 0000-03-01.
 constexpr int32_t unix_epoch = 719468;
 
 template<class IntT>
-constexpr IntT from_days(IntT y, unsigned m, unsigned d) noexcept;
+constexpr IntT from_days(IntT y, uint32_t m, uint32_t d) noexcept;
 
 template<class IntT>
-constexpr std::tuple<IntT, unsigned, unsigned> to_days(IntT z) noexcept;
+constexpr std::tuple<IntT, uint32_t, uint32_t> to_days(IntT z) noexcept;
 
 constexpr uint32_t last_day_of_month_common_year(uint32_t m) noexcept;
 
@@ -185,7 +182,7 @@ constexpr uint32_t next_weekday(uint32_t wd) noexcept;
 
 constexpr uint32_t prev_weekday(uint32_t wd) noexcept;
 
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 constexpr std::pair<Year, Month> operator/(const Year& y, const Month& m) noexcept;
 
@@ -199,7 +196,7 @@ constexpr days operator/(const std::pair<Month, Day>& md, const Year& y) noexcep
 
 constexpr days operator/(const std::pair<Day, Month>& dm, const Year& y) noexcept;
 
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 //
 
 template<class CharT, class Traits, class Rep, class Period>
@@ -210,7 +207,7 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 
 #include <orion/impl/Datetime.ipp>
 
-//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 namespace orion
 {
 

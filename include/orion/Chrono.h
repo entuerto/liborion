@@ -15,6 +15,31 @@
 namespace orion
 {
 
+//-------------------------------------------------------------------------------------------------
+//
+// Types
+
+//
+// Time points
+//
+template<typename D = std::chrono::nanoseconds>
+using TimePoint = std::chrono::time_point<std::chrono::system_clock, D>;
+
+using HighResTimePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
+
+//
+// Durations
+//
+using days = std::chrono::duration<int, std::ratio_multiply<std::ratio<24>, std::chrono::hours::period>>;
+using weeks = std::chrono::duration<int, std::ratio_multiply<std::ratio<7>, days::period>>;
+using years = std::chrono::duration<int, std::ratio_multiply<std::ratio<146097, 400>, days::period>>;
+using months = std::chrono::duration<int, std::ratio_divide<years::period, std::ratio<12>>>;
+
+
+//-------------------------------------------------------------------------------------------------
+//
+// Format strings to convert to string type
+
 constexpr const char* ANSIC    = "%a %b %e %T %Y";     // ANSIC    = "Mon Jan _2 15:04:05 2006"
 constexpr const char* UnixDate = "%a %b %e %T %Z %Y";  // UnixDate = "Mon Jan _2 15:04:05 MST 2006"
 constexpr const char* RFC822   = "%d %b %y %R %Z";     // RFC822   = "02 Jan 06 15:04 MST"
@@ -24,11 +49,6 @@ constexpr const char* RFC1123  = "%a, %d %b %Y %T %Z"; // RFC1123  = "Mon, 02 Ja
 constexpr const char* RFC1123Z = "%a, %d %b %Y %T %z"; // RFC1123Z = "Mon, 02 Jan 2006 15:04:05 -0700"
 constexpr const char* RFC3339  = "%FT%TZ%z";           // RFC3339  = "2006-01-02T15:04:05Z07:00"
 constexpr const char* ISO8601  = "%FT%TZ%z";           // ISO8601  = "2006-01-02T15:04:05Z0700"
-
-template<typename D = std::chrono::nanoseconds>
-using TimePoint = std::chrono::time_point<std::chrono::system_clock, D>;
-
-using HighResTimePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
 //-------------------------------------------------------------------------------------------------
 
