@@ -54,6 +54,9 @@ public:
    TestResult(const std::string& name, const std::string& suite_name);
    ~TestResult() = default;
 
+   DEFAULT_COPY(TestResult)
+   DEFAULT_MOVE(TestResult)
+
    std::string name() const;
    std::string suite_name() const;
 

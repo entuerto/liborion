@@ -28,8 +28,11 @@ namespace unittest
 class API_EXPORT Suite
 {
 public:
-   Suite(const std::string& name);
+   explicit Suite(const std::string& name);
    virtual ~Suite() = default;
+
+   DEFAULT_COPY(Suite)
+   DEFAULT_MOVE(Suite)
 
    /// Name of the test suite
    std::string name() const;
@@ -101,7 +104,7 @@ void set_options(Suite& suite, O&& opt, Opts&&... opts)
    set_options(suite, std::forward<decltype(opts)>(opts)...);
 }
 
-} // namespace orion
 } // namespace unittest
+} // namespace orion
 
 #endif /* ORION_UNITTEST_TESTSUITE_H */

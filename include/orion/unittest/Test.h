@@ -32,8 +32,8 @@ enum
    le, // Less equal then
    eq, // Equals
    ne, // Not equals
-   ge, // Greater then
-   gt  // Greater equals then
+   ge, // Greater equals then
+   gt  // Greater then
 };
 
 //---------------------------------------------------------------------------------------
