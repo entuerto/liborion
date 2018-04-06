@@ -22,7 +22,7 @@ struct StringConcat
    std::string& text;
 
    template<typename T>
-   void operator()(T)
+   void operator()(T /*unused*/)
    {
    }
 
@@ -113,7 +113,7 @@ void TestResult::log_exception(std::exception_ptr eptr, Args... args)
 
    get_all_values(StringConcat{msg}, t);
 
-   msg += type_name(eptr);
+   msg += type_name(std::move(eptr));
 
    _result_items.push_back(
       ResultItem{Result::Exception, msg, "", "", get_value<SourceLocation>(t, SourceLocation{})});

@@ -39,8 +39,6 @@ inline void Test::assert(const T& expected, const T& actual, Args... args)
    }
 
    _test_result.log_failure(expected, actual, args...);
-
-   return;
 }
 
 template<int op, typename T, typename... Args>
@@ -89,8 +87,6 @@ inline void Test::assert(const T& expected, const T& actual, Args... args)
    }
 
    _test_result.log_failure(expected, actual, args...);
-
-   return;
 }
 
 template<bool ExpectedValue, typename... Args>
@@ -113,8 +109,6 @@ inline void Test::assert(bool value, Args... args)
    }
 
    _test_result.log_failure(ExpectedValue, value, args...);
-
-   return;
 }
 
 template<typename ExpectedException, typename Func, typename... Args>
@@ -142,7 +136,6 @@ inline void Test::assert_throw(Func f, Args... args)
    }
    // Not thrown
    fail("The exception was not thrown: ", type_name<ExpectedException>(), args...);
-   return;
 }
 
 template<typename... Args>
@@ -171,8 +164,6 @@ inline void Test::fail_if(bool value, Args... args)
    }
 
    _test_result.log_failure(false, value, args...);
-
-   return;
 }
 
 } // namespace unittest
