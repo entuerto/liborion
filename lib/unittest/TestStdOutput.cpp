@@ -87,7 +87,7 @@ void StdOutput::write_header(uint64_t test_count)
            << fmt::format("Running {0} test {1}...\n", test_count, plural(test_count, "case"s, "cases"s));
 }
 
-void StdOutput::suite_start(const Suite& /* suite */)
+void StdOutput::suite_start(const TestSuite& /* suite */)
 {
 }
 
@@ -132,7 +132,7 @@ void StdOutput::write(const TestResult& test_result)
    }
 }
 
-void StdOutput::suite_end(const Suite& suite)
+void StdOutput::suite_end(const TestSuite& suite)
 {
    if (_report_level == ReportLevel::Error)
       return;

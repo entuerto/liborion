@@ -23,16 +23,16 @@ namespace unittest
 //---------------------------------------------------------------------------------------
 
 ///
-/// A test suite is a set of tests that all share the same fixture.
+/// A test Suite is a set of tests that all share the same fixture.
 ///
-class API_EXPORT Suite
+class API_EXPORT TestSuite
 {
 public:
-   explicit Suite(const std::string& name);
-   virtual ~Suite() = default;
+   explicit TestSuite(const std::string& name);
+   virtual ~TestSuite() = default;
 
-   DEFAULT_COPY(Suite)
-   DEFAULT_MOVE(Suite)
+   DEFAULT_COPY(TestSuite)
+   DEFAULT_MOVE(TestSuite)
 
    /// Name of the test suite
    std::string name() const;
@@ -89,16 +89,16 @@ private:
 
 //-------------------------------------------------------------------------------------------------
 
-inline void set_options(Suite& /* suite */) {}
+inline void set_options(TestSuite& /* unused */) {}
 
 template<typename O>
-void set_options(Suite& suite, O&& opt)
+void set_options(TestSuite& suite, O&& opt)
 {
    suite.set_option(std::forward<decltype(opt)>(opt));
 }
 
 template<typename O, typename... Opts>
-void set_options(Suite& suite, O&& opt, Opts&&... opts)
+void set_options(TestSuite& suite, O&& opt, Opts&&... opts)
 {
    set_options(suite, std::forward<decltype(opt)>(opt));
    set_options(suite, std::forward<decltype(opts)>(opts)...);

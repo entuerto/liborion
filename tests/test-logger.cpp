@@ -53,24 +53,24 @@ static void setup_logger()
    logger.start([] { return ""; });
 }
 
-TestSuite(OrionCore_Logger, Label{"Logger"}, SetupFunc{setup_logger})
+Section(OrionCore_Logger, Label{"Logger"}, SetupFunc{setup_logger})
 {
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-void log_default_level(Test& t)
+TestCase("Log default level")
 {
-   t.assert<eq>(Level::NotSet, logger.level(), _src_loc);
+   check_eq(Level::NotSet, logger.level());
 }
 
-void log_level_change(Test& t)
+TestCase("Log level changed")
 {
    logger.level(Level::Warning);
 
-   t.assert<eq>(Level::Warning, logger.level(), _src_loc);
+   check_eq(Level::Warning, logger.level());
 }
 
-void log_level_output(Test& t)
+TestCase("Log level output")
 {
    logger.level(Level::Warning);
 
@@ -78,32 +78,32 @@ void log_level_output(Test& t)
 
    LOG(Debug) << "Debug message";
 
-   t.assert<eq>(Level::NotSet, output_record.level(), _src_loc);
+   check_eq(Level::NotSet, output_record.level());
 
    output_record.level(Level::NotSet);
 
    LOG(Warning) << "Warning message";
 
-   t.assert<eq>(Level::Warning, output_record.level(), _src_loc);
+   check_eq(Level::Warning, output_record.level());
 
    output_record.level(Level::NotSet);
 
    LOG(Error) << "Error message";
 
-   t.assert<eq>(Level::Error, output_record.level(), _src_loc);
+   check_eq(Level::Error, output_record.level());
 }
 
-void log_error_message(Test& t)
+TestCase("Log error message")
 {
    logger.level(Level::NotSet);
 
    LOG(Error) << "Error message";
 
-   t.assert<eq>(Level::Error, output_record.level(), _src_loc);
-   t.assert<eq>(std::string{"Error message"}, output_record.message(), _src_loc);
+   check_eq(Level::Error, output_record.level());
+   check_eq(std::string{"Error message"}, output_record.message());
 }
 
-void log_fail_message(Test& t)
+TestCase("Log fail message")
 {
    logger.level(Level::NotSet);
 
@@ -111,27 +111,21 @@ void log_fail_message(Test& t)
 
    LOG_IF_FAIL(Error, 1 == 0)
 
-   t.assert<eq>(Level::Error, output_record.level(), _src_loc);
-   t.assert<eq>(std::string{"Condition failed ( 1 == 0 )"}, output_record.message(), _src_loc);
+   check_eq(Level::Error, output_record.level());
+   check_eq(std::string{"Condition failed ( 1 == 0 )"}, output_record.message());
 }
 
-void log_record_output(Test& t)
+TestCase("Log output record")
 {
    logger.write(Record(Level::Message, "", SourceLocation{"FileName", 99, "function name"}) << "message");
 
    auto sl = output_record.source_location();
 
-   t.assert<eq>(Level::Message, output_record.level(), _src_loc);
-   t.assert<eq>(std::string{"FileName"}, sl.file_name, _src_loc);
-   t.assert<eq>(99, sl.line_number, _src_loc);
-   t.assert<eq>(std::string{"function name"}, sl.function_name, _src_loc);
-   t.assert<eq>(std::string{"message"}, output_record.message(), _src_loc);
+   check_eq(Level::Message, output_record.level());
+   check_eq(std::string{"FileName"}, sl.file_name);
+   check_eq(99, sl.line_number);
+   check_eq(std::string{"function name"}, sl.function_name);
+   check_eq(std::string{"message"}, output_record.message());
 }
 
-RegisterTestCase(OrionCore_Logger, log_default_level, Label{"Log default level"});
-RegisterTestCase(OrionCore_Logger, log_level_change, Label{"Log level changed"});
-RegisterTestCase(OrionCore_Logger, log_level_output, Label{"Log level output"});
-RegisterTestCase(OrionCore_Logger, log_error_message, Label{"Log error message"});
-RegisterTestCase(OrionCore_Logger, log_fail_message, Label{"Log fail message"});
-RegisterTestCase(OrionCore_Logger, log_record_output, Label{"Log output record"});
 } // TestSuite(OrionCore_Logger)

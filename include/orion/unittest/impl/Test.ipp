@@ -18,7 +18,7 @@ namespace unittest
 {
 
 template<class Func, typename T, typename... Args>
-inline void Test::assert(const T& expected, const T& actual, Args... args)
+inline void Test::xassert(const T& expected, const T& actual, Args... args)
 {
    auto t = std::make_tuple(args...);
 
@@ -42,7 +42,7 @@ inline void Test::assert(const T& expected, const T& actual, Args... args)
 }
 
 template<int op, typename T, typename... Args>
-inline void Test::assert(const T& expected, const T& actual, Args... args)
+inline void Test::xassert(const T& expected, const T& actual, Args... args)
 {
    auto t = std::make_tuple(args...);
 
@@ -90,7 +90,7 @@ inline void Test::assert(const T& expected, const T& actual, Args... args)
 }
 
 template<bool ExpectedValue, typename... Args>
-inline void Test::assert(bool value, Args... args)
+inline void Test::xassert(bool value, Args... args)
 {
    auto t = std::make_tuple(args...);
 
@@ -112,7 +112,7 @@ inline void Test::assert(bool value, Args... args)
 }
 
 template<typename ExpectedException, typename Func, typename... Args>
-inline void Test::assert_throw(Func f, Args... args)
+inline void Test::xassert_throw(Func f, Args... args)
 {
    try
    {

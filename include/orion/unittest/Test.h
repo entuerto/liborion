@@ -46,8 +46,8 @@ class API_EXPORT Test
 public:
    // NO_COPY(Test)
 
-   Test(const std::string& name, const Suite& suite);
-   Test(const std::string& name, const Suite& suite, TestCaseFunc&& f);
+   Test(const std::string& name, const TestSuite& suite);
+   Test(const std::string& name, const TestSuite& suite, TestCaseFunc&& f);
    virtual ~Test();
 
    std::string name() const;
@@ -78,16 +78,16 @@ public:
    void set_option(option::Disabled opt);
 
    template<class Func, typename T, typename... Args>
-   void assert(const T& expected, const T& actual, Args... args);
+   void xassert(const T& expected, const T& actual, Args... args);
 
    template<int op, typename T, typename... Args>
-   void assert(const T& expected, const T& actual, Args... args);
+   void xassert(const T& expected, const T& actual, Args... args);
 
    template<bool ExpectedValue, typename... Args>
-   void assert(bool value, Args... args);
+   void xassert(bool value, Args... args);
 
    template<typename ExpectedException, typename Func, typename... Args>
-   void assert_throw(Func f, Args... args);
+   void xassert_throw(Func f, Args... args);
 
    template<typename... Args>
    void fail(Args... args);

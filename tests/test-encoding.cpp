@@ -15,21 +15,21 @@ using namespace orion::encoding;
 using namespace orion::unittest;
 using namespace orion::unittest::option;
 
-TestSuite(OrionCore_Encoding, Label{"Encoding"})
+Section(OrionCore_Encoding, Label{"Encoding"})
 {
 //----------------------------------------------------------------------------
 // Tests
 //----------------------------------------------------------------------------
-void BigEndian_to_uint16(Test& t)
+TestCase("BigEndian to_uint16()")
 {
    uint8_t b[] = {1, 0};
 
    uint16_t v16 = BigEndian::to_uint16(b);
 
-   t.assert<eq>(uint16_t(256), v16, _src_loc);
+   check_eq(uint16_t(256), v16);
 }
 
-void BigEndian_put_uint16(Test& t)
+TestCase("BigEndian put_uint16()")
 {
    std::array<uint8_t, 2> b;
    std::array<uint8_t, 2> result{{1, 0}};
@@ -38,19 +38,19 @@ void BigEndian_put_uint16(Test& t)
 
    BigEndian::put_uint16(v16, b.data());
 
-   t.assert<eq>(result, b, _src_loc);
+   check_eq(result, b);
 }
 
-void LittleEndian_to_uint16(Test& t)
+TestCase("LittleEndian to_uint16()")
 {
    uint8_t b[] = {1, 0}; 
 
    uint16_t v16 = LittleEndian::to_uint16(b);
 
-   t.assert<eq>(uint16_t(1), v16, _src_loc);
+   check_eq(uint16_t(1), v16);
 }
 
-void LittleEndian_put_uint16(Test& t)
+TestCase("LittleEndian put_uint16()")
 {
    std::array<uint8_t, 2> b;
    std::array<uint8_t, 2> result{{0, 1}};
@@ -59,7 +59,7 @@ void LittleEndian_put_uint16(Test& t)
 
    LittleEndian::put_uint16(v16, b.data());
 
-   t.assert<eq>(result, b, _src_loc);
+   check_eq(result, b);
 }
 
 std::array<int64_t, 18> numbers64 = {{
@@ -104,7 +104,7 @@ std::array<int32_t, 18> numbers32 = {{
    2147483647 // (1 << 31) - 1,
 }};
 
-void EncVarint32_uint32(Test& t)
+TestCase("Encode varint32 (unsigned)")
 {
    std::array<uint8_t, 10> buf;
 
@@ -114,11 +114,11 @@ void EncVarint32_uint32(Test& t)
 
       uint32_t y = dec_varint(buf.data(), n);
 
-      t.assert<eq>(x, y, _src_loc);
+      check_eq(x, y);
    }
 }
 
-void EncVarint64_uint64(Test& t)
+TestCase("Encoce varint64 (unsigned)")
 {
    std::array<uint8_t, 12> buf;
 
@@ -128,12 +128,12 @@ void EncVarint64_uint64(Test& t)
 
       uint64_t y = dec_varint<uint64_t>(buf.data(), n);
  
-      t.assert<eq>(x, y, _src_loc);
+      check_eq(x, y);
    }
 
 }
   
-void EncVarint64_int64(Test& t)
+TestCase("Encode varint64 (signed)")
 {
    std::array<uint8_t, 12> buf;
 
@@ -143,13 +143,13 @@ void EncVarint64_int64(Test& t)
 
       int64_t y = dec_varint<int64_t>(buf.data(), n); 
 
-      t.assert<eq>(x, y, _src_loc);
+      check_eq(x, y);
    }
 
 }
 
 /*
-TEST(TestEncVarint64_uint64)
+TestCase(TestEncVarint64_uint64)
 {
    std::array<uint8_t, 12> buf;
 
@@ -173,13 +173,5 @@ TEST(TestEncVarint64_uint64)
    //std::cout << (uint64_t(1 << 63) - 1) << "\n";
 }
 */
-
-RegisterTestCase(OrionCore_Encoding, BigEndian_to_uint16, Label{"BigEndian to_uint16()"});
-RegisterTestCase(OrionCore_Encoding, BigEndian_put_uint16, Label{"BigEndian put_uint16()"});
-RegisterTestCase(OrionCore_Encoding, LittleEndian_to_uint16, Label{"LittleEndian to_uint16()"});
-RegisterTestCase(OrionCore_Encoding, LittleEndian_put_uint16, Label{"LittleEndian put_uint16()"});
-RegisterTestCase(OrionCore_Encoding, EncVarint32_uint32, Label{"Encode varint32 (unsigned)"});
-RegisterTestCase(OrionCore_Encoding, EncVarint64_uint64, Label{"Encoce varint64 (unsigned)"});
-RegisterTestCase(OrionCore_Encoding, EncVarint64_int64, Label{"Encode varint64 (signed)"});
 
 }

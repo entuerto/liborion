@@ -17,7 +17,7 @@ namespace unittest
 //---------------------------------------------------------------------------------------
 
 /// Constructor
-Suite::Suite(const std::string& name)
+TestSuite::TestSuite(const std::string& name)
    : _name(name)
    , _label(name)
    , _is_enabled(true)
@@ -27,112 +27,112 @@ Suite::Suite(const std::string& name)
 }
 
 /// Name of the test suite
-std::string Suite::name() const
+std::string TestSuite::name() const
 {
    return _name;
 }
 
-std::string Suite::label() const
+std::string TestSuite::label() const
 {
    return _label;
 }
 
-std::string Suite::description() const
+std::string TestSuite::description() const
 {
    return _description;
 }
 
-bool Suite::enabled() const
+bool TestSuite::enabled() const
 {
    return _is_enabled;
 }
 
-std::string Suite::disabled_reason() const
+std::string TestSuite::disabled_reason() const
 {
    return _disabled_reason;
 }
 
-const Stats& Suite::stats() const
+const Stats& TestSuite::stats() const
 {
    return _stats;
 }
 
-const std::vector<Test>& Suite::test_cases() const
+const std::vector<Test>& TestSuite::test_cases() const
 {
    return _test_cases;
 }
 
-uint64_t Suite::test_count() const
+uint64_t TestSuite::test_count() const
 {
    return _test_cases.size();
 }
 
-void Suite::set_option(Label opt)
+void TestSuite::set_option(Label opt)
 {
    _label = opt.text;
    _stats.label = opt.text;
 }
 
-void Suite::set_option(Description opt)
+void TestSuite::set_option(Description opt)
 {
    _description = opt.text;
 }
 
-void Suite::set_option(SetupFunc opt)
+void TestSuite::set_option(SetupFunc opt)
 {
    _setup_func = std::move(opt.func);
 }
 
-void Suite::set_option(TeardownFunc opt)
+void TestSuite::set_option(TeardownFunc opt)
 {
    _teardown_func = std::move(opt.func);
 }
 
-void Suite::set_option(Enabled /*opt*/)
+void TestSuite::set_option(Enabled /*opt*/)
 {
    _is_enabled = true;
 }
 
-void Suite::set_option(Disabled opt)
+void TestSuite::set_option(Disabled opt)
 {
    _is_enabled      = false;
    _disabled_reason = std::move(opt.reason);
 }
 
 /// Sets up the test suite.
-void Suite::setup()
+void TestSuite::setup()
 {
    if (_setup_func)
       _setup_func();
 }
 
 /// Tears down the test suite.
-void Suite::teardown()
+void TestSuite::teardown()
 {
    if (_teardown_func)
       _teardown_func();
 }
 
-Test& Suite::add_test(const std::string& name, TestCaseFunc f)
+Test& TestSuite::add_test(const std::string& name, TestCaseFunc f)
 {
    Test t(name, *this, std::move(f));
 
    return add_test(std::move(t));
 }
 
-Test& Suite::add_test(Test&& test)
+Test& TestSuite::add_test(Test&& test)
 {
    _test_cases.push_back(std::move(test));
    return _test_cases.back();
 }
 
-void Suite::add_tests(std::initializer_list<Test> l)
+void TestSuite::add_tests(std::initializer_list<Test> l)
 {
    _test_cases.insert(_test_cases.end(), l);
 }
 
 /// Executes the tests and logs then to output.
-const Stats& Suite::run_tests(Output& output)
+const Stats& TestSuite::run_tests(Output& output)
 {
    _stats.count = _test_cases.size();
 

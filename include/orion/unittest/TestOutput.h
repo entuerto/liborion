@@ -17,7 +17,7 @@ namespace orion
 namespace unittest
 {
 struct Stats;
-class Suite;
+class TestSuite;
 class TestResult;
 
 ///
@@ -32,13 +32,13 @@ public:
    virtual void write_header(uint64_t test_count) = 0;
 
    /// New test suite section
-   virtual void suite_start(const Suite& suite) = 0;
+   virtual void suite_start(const TestSuite& suite) = 0;
 
    /// Test results information
    virtual void write(const TestResult& test_result) = 0;
 
    /// End of test suite section
-   virtual void suite_end(const Suite& suite) = 0;
+   virtual void suite_end(const TestSuite& suite) = 0;
 
    /// Footer of the output report
    virtual void write_footer(const Stats& stats) = 0;

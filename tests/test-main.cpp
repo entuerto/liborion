@@ -16,7 +16,7 @@ using namespace orion::unittest;
 
 int main(int argc, char* argv[])
 {
-   auto ret = Runner::runner().run(argc, argv);
+   auto ret = TestRunner::runner().run(argc, argv);
 
    return ret ? EXIT_SUCCESS : EXIT_FAILURE;
 }

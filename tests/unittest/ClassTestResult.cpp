@@ -13,22 +13,22 @@ using namespace orion;
 using namespace orion::unittest;
 using namespace orion::unittest::option;
 
-TestSuite(OrionCore_Test, Label{"Test"})
+Section(OrionCore_Test, Label{"Test"})
 {
 
-void initial_values(Test& t)
+TestCase("Initial values")
 {
    auto tr = TestResult("toto", "toto_suite");
 
-   t.assert<eq>("toto"s, tr.name(), _src_loc);
-   t.assert<eq>("toto_suite"s, tr.suite_name(), _src_loc);
-   t.assert<true>(tr.passed(), _src_loc);
-   t.assert<false>(tr.failed(), _src_loc);
-   t.assert<eq>(std::size_t(0), tr.failed_item_count(), _src_loc);
-   t.assert<eq>(std::size_t(0), tr.passed_item_count(), _src_loc);
+   check_eq("toto"s, tr.name());
+   check_eq("toto_suite"s, tr.suite_name());
+   check_true(tr.passed());
+   check_false(tr.failed());
+   check_eq(uint64_t{0}, tr.failed_item_count());
+   check_eq(uint64_t{0}, tr.passed_item_count());
 }
 
-void number_of_failed_items(Test& t)
+TestCase("Number of failed items")
 {
    auto tr = TestResult("toto", "toto_suite");
 
@@ -36,10 +36,10 @@ void number_of_failed_items(Test& t)
    tr.log_failure("2");
    tr.log_failure("3");
 
-   t.assert<eq>(std::size_t(3), tr.failed_item_count(), _src_loc);
+   check_eq(uint64_t{3}, tr.failed_item_count());
 }
 
-void number_of_passed_items(Test& t)
+TestCase("Number of passed items")
 {
    auto tr = TestResult("toto", "toto_suite");
 
@@ -47,10 +47,7 @@ void number_of_passed_items(Test& t)
    tr.log_success("2");
    tr.log_success("3");
 
-   t.assert<eq>(std::size_t(3), tr.passed_item_count(), _src_loc);
+   check_eq(uint64_t{3}, tr.passed_item_count());
 }
 
-RegisterTestCase(OrionCore_Test, initial_values, Label{"Initial values"});
-RegisterTestCase(OrionCore_Test, number_of_failed_items, Label{"Number of failed items"});
-RegisterTestCase(OrionCore_Test, number_of_passed_items, Label{"Number of passed items"});
 } 

@@ -37,13 +37,13 @@ public:
    void write_header(uint64_t test_count) override;
 
    /// New test suite section
-   void suite_start(const Suite& suite) override;
+   void suite_start(const TestSuite& suite) override;
 
    /// Test results information
    void write(const TestResult& test_result) override;
 
    /// End of test suite section
-   void suite_end(const Suite& suite) override;
+   void suite_end(const TestSuite& suite) override;
 
    /// Footer of the output report
    void write_footer(const Stats& stats) override;

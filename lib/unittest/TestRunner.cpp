@@ -21,17 +21,17 @@ namespace orion
 namespace unittest
 {
 
-Runner::Runner()
+TestRunner::TestRunner()
    : _level(ReportLevel::Detailed)
 {
 }
 
-uint32_t Runner::test_suite_count() const
+uint32_t TestRunner::test_suite_count() const
 {
    return _test_suites.size();
 }
 
-uint32_t Runner::test_case_count() const
+uint32_t TestRunner::test_case_count() const
 {
    uint32_t count = 0;
 
@@ -43,7 +43,7 @@ uint32_t Runner::test_case_count() const
    return count;
 }
 
-bool Runner::parse(int argc, char* argv[])
+bool TestRunner::parse(int argc, char* argv[])
 {
    opts::options_description desc("Test options");
 
@@ -65,13 +65,13 @@ bool Runner::parse(int argc, char* argv[])
    return true;
 }
 
-Suite& Runner::add_test_suite(Suite&& suite)
+TestSuite& TestRunner::add_test_suite(TestSuite&& suite)
 {
    _test_suites.push_back(std::move(suite));
    return _test_suites.back();
 }
 
-bool Runner::run(int argc, char* argv[])
+bool TestRunner::run(int argc, char* argv[])
 {
    if (not parse(argc, argv))
       return false;
@@ -81,7 +81,7 @@ bool Runner::run(int argc, char* argv[])
    return run_tests(output);
 }
 
-bool Runner::run_tests(Output& output, const std::string& /*suite_name*/ /* = "" */)
+bool TestRunner::run_tests(Output& output, const std::string& /*suite_name*/ /* = "" */)
 {
    Stats stats{};
 
@@ -115,9 +115,9 @@ bool Runner::run_tests(Output& output, const std::string& /*suite_name*/ /* = ""
    return stats.failed_count == 0;
 }
 
-Runner& Runner::runner()
+TestRunner& TestRunner::runner()
 {
-   static Runner s_runner;
+   static TestRunner s_runner;
 
    return s_runner;
 }

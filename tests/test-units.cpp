@@ -12,49 +12,43 @@ using namespace orion;
 using namespace orion::unittest;
 using namespace orion::unittest::option;
 
-TestSuite(OrionCore_Units, Label{"Units"})
+Section(OrionCore_Units, Label{"Units"})
 {
-//----------------------------------------------------------------------------
-// Tests
-//----------------------------------------------------------------------------
-void units_SI_kilo_bytes(Test& t)
+
+TestCase("SI KB neq Bytes")
 {
    Value<si::Kilobyte> k = 12345;
 
-   t.assert<true>(12345 != k, _src_loc, Disabled{"No time to fix"});
+   check_true(12345 != k, Disabled{"No time to fix"});
 }
 
-void units_SI_kilo_mega(Test& t)
+TestCase("SI KB MB")
 {
    Value<si::Kilobyte> k = 12345;
    Value<si::Megabyte> m = 12345;
 
-   t.assert<true>(k != m, _src_loc);
+   check_true(k != m);
 
    Value<si::Megabyte> cm = k;
 
    // m  = 12345 MB
    // cm = 12 MB
-   t.assert<true>(cm != m, _src_loc);
+   check_true(cm != m);
 }
 
-void units_SI_mega_literal(Test& t)
+TestCase("SI MB literal")
 {
    Value<si::Megabyte> m = 12345;
 
-   t.assert<true>(m == 12345_mb, _src_loc);
+   check_true(m == 12345_mb);
 }
 
-void units_SI_int_double(Test& t)
+TestCase("SI MB as double")
 {
    Value<si::Megabyte> m = 12345;
    Value<si::Megabyte, double> dm = 12345;
 
-   t.assert<true>(m == dm, _src_loc);
+   check_true(m == dm);
 }
 
-RegisterTestCase(OrionCore_Units, units_SI_kilo_bytes, Label{"SI KB neq Bytes"});
-RegisterTestCase(OrionCore_Units, units_SI_kilo_mega, Label{"SI KB MB"});
-RegisterTestCase(OrionCore_Units, units_SI_mega_literal, Label{"SI MB literal"});
-RegisterTestCase(OrionCore_Units, units_SI_int_double, Label{"SI MB as double"});
 } // TEST_SUITE(OrionCore)
