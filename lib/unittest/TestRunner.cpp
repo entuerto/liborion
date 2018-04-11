@@ -83,36 +83,26 @@ bool TestRunner::run(int argc, char* argv[])
 
 bool TestRunner::run_tests(Output& output, const std::string& /*suite_name*/ /* = "" */)
 {
-   Stats stats{};
+   Totals totals{};
 
-   stats.count = test_case_count();
-
-   output.write_header(stats.count);
+   output.write_header(test_case_count());
 
    auto start = std::chrono::high_resolution_clock::now();
 
    for (auto& item : _test_suites)
    {
-      auto suite_stats = item.run_tests(output);
+      auto& suite_stats = item.run_tests(output);
 
-      stats.passed_count += suite_stats.passed_count;
-      stats.failed_count += suite_stats.failed_count;
-      stats.skipped_count += suite_stats.skipped_count;
-
-      stats.item_count += suite_stats.item_count;
-      stats.passed_item_count += suite_stats.passed_item_count;
-      stats.failed_item_count += suite_stats.failed_item_count;
-      stats.skipped_item_count += suite_stats.skipped_item_count;
-
-      stats.time_elapsed += suite_stats.time_elapsed;
+      totals.assertions += suite_stats.assertions;
+      totals.tests      += suite_stats.tests;
    }
 
    auto end = std::chrono::high_resolution_clock::now();
 
-   stats.time_elapsed = end - start;
+   totals.time_elapsed = end - start;
 
-   output.write_footer(stats);
-   return stats.failed_count == 0;
+   output.write_footer(totals);
+   return totals.tests.failed == 0;
 }
 
 TestRunner& TestRunner::runner()

@@ -52,19 +52,19 @@ std::string TestSuite::disabled_reason() const
    return _disabled_reason;
 }
 
-const Stats& TestSuite::stats() const
+const TestSuiteStats& TestSuite::stats() const
 {
    return _stats;
 }
 
-const std::vector<Test>& TestSuite::test_cases() const
+const std::vector<Test>& TestSuite::tests() const
 {
-   return _test_cases;
+   return _tests;
 }
 
 uint64_t TestSuite::test_count() const
 {
-   return _test_cases.size();
+   return _tests.size();
 }
 
 void TestSuite::set_option(Label opt)
@@ -122,45 +122,41 @@ Test& TestSuite::add_test(const std::string& name, TestCaseFunc f)
 
 Test& TestSuite::add_test(Test&& test)
 {
-   _test_cases.push_back(std::move(test));
-   return _test_cases.back();
+   _tests.push_back(std::move(test));
+   return _tests.back();
 }
 
 void TestSuite::add_tests(std::initializer_list<Test> l)
 {
-   _test_cases.insert(_test_cases.end(), l);
+   _tests.insert(_tests.end(), l);
 }
 
 /// Executes the tests and logs then to output.
-const Stats& TestSuite::run_tests(Output& output)
+const TestSuiteStats& TestSuite::run_tests(Output& output)
 {
-   _stats.count = _test_cases.size();
-
    output.suite_start(*this);
 
    setup();
 
-   for (auto& test : _test_cases)
+   for (auto& test : _tests)
    {
-      auto& test_result = test.execute_test();
+      auto& test_result = test.invoke();
+      auto& result_counters = test_result.counters();
 
-      if (test_result.item_count() == test_result.skipped_item_count())
+      if (result_counters.total() == result_counters.skipped)
       {
-         _stats.skipped_count++;
+         _stats.tests.skipped++;
       }
       else if (test_result.failed())
       {
-         _stats.failed_count++;
+         _stats.tests.failed++;
       }
       else
       {
-         _stats.passed_count++;
+         _stats.tests.passed++;
       }
 
-      _stats.item_count += test_result.item_count();
-      _stats.passed_item_count += test_result.passed_item_count();
-      _stats.failed_item_count += test_result.failed_item_count();
-      _stats.skipped_item_count += test_result.skipped_item_count();
+      _stats.assertions   += result_counters;
       _stats.time_elapsed += test_result.time_elapsed();
 
       output.write(test_result);

@@ -18,6 +18,11 @@ using namespace orion::unittest::option;
 Section(OrionCore_Test, Label{"Test"})
 {
 
+int calc_function()
+{
+   return 0;
+}
+
 int calc_throwing_function()
 {
    throw std::logic_error("Oh boy");
@@ -34,7 +39,7 @@ TestCase("Success on true")
       st.xassert<true>(true); 
    });
    
-   scope_test.execute_test();
+   scope_test.invoke();
 
    check_true(scope_test.test_result().passed());
 }
@@ -45,7 +50,7 @@ TestCase("Failure on false")
       st.xassert<false>(false); 
    });
    
-   scope_test.execute_test();
+   scope_test.invoke();
 
    check_false(scope_test.test_result().failed());
 }
@@ -56,7 +61,7 @@ TestCase("Function failure with exception")
       st.xassert<eq>(calc_throwing_function(), 1); 
    });
 
-   scope_test.execute_test();
+   scope_test.invoke();
    
    check_true(scope_test.test_result().failed());
 }
@@ -99,24 +104,17 @@ TestCase("Close fails on not equal", Disabled{"Not implemented"})
 
 TestCase("Not expected exception")
 {
-   Test scope_test("throwing", TestSuite("testSuite"), [](Test& st) { 
-      st.xassert_throw<std::domain_error>(throwing_function); 
-   });
-
-   scope_test.execute_test();
-   
-   check_true(scope_test.test_result().failed());
+   check_no_throw(calc_function());
 }
 
 TestCase("Expected exception")
 {
-   Test scope_test("throwing", TestSuite("testSuite"), [](Test& st) { 
-      st.xassert_throw<std::logic_error>(throwing_function); 
-   });
-   
-   scope_test.execute_test();
+   check_throws(throwing_function());
+}
 
-   check_true(scope_test.test_result().passed());
+TestCase("Expected specific exception")
+{
+   check_throws_as(throwing_function(), std::logic_error);
 }
 
 TestCase("TestResult::log_success()")

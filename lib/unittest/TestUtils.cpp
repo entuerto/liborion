@@ -66,17 +66,28 @@ std::ostream& operator<<(std::ostream& out, ReportLevel report_level)
    return out;
 }
 
-Stats& operator+=(Stats& lhs, const Stats& rhs)
+Counters& operator+=(Counters& lhs, const Counters& rhs)
 {
-   lhs.count += rhs.count;
-   lhs.passed_count += rhs.passed_count;
-   lhs.failed_count += rhs.failed_count;
-   lhs.skipped_count += rhs.skipped_count;
+   lhs.passed  += rhs.passed;
+   lhs.failed  += rhs.failed;
+   lhs.skipped += rhs.skipped;
 
-   lhs.item_count += rhs.item_count;
-   lhs.passed_item_count += rhs.passed_item_count;
-   lhs.failed_item_count += rhs.failed_item_count;
-   lhs.skipped_item_count += rhs.skipped_item_count;
+   return lhs;
+}
+
+TestSuiteStats& operator+=(TestSuiteStats& lhs, const TestSuiteStats& rhs)
+{
+   lhs.assertions += rhs.assertions;
+   lhs.tests      += rhs.tests;
+
+   lhs.time_elapsed += rhs.time_elapsed;
+
+   return lhs;
+}
+
+TestStats& operator+=(TestStats& lhs, const TestStats& rhs)
+{
+   lhs.assertions += rhs.assertions;
 
    lhs.time_elapsed += rhs.time_elapsed;
 

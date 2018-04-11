@@ -43,9 +43,9 @@ public:
 
    std::string disabled_reason() const;
 
-   const Stats& stats() const;
+   const TestSuiteStats& stats() const;
 
-   const std::vector<Test>& test_cases() const;
+   const std::vector<Test>& tests() const;
 
    uint64_t test_count() const;
 
@@ -63,7 +63,7 @@ public:
    void set_option(option::Disabled opt);
 
    /// Executes the tests and logs then to output.
-   const Stats& run_tests(Output& output);
+   const TestSuiteStats& run_tests(Output& output);
 
    Test& add_test(Test&& test);
 
@@ -82,9 +82,9 @@ private:
    std::function<void()> _setup_func;
    std::function<void()> _teardown_func;
 
-   std::vector<Test> _test_cases;
+   std::vector<Test> _tests;
 
-   Stats _stats;
+   TestSuiteStats _stats;
 };
 
 //-------------------------------------------------------------------------------------------------

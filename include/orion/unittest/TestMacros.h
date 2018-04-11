@@ -19,11 +19,11 @@
 #define ORION_CAT(s1, s2) ORION_CAT_IMPL(s1, s2)
 
 // Macros for anonymous variable name generation
-//#ifdef __COUNTER__ // not standard and may be missing for some compilers
-//#define ORION_ANONYMOUS(x) ORION_CAT(x, __COUNTER__)
-//#else // __COUNTER__
+#ifdef __COUNTER__ // not standard and may be missing for some compilers
+#define ORION_ANONYMOUS(x) ORION_CAT(x, __COUNTER__)
+#else // __COUNTER__
 #define ORION_ANONYMOUS(x) ORION_CAT(x, __LINE__)
-//#endif // __COUNTER__
+#endif // __COUNTER__
 
 
 //-------------------------------------------------------------------------------------------------
@@ -45,12 +45,12 @@ namespace Suite##Name
 
 #define RegisterTestCase(SuiteName, TestFunc, ...)                \
                                                                   \
-orion::unittest::RegisterTestHelper _AutoReg_##TestFunc(          \
+unittest::RegisterTestHelper _AutoReg_##TestFunc(          \
       _current_test_suite(), #TestFunc, TestFunc, ##__VA_ARGS__)
 
 #define _RegisterTestCase(TestFunc, ...)                \
                                                                   \
-orion::unittest::RegisterTestHelper _AutoReg_##TestFunc(          \
+unittest::RegisterTestHelper _AutoReg_##TestFunc(          \
       _current_test_suite(), #TestFunc, TestFunc, ##__VA_ARGS__)
 
 #define _TestCaseImpl(func, ...)         \
@@ -60,14 +60,58 @@ orion::unittest::RegisterTestHelper _AutoReg_##TestFunc(          \
 
 
 #define TestCase(label, ...) \
-   _TestCaseImpl(ORION_ANONYMOUS(_test_case_), orion::unittest::option::Label{label}, ##__VA_ARGS__)
+   _TestCaseImpl(ORION_ANONYMOUS(_test_case_), unittest::option::Label{label}, ##__VA_ARGS__)
 
 
 //-------------------------------------------------------------------------------------------------
 
-//#define check_throws    
-//#define check_throws_as 
-//#define check_nothrow   
+// Expects that an exception (of any type) is thrown during evaluation of the expression.
+#define check_throws(expr, ...)                                                             \
+   do                                                                                       \
+   {                                                                                        \
+      try                                                                                   \
+      {                                                                                     \
+         expr;                                                                              \
+         t.expected_exception_not_thrown(#expr, _src_loc, ##__VA_ARGS__);                   \
+      }                                                                                     \
+      catch(...)                                                                            \
+      {                                                                                     \
+         t.exception_thrown_as_expected(std::current_exception(), _src_loc, ##__VA_ARGS__); \
+      }                                                                                     \
+   } while((void)0, 0);
+  
+// Expects that an exception of the _specified type_ is thrown during evaluation of the expression.
+#define check_throws_as(expr, exception_type, ...)                                          \
+   do                                                                                       \
+   {                                                                                        \
+      try                                                                                   \
+      {                                                                                     \
+         expr;                                                                              \
+         t.expected_exception_not_thrown(#expr, _src_loc, ##__VA_ARGS__);                   \
+      }                                                                                     \
+      catch(const exception_type& e)                                                        \
+      {                                                                                     \
+         t.exception_thrown_as_expected(e, _src_loc, ##__VA_ARGS__);                        \
+      }                                                                                     \
+      catch(...)                                                                            \
+      {                                                                                     \
+         t.unexpected_exception_thrown(std::current_exception(), _src_loc, ##__VA_ARGS__);  \
+      }                                                                                     \
+   } while((void)0, 0);
+
+// Expects that no exception is thrown during evaluation of the expression.
+#define check_no_throw(expr, ...)                                                           \
+   do                                                                                       \
+   {                                                                                        \
+      try                                                                                   \
+      {                                                                                     \
+         expr;                                                                              \
+      }                                                                                     \
+      catch(...)                                                                            \
+      {                                                                                     \
+         t.unexpected_exception_thrown(std::current_exception(), _src_loc, ##__VA_ARGS__);  \
+      }                                                                                     \
+   } while((void)0, 0);   
 
 #define check_eq(ex, ac, ...) t.xassert<eq>((ex), (ac), _src_loc, ##__VA_ARGS__);
 #define check_ne(ex, ac, ...) t.xassert<ne>((ex), (ac), _src_loc, ##__VA_ARGS__);

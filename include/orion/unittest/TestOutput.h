@@ -16,7 +16,7 @@ namespace orion
 {
 namespace unittest
 {
-struct Stats;
+struct Totals;
 class TestSuite;
 class TestResult;
 
@@ -41,7 +41,7 @@ public:
    virtual void suite_end(const TestSuite& suite) = 0;
 
    /// Footer of the output report
-   virtual void write_footer(const Stats& stats) = 0;
+   virtual void write_footer(const Totals& totals) = 0;
 };
 
 } // namespace unittest

@@ -102,13 +102,13 @@ std::string Test::disabled_reason() const
    return _disabled_reason;
 }
 
-void Test::setup()
+void Test::setup() const
 {
    if (_setup_func)
       _setup_func();
 }
 
-void Test::teardown()
+void Test::teardown() const
 {
    if (_teardown_func)
       _teardown_func();
@@ -119,13 +119,13 @@ TestCaseFunc& Test::case_func()
    return _func;
 }
 
-void Test::do_execute_test() const
+void Test::do_invoke() const
 {
    if (_func)
       _func(*const_cast<Test*>(this));
 }
 
-TestResult& Test::execute_test()
+const TestResult& Test::invoke() const
 {
    if (not enabled())
    {
@@ -137,12 +137,8 @@ TestResult& Test::execute_test()
    try
    {
       setup();
-      do_execute_test();
+      do_invoke();
       teardown();
-   }
-   catch (const std::exception& e)
-   {
-      _test_result.log_exception(e, "An unexpected exception was thrown: ", _src_loc);
    }
    catch (...)
    {

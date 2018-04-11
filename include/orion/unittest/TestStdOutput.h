@@ -46,7 +46,7 @@ public:
    void suite_end(const TestSuite& suite) override;
 
    /// Footer of the output report
-   void write_footer(const Stats& stats) override;
+   void write_footer(const Totals& totals) override;
 
 private:
    void write_sections();
@@ -57,8 +57,8 @@ private:
    std::ostream& _stream;
    ReportLevel _report_level;
 
-   std::map<std::string, Stats> _test_suite_stats;
-   std::multimap<std::string, ItemStats> _test_item_stats;
+   std::map<std::string, TestSuiteStats> _test_suite_stats;
+   std::multimap<std::string, TestStats> _test_stats;
 };
 
 } // namespace orion

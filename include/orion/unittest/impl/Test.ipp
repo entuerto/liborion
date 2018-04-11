@@ -111,33 +111,6 @@ inline void Test::xassert(bool value, Args... args)
    _test_result.log_failure(ExpectedValue, value, args...);
 }
 
-template<typename ExpectedException, typename Func, typename... Args>
-inline void Test::xassert_throw(Func f, Args... args)
-{
-   try
-   {
-      f();
-   }
-   catch (const ExpectedException&)
-   {
-      _test_result.log_success();
-      return;
-   }
-   catch (const std::exception& e)
-   {
-      _test_result.log_exception(e, "An unexpected exception was thrown: ", args...);
-      return;
-   }
-   catch (...)
-   {
-      _test_result.log_exception(
-         std::current_exception(), "An unexpected, unknown exception was thrown: ", args...);
-      return;
-   }
-   // Not thrown
-   fail("The exception was not thrown: ", type_name<ExpectedException>(), args...);
-}
-
 template<typename... Args>
 inline void Test::fail(Args... args)
 {
@@ -164,6 +137,44 @@ inline void Test::fail_if(bool value, Args... args)
    }
 
    _test_result.log_failure(false, value, args...);
+}
+
+template<typename... Args>
+inline void Test::expected_exception_not_thrown(Args... args)
+{
+   _test_result.log_failure("Expected exception not thrown: ", args...);
+}
+
+template<typename ExceptionT, typename... Args>
+inline void Test::exception_thrown_as_expected(const ExceptionT& e, Args... args)
+{
+   std::string msg{"Exception thrown as expected: "};
+
+   msg += type_name(e);
+
+   _test_result.log_success(msg, args...);
+}
+
+template<typename... Args>
+inline void Test::exception_thrown_as_expected(std::exception_ptr eptr, Args... args)
+{
+   std::string msg{"Exception thrown as expected: "};
+
+   msg += type_name(std::move(eptr));
+
+   _test_result.log_success(msg, args...);
+}
+
+template<typename ExceptionT, typename... Args>
+inline void Test::unexpected_exception_thrown(const ExceptionT& e, Args... args)
+{
+   _test_result.log_exception(e, "Unexpected exception thrown: ", args...);
+}
+
+template<typename... Args>
+inline void Test::unexpected_exception_thrown(std::exception_ptr eptr, Args... args)
+{
+   _test_result.log_exception(eptr, "Unexpected exception thrown: ", args...);
 }
 
 } // namespace unittest

@@ -13,6 +13,8 @@
 #include <orion/SourceLocation.h>
 #include <orion/Utils.h>
 
+#include <orion/unittest/TestUtils.h>
+
 #include <chrono>
 #include <string>
 #include <vector>
@@ -34,7 +36,7 @@ enum class Result
 
 //-------------------------------------------------------------------------------------------------
 
-struct API_EXPORT ResultItem
+struct API_EXPORT Assertion
 {
    Result result;
 
@@ -63,14 +65,11 @@ public:
    bool passed() const;
    bool failed() const;
 
-   uint64_t item_count() const;
-   uint64_t failed_item_count() const;
-   uint64_t passed_item_count() const;
-   uint64_t skipped_item_count() const;
+   const Counters& counters() const;
 
    std::chrono::nanoseconds time_elapsed() const;
 
-   const std::vector<ResultItem>& result_items() const;
+   const std::vector<Assertion>& assertions() const;
 
    void on_start();
    void on_end();
@@ -97,14 +96,12 @@ private:
    std::string _name;
    std::string _suite_name;
    
-   uint64_t _failed_item_count;
-   uint64_t _passed_item_count;
-   uint64_t _skipped_item_count;
+   Counters _counters;
 
    HighResTimePoint _time_point_start;
    HighResTimePoint _time_point_end;
 
-   std::vector<ResultItem> _result_items;
+   std::vector<Assertion> _assertions;
 };
 
 } // namespace unittest

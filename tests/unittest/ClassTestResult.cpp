@@ -24,8 +24,8 @@ TestCase("Initial values")
    check_eq("toto_suite"s, tr.suite_name());
    check_true(tr.passed());
    check_false(tr.failed());
-   check_eq(uint64_t{0}, tr.failed_item_count());
-   check_eq(uint64_t{0}, tr.passed_item_count());
+   check_eq(uint64_t{0}, tr.counters().failed);
+   check_eq(uint64_t{0}, tr.counters().passed);
 }
 
 TestCase("Number of failed items")
@@ -36,7 +36,7 @@ TestCase("Number of failed items")
    tr.log_failure("2");
    tr.log_failure("3");
 
-   check_eq(uint64_t{3}, tr.failed_item_count());
+   check_eq(uint64_t{3}, tr.counters().failed);
 }
 
 TestCase("Number of passed items")
@@ -47,7 +47,7 @@ TestCase("Number of passed items")
    tr.log_success("2");
    tr.log_success("3");
 
-   check_eq(uint64_t{3}, tr.passed_item_count());
+   check_eq(uint64_t{3}, tr.counters().passed);
 }
 
 } 

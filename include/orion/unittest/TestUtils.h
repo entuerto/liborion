@@ -35,38 +35,49 @@ API_EXPORT std::ostream& operator<<(std::ostream& out, ReportLevel report_level)
 
 //-------------------------------------------------------------------------------------------------
 
-struct Stats
+struct Counters
 {
-   std::string label;
-   
-   uint64_t count;
-   uint64_t passed_count;
-   uint64_t failed_count;
-   uint64_t skipped_count;
+   uint64_t passed;
+   uint64_t failed;
+   uint64_t skipped;
 
-   uint64_t item_count;
-   uint64_t passed_item_count;
-   uint64_t failed_item_count;
-   uint64_t skipped_item_count;
-
-   std::chrono::nanoseconds time_elapsed;
+   uint64_t total() const { return passed + failed + skipped; }
 };
 
-API_EXPORT Stats& operator+=(Stats& lhs, const Stats& rhs);
+API_EXPORT Counters& operator+=(Counters& lhs, const Counters& rhs);
 
 //-------------------------------------------------------------------------------------------------
 
-struct ItemStats
+struct Totals
 {
-   std::string label;
-
-   uint64_t count;
-   uint64_t passed_count;
-   uint64_t failed_count;
-   uint64_t skipped_count;
+   Counters assertions;
+   Counters tests;
 
    std::chrono::nanoseconds time_elapsed;
 };
+
+struct TestSuiteStats
+{
+   std::string label;
+
+   Counters assertions;
+   Counters tests;
+
+   std::chrono::nanoseconds time_elapsed;
+};
+
+API_EXPORT TestSuiteStats& operator+=(TestSuiteStats& lhs, const TestSuiteStats& rhs);
+
+struct TestStats
+{
+   std::string label;
+
+   Counters assertions;
+
+   std::chrono::nanoseconds time_elapsed;
+};
+
+API_EXPORT TestStats& operator+=(TestStats& lhs, const TestStats& rhs);
 
 } // namespace unittest
 } // namespace orion

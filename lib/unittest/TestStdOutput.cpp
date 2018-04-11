@@ -60,15 +60,11 @@ static const std::string text_item_exception = R"(
 )";
 
 static const std::string text_summary = R"(
----
-{passed:4} Tests out of {count} passed
-{failed:4} Tests out of {count} failed
-{skipped:4} Tests out of {count} skipped
-{item_passed:4} Test assertations out of {item_count} passed
-{item_failed:4} Test assertations out of {item_count} failed
-{item_skipped:4} Test assertations out of {item_count} skipped
----
-Test time: {time_elapsed:.2f} ms.
+--------------------------------------------------------------------------------
+Tests:        {count:6}  Passed: {passed:6}  Failed: {failed:6}  Skipped: {skipped:6}
+Assertations: {item_count:6}  Passed: {item_passed:6}  Failed: {item_failed:6}  Skipped: {item_skipped:6}
+--------------------------------------------------------------------------------
+Elapsed time: {time_elapsed:.2f} ms
 )";
 
 //---------------------------------------------------------------------------------------
@@ -93,9 +89,7 @@ void StdOutput::suite_start(const TestSuite& /* suite */)
 
 void StdOutput::write(const TestResult& test_result)
 {
-   auto& items = test_result.result_items();
-
-   for (const auto& item : items)
+   for (const auto& item : test_result.assertions())
    {
       if (item.result == Result::Passed)
          continue;
@@ -129,6 +123,16 @@ void StdOutput::write(const TestResult& test_result)
                                                       item.expected,
                                                       item.actual);
       }
+
+      if (_report_level == ReportLevel::Detailed)
+      {
+         auto& result_counters = test_result.counters();
+
+         _test_stats.emplace(test_result.suite_name(), TestStats{
+            test_result.name(),
+            result_counters,
+            test_result.time_elapsed()});
+      }
    }
 }
 
@@ -138,42 +142,26 @@ void StdOutput::suite_end(const TestSuite& suite)
       return;
 
    _test_suite_stats.emplace(suite.name(), suite.stats());
-
-   if (_report_level != ReportLevel::Detailed)
-      return;
-
-   for (const auto& test : suite.test_cases())
-   {
-      auto& r = test.test_result();
-
-      _test_item_stats.emplace(suite.name(), ItemStats{
-         test.label(),
-         r.item_count(),
-         r.passed_item_count(),
-         r.failed_item_count(), 
-         r.skipped_item_count(),
-         r.time_elapsed()});
-   }
 }
 
-void StdOutput::write_footer(const Stats& stats)
+void StdOutput::write_footer(const Totals& totals)
 {
    if (_report_level != ReportLevel::Error)
       write_sections();
 
    _stream << "\n" 
-           << (stats.failed_item_count > 0 ? "Failure" : "Success");
+           << (totals.assertions.failed > 0 ? "Failure" : "Success");
 
-   auto millis = std::chrono::duration_cast<dbl_milliseconds>(stats.time_elapsed);
+   auto millis = std::chrono::duration_cast<dbl_milliseconds>(totals.time_elapsed);
 
-   _stream << fmt::format(text_summary, fmt::arg("count", stats.count),
-                                        fmt::arg("passed", stats.passed_count),
-                                        fmt::arg("failed", stats.failed_count),
-                                        fmt::arg("skipped", stats.skipped_count),
-                                        fmt::arg("item_count", stats.item_count),
-                                        fmt::arg("item_passed", stats.passed_item_count),
-                                        fmt::arg("item_failed", stats.failed_item_count),
-                                        fmt::arg("item_skipped", stats.skipped_item_count),
+   _stream << fmt::format(text_summary, fmt::arg("count", totals.tests.total()),
+                                        fmt::arg("passed", totals.tests.passed),
+                                        fmt::arg("failed", totals.tests.failed),
+                                        fmt::arg("skipped", totals.tests.skipped),
+                                        fmt::arg("item_count", totals.assertions.total()),
+                                        fmt::arg("item_passed", totals.assertions.passed),
+                                        fmt::arg("item_failed", totals.assertions.failed),
+                                        fmt::arg("item_skipped", totals.assertions.skipped),
                                         fmt::arg("time_elapsed", millis.count()));
 }
 
@@ -183,7 +171,7 @@ void StdOutput::write_sections()
    _stream << "\n" 
            << header_short;
 
-   Stats total{};
+   TestSuiteStats total{};
 
    // Test suite results
    for (const auto& item : _test_suite_stats)
@@ -194,26 +182,27 @@ void StdOutput::write_sections()
 
       auto millis = std::chrono::duration_cast<dbl_milliseconds>(s.time_elapsed);
 
-      _stream << fmt::format(text_suite, s.label, s.passed_count, 
-                                                  s.failed_count, 
-                                                  s.skipped_count, 
-                                                  s.count, 
+      _stream << fmt::format(text_suite, s.label, s.tests.passed, 
+                                                  s.tests.failed, 
+                                                  s.tests.skipped, 
+                                                  s.tests.total(), 
                                                   millis.count());
       
       if (_report_level == ReportLevel::Detailed)
       {
-         auto range = make_range(_test_item_stats.equal_range(item.first));
+         auto range = make_range(_test_stats.equal_range(item.first));
 
          for (const auto& test_item : range)
          {
             auto& i = test_item.second;
+            auto& counters = i.assertions;
 
             auto ms = std::chrono::duration_cast<dbl_milliseconds>(i.time_elapsed);
 
-            _stream << fmt::format(text_item, fit_text(i.label, 38), i.passed_count, 
-                                                                     i.failed_count, 
-                                                                     i.skipped_count,
-                                                                     i.count,
+            _stream << fmt::format(text_item, fit_text(i.label, 38), counters.passed, 
+                                                                     counters.failed, 
+                                                                     counters.skipped,
+                                                                     counters.total(),
                                                                      ms.count());
          }
          _stream << "\n";
@@ -225,10 +214,10 @@ void StdOutput::write_sections()
 
    std::string label = (_report_level == ReportLevel::Detailed) ? "Total" : " ";
 
-   _stream << fmt::format(text_suite, label, total.passed_count, 
-                                             total.failed_count, 
-                                             total.skipped_count, 
-                                             total.count, 
+   _stream << fmt::format(text_suite, label, total.tests.passed, 
+                                             total.tests.failed, 
+                                             total.tests.skipped, 
+                                             total.tests.total(), 
                                              millis.count());
 }
 

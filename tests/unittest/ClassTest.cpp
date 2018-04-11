@@ -22,7 +22,7 @@ TestCase("Passing with no failure")
       ft.xassert<true>(true); 
    });
 
-   auto scope_test_result = passing_test.execute_test();
+   auto scope_test_result = passing_test.invoke();
 
    check_true(scope_test_result.passed());
 }
@@ -33,7 +33,7 @@ TestCase("Failing with no failure")
       ft.xassert<false>(false); 
    });
 
-   auto scope_test_result = failing_test.execute_test();
+   auto scope_test_result = failing_test.invoke();
 
    check_false(scope_test_result.failed());
 }
@@ -44,7 +44,7 @@ TestCase("Throwing reported as failure")
       throw std::logic_error("Oh boy"); 
    });
 
-   auto scope_test_result = crashing_test.execute_test();
+   auto scope_test_result = crashing_test.invoke();
 
    check_true(scope_test_result.failed());
 }

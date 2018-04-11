@@ -16,9 +16,8 @@ namespace unittest
 TestResult::TestResult(const std::string& name, const std::string& suite_name)
    : _name(name)
    , _suite_name(suite_name)
-   , _failed_item_count(0)
-   , _passed_item_count(0)
-   , _skipped_item_count(0)
+   , _counters()
+   , _assertions()
 {
 }
 
@@ -39,27 +38,12 @@ bool TestResult::passed() const
 
 bool TestResult::failed() const
 {
-   return _failed_item_count > 0;
+   return _counters.failed > 0;
 }
 
-uint64_t TestResult::item_count() const
+const Counters& TestResult::counters() const
 {
-   return _result_items.size();
-}
-
-uint64_t TestResult::failed_item_count() const
-{
-   return _failed_item_count;
-}
-
-uint64_t TestResult::passed_item_count() const
-{
-   return _passed_item_count;
-}
-
-uint64_t TestResult::skipped_item_count() const
-{
-   return _skipped_item_count;
+   return _counters;
 }
 
 std::chrono::nanoseconds TestResult::time_elapsed() const
@@ -67,9 +51,9 @@ std::chrono::nanoseconds TestResult::time_elapsed() const
    return _time_point_end - _time_point_start;
 }
 
-const std::vector<ResultItem>& TestResult::result_items() const
+const std::vector<Assertion>& TestResult::assertions() const
 {
-   return _result_items;
+   return _assertions;
 }
 
 void TestResult::on_start()

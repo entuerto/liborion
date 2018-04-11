@@ -61,14 +61,14 @@ public:
    const TestResult& test_result() const;
 
    // Sets up the test fixture.
-   void setup();
+   void setup() const;
 
    // Tears down the test fixture.
-   void teardown();
+   void teardown() const;
 
    TestCaseFunc& case_func();
 
-   TestResult& execute_test();
+   const TestResult& invoke() const;
 
    void set_option(option::Label opt);
    void set_option(option::Description opt);
@@ -86,17 +86,33 @@ public:
    template<bool ExpectedValue, typename... Args>
    void xassert(bool value, Args... args);
 
-   template<typename ExpectedException, typename Func, typename... Args>
-   void xassert_throw(Func f, Args... args);
-
    template<typename... Args>
    void fail(Args... args);
 
    template<typename... Args>
    void fail_if(bool value, Args... args);
 
+   //
+   // Exception handling
+   // 
+
+   template<typename... Args>
+   void expected_exception_not_thrown(Args... args);
+
+   template<typename ExceptionT, typename... Args>
+   void exception_thrown_as_expected(const ExceptionT& e, Args... args);
+
+   template<typename... Args>
+   void exception_thrown_as_expected(std::exception_ptr eptr, Args... args);
+
+   template<typename ExceptionT, typename... Args>
+   void unexpected_exception_thrown(const ExceptionT& e, Args... args);
+
+   template<typename... Args>
+   void unexpected_exception_thrown(std::exception_ptr eptr, Args... args);
+
 protected:
-   virtual void do_execute_test() const;
+   virtual void do_invoke() const;
 
 private:
    std::string _name;
@@ -106,7 +122,7 @@ private:
    bool _is_enabled;
    std::string _disabled_reason;
 
-   TestResult _test_result;
+   mutable TestResult _test_result;
 
    std::function<void()> _setup_func;
    std::function<void()> _teardown_func;
