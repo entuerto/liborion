@@ -44,18 +44,18 @@ namespace Suite##Name
 
 //-------------------------------------------------------------------------------------------------
 
-#define RegisterTestCase(SuiteName, TestFunc, ...)                \
-                                                                  \
-unittest::RegisterTestHelper _AutoReg_##TestFunc(                 \
-      _current_test_suite(), #TestFunc, TestFunc, ##__VA_ARGS__)
+//#define RegisterTestCase(SuiteName, TestFunc, ...)                \
+//                                                                  \
+//unittest::RegisterTestHelper _AutoReg_##TestFunc(                 \
+//      _current_test_suite(), #TestFunc, TestFunc, ##__VA_ARGS__)
 
-#define _RegisterTestCase(TestFunc, ...)                                \
+#define RegisterTestCase(TestFunc, ...)                                \
 unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(), \
                                                  #TestFunc, TestFunc, ##__VA_ARGS__)
 
 #define _TestCaseImpl(func, ...)           \
    static void func(Test& t);              \
-   _RegisterTestCase(func, ##__VA_ARGS__); \
+   RegisterTestCase(func, ##__VA_ARGS__); \
    static void func(Test& t)
 
 
@@ -124,7 +124,6 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(), \
 #define check_false(exp, ...) t.xassert<false>((exp), _src_loc, ##__VA_ARGS__);
 
 //#define check           
-//#define check_not
 
 // clang-format on
 

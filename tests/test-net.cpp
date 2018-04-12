@@ -14,175 +14,185 @@
 using namespace orion;
 using namespace orion::net;
 using namespace orion::unittest;
+using namespace orion::unittest::option;
 
 using namespace std::string_literals;
 
-Section(OrionNet)
+Section(OrionNet_Address, Label{"Address"})
 {
-//----------------------------------------------------------------------------
-// Tests
-//----------------------------------------------------------------------------
-void AddressV4_is_unspecified(Test& t)
+
+TestCase("AddressV4 is unspecified")
 {
-   t.xassert<true>(AddressV4::zero().is_unspecified(), _src_loc);
-   t.xassert<false>(AddressV4{127, 0, 0, 1}.is_unspecified(), _src_loc);
+   check_true(AddressV4::zero().is_unspecified());
+
+   AddressV4 addr{127, 0, 0, 1};
+
+   check_false(addr.is_unspecified());
 }
 
-void AddressV6_is_unspecified(Test& t)
+TestCase("AddressV6 is unspecified")
 {
-   t.xassert<true>(AddressV6::unspecified().is_unspecified(), _src_loc);
-   t.xassert<false>(AddressV6::interface_local_all_nodes().is_unspecified(), _src_loc);
+   check_true(AddressV6::unspecified().is_unspecified());
+   check_false(AddressV6::interface_local_all_nodes().is_unspecified());
 }
 
-void AddressV4_is_loopback(Test& t)
+TestCase("AddressV4 is loopback")
 {
-   t.xassert<true>(AddressV4{127, 0, 0, 1}.is_loopback(), _src_loc);
-   t.xassert<true>(AddressV4{127, 255, 255, 254}.is_loopback(), _src_loc);
-   t.xassert<false>(AddressV4{128, 1, 2, 3}.is_loopback(), _src_loc);
+   AddressV4 addr1{127, 0, 0, 1};
+   check_true(addr1.is_loopback());
+
+   AddressV4 addr2{127, 255, 255, 254};
+   check_true(addr2.is_loopback());
+
+   AddressV4 addr3{128, 1, 2, 3};
+   check_false(addr3.is_loopback());
 }
 
-void AddressV6_is_loopback(Test& t)
+TestCase("AddressV6 is loopback")
 {
-   t.xassert<true>(AddressV6::loopback().is_loopback(), _src_loc);
-   t.xassert<false>(AddressV6::link_local_all_routers().is_loopback(), _src_loc);
+   check_true(AddressV6::loopback().is_loopback());
+   check_false(AddressV6::link_local_all_routers().is_loopback());
 }
 
-void AddressV4_is_multicast(Test& t)
+TestCase("AddressV4 is multicast")
 {
-   t.xassert<true>(AddressV4{224, 0, 0, 0}.is_multicast(), _src_loc);
-   t.xassert<true>(AddressV4{239, 0, 0, 0}.is_multicast(), _src_loc);
-   t.xassert<false>(AddressV4{240, 0, 0, 0}.is_multicast(), _src_loc);
+   AddressV4 addr1{224, 0, 0, 0};
+   check_true(addr1.is_multicast());
+
+   AddressV4 addr2{239, 0, 0, 0};
+   check_true(addr2.is_multicast());
+
+   AddressV4 addr3{240, 0, 0, 0};
+   check_false(addr3.is_multicast());
 }
 
-void AddressV6_is_multicast(Test& t)
+TestCase("AddressV6 is multicast")
 {
-   t.xassert<true>(AddressV6::link_local_all_nodes().is_multicast(), _src_loc);
-   t.xassert<true>(AddressV6{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}}.is_multicast(), _src_loc);
-   t.xassert<false>(AddressV6{std::array<uint8_t, 16>{{0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}}.is_multicast(), _src_loc);
+   check_true(AddressV6::link_local_all_nodes().is_multicast());
+
+   AddressV6 addr{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}};
+   check_true(addr.is_multicast());
+
+   AddressV6 addr2{std::array<uint8_t, 16>{{0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}};
+   check_false(addr2.is_multicast());
 }
 
-void AddressV4_to_string(Test& t)
+TestCase("AddressV4 to_string")
 {
-   t.xassert<eq>(to_string(AddressV4{127, 0, 0, 1}), "127.0.0.1"s, _src_loc);
+   check_eq(to_string(AddressV4{127, 0, 0, 1}), "127.0.0.1"s);
 
-   Address* inv_addr = nullptr;
+   check_throws_as([]() { 
+      Address* inv_addr = nullptr; 
 
-   //t.xassert_throw<std::system_error>([&]() { to_string(inv_addr); }, _src_loc);
+      to_string(inv_addr); 
+   }(), std::system_error);
 
-   AddressV4* inv_addr_v4 = nullptr;
+   
+   check_throws_as([]() { 
+      AddressV4* inv_addr_v4 = nullptr; 
 
-   //t.xassert_throw<std::system_error>([&]() { to_string(inv_addr_v4); }, _src_loc);
-
-   AddressV6* inv_addr_v6 = nullptr;
-
-   //t.xassert_throw<std::system_error>([&]() { to_string(inv_addr_v6); }, _src_loc);
+      to_string(inv_addr_v4); 
+   }(), std::system_error);
 }
 
-void AddressV6_to_string(Test& t)
+TestCase("AddressV6 to_string")
 {
-   t.xassert<eq>(to_string(AddressV6::loopback()), "::1"s, _src_loc);
+   check_eq(to_string(AddressV6::loopback()), "::1"s);
+
+   check_throws_as([]() { 
+      AddressV6* inv_addr_v6 = nullptr; 
+
+      to_string(inv_addr_v6); 
+   }(), std::system_error);
 }
 
-void AddressV4_copy(Test& t)
+TestCase("AddressV4 copy")
 {
    AddressV4 addr(AddressV4::broadcast());
 
-   t.xassert<eq>(addr, AddressV4::broadcast(), _src_loc);
+   check_eq(addr, AddressV4::broadcast());
 
    addr = AddressV4::all_systems();
 
-   t.xassert<eq>(addr, AddressV4::all_systems(), _src_loc);
+   check_eq(addr, AddressV4::all_systems());
 }
 
-void AddressV6_copy(Test& t)
+TestCase("AddressV6 copy")
 {
    AddressV6 addr(AddressV6::link_local_all_routers());
 
-   t.xassert<eq>(addr, AddressV6::link_local_all_routers(), _src_loc);
+   check_eq(addr, AddressV6::link_local_all_routers());
 
    addr = AddressV6::interface_local_all_nodes();
 
-   t.xassert<eq>(addr, AddressV6::interface_local_all_nodes(), _src_loc);
+   check_eq(addr, AddressV6::interface_local_all_nodes());
 }
 
-void AddressV4_move(Test& t)
+TestCase("AddressV4 move")
 {
    AddressV4 addr(AddressV4{255, 255, 255, 255});
 
-   t.xassert<eq>(addr, AddressV4::broadcast(), _src_loc);
+   check_eq(addr, AddressV4::broadcast());
 
    addr = AddressV4{224, 0, 0, 1};
 
-   t.xassert<eq>(addr, AddressV4::all_systems(), _src_loc);
+   check_eq(addr, AddressV4::all_systems());
 }
 
-void AddressV6_move(Test& t)
+TestCase("AddressV6 move")
 {
    AddressV6 addr(AddressV6{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}});
 
-   t.xassert<eq>(addr, AddressV6{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}}, _src_loc);
+   AddressV6 addr1{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}};
+   check_eq(addr, addr1);
 
    addr = AddressV6{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}};
 
-   t.xassert<eq>(addr, AddressV6{std::array<uint8_t, 16>{{0xff, 0x05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}}, _src_loc);
+   check_eq(addr, addr1);
 }
 
-void AddressV4_ipv4_literal(Test& t)
+TestCase("AddressV4 ipv4 literal")
 {
-   t.xassert<eq>(AddressV4{224, 0, 0, 1}, "224.0.0.1"_ipv4, _src_loc);
+   AddressV4 addr{224, 0, 0, 1};
+
+   check_eq(addr, "224.0.0.1"_ipv4);
 }
 
-void AddressV6_ipv6_literal(Test& t)
+TestCase("AddressV6 ipv6 literal")
 {
    auto addr = AddressV6{0x20, 0x1, 0xd, 0xb8, 0, 0, 0, 0, 0, 0, 0x1, 0x23, 0, 0x12, 0, 0x1};
 
-   t.xassert<eq>(addr, "2001:db8::123:12:1"_ipv6, _src_loc);
+   check_eq(addr, "2001:db8::123:12:1"_ipv6);
 }
 
-void EndPoint_from_AddressV4(Test& t)
+TestCase("EndPoint from AddressV4")
 {
    EndPoint end_point(make_address_v4("10.1.2.173"), 22);
 
    auto addr = AddressV4{10, 1, 2, 173};
 
-   t.fail_if(end_point.address() == nullptr, _src_loc);
+   t.fail_if(end_point.address() == nullptr);
 
    if (end_point.address() != nullptr)
    {
       auto addr4 = dynamic_cast<AddressV4*>(end_point.address());
-      t.xassert<eq>(addr, *addr4, _src_loc);
+      check_eq(addr, *addr4);
    }
 }
 
-void EndPoint_from_AddressV6(Test& t)
+TestCase("EndPoint from AddressV6")
 {
    EndPoint end_point(make_address_v6("2001:db8::123:12:1"), 22);
 
    auto addr = AddressV6{0x20, 0x1, 0xd, 0xb8, 0, 0, 0, 0, 0, 0, 0x1, 0x23, 0, 0x12, 0, 0x1};
 
-   t.fail_if(end_point.address() == nullptr, _src_loc);
+   t.fail_if(end_point.address() == nullptr);
 
    if (end_point.address() != nullptr)
    {
       auto addr6 = dynamic_cast<AddressV6*>(end_point.address());
-      t.xassert<eq>(addr, *addr6, _src_loc);
+      check_eq(addr, *addr6);
    }
 }
 
-RegisterTestCase(OrionNet, AddressV4_is_unspecified);
-RegisterTestCase(OrionNet, AddressV6_is_unspecified);
-RegisterTestCase(OrionNet, AddressV4_is_loopback);
-RegisterTestCase(OrionNet, AddressV6_is_loopback);
-RegisterTestCase(OrionNet, AddressV4_is_multicast);
-RegisterTestCase(OrionNet, AddressV6_is_multicast);
-RegisterTestCase(OrionNet, AddressV4_to_string);
-RegisterTestCase(OrionNet, AddressV6_to_string);
-RegisterTestCase(OrionNet, AddressV4_copy);
-RegisterTestCase(OrionNet, AddressV6_copy);
-RegisterTestCase(OrionNet, AddressV4_move);
-RegisterTestCase(OrionNet, AddressV6_move);
-RegisterTestCase(OrionNet, AddressV4_ipv4_literal);
-RegisterTestCase(OrionNet, AddressV6_ipv6_literal);
-RegisterTestCase(OrionNet, EndPoint_from_AddressV4);
-RegisterTestCase(OrionNet, EndPoint_from_AddressV6);
 } // TestSuite(OrionNet)

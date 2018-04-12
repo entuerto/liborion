@@ -11,284 +11,257 @@
 using namespace orion;
 using namespace orion::net;
 using namespace orion::unittest;
+using namespace orion::unittest::option;
 
 using namespace std::string_literals;
 
-Section(OrionNet)
+Section(OrionNet_URL, Label{"URL"})
 {
-//----------------------------------------------------------------------------
-// Tests
-//----------------------------------------------------------------------------
-void url_basic(Test& t)
+
+TestCase("Basic")
 {
    Url u("http://foo.com/path");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "foo.com"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/path"s, _src_loc);
-   t.xassert<eq>(u.port(), 80, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "foo.com"s);
+   check_eq(u.pathname(), "/path"s);
+   check_eq(u.port(), 80);
 }
 
-void url_simple_with_port(Test& t)
+TestCase("Simple with port")
 {
    Url u("http://foo.com:22/path");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "foo.com"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/path"s, _src_loc);
-   t.xassert<eq>(u.port(), 22, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "foo.com"s);
+   check_eq(u.pathname(), "/path"s);
+   check_eq(u.port(), 22);
 }
 
-void url_simple_username(Test& t)
+TestCase("Simple username")
 {
    Url u("http://toto@foo.com/path");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "foo.com"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/path"s, _src_loc);
-   t.xassert<eq>(u.userinfo().username, "toto"s, _src_loc);
-   t.xassert<eq>(u.userinfo().password, ""s, _src_loc);
-   t.xassert<eq>(u.port(), 80, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "foo.com"s);
+   check_eq(u.pathname(), "/path"s);
+   check_eq(u.userinfo().username, "toto"s);
+   check_eq(u.userinfo().password, ""s);
+   check_eq(u.port(), 80);
 }
 
-void url_simple_user_info(Test& t)
+TestCase("Simple user information")
 {
    Url u("http://toto:tata@foo.com/path");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "foo.com"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/path"s, _src_loc);
-   t.xassert<eq>(u.userinfo().username, "toto"s, _src_loc);
-   t.xassert<eq>(u.userinfo().password, "tata"s, _src_loc);
-   t.xassert<eq>(u.port(), 80, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "foo.com"s);
+   check_eq(u.pathname(), "/path"s);
+   check_eq(u.userinfo().username, "toto"s);
+   check_eq(u.userinfo().password, "tata"s);
+   check_eq(u.port(), 80);
 }
 
-void url_simple_with_query(Test& t)
+TestCase("Simple with query")
 {
    Url u("http://www.google.com/?q=go+language");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "www.google.com"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
-   t.xassert<eq>(u.query("q"), "go language"s, _src_loc);
-   t.xassert<eq>(u.port(), 80, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "www.google.com"s);
+   check_eq(u.pathname(), "/"s);
+   check_eq(u.query("q"), "go language"s);
+   check_eq(u.port(), 80);
 }
 
-void url_simple_with_query_no_equals(Test& t)
+TestCase("Simple with query no equals")
 {
    Url u("http://www.google.com/?q");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "www.google.com"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
-   t.xassert<eq>(u.query("q"), ""s, _src_loc);
-   t.xassert<eq>(u.port(), 80, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "www.google.com"s);
+   check_eq(u.pathname(), "/"s);
+   check_eq(u.query("q"), ""s);
+   check_eq(u.port(), 80);
 }
 
-void url_simple_with_multiple_query(Test& t)
+TestCase("Simple with multiple query")
 {
    Url u("http://www.google.com/?q=go+language&foo=bar");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "www.google.com"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
-   t.xassert<eq>(u.query("q"), "go language"s, _src_loc);
-   t.xassert<eq>(u.query("foo"), "bar"s, _src_loc);
-   t.xassert<eq>(u.port(), 80, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "www.google.com"s);
+   check_eq(u.pathname(), "/"s);
+   check_eq(u.query("q"), "go language"s);
+   check_eq(u.query("foo"), "bar"s);
+   check_eq(u.port(), 80);
 }
 
-void url_simple_with_fragment(Test& t)
+TestCase("Simple with fragment")
 {
    Url u("https://www.google.com/#foo");
 
-   t.xassert<eq>(u.protocol(), "https"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "www.google.com"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
-   t.xassert<eq>(u.hash(), "#foo"s, _src_loc);
-   t.xassert<eq>(u.port(), 443, _src_loc);
+   check_eq(u.protocol(), "https"s);
+   check_eq(u.hostname(), "www.google.com"s);
+   check_eq(u.pathname(), "/"s);
+   check_eq(u.hash(), "#foo"s);
+   check_eq(u.port(), 443);
 }
 
-void url_simple_with_query_and_fragment(Test& t)
+TestCase("Simple with query and fragment")
 {
    Url u("http://www.google.com/?q=go+language#foo");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "www.google.com"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
-   t.xassert<eq>(u.query("q"), "go language"s, _src_loc);
-   t.xassert<eq>(u.hash(), "#foo"s, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "www.google.com"s);
+   check_eq(u.pathname(), "/"s);
+   check_eq(u.query("q"), "go language"s);
+   check_eq(u.hash(), "#foo"s);
 }
 
-void url_path_with_hex_escaping(Test& t)
+TestCase("Path with hex escaping")
 {
    Url u("http://www.google.com/file%20one%26two");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "www.google.com"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/file one&two"s, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "www.google.com"s);
+   check_eq(u.pathname(), "/file one&two"s);
 }
 
-void url_escape_sequence_in_username(Test& t)
+TestCase("Escape sequence in username")
 {
    Url u("ftp://john%20doe@www.google.com/");
 
-   t.xassert<eq>(u.protocol(), "ftp"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "www.google.com"s, _src_loc);
-   t.xassert<eq>(u.userinfo().username, "john doe"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
+   check_eq(u.protocol(), "ftp"s);
+   check_eq(u.hostname(), "www.google.com"s);
+   check_eq(u.userinfo().username, "john doe"s);
+   check_eq(u.pathname(), "/"s);
 }
 
-void url_host_ipv4_address_in_rfc3986(Test& t)
+TestCase("Host ipv4 address in rfc3986")
 {
    Url u("http://192.168.0.1/");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "192.168.0.1"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "192.168.0.1"s);
+   check_eq(u.pathname(), "/"s);
 }
 
-void url_host_and_port_ipv4_address_in_rfc3986(Test& t)
+TestCase("Host and port ipv4 address in rfc3986")
 {
    Url u("http://192.168.0.1:8080/");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "192.168.0.1"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
-   t.xassert<eq>(u.port(), 8080, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "192.168.0.1"s);
+   check_eq(u.pathname(), "/"s);
+   check_eq(u.port(), 8080);
 }
 
-void url_host_ipv6_address_in_rfc3986(Test& t)
+TestCase("Host ipv6 address in rfc3986")
 {
    Url u("http://[fe80::1]/");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "fe80::1"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "fe80::1"s);
+   check_eq(u.pathname(), "/"s);
 }
 
-void url_host_and_port_ipv6_address_in_rfc3986(Test& t)
+TestCase("Host and port ipv6 address in rfc3986")
 {
    Url u("http://[fe80::1]:8080/");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "fe80::1"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
-   t.xassert<eq>(u.port(), 8080, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "fe80::1"s);
+   check_eq(u.pathname(), "/"s);
+   check_eq(u.port(), 8080);
 }
 
-void url_host_ipv6_address_with_zone_identifier_in_rfc6874(Test& t)
+TestCase("Host ipv6 address with zone identifier in rfc6874")
 {
    Url u("http://[fe80::1%25en0]/");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "fe80::1%en0"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "fe80::1%en0"s);
+   check_eq(u.pathname(), "/"s);
 }
 
-void url_host_and_port_ipv6_address_with_zone_identifier_in_rfc6874(Test& t)
+TestCase("Host and port ipv6 address with zone identifier in rfc6874")
 {
    Url u("http://[fe80::1%25en0]:8080/");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "fe80::1%en0"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
-   t.xassert<eq>(u.port(), 8080, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "fe80::1%en0"s);
+   check_eq(u.pathname(), "/"s);
+   check_eq(u.port(), 8080);
 }
 
-void url_host_ipv6_address_with_zone_identifier_in_rfc6874_percent_encoded(Test& t)
+TestCase("Host ipv6 address with zone identifier in rfc6874 percent encoded")
 {
    Url u("http://[fe80::1%25%65%6e%301-._~]/");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "fe80::1%en01-._~"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "fe80::1%en01-._~"s);
+   check_eq(u.pathname(), "/"s);
 }
 
-void url_host_and_port_ipv6_address_with_zone_identifier_in_rfc6874_percent_encoded(Test& t)
+TestCase("Host and port ipv6 address with zone identifier in rfc6874 percent encoded")
 {
    Url u("http://[fe80::1%25%65%6e%301-._~]:8080/");
 
-   t.xassert<eq>(u.protocol(), "http"s, _src_loc);
-   t.xassert<eq>(u.hostname(), "fe80::1%en01-._~"s, _src_loc);
-   t.xassert<eq>(u.pathname(), "/"s, _src_loc);
-   t.xassert<eq>(u.port(), 8080, _src_loc);
+   check_eq(u.protocol(), "http"s);
+   check_eq(u.hostname(), "fe80::1%en01-._~"s);
+   check_eq(u.pathname(), "/"s);
+   check_eq(u.port(), 8080);
 }
 
-void url_href_simple(Test& t)
+TestCase("href simple")
 {
    Url u("http://www.google.com/");
 
-   t.xassert<eq>(u.href(), "http://www.google.com/"s, _src_loc);  
+   check_eq(u.href(), "http://www.google.com/"s);  
 }
 
-void url_href_simple_with_port(Test& t)
+TestCase("href simple with port")
 {
    Url u("http://www.google.com:80/");
 
-   t.xassert<eq>(u.href(), "http://www.google.com:80/"s, _src_loc);  
+   check_eq(u.href(), "http://www.google.com:80/"s);  
 }
 
-void url_href_simple_username(Test& t)
+TestCase("href simple username")
 {
    Url u("http://user:pass@www.google.com/");
 
-   t.xassert<eq>(u.href(), "http://user:pass@www.google.com/"s, _src_loc);  
+   check_eq(u.href(), "http://user:pass@www.google.com/"s);  
 }
 
-void url_href_simple_with_query(Test& t)
+TestCase("href simple with query")
 {
    Url u("http://www.google.com/?q=go+language");
 
-   t.xassert<eq>(u.href(), "http://www.google.com/?q=go+language"s, _src_loc);
+   check_eq(u.href(), "http://www.google.com/?q=go+language"s);
 }
 
-void url_href_path_with_hex_escaping(Test& t)
+TestCase("href path with hex escaping")
 {
    Url u("http://www.google.com/file%20one&two");
 
-   t.xassert<eq>(u.href(), "http://www.google.com/file%20one&two"s, _src_loc);
+   check_eq(u.href(), "http://www.google.com/file%20one&two"s);
 }
 
-void url_href_escape_sequence_in_username(Test& t)
+TestCase("href escape sequence in username")
 {
    Url u("ftp://john%20doe@www.google.com/");
 
-   t.xassert<eq>(u.href(), "ftp://john%20doe@www.google.com/"s, _src_loc);
-   t.xassert<eq>(u.port(), 21, _src_loc);
+   check_eq(u.href(), "ftp://john%20doe@www.google.com/"s);
+   check_eq(u.port(), 21);
 }
 
-void url_href_escape_sequence_in_argument1(Test& t)
+TestCase("href escape sequence in argument1")
 {
    Url u("http://www.google.com/?q=go+language#foo%26bar");
 
-   t.xassert<eq>(u.hash(), "#foo&bar"s, _src_loc);
-   t.xassert<eq>(u.href(), "http://www.google.com/?q=go+language#foo&bar"s, _src_loc);
+   check_eq(u.hash(), "#foo&bar"s);
+   check_eq(u.href(), "http://www.google.com/?q=go+language#foo&bar"s);
 }
 
-RegisterTestCase(OrionNet, url_basic);
-RegisterTestCase(OrionNet, url_simple_with_port);
-RegisterTestCase(OrionNet, url_simple_username);
-RegisterTestCase(OrionNet, url_simple_user_info);
-RegisterTestCase(OrionNet, url_simple_with_query);
-RegisterTestCase(OrionNet, url_simple_with_query_no_equals);
-RegisterTestCase(OrionNet, url_simple_with_multiple_query);
-RegisterTestCase(OrionNet, url_simple_with_fragment);
-RegisterTestCase(OrionNet, url_simple_with_query_and_fragment);
-RegisterTestCase(OrionNet, url_path_with_hex_escaping);
-RegisterTestCase(OrionNet, url_escape_sequence_in_username);
-RegisterTestCase(OrionNet, url_host_ipv4_address_in_rfc3986);
-RegisterTestCase(OrionNet, url_host_and_port_ipv4_address_in_rfc3986);
-RegisterTestCase(OrionNet, url_host_ipv6_address_in_rfc3986);
-RegisterTestCase(OrionNet, url_host_and_port_ipv6_address_in_rfc3986);
-RegisterTestCase(OrionNet, url_host_ipv6_address_with_zone_identifier_in_rfc6874);
-RegisterTestCase(OrionNet, url_host_and_port_ipv6_address_with_zone_identifier_in_rfc6874);
-RegisterTestCase(OrionNet, url_host_ipv6_address_with_zone_identifier_in_rfc6874_percent_encoded);
-RegisterTestCase(OrionNet, url_host_and_port_ipv6_address_with_zone_identifier_in_rfc6874_percent_encoded);
-RegisterTestCase(OrionNet, url_href_simple);
-RegisterTestCase(OrionNet, url_href_simple_with_port);
-RegisterTestCase(OrionNet, url_href_simple_username);
-RegisterTestCase(OrionNet, url_href_simple_with_query);
-RegisterTestCase(OrionNet, url_href_path_with_hex_escaping);
-RegisterTestCase(OrionNet, url_href_escape_sequence_in_username);
-RegisterTestCase(OrionNet, url_href_escape_sequence_in_argument1);
 }
