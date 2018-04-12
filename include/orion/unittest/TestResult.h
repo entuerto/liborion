@@ -53,17 +53,15 @@ struct API_EXPORT Assertion
 class API_EXPORT TestResult
 {
 public:
-   TestResult(const std::string& name, const std::string& suite_name);
+   TestResult();
    ~TestResult() = default;
 
    DEFAULT_COPY(TestResult)
    DEFAULT_MOVE(TestResult)
 
-   std::string name() const;
-   std::string suite_name() const;
-
    bool passed() const;
    bool failed() const;
+   bool skipped() const;
 
    const Counters& counters() const;
 
@@ -93,9 +91,6 @@ public:
    void log_skipped(Args... args);
 
 private:
-   std::string _name;
-   std::string _suite_name;
-   
    Counters _counters;
 
    HighResTimePoint _time_point_start;

@@ -25,6 +25,7 @@
 #define ORION_ANONYMOUS(x) ORION_CAT(x, __LINE__)
 #endif // __COUNTER__
 
+// clang-format off
 
 //-------------------------------------------------------------------------------------------------
 
@@ -45,16 +46,15 @@ namespace Suite##Name
 
 #define RegisterTestCase(SuiteName, TestFunc, ...)                \
                                                                   \
-unittest::RegisterTestHelper _AutoReg_##TestFunc(          \
+unittest::RegisterTestHelper _AutoReg_##TestFunc(                 \
       _current_test_suite(), #TestFunc, TestFunc, ##__VA_ARGS__)
 
-#define _RegisterTestCase(TestFunc, ...)                \
-                                                                  \
-unittest::RegisterTestHelper _AutoReg_##TestFunc(          \
-      _current_test_suite(), #TestFunc, TestFunc, ##__VA_ARGS__)
+#define _RegisterTestCase(TestFunc, ...)                                \
+unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(), \
+                                                 #TestFunc, TestFunc, ##__VA_ARGS__)
 
-#define _TestCaseImpl(func, ...)         \
-   static void func(Test& t);            \
+#define _TestCaseImpl(func, ...)           \
+   static void func(Test& t);              \
    _RegisterTestCase(func, ##__VA_ARGS__); \
    static void func(Test& t)
 
@@ -65,7 +65,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(          \
 
 //-------------------------------------------------------------------------------------------------
 
-// Expects that an exception (of any type) is thrown during evaluation of the expression.
+/// Expects that an exception (of any type) is thrown during evaluation of the expression.
 #define check_throws(expr, ...)                                                             \
    do                                                                                       \
    {                                                                                        \
@@ -80,7 +80,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(          \
       }                                                                                     \
    } while((void)0, 0);
   
-// Expects that an exception of the _specified type_ is thrown during evaluation of the expression.
+/// Expects that an exception of the _specified type_ is thrown during evaluation of the expression.
 #define check_throws_as(expr, exception_type, ...)                                          \
    do                                                                                       \
    {                                                                                        \
@@ -99,7 +99,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(          \
       }                                                                                     \
    } while((void)0, 0);
 
-// Expects that no exception is thrown during evaluation of the expression.
+/// Expects that no exception is thrown during evaluation of the expression.
 #define check_no_throw(expr, ...)                                                           \
    do                                                                                       \
    {                                                                                        \
@@ -125,5 +125,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(          \
 
 //#define check           
 //#define check_not
+
+// clang-format on
 
 #endif /* ORION_UNITTEST_TESTMACROS_H */

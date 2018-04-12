@@ -13,22 +13,10 @@ namespace orion
 namespace unittest
 {
 
-TestResult::TestResult(const std::string& name, const std::string& suite_name)
-   : _name(name)
-   , _suite_name(suite_name)
-   , _counters()
+TestResult::TestResult()
+   : _counters()
    , _assertions()
 {
-}
-
-std::string TestResult::name() const
-{
-   return _name;
-}
-
-std::string TestResult::suite_name() const
-{
-   return _suite_name;
 }
 
 bool TestResult::passed() const
@@ -39,6 +27,11 @@ bool TestResult::passed() const
 bool TestResult::failed() const
 {
    return _counters.failed > 0;
+}
+
+bool TestResult::skipped() const
+{
+   return _counters.total() == _counters.skipped;
 }
 
 const Counters& TestResult::counters() const

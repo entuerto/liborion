@@ -33,20 +33,23 @@ public:
    StdOutput(std::ostream& stream, ReportLevel report_level = ReportLevel::Error);
    virtual ~StdOutput();
 
-   /// Global test report header
-   void write_header(uint64_t test_count) override;
+   /// The test runner is starting
+   void runner_start(const TestRunner& runner) override;
 
    /// New test suite section
    void suite_start(const TestSuite& suite) override;
 
-   /// Test results information
-   void write(const TestResult& test_result) override;
+   /// Test case is starting
+   void test_start(const Test& test) override;
+
+   /// Test case ended
+   void test_end(const TestResult& test_result) override;
 
    /// End of test suite section
-   void suite_end(const TestSuite& suite) override;
+   void suite_end(const TestSuiteStats& stats) override;
 
-   /// Footer of the output report
-   void write_footer(const Totals& totals) override;
+   /// The test runner ended
+   void runner_end(const Totals& totals) override;
 
 private:
    void write_sections();
@@ -56,6 +59,9 @@ private:
 private:
    std::ostream& _stream;
    ReportLevel _report_level;
+
+   std::string _current_test_suite;
+   std::string _current_test;
 
    std::map<std::string, TestSuiteStats> _test_suite_stats;
    std::multimap<std::string, TestStats> _test_stats;

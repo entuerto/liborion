@@ -49,11 +49,4 @@ TestCase("Throwing reported as failure")
    check_true(scope_test_result.failed());
 }
 
-TestCase("Same Test name and Suite name as TestResult")
-{
-   auto test_result = t.test_result();
-
-   check_eq(t.name(), test_result.name());
-}
-
 } // TestSuite(OrionCore_Test)

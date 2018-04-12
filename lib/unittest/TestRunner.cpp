@@ -85,7 +85,7 @@ bool TestRunner::run_tests(Output& output, const std::string& /*suite_name*/ /* 
 {
    Totals totals{};
 
-   output.write_header(test_case_count());
+   output.runner_start(*this);
 
    auto start = std::chrono::high_resolution_clock::now();
 
@@ -101,7 +101,7 @@ bool TestRunner::run_tests(Output& output, const std::string& /*suite_name*/ /* 
 
    totals.time_elapsed = end - start;
 
-   output.write_footer(totals);
+   output.runner_end(totals);
    return totals.tests.failed == 0;
 }
 

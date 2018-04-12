@@ -17,8 +17,12 @@ namespace orion
 namespace unittest
 {
 struct Totals;
+struct TestSuiteStats;
+
+class Test;
 class TestSuite;
 class TestResult;
+class TestRunner;
 
 ///
 /// Default interface for unit test output.
@@ -28,20 +32,23 @@ class Output
 public:
    virtual ~Output() = default;
 
-   /// Global test report header
-   virtual void write_header(uint64_t test_count) = 0;
+   /// The test runner is starting
+   virtual void runner_start(const TestRunner& runner) = 0;
 
    /// New test suite section
    virtual void suite_start(const TestSuite& suite) = 0;
 
-   /// Test results information
-   virtual void write(const TestResult& test_result) = 0;
+   /// Test case is starting
+   virtual void test_start(const Test& test) = 0;
+
+   /// Test case ended
+   virtual void test_end(const TestResult& test_result) = 0;
 
    /// End of test suite section
-   virtual void suite_end(const TestSuite& suite) = 0;
+   virtual void suite_end(const TestSuiteStats& stats) = 0;
 
-   /// Footer of the output report
-   virtual void write_footer(const Totals& totals) = 0;
+   /// The test runner ended
+   virtual void runner_end(const Totals& totals) = 0;
 };
 
 } // namespace unittest

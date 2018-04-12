@@ -69,7 +69,7 @@ uint64_t TestSuite::test_count() const
 
 void TestSuite::set_option(Label opt)
 {
-   _label = opt.text;
+   _label       = opt.text;
    _stats.label = opt.text;
 }
 
@@ -140,10 +140,11 @@ const TestSuiteStats& TestSuite::run_tests(Output& output)
 
    for (auto& test : _tests)
    {
-      auto& test_result = test.invoke();
-      auto& result_counters = test_result.counters();
+      output.test_start(test);
 
-      if (result_counters.total() == result_counters.skipped)
+      auto& test_result = test.invoke();
+
+      if (test_result.skipped())
       {
          _stats.tests.skipped++;
       }
@@ -156,15 +157,15 @@ const TestSuiteStats& TestSuite::run_tests(Output& output)
          _stats.tests.passed++;
       }
 
-      _stats.assertions   += result_counters;
+      _stats.assertions += test_result.counters();
       _stats.time_elapsed += test_result.time_elapsed();
 
-      output.write(test_result);
+      output.test_end(test_result);
    }
 
    teardown();
 
-   output.suite_end(*this);
+   output.suite_end(_stats);
 
    return _stats;
 }

@@ -18,10 +18,8 @@ Section(OrionCore_Test, Label{"Test"})
 
 TestCase("Initial values")
 {
-   auto tr = TestResult("toto", "toto_suite");
+   auto tr = TestResult();
 
-   check_eq("toto"s, tr.name());
-   check_eq("toto_suite"s, tr.suite_name());
    check_true(tr.passed());
    check_false(tr.failed());
    check_eq(uint64_t{0}, tr.counters().failed);
@@ -30,7 +28,7 @@ TestCase("Initial values")
 
 TestCase("Number of failed items")
 {
-   auto tr = TestResult("toto", "toto_suite");
+   auto tr = TestResult();
 
    tr.log_failure("1");
    tr.log_failure("2");
@@ -41,7 +39,7 @@ TestCase("Number of failed items")
 
 TestCase("Number of passed items")
 {
-   auto tr = TestResult("toto", "toto_suite");
+   auto tr = TestResult();
 
    tr.log_success("1");
    tr.log_success("2");

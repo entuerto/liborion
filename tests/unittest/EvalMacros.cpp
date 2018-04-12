@@ -119,7 +119,7 @@ TestCase("Expected specific exception")
 
 TestCase("TestResult::log_success()")
 {
-   auto test_result = TestResult("scope test result", "suite");
+   auto test_result = TestResult();
 
    test_result.log_success();
 
@@ -128,7 +128,7 @@ TestCase("TestResult::log_success()")
 
 TestCase("TestResult::log_failure()")
 {
-   auto test_result = TestResult("scope test result", "suite");
+   auto test_result = TestResult();
 
    test_result.log_failure();
 

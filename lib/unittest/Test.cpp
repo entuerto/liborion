@@ -4,7 +4,7 @@
 // Copyright (c) 2013-2017 Tomas Palazuelos
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
-// 
+//
 #include <orion/unittest/Test.h>
 
 #include <orion/unittest/TestSuite.h>
@@ -26,7 +26,7 @@ Test::Test(const std::string& name, const TestSuite& suite)
    : _name(name)
    , _label(name)
    , _is_enabled(true)
-   , _test_result(name, suite.name())
+   , _test_result()
 {
 }
 
@@ -34,7 +34,7 @@ Test::Test(const std::string& name, const TestSuite& suite, TestCaseFunc&& f)
    : _name(name)
    , _label(name)
    , _is_enabled(true)
-   , _test_result(name, suite.name())
+   , _test_result()
    , _func(std::move(f))
 {
 }
