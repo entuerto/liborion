@@ -18,11 +18,12 @@
 using namespace orion;
 using namespace orion::log;
 using namespace orion::net;
+using namespace orion::net::http;
 
 std::error_code hello(const http::Request& request, http::Response& response)
 {
-   response.header("Content-Type", "text/plain; charset=utf-8");
-   response.header("Connection", "close");
+   response.header(Field::ContentType, "text/plain; charset=utf-8");
+   response.header(Field::Connection, "close");
 
    std::ostream o(response.body_rdbuf());
 
@@ -33,8 +34,8 @@ std::error_code hello(const http::Request& request, http::Response& response)
 
 std::error_code world(const http::Request& request, http::Response& response)
 {
-   response.header("Content-Type", "text/plain; charset=utf-8");
-   response.header("Connection", "close");
+   response.header(Field::ContentType, "text/plain; charset=utf-8");
+   response.header(Field::Connection, "close");
 
    std::ostream o(response.body_rdbuf());
 
@@ -43,48 +44,36 @@ std::error_code world(const http::Request& request, http::Response& response)
    return std::error_code();
 }
 
-void setup_logger(std::fstream& file_stream)
+void setup_logger()
 {
    auto cout_handler = make_stream_output_handler(std::cout);
-   auto file_handler = make_stream_output_handler(file_stream);
-
-   file_handler->set_formatter(make_multiline_formatter());
 
    Logger& logger = default_logger();
 
    logger.level(Level::Debug);
    logger.add_output_handler(std::move(cout_handler));
-   logger.add_output_handler(std::move(file_handler));
 }
 
 int main()
 {
-   std::fstream fout("hello-server.log", std::fstream::out | std::fstream::trunc);
-   setup_logger(fout);
+   setup_logger();
 
    log::start();
 
-   auto server = std::make_unique<http::Server>();
+   http::Server server;
 
-   if (server == nullptr)
-   {
-      log::error("Server error...");
-      return EXIT_FAILURE;
-   }
+   RequestMux mux;
 
-   http::RequestMux mux;
-
-   mux.handle(http::Method::GET, "/world", world);
-   mux.handle(http::Method::GET, "/hello", hello);
+   mux.handle(Method::Get, "/world", world);
+   mux.handle(Method::Get, "/hello", hello);
 
    log::write("Server listening on port: 9080\n");
 
    try
    {
-      std::error_code ec = server->listen_and_serve({"0.0.0.0"_ipv4, 9080}, std::move(mux));
+      auto ec = server.listen_and_serve({"0.0.0.0"_ipv4, 9080}, std::move(mux));
 
-      if (ec)
-         LOG(Error) << ec;
+      log::error_if(ec, ec);
    }
    catch (const std::exception& e)
    {

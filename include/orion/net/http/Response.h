@@ -66,6 +66,9 @@ public:
    std::string header(const std::string& name) const;
 
    /// Adds the key, value pair to the header.
+   void header(Field f, const std::string& value);
+
+   /// Adds the key, value pair to the header.
    void header(const std::string& name, const std::string& value);
 
    /// Sets the header of the request.

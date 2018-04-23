@@ -44,6 +44,12 @@ template<typename... Args>
 void error(Args&&... args);
 
 template<typename... Args>
+void error_if(bool expr, Args&&... args);
+
+template<typename... Args>
+void error_if(const std::error_code& ec, Args&&... args);
+
+template<typename... Args>
 void debug(Args&&... args);
 
 template<typename... Args>

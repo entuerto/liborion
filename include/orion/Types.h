@@ -5,20 +5,14 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-#ifndef ORION_NET_RPC_TYPES_H
-#define ORION_NET_RPC_TYPES_H
+#ifndef ORION_TYPES_H
+#define ORION_TYPES_H
 
 #include <orion/Orion-Stddefs.h>
-
-#include <orion/net/rpc/Error.h>
 
 #include <ostream>
 
 namespace orion
-{
-namespace net
-{
-namespace rpc
 {
 
 template<typename T>
@@ -118,14 +112,6 @@ struct TypeName<std::string>
    static std::string name() { return "std::string"; }
 };
 
-template<>
-struct TypeName<Error>
-{
-   static std::string name() { return "Error"; }
-};
-
-} // namespace rpc
-} // namespace net
 } // namespace orion
 
-#endif // ORION_NET_RPC_TYPES_H
+#endif // ORION_TYPES_H

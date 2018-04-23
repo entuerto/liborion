@@ -23,7 +23,7 @@ namespace net
 namespace http
 {
 
-struct call
+struct Call
 {
    Method method;
 
@@ -42,11 +42,11 @@ struct call
    }
 };
 
-call Get{Method::GET};
-call Post{Method::POST};
-call Put{Method::PUT};
-call Patch{Method::PATCH};
-call Delete{Method::DELETE};
+Call Get{Method::Get};
+Call Post{Method::Post};
+Call Put{Method::Put};
+Call Patch{Method::Patch};
+Call Delete{Method::Delete};
 
 } // namespace http
 } // namespace net

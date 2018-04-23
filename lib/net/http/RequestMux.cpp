@@ -34,8 +34,8 @@ static HandlerFunc default_handler(StatusCode status_code)
    return [status_code](const Request& req, Response& res) {
       
       res = Response(status_code);
-      res.header("Connection", "close");
-      res.header("X-Content-Type-Options", "nosniff");
+      res.header(Field::Connection, "close");
+      res.header(Field::XContentTypeOptions, "nosniff");
 
       return std::error_code();
    };
@@ -45,8 +45,8 @@ static HandlerFunc redirect_handler(StatusCode status_code, const std::string& p
 {
    return [status_code, path](const Request& req, Response& res) {
       res = Response(status_code);
-      res.header("Connection", "close");
-      res.header("X-Content-Type-Options", "nosniff");
+      res.header(Field::Connection, "close");
+      res.header(Field::XContentTypeOptions, "nosniff");
 
       return std::error_code();
    };

@@ -96,8 +96,8 @@ Response Session::operator()(const Method& m)
    // Form the request. We specify the "Connection: close" header so that the
    // server will close the socket after transmitting the response. This will
    // allow us to treat all data up until the EOF as the content.
-   req.header("Accept", "*/*");
-   req.header("Connection", "close");
+   req.header(Field::Accept, "*/*");
+   req.header(Field::Connection, "close");
 
    auto buffers = req.to_buffers();
 

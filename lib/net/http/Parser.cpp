@@ -131,7 +131,7 @@ std::error_code Parser::parse(Request& request, const char* data, std::size_t le
 
    if (_headers_complete)
    {
-      request.method(as_method(http_method_str(static_cast<http_method>(_parser.method))));
+      request.method(from_string<Method>(http_method_str(static_cast<http_method>(_parser.method))));
       request.version(Version{_parser.http_major, _parser.http_minor});
       request.url(Url{_url});
       request.header(_header);

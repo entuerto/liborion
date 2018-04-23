@@ -24,7 +24,7 @@ namespace http
 {
 
 Request::Request()
-   : _method(Method::GET)
+   : _method(Method::Get)
    , _url()
    , _version()
    , _header()
@@ -102,6 +102,11 @@ std::string Request::header(const std::string& name) const
    return "";
 }
 
+void Request::header(Field f, const std::string& value)
+{
+   _header[to_string(f)] = value;
+}
+
 void Request::header(const std::string& name, const std::string& value)
 {
    _header[name] = value;
@@ -167,7 +172,7 @@ void Request::build_header_buffer()
    std::size_t body_size = _header_streambuf->size();
 
    if (body_size != 0)
-      header("Content-Length", std::to_string(body_size));
+      header(Field::ContentLength, std::to_string(body_size));
 
    std::ostream o(_header_streambuf.get());
 

@@ -49,6 +49,11 @@ struct Version
 
 //-------------------------------------------------------------------------------------------------
 
+template<typename T>
+T from_string(const std::string& text) {}
+
+//-------------------------------------------------------------------------------------------------
+
 #if defined(DELETE) && defined(_WIN32)
 #undef DELETE
 #endif
@@ -74,46 +79,55 @@ struct Version
 ///
 enum class Method
 {
-   DELETE = 0,
-   GET    = 1,
-   HEAD   = 2,
-   POST   = 3,
-   PUT    = 4,
+   Unknown,
+
+   Delete,
+   Get,
+   Head,
+   Post,
+   Put,
+
    // Pathological
-   CONNECT = 5,
-   OPTIONS = 6,
-   TRACE   = 7,
+   Connect,
+   Options,
+   Trace,
+
    // WebDAV
-   COPY      = 8,
-   LOCK      = 9,
-   MKCOL     = 10,
-   MOVE      = 11,
-   PROPFIND  = 12,
-   PROPPATCH = 13,
-   SEARCH    = 14,
-   UNLOCK    = 15,
-   BIND      = 16,
-   REBIND    = 17,
-   UNBIND    = 18,
-   ACL       = 19,
+   Copy,
+   Lock,
+   MkCol,
+   Move,
+   PropFind,
+   PropPatch,
+   Search,
+   Unlock,
+   Bind,
+   Rebind,
+   Unbind,
+   Acl,
+
    // Subversion
-   REPORT     = 20,
-   MKACTIVITY = 21,
-   CHECKOUT   = 22,
-   MERGE      = 23,
+   Report,
+   MkActivity,
+   Checkout,
+   Merge,
+
    // upnp
-   MSEARCH     = 24,
-   NOTIFY      = 25,
-   SUBSCRIBE   = 26,
-   UNSUBSCRIBE = 27,
+   MSearch,
+   Notify,
+   Subscribe,
+   Unsubscribe,
+
    // RFC-5789
-   PATCH = 28,
-   PURGE = 29,
+   Patch,
+   Purge,
+
    // CalDAV
-   MKCALENDAR = 30,
+   MkCalendar,
+
    // RFC-2068, section 19.6.1.2
-   LINK   = 31,
-   UNLINK = 32
+   Link,
+   Unlink
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -128,7 +142,119 @@ bool operator==(const std::string& text, Method m);
 
 std::string to_string(Method m);
 
-Method as_method(const std::string& text);
+template<>
+Method from_string<Method>(const std::string& text);
+
+//-------------------------------------------------------------------------------------------------
+
+enum class Field
+{
+   Accept,                    // Accept
+   AcceptCharset,             // Accept-Charset
+   AcceptEncoding,            // Accept-Encoding
+   AcceptLanguage,            // Accept-Language
+   AcceptPost,                // Accept-Post
+   AcceptRanges,              // Accept-Ranges
+   Age,                       // Age
+   Allow,                     // Allow
+   ALPN,                      // ALPN
+   AltSvc,                    // Alt-Svc
+   AltUsed,                   // Alt-Used
+   AuthenticationInfo,        // Authentication-Info
+   Authorization,             // Authorization
+   CacheControl,              // Cache-Control
+   CalDAVTimezones,           // CalDAV-Timezones
+   Connection,                // Connection
+   ContentDisposition,        // Content-Disposition
+   ContentEncoding,           // Content-Encoding
+   ContentLanguage,           // Content-Language
+   ContentLength,             // Content-Length
+   ContentLocation,           // Content-Location
+   ContentRange,              // Content-Range
+   ContentType,               // Content-Type
+   Cookie,                    // Cookie
+   DASL,                      // DASL
+   DAV,                       // DAV
+   Date,                      // Date
+   Depth,                     // Depth
+   Destination,               // Destination
+   ETag,                      // ETag
+   Expect,                    // Expect
+   Expires,                   // Expires
+   Forwarded,                 // Forwarded
+   From,                      // From
+   Host,                      // Host
+   HTTP2Settings,             // HTTP2-Settings
+   If,                        // If
+   IfMatch,                   // If-Match
+   IfModifiedSince,           // If-Modified-Since
+   IfNoneMatch,               // If-None-Match
+   IfRange,                   // If-Range                       
+   IfScheduleTagMatch,        // If-Schedule-Tag-Match
+   IfUnmodifiedSince,         // If-Unmodified-Since
+   LastModified,              // Last-Modified                  
+   Link,                      // Link
+   Location,                  // Location
+   LockToken,                 // Lock-Token
+   MaxForwards,               // Max-Forwards
+   MIMEVersion,               // MIME-Version
+   OrderingType,              // Ordering-Type
+   Origin,                    // Origin
+   Overwrite,                 // Overwrite
+   Position,                  // Position
+   Pragma,                    // Pragma
+   Prefer,                    // Prefer
+   PreferenceApplied,         // Preference-Applied
+   ProxyAuthenticate,         // Proxy-Authenticate
+   ProxyAuthenticationInfo,   // Proxy-Authentication-Info
+   ProxyAuthorization,        // Proxy-Authorization
+   PublicKeyPins,             // Public-Key-Pins
+   PublicKeyPinsReportOnly,   // Public-Key-Pins-Report-Only
+   Range,                     // Range
+   Referer,                   // Referer
+   RetryAfter,                // Retry-After
+   ScheduleReply,             // Schedule-Reply
+   ScheduleTag,               // Schedule-Tag
+   SecWebSocketAccept,        // Sec-WebSocket-Accept
+   SecWebSocketExtensions,    // Sec-WebSocket-Extensions
+   SecWebSocketKey,           // Sec-WebSocket-Key
+   SecWebSocketProtocol,      // Sec-WebSocket-Protocol
+   SecWebSocketVersion,       // Sec-WebSocket-Version
+   Server,                    // Server
+   SetCookie,                 // Set-Cookie
+   SLUG,                      // SLUG
+   StrictTransportSecurity,   // Strict-Transport-Security
+   TE,                        // TE
+   Timeout,                   // Timeout
+   Topic,                     // Topic
+   Trailer,                   // Trailer
+   TransferEncoding,          // Transfer-Encoding
+   TTL,                       // TTL
+   Urgency,                   // Urgency
+   Upgrade,                   // Upgrade
+   UserAgent,                 // User-Agent
+   Vary,                      // Vary
+   Via,                       // Via
+   WWWAuthenticate,           // WWW-Authenticate
+   Warning,                   // Warning
+   XContentTypeOptions        // X-Content-Type-Options
+};
+
+//-------------------------------------------------------------------------------------------------
+
+void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, Field field);
+
+std::ostream& operator<<(std::ostream& o, Field f);
+
+bool operator==(Field f, const std::string& text);
+
+bool operator==(const std::string& text, Field f);
+
+std::string to_string(Field f);
+
+template<>
+Field from_string<Field>(const std::string& text);
+
 
 //-------------------------------------------------------------------------------------------------
 

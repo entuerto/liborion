@@ -46,6 +46,20 @@ void error(Args&&... args)
 }
 
 template<typename... Args>
+void error_if(bool expr, Args&&... args)
+{
+   if (expr)
+      default_logger().write(Level::Error, args...);
+}
+
+template<typename... Args>
+void error_if(const std::error_code& ec, Args&&... args)
+{
+   if (ec)
+      default_logger().write(Level::Error, args...);
+}
+
+template<typename... Args>
 void debug(Args&&... args)
 {
    default_logger().write(Level::Debug, args...);

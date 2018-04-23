@@ -101,11 +101,6 @@ void ServerConnection::do_handler()
    _mux(_request, _response);
 
    log::debug2(_response);
-
-
-   ///_response = Response(StatusCode::BadRequest);
-   ///_response.header("Connection", "close");
-   ///_response.header("X-Content-Type-Options", "nosniff");
 }
 
 } // http

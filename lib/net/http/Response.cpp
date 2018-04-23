@@ -106,6 +106,11 @@ std::string Response::header(const std::string& name) const
    return "";
 }
 
+void Response::header(Field f, const std::string& value)
+{
+   _header[to_string(f)] = value;
+}
+
 void Response::header(const std::string& name, const std::string& value)
 {
    _header[name] = value;
@@ -136,7 +141,7 @@ void Response::build_header_buffer()
       _status_code = StatusCode::NoContent;
 
    if (body_size != 0)
-      header("Content-Length", std::to_string(body_size));
+      header(Field::ContentLength, std::to_string(body_size));
 
    std::ostream o(&_header_streambuf);
 
