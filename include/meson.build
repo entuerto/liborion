@@ -159,8 +159,7 @@ _rpc_incl = files(
    'orion/net/rpc/Rpc.h',
    'orion/net/rpc/Serializer.h',
    'orion/net/rpc/Service.h',
-   'orion/net/rpc/Traits.h',
-   'orion/net/rpc/Types.h'
+   'orion/net/rpc/Traits.h'
    )
 
 _rpc_impl_incl = files(

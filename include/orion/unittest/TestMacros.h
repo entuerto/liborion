@@ -44,11 +44,6 @@ namespace Suite##Name
 
 //-------------------------------------------------------------------------------------------------
 
-//#define RegisterTestCase(SuiteName, TestFunc, ...)                \
-//                                                                  \
-//unittest::RegisterTestHelper _AutoReg_##TestFunc(                 \
-//      _current_test_suite(), #TestFunc, TestFunc, ##__VA_ARGS__)
-
 #define RegisterTestCase(TestFunc, ...)                                \
 unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(), \
                                                  #TestFunc, TestFunc, ##__VA_ARGS__)
