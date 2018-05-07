@@ -9,6 +9,7 @@
 orion_test_src = files(
    'test-encoding.cpp',
    'test-logger.cpp',
+   'test-semver.cpp',
    'test-string.cpp',
    'test-units.cpp',
    'unittest/ClassTest.cpp',
