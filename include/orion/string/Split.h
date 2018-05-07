@@ -153,6 +153,38 @@ private:
    FinderType _finder;
 };
 
+template<typename FinderT>
+class MaxSplits
+{
+public:
+   using Iterator = typename std::string::iterator;
+
+   MaxSplits(FinderT finder, int limit)
+      : _finder(std::move(finder))
+      , _limit(limit)
+      , _count(0)
+   {
+   }
+
+   Range<Iterator> operator()(Iterator f, Iterator l) const
+   {
+      _count++;
+
+      if (_count >= _limit)
+         return {l, l};
+
+      return _finder(f, l);
+   }
+
+private:
+   FinderT _finder;
+   int _limit;
+
+   mutable int _count;
+};
+
+//-------------------------------------------------------------------------------------------------
+
 /// Splits a string into various substrings.
 template<typename StrintT, typename FinderT>
 inline Split<StrintT> split(const StrintT& text, FinderT f)
@@ -177,6 +209,34 @@ template<typename FinderT>
 inline Split<std::string> split(FinderT f)
 {
    return Split<std::string>{std::move(f)};
+}
+
+//-------------------------------------------------------------------------------------------------
+
+/// Splits a string into various substrings.
+template<typename StrintT, typename FinderT>
+inline Split<StrintT> split_max(const StrintT& text, FinderT f, int limit)
+{
+   return Split<StrintT>{text, MaxSplits<FinderT>{std::move(f), limit}};
+}
+
+/// Splits a string into various substrings.
+template<typename FinderT>
+inline Split<std::string> split_max(const std::string& text, FinderT f, int limit)
+{
+   return Split<std::string>{text, MaxSplits<FinderT>{std::move(f), limit}};
+}
+
+template<typename StrintT, typename FinderT>
+inline Split<StrintT> split_max(FinderT f, int limit)
+{
+   return Split<StrintT>{MaxSplits<FinderT>{std::move(f), limit}};
+}
+
+template<typename FinderT>
+inline Split<std::string> split_max(FinderT f, int limit)
+{
+   return Split<std::string>{MaxSplits<FinderT>{std::move(f), limit}};
 }
 
 } // namespace orion

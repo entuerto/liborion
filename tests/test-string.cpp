@@ -81,6 +81,18 @@ TestCase("Split by char")
    check_eq("four"s, items[3]);
 }
 
+TestCase("Split max by char")
+{
+   std::string text{"one,two,three,four"};
+
+   std::vector<std::string> items = split_max(by_char{','}, 3) | text;
+
+   check_eq(std::size_t(3), items.size());
+   check_eq("one"s, items[0]);
+   check_eq("two"s, items[1]);
+   check_eq("three,four"s, items[2]);
+}
+
 TestCase("Split by char no match")
 {
    std::string text{"one,two,three,four"};
