@@ -11,6 +11,7 @@
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/net/EndPoint.h>
+#include <orion/net/Options.h>
 #include <orion/net/Utils.h>
 
 #include <asio.hpp>

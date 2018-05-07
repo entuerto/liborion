@@ -124,6 +124,7 @@ _net_incl = files(
    'orion/net/EndPoint.h',
    'orion/net/Error.h',
    'orion/net/Listener.h',
+   'orion/net/Options.h',
    'orion/net/Types.h',
    'orion/net/Url.h',
    'orion/net/Utils.h'

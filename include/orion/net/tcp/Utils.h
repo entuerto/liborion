@@ -10,7 +10,7 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/Utils.h>
+#include <orion/net/Options.h>
 
 #include <asio.hpp>
 
@@ -37,7 +37,7 @@ std::unique_ptr<std::streambuf> make_buffer(std::size_t max_size = 0);
 
 //-------------------------------------------------------------------------------------------------
 // Tcp Options
-using NoDelay = Option<0, bool>;
+using NoDelay = Option<bool, struct NoDelayTag>;
 
 } // tcp
 } // net
