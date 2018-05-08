@@ -17,19 +17,18 @@
 namespace orion
 {
 template<class R>
-class Unit
+struct Unit
 {
-public:
    static const char* name;
    static const char* symbol;
 
-   typedef R ratio_number;
+   using ratio_number = R;
 };
 
 template<class R>
 std::ostream& operator<<(std::ostream& os, const Unit<R>& u)
 {
-   os << "Name: " << u.name << "\t"
+   os << "Name:   " << u.name << "\t"
       << "Symbol: " << u.symbol << "\t"
       << "Number: " << Unit<R>::ratio_number::num << "\n";
    return os;
@@ -37,45 +36,31 @@ std::ostream& operator<<(std::ostream& os, const Unit<R>& u)
 
 namespace si
 {
-typedef Unit<std::ratio<1>> Byte;
-typedef Unit<std::kilo> Kilobyte;
-typedef Unit<std::mega> Megabyte;
-typedef Unit<std::giga> Gigabyte;
-typedef Unit<std::tera> Terabyte;
-typedef Unit<std::peta> Petabyte;
-typedef Unit<std::exa> Exabyte;
-// typedef Unit<std::zetta> Zettabyte;
-// typedef Unit<std::yotta> Yottabyte;
+using Byte     = Unit<std::ratio<1>>;
+using Kilobyte = Unit<std::kilo>;
+using Megabyte = Unit<std::mega>;
+using Gigabyte = Unit<std::giga>;
+using Terabyte = Unit<std::tera>;
+using Petabyte = Unit<std::peta>;
+using Exabyte  = Unit<std::exa>;
+// using Zettabyte = Unit<std::zetta>;
+// using Yottabyte = Unit<std::yotta>;
 }
 
-template<>
-const char* si::Byte::name = "Byte";
-template<>
-const char* si::Byte::symbol = "B";
-template<>
-const char* si::Kilobyte::name = "Kilobyte";
-template<>
-const char* si::Kilobyte::symbol = "KB";
-template<>
-const char* si::Megabyte::name = "Megabyte";
-template<>
-const char* si::Megabyte::symbol = "MB";
-template<>
-const char* si::Gigabyte::name = "Gigabyte";
-template<>
-const char* si::Gigabyte::symbol = "GB";
-template<>
-const char* si::Terabyte::name = "Terabyte";
-template<>
-const char* si::Terabyte::symbol = "TB";
-template<>
-const char* si::Petabyte::name = "Petabyte";
-template<>
-const char* si::Petabyte::symbol = "PB";
-template<>
-const char* si::Exabyte::name = "Exabyte";
-template<>
-const char* si::Exabyte::symbol = "EB";
+template<> const char* si::Byte::name       = "Byte";
+template<> const char* si::Byte::symbol     = "B";
+template<> const char* si::Kilobyte::name   = "Kilobyte";
+template<> const char* si::Kilobyte::symbol = "KB";
+template<> const char* si::Megabyte::name   = "Megabyte";
+template<> const char* si::Megabyte::symbol = "MB";
+template<> const char* si::Gigabyte::name   = "Gigabyte";
+template<> const char* si::Gigabyte::symbol = "GB";
+template<> const char* si::Terabyte::name   = "Terabyte";
+template<> const char* si::Terabyte::symbol = "TB";
+template<> const char* si::Petabyte::name   = "Petabyte";
+template<> const char* si::Petabyte::symbol = "PB";
+template<> const char* si::Exabyte::name    = "Exabyte";
+template<> const char* si::Exabyte::symbol  = "EB";
 /*
 template<> const char* si::Zettabyte::name   = "Zettabyte";
 template<> const char* si::Zettabyte::symbol = "ZB";
@@ -85,41 +70,29 @@ template<> const char* si::Yottabyte::symbol = "YB";
 
 namespace iec
 {
-typedef Unit<std::ratio<1LL>> Byte;
-typedef Unit<std::ratio<1024LL>> Kibibyte;
-typedef Unit<std::ratio<1048576LL>> Mebibyte;
-typedef Unit<std::ratio<1073741824LL>> Gibibyte;
-typedef Unit<std::ratio<1099511627776LL>> Tebibyte;
-typedef Unit<std::ratio<1125899906842624LL>> Pebibyte;
-typedef Unit<std::ratio<1152921504606846976LL>> Exbibyte;
-// typedef Unit<std::ratio<   1180591620717411303424LL>> Zebibyte;
-// typedef Unit<std::ratio<1208925819614629174706176LL>> Yobibyte;
+using Byte     = Unit<std::ratio<1LL>>;
+using Kibibyte = Unit<std::ratio<1024LL>>;
+using Mebibyte = Unit<std::ratio<1048576LL>>;
+using Gibibyte = Unit<std::ratio<1073741824LL>>;
+using Tebibyte = Unit<std::ratio<1099511627776LL>>;
+using Pebibyte = Unit<std::ratio<1125899906842624LL>>;
+using Exbibyte = Unit<std::ratio<1152921504606846976LL>>;
+// using Zebibyte = Unit<std::ratio<   1180591620717411303424LL>>;
+// using Yobibyte = Unit<std::ratio<1208925819614629174706176LL>>;
 }
 
-template<>
-const char* iec::Kibibyte::name = "Kibibyte";
-template<>
-const char* iec::Kibibyte::symbol = "KiB";
-template<>
-const char* iec::Mebibyte::name = "Mebibyte";
-template<>
-const char* iec::Mebibyte::symbol = "MiB";
-template<>
-const char* iec::Gibibyte::name = "Gibibyte";
-template<>
-const char* iec::Gibibyte::symbol = "GiB";
-template<>
-const char* iec::Tebibyte::name = "Tebibyte";
-template<>
-const char* iec::Tebibyte::symbol = "TiB";
-template<>
-const char* iec::Pebibyte::name = "Pebibyte";
-template<>
-const char* iec::Pebibyte::symbol = "PiB";
-template<>
-const char* iec::Exbibyte::name = "Exbibyte";
-template<>
-const char* iec::Exbibyte::symbol = "EiB";
+template<> const char* iec::Kibibyte::name   = "Kibibyte";
+template<> const char* iec::Kibibyte::symbol = "KiB";
+template<> const char* iec::Mebibyte::name   = "Mebibyte";
+template<> const char* iec::Mebibyte::symbol = "MiB";
+template<> const char* iec::Gibibyte::name   = "Gibibyte";
+template<> const char* iec::Gibibyte::symbol = "GiB";
+template<> const char* iec::Tebibyte::name   = "Tebibyte";
+template<> const char* iec::Tebibyte::symbol = "TiB";
+template<> const char* iec::Pebibyte::name   = "Pebibyte";
+template<> const char* iec::Pebibyte::symbol = "PiB";
+template<> const char* iec::Exbibyte::name   = "Exbibyte";
+template<> const char* iec::Exbibyte::symbol = "EiB";
 /*
 template<> const char* iec::Zebibyte::name   = "Zebibyte";
 template<> const char* iec::Zebibyte::symbol = "ZiB";
@@ -136,16 +109,17 @@ public:
    template<class OTHER_UNIT, class OTHER_TYPE>
    friend class Value;
 
-   typedef Value<U, T> this_type;
+   using this_type = Value<U, T>;
 
-   typedef U unit_type;
-   typedef T value_type;
+   using unit_type  = U;
+   using value_type = T;
 
    Value()
       : _value(T(0))
    {
    }
-   Value(const value_type& v)
+
+   explicit Value(const value_type& v)
       : _value(v)
    {
    }
@@ -182,8 +156,8 @@ public:
    }
 
    static constexpr Value zero() { return value_type(0); }
-   static constexpr Value min() { return std::numeric_limits<value_type>::lowest(); }
-   static constexpr Value max() { return std::numeric_limits<value_type>::max(); }
+   static constexpr Value min()  { return std::numeric_limits<value_type>::lowest(); }
+   static constexpr Value max()  { return std::numeric_limits<value_type>::max(); }
 
    friend std::ostream& operator<<(std::ostream& os, const Value& value)
    {

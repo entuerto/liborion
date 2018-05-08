@@ -17,15 +17,15 @@ Section(OrionCore_Units, Label{"Units"})
 
 TestCase("SI KB neq Bytes")
 {
-   Value<si::Kilobyte> k = 12345;
+   Value<si::Kilobyte> k = 12345_b;
 
-   check_true(12345 != k, Disabled{"No time to fix"});
+   check_true(12345 != k);
 }
 
 TestCase("SI KB MB")
 {
-   Value<si::Kilobyte> k = 12345;
-   Value<si::Megabyte> m = 12345;
+   Value<si::Kilobyte> k = 12345_kb;
+   Value<si::Megabyte> m = 12345_mb;
 
    check_true(k != m);
 
@@ -38,15 +38,15 @@ TestCase("SI KB MB")
 
 TestCase("SI MB literal")
 {
-   Value<si::Megabyte> m = 12345;
+   Value<si::Megabyte> m = 12345_mb;
 
    check_true(m == 12345_mb);
 }
 
 TestCase("SI MB as double")
 {
-   Value<si::Megabyte> m = 12345;
-   Value<si::Megabyte, double> dm = 12345;
+   Value<si::Megabyte> m = 12345_mb;
+   Value<si::Megabyte, double> dm = 12345_mb;
 
    check_true(m == dm);
 }
