@@ -20,6 +20,12 @@
 namespace orion
 {
 
+template<typename T>
+struct Hashable
+{
+   static constexpr bool is_hashable = true;
+};
+
 //-------------------------------------------------------------------------------------------------
 
 template<typename... Ts>

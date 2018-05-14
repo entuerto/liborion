@@ -7,7 +7,7 @@
 //
 #include <orion/net/AddressV4.h>
 
-#include <UtilWin32.h>
+#include <host/win32/String.h>
 
 #include <system_error>
 

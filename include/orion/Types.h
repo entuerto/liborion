@@ -16,6 +16,39 @@ namespace orion
 {
 
 template<typename T>
+using IsNotReference = typename std::enable_if<!std::is_reference<T>::value, void>::type;
+
+template<typename T, typename Tag>
+class BaseType
+{
+public:
+   explicit BaseType(const T& value)
+      : _value(value)
+   {
+   }
+
+   template<typename T_ = T, typename = IsNotReference<T_>>
+   explicit BaseType(T&& value)
+      : _value(std::move(value))
+   {
+   }
+
+   T& get()             { return _value; }
+   const T& get() const { return _value; }
+
+   operator const T&() const  { return get(); }
+   operator T&()              { return get(); }
+
+   const T* operator->() const { return std::addressof(get()); }
+   T* operator->()             { return std::addressof(get()); }
+
+private:
+   T _value;
+};
+
+//------------------------------------------------------------------------------------------------
+
+template<typename T>
 struct TypeName;
 
 /// TypeNameSequence is a utility for rendering sequences of types to a stream
@@ -113,5 +146,20 @@ struct TypeName<std::string>
 };
 
 } // namespace orion
+
+namespace std
+{
+template<typename T, typename Tag>
+struct hash<orion::BaseType<T, Tag>>
+{
+   using BaseType        = orion::BaseType<T, Tag>;
+   using CheckIfHashable = typename std::enable_if<BaseType::is_hashable, void>::type;
+
+   size_t operator()(const orion::BaseType<T, Tag>& x) const 
+   { 
+      return std::hash<T>()(x.get()); 
+   }
+};
+}
 
 #endif // ORION_TYPES_H

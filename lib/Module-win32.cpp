@@ -13,7 +13,7 @@
 #include <orion/SourceLocation.h>
 #include <orion/Throw.h>
 
-#include <UtilWin32.h>
+#include <host/win32/String.h>
 
 #include <windows.h>
 

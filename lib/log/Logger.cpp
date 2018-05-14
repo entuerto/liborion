@@ -50,12 +50,18 @@ std::string DefaultInfo()
 {
    std::ostringstream stream_info;
 
+   sys::CpuInfo cpu = sys::get_cpu_info();
+
+   auto cpu_name = (cpu.cpu_count == 1) 
+                      ? fmt::format("{0} ({1} thread)", cpu.name, cpu.cpu_count)
+                      : fmt::format("{0} ({1} threads)", cpu.name, cpu.cpu_count); 
+
    stream_info << "System Information\n"
                << "  Name:       " << sys::get_user_name() << "\n"
                << "  Host name:  " << sys::get_host_name() << "\n"
                << "  Process ID: " << sys::get_process_id() << "\n"
                << "  Sytem:      " << sys::get_os_version() << "\n"
-               << "  CPU:        " << sys::get_cpu_model() << "\n"
+               << "  CPU:        " << cpu_name << "\n"
                << "\n"
                << "Program Information\n"
                << "  " << sys::get_program_name() << "\n";

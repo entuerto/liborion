@@ -7,7 +7,7 @@
 //
 #include <orion/Uuid.h>
 
-#include <UtilWin32.h>
+#include <host/win32/String.h>
 
 #include <cstdint>
 #include <rpc.h>

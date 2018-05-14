@@ -9,7 +9,8 @@
 
 #include <orion/Log.h>
 
-#include <UtilWin32.h>
+#include <host/win32/Registry.h>
+#include <host/win32/String.h>
 
 #include <fmt/format.h>
 
@@ -65,41 +66,148 @@ void get_loaded_modules(unsigned long process_id, ModuleList& modules)
 
 //-------------------------------------------------------------------------------------------------
 
-std::string get_cpu_model()
+// The number of physical CPU cores (hyper-thread CPU count excluded)
+static uint32_t get_cpu_count_phys()
 {
-   const uint32_t max_length = 4096;
+   PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX buffer = nullptr;
+   PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX ptr    = nullptr;
+   DWORD length                                    = 0;
+   DWORD offset                                    = 0;
+   DWORD ncpus                                     = 0;
 
-   DWORD type   = REG_SZ;
-   HKEY hKey    = nullptr;
-   DWORD length = max_length;
-   wchar_t value[max_length];
+   for(;;)
+   {
+      // GetLogicalProcessorInformationEx() is available from Windows 7
+      // onward.
+      if (GetLogicalProcessorInformationEx(RelationAll, buffer, &length) == TRUE)
+         break;
+      
+      if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+      {
+         if (buffer != nullptr)
+            free(buffer);
+            
+         buffer = (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX)malloc(length);
+         if (buffer == nullptr)
+         {
+            std::string error_message;
 
-   ZeroMemory(value, max_length);
+            win32::format_error_message(GetLastError(), error_message);
+            log::error(error_message, _src_loc);
+            return 0;
+         }
+         continue;
+      }
+      std::string error_message;
 
-   const wchar_t* key_to_open   = L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
-   const wchar_t* value_to_find = L"ProcessorNameString";
+      win32::format_error_message(GetLastError(), error_message);
+      log::error(error_message, _src_loc);
+      return 0;      
+   }
 
-   RegOpenKeyExW(HKEY_LOCAL_MACHINE, key_to_open, 0, KEY_READ, &hKey);
-   RegQueryValueExW(hKey, value_to_find, nullptr, &type, (LPBYTE)&value, &length);
-   RegCloseKey(hKey);
+   ptr = buffer;
+   while (ptr->Size > 0 and (offset + ptr->Size) <= length) 
+   {
+      if (ptr->Relationship == RelationProcessorCore) 
+         ncpus += 1;
+        
+      offset += ptr->Size;
+      ptr = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*)(((char*)ptr) + ptr->Size);
+   }
+   return ncpus;
+} 
 
-   std::string cpu_name = win32::wstring_to_utf8(value);
+//-------------------------------------------------------------------------------------------------
 
-   SYSTEM_INFO sysinfo;
-   ZeroMemory(&sysinfo, sizeof(SYSTEM_INFO));
-   GetSystemInfo(&sysinfo);
+// Windows example values:
+// 
+// struct CpuInfo
+// {
+//    std::string id;             Identifier:          Intel64 Family 6 Model 60 Stepping 3
+//    std::string name;           ProcessorNameString: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz
+//    std::string vendor;         VendorIdentifier:    GenuineIntel
+//    uint32_t    speed;          ~MHz:                3392
+//    uint32_t    cpu_count;      The number of logical, active CPUs.
+//    uint32_t    cpu_count_phys; The number of physical CPU cores (hyper-thread CPU count excluded)
+// };
+// 
+CpuInfo get_cpu_info()
+{
+   const char* key_to_open = "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
 
-   const uint64_t cpu_thread_count = sysinfo.dwNumberOfProcessors;
+   win32::Registry reg;
 
-   return (cpu_thread_count == 1) ? fmt::format("{0} ({1} thread)", cpu_name, cpu_thread_count)
-                                  : fmt::format("{0} ({1} threads)", cpu_name, cpu_thread_count);
+   std::error_code ec = reg.open_key(HKEY_LOCAL_MACHINE, key_to_open, KEY_READ);
+   if (ec)
+      log::error(ec);
+
+   std::wstring value;
+   value.reserve(4096);
+
+   //
+   // Id
+   //
+
+   ec = reg.query_value("Identifier", value);
+   if (ec)
+      log::error(ec);
+
+   CpuInfo cpu;
+
+   cpu.id = win32::wstring_to_utf8(value);
+
+   //
+   // Name
+   //
+
+   ec = reg.query_value("ProcessorNameString", value);
+   if (ec)
+      log::error(ec);
+
+   cpu.name = win32::wstring_to_utf8(value);
+
+   //
+   // Vendor
+   //
+   
+   ec = reg.query_value("VendorIdentifier", value);
+   if (ec)
+      log::error(ec);
+
+   cpu.vendor = win32::wstring_to_utf8(value);
+
+   //
+   // Speed
+   //
+   
+   ec = reg.query_value("~MHz", cpu.speed);
+   if (ec)
+      log::error(ec);
+
+   //
+   // Number of logical, active CPUs
+   //
+
+   // GetActiveProcessorCount is available only on 64 bit versions
+   // of Windows from Windows 7 onward.
+   cpu.cpu_count = GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
+
+   //
+   // Number of physical CPU cores
+   //
+
+   // GetLogicalProcessorInformationEx() is available from Windows 7
+   // onward.
+   cpu.cpu_count_phys = get_cpu_count_phys();
+
+   return cpu;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-std::vector<CpuInfo> get_cpu_info()
+CpuTimes get_cpu_times()
 {
-   std::vector<CpuInfo> cpu_infos;
+   CpuTimes cpu_times{};
 
    SYSTEM_INFO system_info;
    ZeroMemory(&system_info, sizeof(SYSTEM_INFO));
@@ -122,92 +230,24 @@ std::vector<CpuInfo> get_cpu_info()
       // err = RtlNtStatusToDosError(status);
       RtlNtStatusToDosError(status);
       free(sppi);
-      return cpu_infos;
+      return cpu_times;
    }
 
-   for (int32_t i = 0; i < cpu_count; i++)
+   for (int i = 0; i < cpu_count; i++)
    {
-      WCHAR key_name[128];
-      HKEY processor_key;
-
-      _snwprintf_s(key_name,
-                   sizeof(key_name),
-                   ARRAY_SIZE(key_name),
-                   L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\%d",
-                   i);
-
-      DWORD ret = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key_name, 0, KEY_QUERY_VALUE, &processor_key);
-
-      if (ret != ERROR_SUCCESS)
-      {
-         std::string error_message;
-
-         win32::format_error_message(GetLastError(), error_message);
-         log::error(error_message);
-
-         free(sppi);
-      }
-
-      DWORD cpu_speed;
-      DWORD cpu_speed_size = sizeof(cpu_speed);
-
-      ret = RegQueryValueExW(
-         processor_key, L"~MHz", nullptr, nullptr, (BYTE*)&cpu_speed, &cpu_speed_size);
-
-      if (ret != ERROR_SUCCESS)
-      {
-         std::string error_message;
-
-         win32::format_error_message(GetLastError(), error_message);
-         log::error(error_message);
-         
-         free(sppi);
-         RegCloseKey(processor_key);
-      }
-
-      WCHAR cpu_brand[256];
-      DWORD cpu_brand_size = sizeof(cpu_brand);
-
-      ret = RegQueryValueExW(processor_key,
-                             L"ProcessorNameString",
-                             nullptr,
-                             nullptr,
-                             (BYTE*)&cpu_brand,
-                             &cpu_brand_size);
-
-      if (ret != ERROR_SUCCESS)
-      {
-         std::string error_message;
-
-         win32::format_error_message(GetLastError(), error_message);
-         log::error(error_message);
-
-         free(sppi);
-         RegCloseKey(processor_key);
-      }
-
-      RegCloseKey(processor_key);
-
-      CpuTimes cpu_times;
-
-      cpu_times.user = sppi[i].UserTime.QuadPart / 10000;
-      cpu_times.nice = 0;
-      cpu_times.sys  = (sppi[i].KernelTime.QuadPart - sppi[i].IdleTime.QuadPart) / 10000;
-      cpu_times.idle = sppi[i].IdleTime.QuadPart / 10000;
+      cpu_times.user += sppi[i].UserTime.QuadPart / 10000;
+      cpu_times.nice += 0;
+      cpu_times.sys  += (sppi[i].KernelTime.QuadPart - sppi[i].IdleTime.QuadPart) / 10000;
+      cpu_times.idle += sppi[i].IdleTime.QuadPart / 10000;
 #if 0 // ndef __MINGW64__
-      cpu_times.irq  = sppi[i].InterruptTime.QuadPart / 10000;
+      cpu_times.irq  += sppi[i].InterruptTime.QuadPart / 10000;
 #else
-      cpu_times.irq = sppi[i].Reserved1[0].QuadPart / 10000;
+      cpu_times.irq += sppi[i].Reserved1[0].QuadPart / 10000;
 #endif
-
-      std::string model = win32::wstring_to_utf8(cpu_brand);
-
-      cpu_infos.push_back(CpuInfo{model, cpu_speed, cpu_times});
    }
-
    free(sppi);
 
-   return cpu_infos;
+   return cpu_times;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -306,32 +346,32 @@ void get_loadavg(double avg[3])
 
 //-------------------------------------------------------------------------------------------------
 
-uint64_t get_free_memory()
+Value<si::Kilobyte> get_free_memory()
 {
    MEMORYSTATUSEX memory_status;
    memory_status.dwLength = sizeof(memory_status);
 
    if (not GlobalMemoryStatusEx(&memory_status))
    {
-      return -1;
+      return {};
    }
 
-   return static_cast<uint64_t>(memory_status.ullAvailPhys);
+   return Value<si::Byte>{static_cast<uintmax_t>(memory_status.ullAvailPhys)};
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint64_t get_total_memory()
+Value<si::Kilobyte> get_total_memory()
 {
    MEMORYSTATUSEX memory_status;
    memory_status.dwLength = sizeof(memory_status);
 
    if (not GlobalMemoryStatusEx(&memory_status))
    {
-      return -1;
+      return {};
    }
 
-   return static_cast<uint64_t>(memory_status.ullTotalPhys);
+   return  Value<si::Byte>{static_cast<uintmax_t>(memory_status.ullTotalPhys)};
 }
 
 //-------------------------------------------------------------------------------------------------

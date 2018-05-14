@@ -33,6 +33,15 @@ struct Concatenate
       buffer << value;
    }
 
+   void operator()(std::error_code& ec) 
+   {
+      buffer << ec.category().name() 
+             << ": (Code " 
+             << ec.value()
+             << ") "
+             << ec.message();
+   }
+
    void operator()(SourceLocation& /*unused*/) {}
 };
 } // namespace detail

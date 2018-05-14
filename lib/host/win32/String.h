@@ -1,12 +1,12 @@
 //
-// UtilWin32.h
+// String.h
 //
-// Copyright (c) 2013-2017 Tomas Palazuelos
+// Copyright (c) 2013-2018 Tomas Palazuelos
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-#ifndef ORION_UTILWIN32_H
-#define ORION_UTILWIN32_H
+#ifndef ORION_HOST_WIN32_STRING_H
+#define ORION_HOST_WIN32_STRING_H
 
 #include <orion/String.h>
 
@@ -67,4 +67,4 @@ inline void format_error_message(DWORD last_error_code, std::string& error_messa
 } // namespace win32
 } // namespace orion
 
-#endif // ORION_UTILWIN32_H
+#endif // ORION_HOST_WIN32_STRING_H

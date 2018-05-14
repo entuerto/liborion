@@ -10,6 +10,8 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/Units.h>
+
 #include <cstdint>
 #include <iosfwd>
 #include <string>
@@ -30,18 +32,19 @@ struct CpuTimes
 
 struct CpuInfo
 {
-   std::string model;
-   uint32_t speed;
-   CpuTimes times;
+   std::string id;
+   std::string name;
+   std::string vendor;
+   uint32_t    speed;
+   uint32_t    cpu_count;
+   uint32_t    cpu_count_phys;
 };
 
 typedef std::vector<std::string> ModuleList;
 
-API_EXPORT std::string human_readable(uint64_t value, uint64_t base = 1024);
+API_EXPORT CpuInfo get_cpu_info();
 
-API_EXPORT std::string get_cpu_model();
-
-API_EXPORT std::vector<CpuInfo> get_cpu_info();
+API_EXPORT CpuTimes get_cpu_times();
 
 API_EXPORT std::string get_os_version();
 
@@ -57,9 +60,9 @@ API_EXPORT void get_loaded_modules(unsigned long process_id, ModuleList& modules
 
 API_EXPORT void get_loadavg(double avg[3]);
 
-API_EXPORT uint64_t get_free_memory();
+API_EXPORT Value<si::Kilobyte> get_free_memory();
 
-API_EXPORT uint64_t get_total_memory();
+API_EXPORT Value<si::Kilobyte> get_total_memory();
 
 /// Writes the stack trace using the given ostream object.
 API_EXPORT void write_stack_trace(std::ostream& os);
