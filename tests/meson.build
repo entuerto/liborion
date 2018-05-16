@@ -12,9 +12,7 @@ orion_test_src = files(
    'test-semver.cpp',
    'test-string.cpp',
    'test-units.cpp',
-   'unittest/ClassTest.cpp',
-   'unittest/ClassTestResult.cpp',
-   'unittest/EvalMacros.cpp',
+   'test-unittests.cpp',
    'test-main.cpp'
    )
 

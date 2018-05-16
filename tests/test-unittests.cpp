@@ -1,15 +1,13 @@
 //
-//  EvalMacros.cpp
+//  test-unittests.cpp
 //
 // Copyright (c) 2013-2017 Tomas Palazuelos
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-#include <stdexcept>
-
 #include <orion/Test.h>
-#include <orion/ErrorMacros.h>
-#include <orion/Exception.h>
+
+using namespace std::string_literals;
 
 using namespace orion;
 using namespace orion::unittest;
@@ -31,6 +29,71 @@ int calc_throwing_function()
 void throwing_function()
 {
    throw std::logic_error("Oh boy");
+}
+
+TestCase("Passing with no failure")
+{
+   Test passing_test("passing", TestSuite("testSuite"), [](Test& ft) { 
+      ft.xassert<true>(true); 
+   });
+
+   auto scope_test_result = passing_test.invoke();
+
+   check_true(scope_test_result.passed());
+}
+
+TestCase("Failing with no failure")
+{
+   Test failing_test("failing", TestSuite("testSuite"), [](Test& ft) { 
+      ft.xassert<false>(false); 
+   });
+
+   auto scope_test_result = failing_test.invoke();
+
+   check_false(scope_test_result.failed());
+}
+
+TestCase("Throwing reported as failure")
+{
+   Test crashing_test("throwing", TestSuite("testSuite"), [](Test&) { 
+      throw std::logic_error("Oh boy"); 
+   });
+
+   auto scope_test_result = crashing_test.invoke();
+
+   check_true(scope_test_result.failed());
+}
+
+TestCase("Initial values")
+{
+   auto tr = TestResult();
+
+   check_true(tr.passed());
+   check_false(tr.failed());
+   check_eq(uint64_t{0}, tr.counters().failed);
+   check_eq(uint64_t{0}, tr.counters().passed);
+}
+
+TestCase("Number of failed items")
+{
+   auto tr = TestResult();
+
+   tr.log_failure("1");
+   tr.log_failure("2");
+   tr.log_failure("3");
+
+   check_eq(uint64_t{3}, tr.counters().failed);
+}
+
+TestCase("Number of passed items")
+{
+   auto tr = TestResult();
+
+   tr.log_success("1");
+   tr.log_success("2");
+   tr.log_success("3");
+
+   check_eq(uint64_t{3}, tr.counters().passed);
 }
 
 TestCase("Success on true")
@@ -135,4 +198,4 @@ TestCase("TestResult::log_failure()")
    check_true(test_result.failed());
 }
 
-} 
+} // TestSuite(OrionCore_Test)
