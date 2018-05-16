@@ -81,8 +81,8 @@ inline std::ostream& operator<<(std::ostream& s, const Message& msg)
 //--------------------------------------------------------------------------------------------------
 
 template<typename IdT>
-Request<IdT>::Request(IdT id)
-   : id(id)
+Request<IdT>::Request(IdT identifier)
+   : id(identifier)
    , method()
    , params()
 {
@@ -116,8 +116,8 @@ Request<IdT>& Request<IdT>::operator=(const Request& other)
 //--------------------------------------------------------------------------------------------------
 
 template<typename IdT>
-Response<IdT>::Response(IdT id)
-   : id(id)
+Response<IdT>::Response(IdT identifier)
+   : id(identifier)
    , result()
 {
 }

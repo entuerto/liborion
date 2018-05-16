@@ -10,6 +10,7 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/Semver.h>
 #include <orion/Types.h>
 
 #include <fmt/format.h>

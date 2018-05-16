@@ -137,7 +137,7 @@ struct Request
    Request() = default;
    ~Request() = default;
 
-   Request(IdT id);
+   explicit Request(IdT identifier);
 
    // Copy
    Request(const Request& other);
@@ -161,7 +161,7 @@ struct Response
    Response() = default;
    ~Response() = default;
 
-   Response(IdT id);
+   explicit Response(IdT identifier);
 
    // Copy
    Response(const Response& other);
@@ -410,7 +410,7 @@ template<typename Codec>
 std::atomic<typename Tcp<Codec>::IdType> Tcp<Codec>::req_id{0};
 
 template<typename Codec>
-Version Tcp<Codec>::current_version{1, 0};
+Version Tcp<Codec>::current_version{1, 0, 0};
 
 using TcpString = Tcp<StringCodec>;
 
@@ -419,7 +419,7 @@ using TcpString = Tcp<StringCodec>;
 //--------------------------------------------------------------------------------------------------
 
 template<>
-class rpc::Serializer<TcpString>
+class Serializer<TcpString>
 {
 public:
    using CodecType = typename TcpString::CodecType;

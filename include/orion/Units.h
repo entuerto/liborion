@@ -121,7 +121,7 @@ public:
 
    friend std::ostream& operator<<(std::ostream& os, const Value& value)
    {
-      os << value._value << " " << value._unit.symbol;
+      os << value._value << " " << unit_type::symbol();
       return os;
    }
 
