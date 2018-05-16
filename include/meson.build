@@ -36,7 +36,9 @@ _base_impl_incl = files(
    'orion/impl/ART.ipp',
    'orion/impl/Chrono.ipp',
    'orion/impl/Datetime.ipp',
-   'orion/impl/Exception.ipp'
+   'orion/impl/Exception.ipp',
+   'orion/impl/Semver.ipp',
+   'orion/impl/Units.ipp'
    )
 
 _config_incl = files(

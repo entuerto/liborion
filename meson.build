@@ -26,7 +26,7 @@ if compiler.has_header('asio.hpp', required: true)
    asio_cflags = ['-DASIO_STANDALONE -DASIO_NO_DEPRECATED -DASIO_HAS_MOVE']
 
    if host_system == 'windows'
-      asio_cflags += ['-D_WIN32_WINNT=0x0603', '-Wno-microsoft-enum-value']
+      asio_cflags += ['-D_WIN32_WINNT=0x0603']
    endif
    
    asio_dep = declare_dependency(compile_args: asio_cflags)
@@ -74,8 +74,6 @@ if host_system == 'windows'
    ]
 
    #add_global_arguments('-fms-compatibility-version=19', language: 'cpp')
-
-   add_global_link_arguments('-Wl,--allow-multiple-definition', language: 'cpp')
 endif
 
 add_global_arguments('-Wshadow', '-Wundef', language: 'cpp')
