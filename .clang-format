@@ -29,9 +29,13 @@ BraceWrapping:
   AfterObjCDeclaration: false
   AfterStruct:     true
   AfterUnion:      true
+  AfterExternBlock: true
   BeforeCatch:     true
   BeforeElse:      true
   IndentBraces:    false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Custom
 BreakBeforeInheritanceComma: true
@@ -42,6 +46,7 @@ BreakAfterJavaFieldAnnotations: false
 BreakStringLiterals: true
 ColumnLimit:     100
 CommentPragmas:  '^ IWYU pragma:'
+CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 3
 ContinuationIndentWidth: 3
@@ -50,7 +55,11 @@ DerivePointerAlignment: false
 DisableFormat:   false
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
-ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
+ForEachMacros:   
+  - foreach
+  - Q_FOREACH
+  - BOOST_FOREACH
+IncludeBlocks:   Preserve
 IncludeCategories:
   - Regex:           '^<orion/Orion-Stddefs.h>'
     Priority:        1
@@ -62,6 +71,7 @@ IncludeCategories:
     Priority:        4
 IncludeIsMainRegex: '$'
 IndentCaseLabels: true
+IndentPPDirectives: AfterHash
 IndentWidth:     3
 IndentWrappedFunctionNames: false
 JavaScriptQuotes: Leave
@@ -74,6 +84,7 @@ NamespaceIndentation: None
 ObjCBlockIndentWidth: 2
 ObjCSpaceAfterProperty: true
 ObjCSpaceBeforeProtocolList: false
+PenaltyBreakAssignment: 2
 PenaltyBreakBeforeFirstCallParameter: 19
 PenaltyBreakComment: 300
 PenaltyBreakFirstLessLess: 120
@@ -83,6 +94,7 @@ PenaltyReturnTypeOnItsOwnLine: 200
 PointerAlignment: Left
 ReflowComments:  true
 SortIncludes:    true
+SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
 SpaceAfterTemplateKeyword: false
 SpaceBeforeAssignmentOperators: true
