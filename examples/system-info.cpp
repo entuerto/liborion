@@ -5,9 +5,9 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-#include <orion/System.h>
-
 #include <orion/Log.h>
+#include <orion/System.h>
+#include <orion/debug/Stacktrace.h>
 
 #include <fmt/format.h>
 
@@ -16,12 +16,15 @@
 #include <sstream>
 
 using namespace orion;
+using namespace orion::debug;
 using namespace orion::log;
 using namespace orion::sys;
 
 void function_a()
 {
-   write_stack_trace(std::cout);
+   Stacktrace st = make_stacktrace();
+
+   std::cout << to_string(st);
 }
 
 void setup_logger()

@@ -9,6 +9,7 @@
 
 #include <orion/Log.h>
 
+#include <host/win32/COM.h>
 #include <host/win32/Registry.h>
 #include <host/win32/String.h>
 
@@ -20,13 +21,9 @@
 #include <winternl.h>
 
 #include <crtdbg.h>
-#include <dbghelp.h>
 #include <psapi.h>
 
 #include <array>
-#include <ostream>
-
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 namespace orion
 {
@@ -49,7 +46,9 @@ void get_loaded_modules(unsigned long process_id, ModuleList& modules)
    if (EnumProcessModulesEx(
           handle, module_handles, sizeof(module_handles), &cbNeeded, LIST_MODULES_ALL))
    {
-      for (int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++)
+      int count = int(cbNeeded / sizeof(HMODULE));
+
+      for (int i = 0; i < count; i++)
       {
          wchar_t module_name[MAX_PATH];
 
@@ -372,124 +371,6 @@ Value<si::Kilobyte> get_total_memory()
    }
 
    return  Value<si::Byte>{static_cast<uintmax_t>(memory_status.ullTotalPhys)};
-}
-
-//-------------------------------------------------------------------------------------------------
-
-static void write_stack_trace_for_thread(std::ostream& os, 
-                                         HANDLE hProcess,
-                                         HANDLE hThread, 
-                                         STACKFRAME64& StackFrame,
-                                         CONTEXT* Context) 
-{
-   
-   // Set the symbol engine options
-   DWORD SymOptions = SymGetOptions();
-   SymOptions |= SYMOPT_DEFERRED_LOADS;  // Do not load all symbols at once.
-   SymOptions |= SYMOPT_LOAD_LINES;      // Load line info
-   //SymOptions |= SYMOPT_EXACT_SYMBOLS;   // Do not load unmatched .PDB file.
-   //SymOptions |= SYMOPT_DEBUG;               // Symbol debug callback handler
-
-   SymSetOptions(SymOptions);
-
-   // Initialize the symbol handler.
-   SymInitialize(hProcess, NULL, TRUE);
-
-
-   while (true) 
-   {
-      if (not StackWalk64(IMAGE_FILE_MACHINE_AMD64, hProcess, hThread, &StackFrame,
-                          Context, 0, SymFunctionTableAccess64,
-                          SymGetModuleBase64, 0)) 
-      {
-         break;
-      }
-
-      if (StackFrame.AddrFrame.Offset == 0)
-         break;
-
-      // Print the AddressPC in hexadecimal.
-      DWORD64 AddressPC = StackFrame.AddrPC.Offset;
-
-      os << fmt::format("{:#x}", AddressPC);
-
-      // Verify the AddressPC belongs to a module in this process.
-      if (not SymGetModuleBase64(hProcess, AddressPC)) 
-      {
-        os << " <Unknown module>\n";
-        continue;
-      }
-
-      // Get module information
-      IMAGEHLP_MODULE FoundModule;
-      ZeroMemory(&FoundModule, sizeof(IMAGEHLP_MODULE));
-      FoundModule.SizeOfStruct = sizeof(IMAGEHLP_MODULE);
-
-      if (SymGetModuleInfo(hProcess, AddressPC, &FoundModule))
-         os << fmt::format(" {:<15}", FoundModule.ModuleName);
-
-      // Print the symbol name.
-      char buffer[512];
-      IMAGEHLP_SYMBOL64* symbol = reinterpret_cast<IMAGEHLP_SYMBOL64*>(buffer);
-      memset(symbol, 0, sizeof(IMAGEHLP_SYMBOL64));
-      symbol->SizeOfStruct  = sizeof(IMAGEHLP_SYMBOL64);
-      symbol->MaxNameLength = 512 - sizeof(IMAGEHLP_SYMBOL64);
-
-      DWORD64 dwDisp;
-      if (not SymGetSymFromAddr64(hProcess, AddressPC, &dwDisp, symbol)) 
-      {
-         os << '\n';
-         continue;
-      }
-
-      buffer[511] = 0;
-
-      if (dwDisp > 0)
-         os << fmt::format(" {0}() + {1:#x} byte(s)", symbol->Name, dwDisp);
-      else
-         os << fmt::format(" {}", symbol->Name);
-
-      // Print the source file and line number information.
-      IMAGEHLP_LINE64 line;
-      ZeroMemory(&line, sizeof(IMAGEHLP_LINE));
-      line.SizeOfStruct = sizeof(IMAGEHLP_LINE);
-      DWORD dwLineDisp;
-
-      if (SymGetLineFromAddr64(hProcess, AddressPC, &dwLineDisp, &line)) 
-      {
-        os << fmt::format(" {0}, line {1}", line.FileName, line.LineNumber);
-
-        if (dwLineDisp > 0)
-          os << fmt::format(" + {:#x} byte(s)", dwLineDisp);
-      }
-      os << '\n';
-   }
-}
-
-//-------------------------------------------------------------------------------------------------
-
-void write_stack_trace(std::ostream& os)
-{
-   STACKFRAME64 StackFrame = {};
-   CONTEXT Context = {};
-   
-   ::RtlCaptureContext(&Context);
-
-#if defined(_M_X64)
-   StackFrame.AddrPC.Offset = Context.Rip;
-   StackFrame.AddrStack.Offset = Context.Rsp;
-   StackFrame.AddrFrame.Offset = Context.Rbp;
-#else
-   StackFrame.AddrPC.Offset = Context.Eip;
-   StackFrame.AddrStack.Offset = Context.Esp;
-   StackFrame.AddrFrame.Offset = Context.Ebp;
-#endif
-
-   StackFrame.AddrPC.Mode = AddrModeFlat;
-   StackFrame.AddrStack.Mode = AddrModeFlat;
-   StackFrame.AddrFrame.Mode = AddrModeFlat;
-
-   write_stack_trace_for_thread(os, GetCurrentProcess(), GetCurrentThread(), StackFrame, &Context);
 }
 
 } // namespace sys

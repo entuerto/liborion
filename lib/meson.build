@@ -12,6 +12,8 @@ orion_src = files(
    'AsyncService.cpp',
    'Encoding.cpp',
    'System.cpp',
+   # debug files
+   'debug/Stacktrace.cpp',
    # Logger files
    'log/EndRecord.h', 
    'log/ExceptionRecord.cpp', 
@@ -37,17 +39,26 @@ orion_libs = [ boost_prog_opts_lib ]
 
 if host_system == 'windows'
    orion_src += [
+      'debug/Stacktrace-win32.cpp',
+      'host/mingw64/DwarfSymbols.cpp',
+      'host/mingw64/ModulePool.cpp',
+      'io/MapFile-win32.cpp',
       'Module-win32.cpp',
       'System-win32.cpp',
       'Uuid-win32.cpp'
    ]
 
    orion_libs += [
+      compiler.find_library('dwarf'),
+      compiler.find_library('z'),
+
       compiler.find_library('dbghelp'),
+      compiler.find_library('dbgeng'),
+      compiler.find_library('Imagehlp'),
       compiler.find_library('ws2_32'),
       compiler.find_library('psapi'), 
       compiler.find_library('ntdll'), 
-      compiler.find_library('rpcrt4') 
+      compiler.find_library('rpcrt4')
    ]
 endif
 

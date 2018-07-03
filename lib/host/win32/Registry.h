@@ -46,6 +46,23 @@ namespace win32
 // KEY_WOW64_64KEY
 // KEY_WRITE
 
+struct KeyInfo  
+{
+   uint32_t subkey_count;
+   uint32_t max_subkey_len;      // size of the key's subkey with the longest name
+   uint32_t value_count;
+   uint32_t max_value_name_len;  // size of the key's longest value name
+   uint32_t max_value_len;       // longest data component among the key's values, in bytes
+   FILETIME last_write_time;
+};
+
+struct KeyValue
+{
+   std::wstring key;
+   std::wstring value;
+   FILETIME last_write_time;
+};
+
 class Registry
 {
 public:
@@ -129,7 +146,81 @@ public:
 
    // std::error_code set_value();
 
-   // std::error_code enum_value();
+   std::error_code enum_value(std::vector<KeyValue>& values)
+   {
+      KeyInfo ki;
+
+      auto ec = query_info_key(ki);
+
+      if (ec)
+         return ec;
+
+      std::wstring value;
+
+      value.reserve(ki.max_subkey_len);
+
+      wchar_t* data = const_cast<wchar_t*>(value.data());
+
+      FILETIME last_write_time;
+
+      for (uint32_t i = 0; i < ki.subkey_count; i++) 
+      { 
+         uint32_t ret = RegEnumKeyExW(_subkey, 
+                                      i, 
+                                      data, 
+                                      (LPDWORD)&ki.max_subkey_len,
+                                      nullptr, 
+                                      nullptr, 
+                                      nullptr, 
+                                      &last_write_time); 
+         if (ret != ERROR_SUCCESS)   
+            break;
+
+         values.push_back(KeyValue{value, L"", last_write_time});
+      }
+
+      value.reserve(ki.max_value_len);
+
+      data = const_cast<wchar_t*>(value.data());
+
+      for (uint32_t i = 0; i < ki.value_count; i++) 
+      { 
+         uint32_t data_len = value.capacity();
+
+         uint32_t ret = RegEnumValueW(_subkey, 
+                                      i, 
+                                      data, 
+                                      (LPDWORD)&data_len, 
+                                      nullptr /* lpReserved */, 
+                                      nullptr /* lpType */,
+                                      nullptr /* lpData */,
+                                      nullptr /* lpcbData */);
+ 
+         while (ret == ERROR_MORE_DATA) 
+         { 
+            value.reserve(data_len);
+
+            data = const_cast<wchar_t*>(value.data());
+
+            ret = RegEnumValueW(_subkey, 
+                                i, 
+                                data, 
+                                (LPDWORD)&data_len, 
+                                nullptr /* lpReserved */, 
+                                nullptr /* lpType */,
+                                nullptr /* lpData */,
+                                nullptr /* lpcbData */);
+         } 
+
+         values[i].value = value;
+
+         if (ret == ERROR_NO_MORE_ITEMS) 
+            break; 
+         
+      }
+
+      return std::error_code();
+   }
 
    /// Queries the value of a subkey name.
    /// value must reserve storage to retreive data.
@@ -194,9 +285,61 @@ public:
       return std::error_code();
    }
 
-   // delete_value()
+   std::error_code delete_value(const std::string& name)
+   {
+      std::wstring value_name = utf8_to_wstring(name);
 
-   // load_mui_string();
+      uint32_t ret = RegDeleteValueW(_subkey, value_name.c_str());
+
+      if (ret != ERROR_SUCCESS)
+      {
+         return win32::make_error_code(ret);
+      }
+
+      return std::error_code();
+   }
+
+   // query_mui_value retrieves the localized string value for the specified value name 
+   // associated with an open key.
+   std::error_code query_mui_value(const std::string& name, std::wstring& value)
+   {
+      std::wstring value_name = utf8_to_wstring(name);
+
+      DWORD length = value.capacity();
+
+      wchar_t* data = const_cast<wchar_t*>(value.data());
+
+      DWORD data_len = 0;
+
+      std::wstring dir;
+
+      uint32_t ret = RegLoadMUIStringW(_subkey, value_name.c_str(), data, length, &data_len, 0, dir.c_str());
+
+      if (ret == ERROR_FILE_NOT_FOUND)
+      {
+         auto err = expand_string(L"%SystemRoot%\\system32\\", dir);
+         if (err)
+            return err;
+
+         ret = RegLoadMUIStringW(_subkey, value_name.c_str(), data, length, &data_len, 0, dir.c_str());
+      }
+
+      while (ret == ERROR_MORE_DATA)
+      {
+         value.reserve(data_len);
+
+         wchar_t* d = const_cast<wchar_t*>(value.data());
+
+         ret = RegLoadMUIStringW(_subkey, value_name.c_str(), d, data_len, &data_len, 0, dir.c_str());
+      }
+
+      if (ret != ERROR_SUCCESS)
+      {
+         return win32::make_error_code(ret);
+      }
+
+      return std::error_code();
+   }
 
    // ExpandString expands environment-variable strings and replaces
    // them with the values defined for the current user.
@@ -229,39 +372,28 @@ public:
       return std::error_code();
    }
 
-   std::error_code query_info_key()
+   std::error_code query_info_key(KeyInfo& ki)
    {
-#if 0
-      struct KeyInfo  
-      {
-         uint32_t SubKeyCount     
-         uint32_t MaxSubKeyLen     // size of the key's subkey with the longest name
-         uint32_t ValueCount      
-         uint32_t MaxValueNameLen  // size of the key's longest value name
-         uint32_t MaxValueLen      // longest data component among the key's values, in bytes
-         lastWriteTime   
-      }
 
       uint32_t ret = RegQueryInfoKey(
          _subkey,
          nullptr /* lpClass */,
          nullptr /* lpcClass */,
          nullptr /* lpReserved */,
-         _Out_opt_   LPDWORD   lpcSubKeys,
-         _Out_opt_   LPDWORD   lpcMaxSubKeyLen,
-         _Out_opt_   LPDWORD   lpcMaxClassLen,
-         _Out_opt_   LPDWORD   lpcValues,
-         _Out_opt_   LPDWORD   lpcMaxValueNameLen,
-         _Out_opt_   LPDWORD   lpcMaxValueLen,
-         _Out_opt_   LPDWORD   lpcbSecurityDescriptor,
-         _Out_opt_   PFILETIME lpftLastWriteTime
-      );
+         (LPDWORD)&ki.subkey_count,
+         (LPDWORD)&ki.max_subkey_len,
+         nullptr /* lpcMaxClassLen */,
+         (LPDWORD)&ki.value_count,
+         (LPDWORD)&ki.max_value_name_len,
+         (LPDWORD)&ki.max_value_len,
+         nullptr /* lpcbSecurityDescriptor */,
+         &ki.last_write_time);
 
       if (ret != ERROR_SUCCESS)
       {
          return win32::make_error_code(ret);
       }
-#endif
+
       return std::error_code();
    }
 

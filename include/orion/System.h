@@ -13,7 +13,6 @@
 #include <orion/Units.h>
 
 #include <cstdint>
-#include <iosfwd>
 #include <string>
 #include <vector>
 
@@ -21,6 +20,7 @@ namespace orion
 {
 namespace sys
 {
+   
 struct CpuTimes
 {
    uint32_t user;
@@ -63,9 +63,6 @@ API_EXPORT void get_loadavg(double avg[3]);
 API_EXPORT Value<si::Kilobyte> get_free_memory();
 
 API_EXPORT Value<si::Kilobyte> get_total_memory();
-
-/// Writes the stack trace using the given ostream object.
-API_EXPORT void write_stack_trace(std::ostream& os);
 
 } // namespace sys
 } // namespace orion
