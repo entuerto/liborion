@@ -14,14 +14,24 @@
 #include <_mingw.h>
 #endif
 
-#define ORION_MINGW32 __MINGW32__
-#define ORION_MINGW64 __MINGW64__
+#if defined(__MINGW32__)
+#define ORION_MINGW32 
+#endif
 
-#define ORION_MSVC  _MSC_VER
-#define ORION_CLANG __clang_version__
+#if defined(__MINGW64__)
+#define ORION_MINGW64 
+#endif
 
-#if !defined(ORION_CLANG)
-#define ORION_GCC   __GNUC__
+#if defined(_MSC_VER)
+#define ORION_MSVC  
+#endif
+
+#if defined(__clang__)
+#define ORION_CLANG 
+#endif
+
+#if defined(__GNUC__)
+#define ORION_GCC   
 #endif
 
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)
@@ -30,6 +40,10 @@
 
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201402L)
 #define ORION_CXX14 
+#endif
+
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201703L)
+#define ORION_CXX17 
 #endif
 
 

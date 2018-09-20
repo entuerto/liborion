@@ -8,13 +8,16 @@
 #ifndef ORION_CONFIG_MACOS_H
 #define ORION_CONFIG_MACOS_H
 
-#define ORION_MACOS __MACH__
+#if defined(__MACH__)
+#define ORION_MACOS 
+#endif
 
+#if defined(__clang__)
+#define ORION_CLANG 
+#endif
 
-#define ORION_CLANG __clang_version__
-
-#if !defined(ORION_CLANG)
-#define ORION_GCC   __GNUC__
+#if defined(__GNUC__)
+#define ORION_GCC   
 #endif
 
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)
@@ -23,6 +26,10 @@
 
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201402L)
 #define ORION_CXX14 
+#endif
+
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201703L)
+#define ORION_CXX17 
 #endif
 
 //  Default define for symbole export 
