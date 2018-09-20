@@ -13,6 +13,7 @@
 #include <fmt/format.h>
 
 #include <iostream>
+#include <vector>
 
 namespace orion
 {
@@ -48,7 +49,7 @@ bool operator>(const Version& v1, const Version& v2) noexcept;
 bool operator<=(const Version& v1, const Version& v2) noexcept;
 bool operator>=(const Version& v1, const Version& v2) noexcept;
 
-inline void format_arg(fmt::BasicFormatter<char>& f, const char*& /*fmt_str*/, const Version& v);
+inline std::string to_string(const Version& v);
 
 inline std::istream& operator>>(std::istream& s, Version& v);
 
@@ -56,6 +57,25 @@ inline std::ostream& operator<<(std::ostream& s, const Version& v);
 
 
 } // namespace orion
+
+namespace fmt
+{
+template<>
+struct formatter<orion::Version>
+{
+   template<typename ParseContext>
+   constexpr auto parse(ParseContext& ctx)
+   {
+      return ctx.begin();
+   }
+
+   template<typename FormatContext>
+   auto format(const orion::Version& v, FormatContext& ctx)
+   {
+      return fmt::format_to(ctx.begin(), "{}", orion::to_string(v));
+   }
+};
+} // namespace fmt
 
 #include <orion/impl/Semver.ipp>
 

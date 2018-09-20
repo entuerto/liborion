@@ -148,23 +148,27 @@ inline bool operator>=(const Version& v1, const Version& v2) noexcept
 
 //-------------------------------------------------------------------------------------------------
 
-inline void format_arg(fmt::BasicFormatter<char>& f, const char*& /*fmt_str*/, const Version& v)
+inline std::string to_string(const Version& v)
 {
-   f.writer().write("{}.{}.{}", v.major, v.minor, v.patch);
+   fmt::memory_buffer buffer;
+
+   fmt::format_to(buffer, "{}.{}.{}", v.major, v.minor, v.patch);
 
    if (not v.prerelease.empty())
    {
       std::string text = join(v.prerelease, "."s);
 
-      f.writer().write("-{}", text);
+      fmt::format_to(buffer, "-{}", text);
    }
 
    if (not v.build.empty())
    {
       std::string text = join(v.build, "."s);
 
-      f.writer().write("+{}", text);
+      fmt::format_to(buffer, "+{}", text);
    }
+
+   return fmt::to_string(buffer);
 }
 
 inline std::istream& operator>>(std::istream& s, Version& v)

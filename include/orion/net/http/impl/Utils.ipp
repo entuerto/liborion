@@ -78,11 +78,6 @@ static const std::map<Method, std::string>& method_text()
    }
 }
 
-inline void format_arg(fmt::BasicFormatter<char>& f, const char*& /*fmt_str*/, Method m)
-{
-   f.writer().write("{}", to_string(m));
-}
-
 inline std::ostream& operator<<(std::ostream& o, Method m)
 {
    auto item = method_text().find(m);

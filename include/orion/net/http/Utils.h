@@ -132,15 +132,13 @@ enum class Method
 
 //-------------------------------------------------------------------------------------------------
 
-void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, Method m);
+std::string to_string(Method m);
 
 std::ostream& operator<<(std::ostream& o, Method m);
 
 bool operator==(Method m, const std::string& text);
 
 bool operator==(const std::string& text, Method m);
-
-std::string to_string(Method m);
 
 template<>
 Method from_string<Method>(const std::string& text);
@@ -263,6 +261,25 @@ const char crlf[] = {'\r', '\n', '\0'};
 } // namespace http
 } // namespace net
 } // namespace orion
+
+namespace fmt
+{
+template<>
+struct formatter<orion::net::http::Method>
+{
+   template<typename ParseContext>
+   constexpr auto parse(ParseContext& ctx)
+   {
+      return ctx.begin();
+   }
+
+   template<typename FormatContext>
+   auto format(const orion::net::http::Method& m, FormatContext& ctx)
+   {
+      return fmt::format_to(ctx.begin(), "{}", orion::net::http::to_string(m));
+   }
+};
+} // namespace fmt
 
 #include <orion/net/http/impl/Utils.ipp>
 
