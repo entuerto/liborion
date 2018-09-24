@@ -219,8 +219,7 @@ Version parse_version(const std::string& value)
    std::vector<std::string> parts = split_max(by_char{'.'}, 3) | value;
 
    // Error when not 3 parts
-   if (parts.size() != 3)
-      return Version{};
+   throw_if<Exception>(parts.size() != 3, "No Major.Minor.Patch elements found");
 
    Version v;
 
@@ -229,7 +228,12 @@ Version parse_version(const std::string& value)
 
    try
    {
-      v.major = std::stoul(parts[0]);
+      auto num =  std::stol(parts[0]);
+
+      if (num < 0)
+         throw_exception<Exception>("Invalid major number (< 0)", _src_loc);
+
+      v.major = num;
    }
    catch (std::invalid_argument& ia)
    {
@@ -241,7 +245,12 @@ Version parse_version(const std::string& value)
 
    try
    {
-      v.minor = std::stoul(parts[1]);
+      auto num =  std::stol(parts[1]);
+
+      if (num < 0)
+         throw_exception<Exception>("Invalid minor number (< 0)", _src_loc);
+
+      v.minor = num;
    }
    catch (std::invalid_argument& ia)
    {
