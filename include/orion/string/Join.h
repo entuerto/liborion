@@ -10,6 +10,8 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <fmt/format.h>
+
 #include <locale>
 #include <sstream>
 #include <string>
@@ -57,9 +59,7 @@ public:
    template<typename T>
    std::string operator()(const T& t) const
    {
-      using namespace std;
-
-      return to_string(t);
+      return fmt::to_string(t);
    }
 };
 
