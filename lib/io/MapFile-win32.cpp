@@ -15,7 +15,9 @@
 #include <host/win32/Error.h>
 #include <host/win32/String.h>
 
-#define WIN32_LEAN_AND_MEAN
+#ifndef WIN32_LEAN_AND_MEAN
+#   define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 
 namespace orion
@@ -148,12 +150,12 @@ MapFile make_mapfile(const std::wstring& file_name,
                                     nullptr,
                                     OPEN_EXISTING,
                                     FILE_ATTRIBUTE_NORMAL,
-                                    0);
+                                    nullptr);
 
    if (file_handle == INVALID_HANDLE_VALUE)
    {
       // Error
-      return {};
+      throw std::system_error(std::make_error_code(std::errc::bad_file_descriptor));
    }
 
    std::unique_ptr<MapFileImpl> impl = make_impl(file_handle, flags, bytes_to_map, offset);
@@ -168,7 +170,8 @@ MapFile make_mapfile(uintptr_t file_handle,
                      std::size_t bytes_to_map,
                      uint64_t offset)
 {
-   std::unique_ptr<MapFileImpl> impl = make_impl((HANDLE)file_handle, flags, bytes_to_map, offset);
+   std::unique_ptr<MapFileImpl> impl =
+      make_impl(reinterpret_cast<HANDLE>(file_handle), flags, bytes_to_map, offset);
 
    return MapFile{std::move(impl)};
 }
@@ -207,13 +210,12 @@ std::unique_ptr<MapFileImpl> make_impl(HANDLE file_handle,
       throw std::system_error(win32::make_error_code(GetLastError()));
       return {};
    }
-   std::size_t file_size = static_cast<std::size_t>(win32_file_size.QuadPart);
+   auto file_size = static_cast<std::size_t>(win32_file_size.QuadPart);
 
    if (offset > file_size)
    {
       // Error
       throw std::system_error(win32::make_error_code(GetLastError()));
-      return {};
    }
 
    HANDLE file_mapping = CreateFileMapping(file_handle, nullptr, protect, 0, 0, nullptr);
@@ -221,23 +223,21 @@ std::unique_ptr<MapFileImpl> make_impl(HANDLE file_handle,
    {
       // Error
       throw std::system_error(win32::make_error_code(GetLastError()));
-      return {};
    }
 
    if ((offset + bytes_to_map) > file_size)
       bytes_to_map = std::size_t(file_size - offset);
 
-   DWORD offset_low  = DWORD(offset & 0xFFFFFFFF);
-   DWORD offset_high = DWORD(offset >> 32);
+   auto offset_low  = static_cast<uint32_t>(offset & 0xFFFFFFFF);
+   auto offset_high = static_cast<uint32_t>(offset >> 32u);
 
    // Get mapped view address
-   uint8_t* view_address =
-      (uint8_t*)MapViewOfFile(file_mapping, access, offset_high, offset_low, bytes_to_map);
+   auto view_address = static_cast<uint8_t*>(
+      MapViewOfFile(file_mapping, access, offset_high, offset_low, bytes_to_map));
    if (view_address == nullptr)
    {
       CloseHandle(file_mapping);
       throw std::system_error(win32::make_error_code(GetLastError()));
-      return {};
    }
 
    // mapped_size = (bytes_to_map == 0) ? file_size : bytes_to_map;

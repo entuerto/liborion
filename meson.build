@@ -22,7 +22,7 @@ host_system = host_machine.system()
 #
 # Asio
 #
-if compiler.has_header('asio.hpp', required: true) 
+if compiler.has_header('asio.hpp') 
    asio_cflags = ['-DASIO_STANDALONE -DASIO_NO_DEPRECATED -DASIO_HAS_MOVE']
 
    if host_system == 'windows'

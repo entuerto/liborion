@@ -7,7 +7,7 @@
 //
 #include <orion/debug/Stacktrace.h>
 
-#include <host/mingw64/Debug.h>
+#include <host/win32/Debug.h>
 
 namespace orion
 {
@@ -18,7 +18,7 @@ Stacktrace make_stacktrace(int skip /* = 0 */, int max_depth /* = DEFAULT_MAX_DE
 {
    std::vector<Frame> frames;
 
-   mingw64::capture_stacktrace(frames, skip, max_depth);
+   win32::capture_stacktrace(frames, skip, max_depth);
 
    return Stacktrace{std::move(frames)};
 }

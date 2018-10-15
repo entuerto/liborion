@@ -15,18 +15,48 @@ namespace orion
 {
 namespace debug
 {
-
 //--------------------------------------------------------------------------------------------------
 // Frame
 
+Frame::Frame()
+   : _address(0)
+{
+}
+
+Frame::Frame(uintptr_t addr) noexcept
+   : _address(addr)
+{
+}
+
+uintptr_t Frame::address() const
+{
+   return _address;
+}
+
+bool Frame::empty() const noexcept
+{
+   return _address == 0;
+}
+
 std::string to_string(const Frame& f)
 {
-   return fmt::format("{:#018x}, {}!{}, {}:{}",
-                      f.address,
-                      (not f.module_name.empty() ? f.module_name : "[unknown module]"),
-                      (not f.function_name.empty() ? f.function_name : "[unknown function]"),
-                      (not f.source_file.empty() ? f.source_file : "[unknown file]"),
-                      f.source_line);
+   std::ostringstream ostream;
+
+   auto name = f.function_name();
+
+   if (not name.empty())
+      ostream << fmt::format("{}()", name);
+   else
+      ostream << fmt::format("{:#016x}", f.address());
+
+   auto file = f.source_file();
+
+   if (not file.empty())
+      ostream << fmt::format(" at {}:{} ", file, f.source_line());
+   else if (not f.module_name().empty())
+      ostream << fmt::format(" in {}", f.module_name());
+
+   return ostream.str();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -107,9 +137,12 @@ std::string to_string(const Stacktrace& st)
 {
    std::ostringstream ostream;
 
+   int i = 0;
    for (auto& frame : st)
    {
-      ostream << to_string(frame) << "\n";
+      ostream << fmt::format("{:2}# ", i)
+              << to_string(frame) << "\n";
+      ++i;
    }
 
    return ostream.str();

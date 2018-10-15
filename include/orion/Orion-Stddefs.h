@@ -30,8 +30,8 @@
 
 #ifndef DEFAULT_MOVE
 #define DEFAULT_MOVE(klass) \
-   klass(klass&&) noexcept = default; \
-   klass& operator=(klass&&) noexcept = default;   
+   klass(klass&&) = default; \
+   klass& operator=(klass&&) = default;   
 #endif
    
 #endif

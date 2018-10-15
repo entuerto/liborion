@@ -882,7 +882,9 @@ def declare_build_targets(build_env, static_libraries, shared_libraries, executa
          'lib/Uuid-linux.cpp'
       ],
      'sources-windows' : [
-        'lib/debug/Stacktrace-win32.cpp',
+         'lib/debug/Stacktrace-win32.cpp',
+         'lib/debug/StacktraceFrame-win32.cpp',
+         'lib/host/win32/Debug.cpp',
          'lib/io/MapFile-win32.cpp',
          'lib/Module-win32.cpp',
          'lib/System-win32.cpp',

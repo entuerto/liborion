@@ -40,7 +40,7 @@ public:
    MapFile();
    ~MapFile();
 
-   MapFile(std::unique_ptr<MapFileImpl>&& priv);
+   explicit MapFile(std::unique_ptr<MapFileImpl>&& priv);
 
    // Move
    MapFile(MapFile&& rhs) noexcept;
@@ -83,20 +83,20 @@ private:
    std::unique_ptr<MapFileImpl> _impl;
 };
 
-API_EXPORT MapFile make_mapfile(const std::string& file_name,
-                                MapFlags flags,
-                                std::size_t bytes_to_map = 0, // 0 = Whole file
-                                uint64_t offset          = 0);
+MapFile make_mapfile(const std::string& file_name,
+                     MapFlags flags,
+                     std::size_t bytes_to_map = 0, // 0 = Whole file
+                     uint64_t offset          = 0);
 
-API_EXPORT MapFile make_mapfile(const std::wstring& file_name,
-                                MapFlags flags,
-                                std::size_t bytes_to_map = 0, // 0 = Whole file
-                                uint64_t offset          = 0);
+MapFile make_mapfile(const std::wstring& file_name,
+                     MapFlags flags,
+                     std::size_t bytes_to_map = 0, // 0 = Whole file
+                     uint64_t offset          = 0);
 
-API_EXPORT MapFile make_mapfile(uintptr_t file_handle,
-                                MapFlags flags,
-                                std::size_t bytes_to_map = 0, // 0 = Whole file
-                                uint64_t offset          = 0);
+MapFile make_mapfile(uintptr_t file_handle,
+                     MapFlags flags,
+                     std::size_t bytes_to_map = 0, // 0 = Whole file
+                     uint64_t offset          = 0);
 
 } // namespace io
 } // namespace orion

@@ -39,9 +39,13 @@ orion_libs = [ boost_prog_opts_lib ]
 
 if host_system == 'windows'
    orion_src += [
+      'debug/ModuleCache.cpp',
       'debug/Stacktrace-win32.cpp',
-      'host/mingw64/DwarfSymbols.cpp',
-      'host/mingw64/ModulePool.cpp',
+      'debug/StacktraceFrame-posix.cpp',
+      'debug/Symbols.cpp',
+      'debug/dw/COFF.cpp',
+      'debug/dw/DwarfWrapper.cpp',
+      'host/win32/Debug.cpp',
       'io/MapFile-win32.cpp',
       'Module-win32.cpp',
       'System-win32.cpp',

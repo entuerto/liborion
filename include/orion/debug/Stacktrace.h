@@ -21,13 +21,41 @@ namespace debug
 
 //--------------------------------------------------------------------------------------------------
 
-struct API_EXPORT Frame
+class API_EXPORT Frame
 {
-   uintptr_t address;
-   std::string module_name;
-   std::string function_name;
-   std::string source_file;
-   uint64_t source_line;
+public:
+   /// Default constructor
+   Frame();
+
+   explicit Frame(uintptr_t addr) noexcept;
+
+   ~Frame() = default;
+
+   Frame(const Frame&) = default;
+   Frame& operator=(const Frame&) = default;
+
+   Frame(Frame&&) = default;
+   Frame& operator=(Frame&&) = default;
+
+   /// Address of the frame function.
+   uintptr_t address() const;
+
+   /// Module name where the address is located.
+   std::string module_name() const;
+
+   /// function name of the frame address.
+   std::string function_name() const;
+
+   /// Path to the source file, were the function of the frame is defined.
+   std::string source_file() const;
+
+   /// Code line in the source file, were the function of the frame is defined.
+   uint64_t source_line() const;
+
+   bool empty() const noexcept;
+
+private:
+   uintptr_t _address;
 };
 
 API_EXPORT std::string to_string(const Frame& f);
