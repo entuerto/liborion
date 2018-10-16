@@ -6,7 +6,6 @@ Projects that use ninja themselves should either write a similar script
 or use a meta-build system that supports Ninja output.
 """
 
-from dataclasses import dataclass
 from optparse import OptionParser
 import os
 import pipes

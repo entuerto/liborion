@@ -11,7 +11,7 @@
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/SourceLocation.h>
-#include <orion/Utils.h>
+#include <orion/TypeTraits.h>
 #include <orion/log/ExceptionRecord.h>
 
 #include <sstream>

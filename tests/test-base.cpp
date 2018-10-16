@@ -33,6 +33,11 @@ void unreachable()
    AssertUnreachable("Test unreachable");
 }
 
+void f(int& i) 
+{ 
+   i += 1; 
+}
+
 //--------------------------------------------------------------------------------------------------
 // Tests
 //--------------------------------------------------------------------------------------------------
@@ -59,6 +64,35 @@ TestCase("Ensures(): Terminates on a false expression")
 TestCase("AssertUnreachable(): Terminates on assertation")
 {
    check_throws(unreachable());
+}
+
+TestCase("FinalAction: function lambda")
+{
+   int i = 0;
+   {
+      auto _ = finally([&]() { f(i); });
+      check_eq(i, 0);
+   }
+   check_eq(i, 1);
+}
+
+TestCase("FinalAction: function lambda with move")
+{
+   int i = 0;
+   {
+      auto _1 = finally([&]() { f(i); });
+      {
+         auto _2 = std::move(_1);
+         check_eq(i, 0);
+      }
+      check_eq(i, 1);
+      {
+         auto _2 = std::move(_1);
+         check_eq(i, 1);
+      }
+      check_eq(i, 1);
+   }
+   check_eq(i, 1);
 }
 
 } // Section

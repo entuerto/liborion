@@ -8,9 +8,11 @@
 #include <orion/log/Logger.h>
 
 #include <orion/Log.h>
+#include <orion/System.h>
 #include <orion/Utils.h>
 
-#include <orion/System.h>
+#include <fmt/format.h>
+
 #include <sstream>
 
 namespace orion
