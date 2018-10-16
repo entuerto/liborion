@@ -8,6 +8,7 @@
 #ifndef ORION_UNITTEST_TEST_IPP
 #define ORION_UNITTEST_TEST_IPP
 
+#include <orion/Assert.h>
 #include <orion/Utils.h>
 
 #include <string>
@@ -77,6 +78,7 @@ inline void Test::xassert(const T& expected, const T& actual, Args... args)
          success = expected >= actual;
          break;
       default:
+         AssertUnreachable("Invalid operator");
          break;
    }
 

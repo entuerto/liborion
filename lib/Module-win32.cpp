@@ -7,7 +7,7 @@
 //
 #include <orion/Module.h>
 
-#include <orion/ErrorMacros.h>
+#include <orion/Assert.h>
 #include <orion/Exception.h>
 #include <orion/Log.h>
 #include <orion/SourceLocation.h>
@@ -105,7 +105,7 @@ void Module::close()
 ///
 void* Module::find_symbol_address(const std::string& symbol_name)
 {
-   RETURN_VALUE_IF_FAIL(is_open(), nullptr);
+   Expects(is_open());
 
    // reinterpret_cast
    void* symbol = reinterpret_cast<void*>(GetProcAddress(_impl->handle, symbol_name.c_str()));

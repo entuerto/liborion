@@ -909,6 +909,7 @@ def declare_build_targets(build_env, static_libraries, shared_libraries, executa
       'tool'     : 'cxx',
       'includes' : ['include', 'lib', 'deps', 'tests'],
       'sources'  : [
+         'tests/test-base.cpp',
          'tests/test-encoding.cpp',
          'tests/test-logger.cpp',
          'tests/test-semver.cpp',

@@ -8,22 +8,7 @@
 #ifndef ORION_UNITTEST_TESTMACROS_H
 #define ORION_UNITTEST_TESTMACROS_H
 
-//-------------------------------------------------------------------------------------------------
-
-// Stringify an identifier
-#define ORION_TOSTRING_IMPL(...) #__VA_ARGS__
-#define ORION_TOSTRING(...) ORION_TOSTRING_IMPL(__VA_ARGS__)
-
-// Macros for string concatenation
-#define ORION_CAT_IMPL(s1, s2) s1##s2
-#define ORION_CAT(s1, s2) ORION_CAT_IMPL(s1, s2)
-
-// Macros for anonymous variable name generation
-#ifdef __COUNTER__ // not standard and may be missing for some compilers
-#define ORION_ANONYMOUS(x) ORION_CAT(x, __COUNTER__)
-#else // __COUNTER__
-#define ORION_ANONYMOUS(x) ORION_CAT(x, __LINE__)
-#endif // __COUNTER__
+#include <orion/Macros.h>
 
 // clang-format off
 

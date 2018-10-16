@@ -7,6 +7,7 @@
 //
 #include <orion/unittest/TestUtils.h>
 
+#include <orion/Assert.h>
 #include <orion/String.h>
 
 #include <iostream>
@@ -30,6 +31,7 @@ std::string to_string(ReportLevel rl)
       case ReportLevel::Detailed:
          return "Detailed";
       default:
+         AssertUnreachable("Invalid ReportLevel");
          break;
    }
    return "Error";

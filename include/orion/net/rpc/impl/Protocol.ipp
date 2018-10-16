@@ -10,6 +10,8 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/Assert.h>
+
 namespace orion
 {
 namespace net
@@ -49,6 +51,9 @@ inline std::ostream& operator<<(std::ostream& s, ContentType ct)
          break;
       case ContentType::Json:
          s << "Json";
+         break;
+      default:
+         AssertUnreachable("Invalid ContentType");
          break;
    }
    

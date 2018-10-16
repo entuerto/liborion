@@ -7,6 +7,8 @@
 //
 #include <orion/log/Level.h>
 
+#include <orion/Assert.h>
+
 #include <iostream>
 
 namespace orion
@@ -39,6 +41,7 @@ std::string to_string(Level level)
       case Level::Fatal:
          return "Fatal     ";
       default:
+         AssertUnreachable("Invalid logger level");
          break;
    }
    return "";

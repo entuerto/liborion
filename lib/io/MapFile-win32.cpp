@@ -7,7 +7,6 @@
 //
 #include <orion/io/MapFile.h>
 
-#include <orion/ErrorMacros.h>
 #include <orion/Exception.h>
 #include <orion/SourceLocation.h>
 #include <orion/Throw.h>

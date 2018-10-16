@@ -7,7 +7,7 @@
 //
 #include <orion/Module.h>
 
-#include <orion/ErrorMacros.h>
+#include <orion/Assert.h>
 #include <orion/Log.h>
 
 namespace orion
@@ -81,7 +81,7 @@ void Module::close()
  */
 void* Module::find_symbol_address(const std::string& symbol_name)
 {
-   RETURN_VALUE_IF_FAIL(is_open(), nullptr);
+   Expects(is_open());
 
    return nullptr;
 }

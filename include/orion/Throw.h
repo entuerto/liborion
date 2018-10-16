@@ -17,13 +17,13 @@ namespace orion
 {
 
 template<typename E>
-void throw_exception(const std::string& msg)
+[[noreturn]] void throw_exception(const std::string& msg)
 {
    throw E(msg);
 }
 
 template<typename E>
-void throw_exception(const std::string& msg, const SourceLocation& src_loc)
+[[noreturn]] void throw_exception(const std::string& msg, const SourceLocation& src_loc)
 {
    throw E(msg, src_loc);
 }

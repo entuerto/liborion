@@ -133,6 +133,8 @@ struct EncodePathChar
             // only manipulates the path as a whole. That leaves
             // only ? to escape.
             return c == '?';
+         default:
+            break;
       }
       // Everything else must be escaped.
       return true;
@@ -185,6 +187,8 @@ struct EncodeUserPasswordChar
             // The parsing of userinfo treats ':' as special so we must escape
             // that too.
             return c == '@' or c == '/' or c == '?' or c == ':';
+         default:
+            break;
       }
       // Everything else must be escaped.
       return true;
@@ -232,6 +236,8 @@ struct EncodeQueryChar
          case '?':
          case '@':
             return true;
+         default:
+            break;
       }
       // Everything else must be escaped.
       return true;
@@ -281,6 +287,8 @@ struct EncodeFragmentChar
          case '?':
          case '@':
             return false;
+         default:
+            break;
       }
       // Everything else must be escaped.
       return true;

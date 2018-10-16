@@ -7,10 +7,11 @@
 //
 #include <debug/dw/DwarfWrapper.h>
 
+#include <orion/Assert.h>
+
 #include <fmt/format.h>
 
 #include <algorithm>
-#include <cassert>
 #include <iostream>
 
 namespace orion
@@ -1473,7 +1474,7 @@ DieChildIterator::DieChildIterator(const Die& parent)
 
 DieChildIterator& DieChildIterator::operator++()
 {
-   assert(_child && "Incremented end DieChildIterator");
+   Expects(_child) // Incremented end DieChildIterator
    if (_child)
    {
       Dwarf_Die raw_child_die;
@@ -1593,6 +1594,9 @@ AttrValue::AttrValue(const AttrValue& other)
       case AttrValueKind::String:
          new (&_value.String) std::string(other._value.String);
          break;
+      default:
+         AssertUnreachable("Invalid AttrValueKind");
+         break;
    }
 }
 
@@ -1629,6 +1633,9 @@ AttrValue::AttrValue(AttrValue&& other) noexcept
          break;
       case AttrValueKind::String:
          new (&_value.String) std::string(std::move(other._value.String));
+         break;
+      default:
+         AssertUnreachable("Invalid AttrValueKind");
          break;
    }
 }
@@ -1669,6 +1676,9 @@ AttrValue& AttrValue::operator=(AttrValue&& other) noexcept
       case AttrValueKind::String:
          new (&_value.String) std::string(std::move(other._value.String));
          break;
+      default:
+         AssertUnreachable("Invalid AttrValueKind");
+         break;
    }
    return *this;
 }
@@ -1683,55 +1693,55 @@ AttrValueKind AttrValue::kind() const
 }
 Dwarf_Half AttrValue::form() const
 {
-   assert(!empty());
+   Expects(not empty());
    return _form;
 }
 
 Dwarf_Off AttrValue::get_reference() const
 {
-   assert(_kind == AttrValueKind::Reference);
+   Expects(_kind == AttrValueKind::Reference);
    return _value.Reference;
 }
 
 Dwarf_Addr AttrValue::get_address() const
 {
-   assert(_kind == AttrValueKind::Address);
+   Expects(_kind == AttrValueKind::Address);
    return _value.Address;
 }
 
 Dwarf_Bool AttrValue::get_bool() const
 {
-   assert(_kind == AttrValueKind::Boolean);
+   Expects(_kind == AttrValueKind::Boolean);
    return _value.Boolean;
 }
 
 Dwarf_Unsigned AttrValue::get_unsigned() const
 {
-   assert(_kind == AttrValueKind::Unsigned);
+   Expects(_kind == AttrValueKind::Unsigned);
    return _value.Unsigned;
 }
 
 Dwarf_Signed AttrValue::get_signed() const
 {
-   assert(_kind == AttrValueKind::Signed);
+   Expects(_kind == AttrValueKind::Signed);
    return _value.Signed;
 }
 
 const std::vector<uint8_t>& AttrValue::get_bytes() const
 {
-   assert(_kind == AttrValueKind::Bytes);
+   Expects(_kind == AttrValueKind::Bytes);
    return _value.Bytes;
 }
 
 const std::vector<uint8_t>& AttrValue::get_exprloc() const
 {
-   assert(_kind == AttrValueKind::Exprloc);
+   Expects(_kind == AttrValueKind::Exprloc);
    return _value.Exprloc;
 }
 
 const std::string& AttrValue::get_string() const
 {
-   assert(_kind == AttrValueKind::String);
+   Expects(_kind == AttrValueKind::String);
    return _value.String;
 }
 
@@ -1775,7 +1785,9 @@ AttrValue::AttrValue(std::vector<uint8_t>&& value, AttrValueKind kind, Dwarf_Hal
       case AttrValueKind::Unsigned:
       case AttrValueKind::Signed:
       case AttrValueKind::String:
-         assert(false && "Bad AttrValueKind");
+      default:
+         AssertUnreachable("Invalid AttrValueKind");
+         break;
    }
 }
 
@@ -1808,7 +1820,9 @@ AttrValue::AttrValue(Dwarf_Unsigned value, AttrValueKind kind, Dwarf_Half form)
       case AttrValueKind::Bytes:
       case AttrValueKind::Exprloc:
       case AttrValueKind::String:
-         assert(false && "Bad AttrValueKind");
+      default:
+         AssertUnreachable("Invalid AttrValueKind");
+         break;
    }
 }
 
@@ -1833,6 +1847,9 @@ void AttrValue::destroy_value()
       case AttrValueKind::String:
          _value.String.~basic_string();
          break;
+      default:
+         AssertUnreachable("Invalid AttrValueKind");
+         break;
    }
    _kind = AttrValueKind::Empty;
 }
@@ -1844,14 +1861,15 @@ LineTable::LineTable(const Die& cu)
    , _lines(nullptr)
    , _line_count(0U)
 {
-   assert(cu.tag() == DW_TAG_compile_unit && "getLineTable is only valid on compile units");
+   // line_table() is only valid on compile units
+   Expects(cu.tag() == DW_TAG_compile_unit); 
 
    Dwarf_Unsigned version  = 0;
    Dwarf_Small table_count = 0;
 
    auto ret = dwarf_srclines_b(*cu, &version, &table_count, &_context, nullptr);
 
-   assert(table_count <= 1 && "Multiline table is not supported");
+   Expects(table_count <= 1); // Multiline table is not supported
    if (ret != DW_DLV_OK or table_count != 1)
    {
       dealloc_lines();
@@ -1911,7 +1929,7 @@ LineEntry LineTable::operator[](std::size_t index) const
 
 LineEntry LineTable::get_line(std::size_t index) const
 {
-   assert(index < size() && "Index out of range");
+   Expects(index < size());
 
    Dwarf_Line line = _lines[index];
 
