@@ -8,6 +8,9 @@
 #include <orion/Test.h>
 
 #include <orion/Assert.h>
+#include <orion/Utils.h>
+
+#include <limits> 
 
 using namespace orion;
 using namespace orion::unittest;
@@ -93,6 +96,40 @@ TestCase("FinalAction: function lambda with move")
       check_eq(i, 1);
    }
    check_eq(i, 1);
+}
+
+TestCase("narrow_cast")
+{
+    int n = 120;
+    char c = narrow_cast<char>(n);
+    check_true(c == 120);
+
+    n = 300;
+    unsigned char uc = narrow_cast<unsigned char>(n);
+    check_true(uc == 44);
+}
+
+TestCase("narrow")
+{
+    int n = 120;
+    const char c = narrow<char>(n);
+    check_true(c == 120);
+
+    n = 300;
+    check_throws_as(narrow<char>(n), NarrowingError);
+
+    const auto int32_max = std::numeric_limits<int32_t>::max();
+    const auto int32_min = std::numeric_limits<int32_t>::min();
+
+    check_true(narrow<uint32_t>(int32_t(0)) == 0);
+    check_true(narrow<uint32_t>(int32_t(1)) == 1);
+    check_true(narrow<uint32_t>(int32_max) == static_cast<uint32_t>(int32_max));
+
+    check_throws_as(narrow<uint32_t>(int32_t(-1)), NarrowingError);
+    check_throws_as(narrow<uint32_t>(int32_min), NarrowingError);
+
+    n = -42;
+    check_throws_as(narrow<unsigned>(n), NarrowingError);
 }
 
 } // Section
