@@ -233,7 +233,7 @@ darwin_name_tpls = {
       'filename' : '{0.prefix}{0.name}.{0.suffix}',
    },
    'exec'  : {
-      'file'     : '{0.name}'
+      'fname'     : '{0.name}'
    },
 }
 
@@ -312,7 +312,8 @@ class BuildTarget(Target):
 
    def libs(self):
       env_libs = 'libs-{}'.format(self._sysname)
-      return windows_libs + self._settings.get(env_libs, []) + self._settings.get('libs', [])
+      platform_libs = windows_libs if self.build_env.platform.is_windows() else []
+      return platform_libs + self._settings.get(env_libs, []) + self._settings.get('libs', [])
       
 
 
@@ -439,7 +440,7 @@ class BuildEnv:
       else:
          self.CC  = os.environ.get('CC',  'clang')
          self.CXX = os.environ.get('CXX', 'clang++')
-         self.LD  = cxx
+         self.LD  = self.CXX
          self.AR  = os.environ.get('AR', 'ar')
 
    def is_debug_build(self):
@@ -468,6 +469,18 @@ class BuildEnv:
                               clang_buildtype[self.buildtype]['warnings'],
                               clang_buildtype[self.buildtype]['cxxflags']))
 
+   def default_ldflags(self):
+      if self.platform.is_windows():
+         return list(set().union(LDFLAGS,
+                                 clang_msvc_buildtype[self.buildtype]['ldflags']))
+      elif self.platform.is_darwin():
+         return list(set().union(LDFLAGS,
+                                 ['-Wl,-dead_strip_dylibs', '-Wl,-headerpad_max_install_names'],
+                                 clang_buildtype[self.buildtype]['ldflags']))
+      return list(set().union(LDFLAGS,
+                              clang_buildtype[self.buildtype]['ldflags']))
+
+
    def format_obj_name(self, name):
       if self.platform.is_msvc():
          return '{}.obj'.format(name)
@@ -483,6 +496,9 @@ class BuildEnv:
       if libname.startswith('boost'):
          if self.platform.is_msvc():
             return '{}-vc140-mt{}'.format(libname, '-gd' if self.is_debug_build() else '')
+         else:
+            #return '{}-mt{}'.format(libname, '-gd' if self.is_debug_build() else '')
+            return '{}-mt'.format(libname)
       return libname
 
    def out_stlib(self, target):
@@ -524,6 +540,9 @@ class BuildEnv:
    def shlib_ldflags(self, target):
       def fmt_win_lib(library):
          return '{}.lib'.format(self.lib_to_native(library))
+
+      def fmt_lib(library):
+         return '-l{}'.format(self.lib_to_native(library))
    
       args = {}
    
@@ -539,17 +558,23 @@ class BuildEnv:
          args['libs'] = [fmt_win_lib(l) for l in target.libs()]
          return args
       elif self.platform.is_darwin():
-         args['ldflags'] = ['/dll'] + target.ldflags()
-         args['libs']    = target.libs()
+         args['ldflags'] = ['-shared',
+                            '-install_name @rpath/{}'.format(target.filename()),
+                            '-compatibility_version 0',
+                            '-current_version 0',] + target.ldflags()
+         args['libs']    = [fmt_lib(l) for l in target.libs()]
          return args
    
-      args['ldflags'] = ['/dll'] + target.ldflags()
-      args['libs']    = target.libs()
+      args['ldflags'] = ['-shared'] + target.ldflags()
+      args['libs']    = [fmt_lib(l) for l in target.libs()]
       return args
    
    def exec_ldflags(self, target):
       def fmt_win_lib(library):
-         return '{}.lib'.format(library)
+         return '{}.lib'.format(self.lib_to_native(library))
+
+      def fmt_lib(library):
+         return '-l{}'.format(self.lib_to_native(library))
    
       args = {}
    
@@ -563,13 +588,13 @@ class BuildEnv:
          # Add libs
          args['libs'] = [fmt_win_lib(l) for l in target.libs()]
          return args
-      elif platform.is_darwin():
+      elif self.platform.is_darwin():
          args['ldflags'] = target.ldflags()
-         args['libs']    = target.libs()
+         args['libs']    = [fmt_lib(l) for l in target.libs()]
          return args
       
       args['ldflags'] = target.ldflags()
-      args['libs']    = target.libs()
+      args['libs']    = [fmt_lib(l) for l in target.libs()]
       return args
 
    def dependencies(self, target, targets):
@@ -668,7 +693,7 @@ def write_ninja_file(build_env, targets):
    n.newline()
 
    n.variable('gbl_libs', LIBFLAGS)
-   n.variable('gbl_ldflags', LDFLAGS)
+   n.variable('gbl_ldflags', build_env.default_ldflags())
    n.newline()
 
    n.variable('cc', build_env.CC)
@@ -819,7 +844,7 @@ def write_ninja_rules(n, build_env):
            restat=True)
    n.newline()
    n.rule('REGENERATE_BUILD',
-           command='py ..\\configure.py build',
+           command='python3 ../configure.py build',
            description='Regenerating build files.',
            generator=1)
    n.newline()
@@ -871,12 +896,16 @@ def declare_build_targets(build_env, static_libraries, shared_libraries, executa
          'lib/unittest/TestSuite.cpp'
       ],
      'sources-darwin' : [
-        'lib/Module-darwin.cpp',
+         'lib/debug/ModuleCache.cpp',
+         'lib/debug/StacktraceFrame-posix.cpp',
+         'lib/debug/Symbols.cpp',
+         'lib/debug/dw/DwarfWrapper.cpp',
+         'lib/Module-darwin.cpp',
          'lib/System-darwin.cpp',
          'lib/Uuid-darwin.cpp'
       ],
      'sources-linux' : [
-        'lib/Module-linux.cpp',
+         'lib/Module-linux.cpp',
          'lib/System-linux.cpp',
          'lib/Uuid-linux.cpp'
       ],
