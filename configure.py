@@ -533,7 +533,8 @@ class BuildEnv:
          # Add linker flags
          args['ldflags'] = ['/dll', 
                             '/debug' if self.is_debug_build() else '',
-                            '/implib:{}'.format(implib)] + \
+                            '/implib:{}'.format(implib),
+                            '/libpath:{}'.format(LIB_OUT_NAME)] + \
                             target.ldflags()
          # Add libs
          args['libs'] = [fmt_win_lib(l) for l in target.libs()]
@@ -904,6 +905,64 @@ def declare_build_targets(build_env, static_libraries, shared_libraries, executa
      ]
    }
 
+   shared_libraries['orion-net'] = {
+      'tool'      : 'cxx',
+      'cxxflags'  : [],
+      'includes'  : ['include', 'lib', 'deps'],
+      'defines'   : asio_defines + ['-DORION_SHARED_EXPORTS'],
+      'soversion' : '0',
+      'sources'   : [
+         'lib/net/Address.cpp',
+         'lib/net/AddressV4.cpp',
+         'lib/net/AddressV6.cpp',
+         'lib/net/EndPoint.cpp',
+         'lib/net/Error.cpp',
+         'lib/net/Url.cpp',
+         # HTTP files
+         'lib/net/http/Error.cpp',
+         'lib/net/http/Parser.cpp',
+         'lib/net/http/Request.cpp',
+         'lib/net/http/RequestMux.cpp',
+         'lib/net/http/Response.cpp',
+         'lib/net/http/Server.cpp',
+         'lib/net/http/ServerImpl.cpp',
+         'lib/net/http/ServerConnection.cpp',
+         'lib/net/http/Session.cpp',
+         # TCP files
+         'lib/net/tcp/Session.cpp',
+         'lib/net/tcp/SessionImpl.cpp',
+         'lib/net/tcp/Utils.cpp',
+         # RPC files
+         'lib/net/rpc/Error.cpp'
+      ],
+      'sources-darwin' : [
+         'lib/net/AddressV4-darwin.cpp',
+         'lib/net/AddressV6-darwin.cpp'
+      ],
+      'sources-windows' : [
+         'lib/net/AddressV4-win32.cpp',
+         'lib/net/AddressV6-win32.cpp'
+      ],
+      'libs': [
+        'orion',
+        'http-parser',
+        'fmt'
+      ],
+      'libs-windows': [
+         'ws2_32',
+         'mswsock',
+         'psapi', 
+         'ntdll', 
+         'rpcrt4' 
+      ]
+   }
+
+   #------------------------------------------------------------------------------------------------
+   # Tests
+   # 
+   
+   # Test: orion
+   # 
    executables['test-orion'] = {
       'tool'     : 'cxx',
       'includes' : ['include', 'lib', 'deps', 'tests'],
@@ -919,6 +978,23 @@ def declare_build_targets(build_env, static_libraries, shared_libraries, executa
       ],
       'libs': ['fmt', 'orion']
    }
+
+   # Test: orion
+   # 
+   executables['test-orion-net'] = {
+      'tool'     : 'cxx',
+      'includes' : ['include', 'lib', 'deps', 'tests'],
+      'sources'  : [
+         'tests/test-net.cpp',
+         'tests/test-url.cpp',
+         'tests/test-main.cpp'
+      ],
+      'libs': ['fmt', 'orion', 'orion-net']
+   }
+
+   #------------------------------------------------------------------------------------------------
+   # Examples
+   # 
 
    # Example: date-example
    #
@@ -986,6 +1062,27 @@ def declare_build_targets(build_env, static_libraries, shared_libraries, executa
       'libs': ['fmt', 'orion']
    }
 
+   # Example: hello-http-server
+   #
+   executables['hello-http-server'] = {
+      'tool'     : 'cxx',
+      'includes' : ['include', 'deps'],
+      'sources'  : [
+         'examples/hello-http-server.cpp'
+      ],
+      'libs': ['fmt', 'orion', 'orion-net']
+   }
+
+   # Example: hello-http-client
+   #
+   executables['hello-http-client'] = {
+      'tool'     : 'cxx',
+      'includes' : ['include', 'deps'],
+      'sources'  : [
+         'examples/hello-http-client.cpp'
+      ],
+      'libs': ['fmt', 'orion', 'orion-net']
+   }
 
 #---------------------------------------------------------------------------------------------------
 

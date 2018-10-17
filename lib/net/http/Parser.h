@@ -36,8 +36,8 @@ public:
    bool headers_complete() const;
    bool message_complete() const;
 
-   std::error_code parse(Request& request, const char* data, std::size_t length);
-   std::error_code parse(Response& response, const char* data, std::size_t length);
+   std::error_code parse(Request& request, asio::const_buffer buffer);
+   std::error_code parse(Response& response, asio::const_buffer buffer);
 
    int on_message_begin();
    int on_url(const char* at, size_t length);

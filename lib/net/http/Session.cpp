@@ -85,13 +85,12 @@ Response Session::operator()(const Method& m)
 
    // Get a list of endpoints corresponding to the server name.
    asio::ip::tcp::resolver resolver(io_context);
-   asio::ip::tcp::resolver::query query(_url.hostname(), std::to_string(_url.port()));
 
-   auto endpoint_iterator = resolver.resolve(query);
+   auto endpoints = resolver.resolve(_url.hostname(), std::to_string(_url.port()));
 
    // Try each endpoint until we successfully establish a connection.
    asio::ip::tcp::socket socket(io_context);
-   asio::connect(socket, endpoint_iterator);
+   asio::connect(socket, endpoints);
 
    // Form the request. We specify the "Connection: close" header so that the
    // server will close the socket after transmitting the response. This will
@@ -120,8 +119,7 @@ Response Session::operator()(const Method& m)
    Parser parser;
    Response response(StatusCode::OK);
 
-   ec = parser.parse(
-      response, asio::buffer_cast<const char*>(response_buffer.data()), response_buffer.size());
+   ec = parser.parse(response, response_buffer.data());
    if (ec)
    {
       throw std::system_error(ec);

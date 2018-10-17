@@ -177,7 +177,7 @@ void Connection<SocketT>::start_read_timer()
    if (read_deadline() == std::chrono::seconds::zero())
       return;
 
-   _read_deadline_timer.expires_from_now(read_deadline());
+   _read_deadline_timer.expires_after(read_deadline());
 
    _read_deadline_timer.async_wait(
       std::bind(&Connection::on_read_timeout, this, std::placeholders::_1));
@@ -189,7 +189,7 @@ void Connection<SocketT>::start_write_timer()
    if (write_deadline() == std::chrono::seconds::zero())
       return;
 
-   _write_deadline_timer.expires_from_now(write_deadline());
+   _write_deadline_timer.expires_after(write_deadline());
 
    _write_deadline_timer.async_wait(
       std::bind(&Connection::on_write_timeout, this, std::placeholders::_1));

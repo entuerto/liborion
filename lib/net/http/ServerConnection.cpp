@@ -49,7 +49,7 @@ void ServerConnection::do_read()
 
          log::debug2("Connection::do_read() ", int(bytes_transferred));
 
-         ec = _parser.parse(_request, _in_buffer.data(), bytes_transferred);
+         ec = _parser.parse(_request, asio::const_buffer(_in_buffer.data(), bytes_transferred));
          if (ec)
          {
             log::error(ec, _src_loc);
