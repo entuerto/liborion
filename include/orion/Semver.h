@@ -80,25 +80,6 @@ inline std::ostream& operator<<(std::ostream& s, const Version& v);
 
 } // namespace orion
 
-namespace fmt
-{
-template<>
-struct formatter<orion::Version>
-{
-   template<typename ParseContext>
-   constexpr auto parse(ParseContext& ctx)
-   {
-      return ctx.begin();
-   }
-
-   template<typename FormatContext>
-   auto format(const orion::Version& v, FormatContext& ctx)
-   {
-      return fmt::format_to(ctx.begin(), "{}", orion::to_string(v));
-   }
-};
-} // namespace fmt
-
 #include <orion/impl/Semver.ipp>
 
 #endif // ORION_SEMVER_H 

@@ -115,11 +115,6 @@ inline std::string to_string(StatusCode code)
    return "StatusCode: Unkown";
 }
 
-inline void format_arg(fmt::BasicFormatter<char>& f, const char*& /*fmt_str*/, StatusCode code)
-{
-   f.writer().write("{}", static_cast<int>(code));
-}
-
 inline std::ostream& operator<<(std::ostream& o, StatusCode code)
 {
    o << static_cast<int>(code);
@@ -129,5 +124,27 @@ inline std::ostream& operator<<(std::ostream& o, StatusCode code)
 } // namespace http
 } // namespace net
 } // namespace orion
+
+//--------------------------------------------------------------------------------------------------
+// Formatters for fmtlib
+
+namespace fmt
+{
+template<>
+struct formatter<orion::net::http::StatusCode>
+{
+   template<typename ParseContext>
+   constexpr auto parse(ParseContext& ctx)
+   {
+      return ctx.begin();
+   }
+
+   template<typename FormatContext>
+   auto format(const orion::net::http::StatusCode& code, FormatContext& ctx)
+   {
+      return fmt::format_to(ctx.begin(), "{}", static_cast<int>(code));
+   }
+};
+} // namespace fmt
 
 #endif // ORION_NET_HTTP_STATUSCODE_IPP

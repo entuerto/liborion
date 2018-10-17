@@ -328,4 +328,27 @@ inline Version make_version(const std::string& value)
 }
 
 } // namespace orion
+
+//--------------------------------------------------------------------------------------------------
+// Formatters for fmtlib
+
+namespace fmt
+{
+template<>
+struct formatter<orion::Version>
+{
+   template<typename ParseContext>
+   constexpr auto parse(ParseContext& ctx)
+   {
+      return ctx.begin();
+   }
+
+   template<typename FormatContext>
+   auto format(const orion::Version& v, FormatContext& ctx)
+   {
+      return fmt::format_to(ctx.begin(), "{}", orion::to_string(v));
+   }
+};
+} // namespace fmt
+
 #endif // ORION_SEMVER_IPP
