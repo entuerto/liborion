@@ -111,12 +111,15 @@ bool Parser::message_complete() const
    return _message_complete;
 }
 
-std::error_code Parser::parse(Request& request, const char* data, std::size_t length)
+std::error_code Parser::parse(Request& request, asio::const_buffer buffer)
 {
    http_parser_init(&_parser, HTTP_REQUEST);
    _parser.data = this;
 
    _streambuf = request.body_rdbuf();
+
+   auto data = static_cast<const char*>(buffer.data());
+   auto length = buffer.size();
 
    int nparsed = http_parser_execute(&_parser, &_settings, data, length);
 
@@ -142,12 +145,15 @@ std::error_code Parser::parse(Request& request, const char* data, std::size_t le
    return std::error_code();
 }
 
-std::error_code Parser::parse(Response& response, const char* data, std::size_t length)
+std::error_code Parser::parse(Response& response, asio::const_buffer buffer)
 {
    http_parser_init(&_parser, HTTP_RESPONSE);
    _parser.data = this;
 
    _streambuf = response.body_rdbuf();
+
+   auto data = static_cast<const char*>(buffer.data());
+   auto length = buffer.size();
 
    std::size_t nparsed = http_parser_execute(&_parser, &_settings, data, length);
 

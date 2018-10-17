@@ -240,8 +240,6 @@ enum class Field
 
 //-------------------------------------------------------------------------------------------------
 
-void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, Field field);
-
 std::ostream& operator<<(std::ostream& o, Field f);
 
 bool operator==(Field f, const std::string& text);
@@ -253,7 +251,6 @@ std::string to_string(Field f);
 template<>
 Field from_string<Field>(const std::string& text);
 
-
 //-------------------------------------------------------------------------------------------------
 
 const char crlf[] = {'\r', '\n', '\0'};
@@ -261,25 +258,6 @@ const char crlf[] = {'\r', '\n', '\0'};
 } // namespace http
 } // namespace net
 } // namespace orion
-
-namespace fmt
-{
-template<>
-struct formatter<orion::net::http::Method>
-{
-   template<typename ParseContext>
-   constexpr auto parse(ParseContext& ctx)
-   {
-      return ctx.begin();
-   }
-
-   template<typename FormatContext>
-   auto format(const orion::net::http::Method& m, FormatContext& ctx)
-   {
-      return fmt::format_to(ctx.begin(), "{}", orion::net::http::to_string(m));
-   }
-};
-} // namespace fmt
 
 #include <orion/net/http/impl/Utils.ipp>
 

@@ -67,7 +67,7 @@ std::error_code ServerImpl::listen_and_serve(EndPoint endpoint)
    if (ec)
       return ec;
 
-   _io_context.run(ec);
+   _io_context.run();
 
    return ec;
 }

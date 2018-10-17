@@ -419,8 +419,17 @@ class Executable(BuildTarget):
 
 #---------------------------------------------------------------------------------------------------
 
+class Compiler:
+   def __init__(self, lang, buildtype):
+      self.language = lang
+      self.defines = buildtype.get('defines', [])
+      self.warnings = buildtype.get('warnings', [])
+      self.cflags = buildtype.get('cflags', [])
+      self.cxxflags = buildtype.get('cxxflags', [])
+
 class BuildEnv:
    def __init__(self, options):
+      self.targets = {}
       self.buildtype = options.buildtype
       self.platform  = Platform(options.platform)
       if options.host:
@@ -443,31 +452,22 @@ class BuildEnv:
          self.LD  = self.CXX
          self.AR  = os.environ.get('AR', 'ar')
 
+      if self.platform.is_windows():
+         self.compiler = Compiler('', clang_msvc_buildtype[self.buildtype])
+      else:
+         self.compiler = Compiler('', clang_buildtype[self.buildtype])
+
    def is_debug_build(self):
       return self.buildtype == 'debug'
 
    def default_defines(self):
-      if self.platform.is_windows():
-         return clang_msvc_buildtype[self.buildtype]['defines']
-      return clang_buildtype[self.buildtype]['defines']
+      return self.compiler.defines
    
    def default_cflags(self):
-      if self.platform.is_windows():
-         return list(set().union(CFLAGS,
-                                 clang_msvc_buildtype[self.buildtype]['warnings'],
-                                 clang_msvc_buildtype[self.buildtype]['cflags']))
-      return list(set().union(CFLAGS,
-                              clang_buildtype[self.buildtype]['warnings'],
-                              clang_buildtype[self.buildtype]['cflags']))
+      return list(set().union(CFLAGS, self.compiler.warnings, self.compiler.cflags))
    
    def default_cxxflags(self):
-      if self.platform.is_windows():
-         return list(set().union(CXXFLAGS,
-                                 clang_msvc_buildtype[self.buildtype]['warnings'],
-                                 clang_msvc_buildtype[self.buildtype]['cxxflags']))
-      return list(set().union(CXXFLAGS,
-                              clang_buildtype[self.buildtype]['warnings'],
-                              clang_buildtype[self.buildtype]['cxxflags']))
+      return list(set().union(CXXFLAGS, self.compiler.warnings, self.compiler.cxxflags))
 
    def default_ldflags(self):
       if self.platform.is_windows():
@@ -552,7 +552,8 @@ class BuildEnv:
          # Add linker flags
          args['ldflags'] = ['/dll', 
                             '/debug' if self.is_debug_build() else '',
-                            '/implib:{}'.format(implib)] + \
+                            '/implib:{}'.format(implib),
+                            '/libpath:{}'.format(LIB_OUT_NAME)] + \
                             target.ldflags()
          # Add libs
          args['libs'] = [fmt_win_lib(l) for l in target.libs()]
@@ -597,11 +598,11 @@ class BuildEnv:
       args['libs']    = [fmt_lib(l) for l in target.libs()]
       return args
 
-   def dependencies(self, target, targets):
+   def dependencies(self, target):
       deps = []
       for libname in target.libs():
-         if libname in targets:
-            deps += [self.out_dep(targets[libname])]
+         if libname in self.targets:
+            deps += [self.out_dep(self.targets[libname])]
    
       return deps
 
@@ -638,25 +639,24 @@ def main(argv):
    shared_libs = {}
    executables = {}
 
-   declare_build_targets(build_env, static_libs, shared_libs, executables)
-
-   targets = {}
+   declare_build_targets(build_env.platform, static_libs, shared_libs, executables)
 
    for name, settings in static_libs.items():
-      targets[name] = StaticLibrary(name, settings, build_env)
+      build_env.targets[name] = StaticLibrary(name, settings, build_env)
 
    for name, settings in shared_libs.items():
-      targets[name] = SharedLibrary(name, settings, build_env)
+      build_env.targets[name] = SharedLibrary(name, settings, build_env)
 
    for name, settings in executables.items():
-      targets[name] = Executable(name, settings, build_env)
+      build_env.targets[name] = Executable(name, settings, build_env)
 
-   write_ninja_file(build_env, targets)
+   write_ninja_file(build_env)
 
    return 0
 
-def write_ninja_file(build_env, targets):
+def write_ninja_file(build_env):
    platform = build_env.platform
+   targets = build_env.targets
 
    def rel_to_builddir(src_file):
       return os.path.relpath(os.path.join(root_dir, src_file), build_env.build_dir)
@@ -722,13 +722,13 @@ def write_ninja_file(build_env, targets):
          all_targets += n.build(build_env.out_shlib(target), 
                                 'link', 
                                 target.objects(),
-                                implicit=build_env.dependencies(target, targets),
+                                implicit=build_env.dependencies(target),
                                 variables=build_env.shlib_ldflags(target))
       elif isinstance(target, Executable):
          all_targets += n.build(build_env.out_exec(target), 
                                 'link', 
                                 target.objects(),
-                                implicit=build_env.dependencies(target, targets),
+                                implicit=build_env.dependencies(target),
                                 variables=build_env.exec_ldflags(target))
 
       n.newline()
@@ -852,9 +852,7 @@ def write_ninja_rules(n, build_env):
 
 #---------------------------------------------------------------------------------------------------
 
-def declare_build_targets(build_env, static_libraries, shared_libraries, executables):
-   platform = build_env.platform
-
+def declare_build_targets(platform, static_libraries, shared_libraries, executables):
    asio_defines = ['-DASIO_STANDALONE', '-DASIO_NO_DEPRECATED', '-DASIO_HAS_MOVE']
    boost_defines = ['-DBOOST_LIB_DIAGNOSTIC', '-DBOOST_ALL_NO_LIB', '-DBOOST_ALL_DYN_LINK']
 
@@ -933,6 +931,64 @@ def declare_build_targets(build_env, static_libraries, shared_libraries, executa
      ]
    }
 
+   shared_libraries['orion-net'] = {
+      'tool'      : 'cxx',
+      'cxxflags'  : [],
+      'includes'  : ['include', 'lib', 'deps'],
+      'defines'   : asio_defines + ['-DORION_SHARED_EXPORTS'],
+      'soversion' : '0',
+      'sources'   : [
+         'lib/net/Address.cpp',
+         'lib/net/AddressV4.cpp',
+         'lib/net/AddressV6.cpp',
+         'lib/net/EndPoint.cpp',
+         'lib/net/Error.cpp',
+         'lib/net/Url.cpp',
+         # HTTP files
+         'lib/net/http/Error.cpp',
+         'lib/net/http/Parser.cpp',
+         'lib/net/http/Request.cpp',
+         'lib/net/http/RequestMux.cpp',
+         'lib/net/http/Response.cpp',
+         'lib/net/http/Server.cpp',
+         'lib/net/http/ServerImpl.cpp',
+         'lib/net/http/ServerConnection.cpp',
+         'lib/net/http/Session.cpp',
+         # TCP files
+         'lib/net/tcp/Session.cpp',
+         'lib/net/tcp/SessionImpl.cpp',
+         'lib/net/tcp/Utils.cpp',
+         # RPC files
+         'lib/net/rpc/Error.cpp'
+      ],
+      'sources-darwin' : [
+         'lib/net/AddressV4-darwin.cpp',
+         'lib/net/AddressV6-darwin.cpp'
+      ],
+      'sources-windows' : [
+         'lib/net/AddressV4-win32.cpp',
+         'lib/net/AddressV6-win32.cpp'
+      ],
+      'libs': [
+        'orion',
+        'http-parser',
+        'fmt'
+      ],
+      'libs-windows': [
+         'ws2_32',
+         'mswsock',
+         'psapi', 
+         'ntdll', 
+         'rpcrt4' 
+      ]
+   }
+
+   #------------------------------------------------------------------------------------------------
+   # Tests
+   # 
+   
+   # Test: orion
+   # 
    executables['test-orion'] = {
       'tool'     : 'cxx',
       'includes' : ['include', 'lib', 'deps', 'tests'],
@@ -948,6 +1004,23 @@ def declare_build_targets(build_env, static_libraries, shared_libraries, executa
       ],
       'libs': ['fmt', 'orion']
    }
+
+   # Test: orion
+   # 
+   executables['test-orion-net'] = {
+      'tool'     : 'cxx',
+      'includes' : ['include', 'lib', 'deps', 'tests'],
+      'sources'  : [
+         'tests/test-net.cpp',
+         'tests/test-url.cpp',
+         'tests/test-main.cpp'
+      ],
+      'libs': ['fmt', 'orion', 'orion-net']
+   }
+
+   #------------------------------------------------------------------------------------------------
+   # Examples
+   # 
 
    # Example: date-example
    #
@@ -1015,6 +1088,27 @@ def declare_build_targets(build_env, static_libraries, shared_libraries, executa
       'libs': ['fmt', 'orion']
    }
 
+   # Example: hello-http-server
+   #
+   executables['hello-http-server'] = {
+      'tool'     : 'cxx',
+      'includes' : ['include', 'deps'],
+      'sources'  : [
+         'examples/hello-http-server.cpp'
+      ],
+      'libs': ['fmt', 'orion', 'orion-net']
+   }
+
+   # Example: hello-http-client
+   #
+   executables['hello-http-client'] = {
+      'tool'     : 'cxx',
+      'includes' : ['include', 'deps'],
+      'sources'  : [
+         'examples/hello-http-client.cpp'
+      ],
+      'libs': ['fmt', 'orion', 'orion-net']
+   }
 
 #---------------------------------------------------------------------------------------------------
 

@@ -237,11 +237,6 @@ static const std::map<Field, std::string>& field_text()
    }
 }
 
-inline void format_arg(fmt::BasicFormatter<char>& f, const char*& /*fmt_str*/, Field field)
-{
-   f.writer().write("{}", to_string(field));
-}
-
 inline std::ostream& operator<<(std::ostream& o, Field f)
 {
    auto item = field_text().find(f);
@@ -296,5 +291,44 @@ inline Field from_string<Field>(const std::string& text)
 } // namespace http
 } // namespace net
 } // namespace orion
+
+//--------------------------------------------------------------------------------------------------
+// Formatters for fmtlib
+
+namespace fmt
+{
+template<>
+struct formatter<orion::net::http::Method>
+{
+   template<typename ParseContext>
+   constexpr auto parse(ParseContext& ctx)
+   {
+      return ctx.begin();
+   }
+
+   template<typename FormatContext>
+   auto format(const orion::net::http::Method& m, FormatContext& ctx)
+   {
+      return fmt::format_to(ctx.begin(), "{}", orion::net::http::to_string(m));
+   }
+};
+
+template<>
+struct formatter<orion::net::http::Field>
+{
+   template<typename ParseContext>
+   constexpr auto parse(ParseContext& ctx)
+   {
+      return ctx.begin();
+   }
+
+   template<typename FormatContext>
+   auto format(const orion::net::http::Field& field, FormatContext& ctx)
+   {
+      return fmt::format_to(ctx.begin(), "{}", orion::net::http::to_string(field));
+   }
+};
+
+} // namespace fmt
 
 #endif // ORION_NET_HTTP_UTILS_IPP

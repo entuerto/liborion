@@ -94,8 +94,6 @@ enum class StatusCode
 
 std::string to_string(StatusCode code);
 
-void format_arg(fmt::BasicFormatter<char>& f, const char*& fmt_str, StatusCode code);
-
 std::ostream& operator<<(std::ostream& o, StatusCode code);
 
 } // namespace http

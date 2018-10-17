@@ -10,12 +10,37 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/Exception.h>
+
 #include <functional>
 #include <memory>
 #include <string>
 
 namespace orion
 {
+// ------------------------------------------------------------------------------------------------
+// ModuleError
+
+/// General module errors
+///
+/// Throw this exception for module errors.
+///
+class ModuleError : public Exception
+{
+public:
+   explicit ModuleError(std::string text)
+      : Exception(std::move(text))
+   {
+   }
+   ModuleError(std::string text, SourceLocation src_loc)
+      : Exception(std::move(text), std::move(src_loc))
+   {
+   }
+};
+
+//--------------------------------------------------------------------------------------------------
+// Module
+
 /// 
 /// Dynamic Loading of Modules These functions provide a portable way to
 /// dynamically load object files.
