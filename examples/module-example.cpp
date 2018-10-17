@@ -25,7 +25,7 @@ int main()
    {
       module->open("mod-example-0.1-d.dll");
    }
-   catch (const ModuleException& me)
+   catch (const ModuleError& me)
    {
       std::cout << me.what() << "\n";
       return 1;
@@ -37,7 +37,7 @@ int main()
    {
       create_instance = module->import<Hello*()>("create_instance");
    }
-   catch (const ModuleSymbolNotFoundException& snf)
+   catch (const SymbolNotFoundError& snf)
    {
       std::cout << snf.what() << "\n";
       return 1;

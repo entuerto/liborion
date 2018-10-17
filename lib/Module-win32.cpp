@@ -8,7 +8,6 @@
 #include <orion/Module.h>
 
 #include <orion/Assert.h>
-#include <orion/Exception.h>
 #include <orion/Log.h>
 #include <orion/SourceLocation.h>
 #include <orion/Throw.h>
@@ -81,7 +80,7 @@ void Module::open(const std::string& file_name)
       std::string error_message;
 
       win32::format_error_message(GetLastError(), error_message);
-      throw_exception<ModuleException>(error_message, _src_loc);
+      throw_exception<ModuleError>(error_message, _src_loc);
    }
 
    _impl->is_open = true;
@@ -115,7 +114,7 @@ void* Module::find_symbol_address(const std::string& symbol_name)
       std::string error_message;
 
       win32::format_error_message(GetLastError(), error_message);
-      throw_exception<ModuleSymbolNotFoundException>(error_message, _src_loc);
+      throw_exception<SymbolNotFoundError>(error_message, _src_loc);
    }
 
    return symbol;

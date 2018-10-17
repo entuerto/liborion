@@ -35,7 +35,7 @@ void function_b()
 
 void function_c()
 {
-   throw_exception<ArgumentException>("No arguments in function c", _src_loc);
+   throw_exception<InvalidArgumentError>("No arguments in function c", _src_loc);
 }
 
 void setup_logger()

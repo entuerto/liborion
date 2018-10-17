@@ -10,6 +10,8 @@
 
 #include <orion/Orion-Stddefs.h>
 
+#include <orion/Exception.h>
+
 #include <fmt/format.h>
 
 #include <iostream>
@@ -17,7 +19,27 @@
 
 namespace orion
 {
+// ------------------------------------------------------------------------------------------------
+// VersionError 
 
+/// Version error
+///
+/// Reports errors when a version is not valid.
+///
+class VersionError : public Exception
+{
+public:
+   explicit VersionError(std::string text)
+      : Exception(std::move(text))
+   {
+   }
+   VersionError(std::string text, SourceLocation src_loc)
+      : Exception(std::move(text), std::move(src_loc))
+   {
+   }
+};
+
+//--------------------------------------------------------------------------------------------------
 ///
 /// Semantic Versioning
 /// 

@@ -46,63 +46,105 @@ private:
 };
 
 // ------------------------------------------------------------------------------------------------
-// -- ArgumentException 
+// -- InvalidArgumentError 
 
-/// Argument exception
+/// Invalid argument error
 ///
-/// The exception that is thrown when one of the arguments
-/// provided to a method is not valid.
+/// The error is thrown when one of the arguments provided to a method is not valid.
 ///
-using ArgumentException = Exception;
-
-// ------------------------------------------------------------------------------------------------
-// -- ArgumentNullException 
-
-/// Argument null exception
-///
-/// The exception that is thrown when a null pointer is passed to a
-/// method that does not accept it as a valid argument.
-///
-using ArgumentNullException = Exception;
-
-// ------------------------------------------------------------------------------------------------
-// -- ArgumentOutOfRangeException 
-
-/// Argument out of range exception
-///
-/// The exception that is thrown when the value of an argument is
-/// outside the allowable range of values as defined by the invoked
-/// method.
-///
-using ArgumentOutOfRangeException = Exception;
+class InvalidArgumentError : public Exception
+{
+public:
+   explicit InvalidArgumentError(std::string text)
+      : Exception(std::move(text))
+   {
+   }
+   InvalidArgumentError(std::string text, SourceLocation src_loc)
+      : Exception(std::move(text), std::move(src_loc))
+   {
+   }
+};
 
 // ------------------------------------------------------------------------------------------------
-// -- NotImplementedException 
+// -- NullArgumentError
 
-/// Not implemented exception
+/// Null argument error
 ///
-/// The exception that is thrown when a requested method
-/// or operation is not implemented.
+/// The error is thrown when a null pointer is passed to a method that does not accept 
+/// it as a valid argument.
 ///
-using NotImplementedException = Exception;
+class NullArgumentError : public Exception
+{
+public:
+   explicit NullArgumentError(std::string text)
+      : Exception(std::move(text))
+   {
+   }
+   NullArgumentError(std::string text, SourceLocation src_loc)
+      : Exception(std::move(text), std::move(src_loc))
+   {
+   }
+};
 
 // ------------------------------------------------------------------------------------------------
-// -- ModuleException 
+// -- OutOfRangeError 
 
-/// General module exception
+/// Out of range error
 ///
-/// Throw this exception for module errors.
+/// It reports errors that are consequence of attempt to access elements out of defined range.
 ///
-using ModuleException = Exception;
+class OutOfRangeError : public Exception
+{
+public:
+   explicit OutOfRangeError(std::string text)
+      : Exception(std::move(text))
+   {
+   }
+   OutOfRangeError(std::string text, SourceLocation src_loc)
+      : Exception(std::move(text), std::move(src_loc))
+   {
+   }
+};
 
 // ------------------------------------------------------------------------------------------------
-// -- ModuleSymbolNotFoundException 
+// -- NotImplementedError 
 
-/// Symbol not found exception
+/// Not implemented error
 ///
-/// This exception is thrown when loading the modules and we cannot find the symbol in the module.
+/// The error is thrown when a requested method or operation is not implemented.
 ///
-using ModuleSymbolNotFoundException = Exception;
+class NotImplementedError : public Exception
+{
+public:
+   explicit NotImplementedError(std::string text)
+      : Exception(std::move(text))
+   {
+   }
+   NotImplementedError(std::string text, SourceLocation src_loc)
+      : Exception(std::move(text), std::move(src_loc))
+   {
+   }
+};
+
+// ------------------------------------------------------------------------------------------------
+// -- SymbolNotFoundError 
+
+/// Symbol not found error
+///
+/// This error is thrown when we cannot find a symbol in a module.
+///
+class SymbolNotFoundError : public Exception
+{
+public:
+   explicit SymbolNotFoundError(std::string text)
+      : Exception(std::move(text))
+   {
+   }
+   SymbolNotFoundError(std::string text, SourceLocation src_loc)
+      : Exception(std::move(text), std::move(src_loc))
+   {
+   }
+};
 
 } // namespace orion
 
