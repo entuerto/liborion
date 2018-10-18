@@ -99,7 +99,7 @@ public:
 
    /// Writes a fatal message and aborts the application.
    template<typename... Args>
-   void fatal(Args&&... args);
+   [[noreturn]] void fatal(Args&&... args);
 
    /// Writes a message the with a specified logging level
    template<typename... Args>
