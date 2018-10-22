@@ -230,7 +230,7 @@ darwin_name_tpls = {
    'stlib' : {
       'prefix'   : 'lib',
       'suffix'   : 'a',
-      'filename' : '{0.prefix}{0.name}.{0.suffix}',
+      'fname'    : '{0.prefix}{0.name}.{0.suffix}',
    },
    'exec'  : {
       'fname'     : '{0.name}'
@@ -441,23 +441,16 @@ class BuildEnv:
       if not os.path.isdir(self.build_dir):
          os.makedirs(self.build_dir)
 
-      if self.platform.is_msvc():
-         self.CC  = os.environ.get('CC',  'clang-cl.exe')
-         self.CXX = os.environ.get('CXX', 'clang-cl.exe')
-         self.LD  = os.environ.get('LD',  'lld-link.exe')
-         self.AR  = os.environ.get('AR',  'llvm-lib.exe')
-         self.PYTHON = 'py.exe'
-      else:
-         self.CC  = os.environ.get('CC',  'clang')
-         self.CXX = os.environ.get('CXX', 'clang++')
-         self.LD  = self.CXX
-         self.AR  = os.environ.get('AR', 'ar')
-         self.PYTHON = 'python3'
+      self.bin_dir = os.path.join(self.build_dir, BIN_OUT_NAME)
+      self.lib_dir = os.path.join(self.build_dir, LIB_OUT_NAME)
 
-      if self.platform.is_windows():
-         self.compiler = Compiler('clang-cl', clang_msvc_buildtype[self.buildtype])
-      else:
-         self.compiler = Compiler('clang', clang_buildtype[self.buildtype])
+      self.CC  = os.environ.get('CC',  'clang')
+      self.CXX = os.environ.get('CXX', 'clang++')
+      self.LD  = self.CXX
+      self.AR  = os.environ.get('AR', 'ar')
+      self.PYTHON = 'python3'
+
+      self.compiler = Compiler('clang', clang_buildtype[self.buildtype])
 
    def is_debug_build(self):
       return self.buildtype == 'debug'
@@ -472,20 +465,9 @@ class BuildEnv:
       return list(set().union(CXXFLAGS, self.compiler.warnings, self.compiler.cxxflags))
 
    def default_ldflags(self):
-      if self.platform.is_windows():
-         return list(set().union(LDFLAGS,
-                                 clang_msvc_buildtype[self.buildtype]['ldflags']))
-      elif self.platform.is_darwin():
-         return list(set().union(LDFLAGS,
-                                 ['-Wl,-dead_strip_dylibs', '-Wl,-headerpad_max_install_names'],
-                                 clang_buildtype[self.buildtype]['ldflags']))
-      return list(set().union(LDFLAGS,
-                              clang_buildtype[self.buildtype]['ldflags']))
-
+      return list(set().union(LDFLAGS, clang_buildtype[self.buildtype]['ldflags']))
 
    def format_obj_name(self, name):
-      if self.platform.is_msvc():
-         return '{}.obj'.format(name)
       return 'lib{}.o'.format(name)
 
    def src_to_obj(self, filename):
@@ -546,11 +528,6 @@ class BuildEnv:
       return flags
 
    def shlib_ldflags(self, target):
-      def fmt_win_lib(library):
-         if library in self.targets:
-            return self.project_dep(library)
-         return '{}.lib'.format(self.lib_to_native(library))
-
       def fmt_lib(library):
          return '-l{}'.format(self.lib_to_native(library))
    
@@ -558,49 +535,15 @@ class BuildEnv:
    
       implib = self.out_implib(target)
    
-      if self.platform.is_windows():
-         # Add linker flags
-         args['ldflags'] = ['/dll', 
-                            '/debug' if self.is_debug_build() else '',
-                            '/implib:{}'.format(implib)] + \
-                            target.ldflags()
-         # Add libs
-         args['libs'] = [fmt_win_lib(l) for l in target.libs()]
-         return args
-      elif self.platform.is_darwin():
-         args['ldflags'] = ['-shared',
-                            '-install_name @rpath/{}'.format(target.filename()),
-                            '-compatibility_version 0',
-                            '-current_version 0',] + target.ldflags()
-         args['libs']    = [fmt_lib(l) for l in target.libs()]
-         return args
-   
       args['ldflags'] = ['-shared'] + target.ldflags()
       args['libs']    = [fmt_lib(l) for l in target.libs()]
       return args
    
    def exec_ldflags(self, target):
-      def fmt_win_lib(library):
-         if library in self.targets:
-            return self.project_dep(library)
-         return '{}.lib'.format(library)
       def fmt_lib(library):
          return '-l{}'.format(self.lib_to_native(library))
    
       args = {}
-   
-      if self.platform.is_windows():
-         # Add linker flags
-         args['ldflags'] = ['/debug'] if self.is_debug_build() else []
-         args['ldflags'].extend(target.ldflags())
-         # Add libs
-         args['libs'] = [fmt_win_lib(l) for l in target.libs()]
-         return args
-      elif self.platform.is_darwin():
-         args['ldflags'] = target.ldflags()
-         args['libs']    = [fmt_lib(l) for l in target.libs()]
-         return args
-      
       args['ldflags'] = target.ldflags()
       args['libs']    = [fmt_lib(l) for l in target.libs()]
       return args
@@ -612,6 +555,112 @@ class BuildEnv:
             deps += [self.out_dep(self.targets[libname])]
    
       return deps
+
+
+class DarwinBuildEnv(BuildEnv):
+   def __init__(self, options):
+      super().__init__(options)
+
+   def default_ldflags(self):
+      return list(set().union(LDFLAGS, 
+                              ['-dead_strip_dylibs', '-headerpad_max_install_names'],
+                              clang_buildtype[self.buildtype]['ldflags']))
+
+   def project_dep(self, libname):
+      t = self.targets[libname]
+      if isinstance(t, StaticLibrary):
+         return self.out_stlib(t)
+      return self.out_shlib(t)
+
+   def shlib_ldflags(self, target):
+      def fmt_lib(library):
+         if library in self.targets:
+            return self.project_dep(library)
+         return '-l{}'.format(self.lib_to_native(library))
+   
+      args = {}
+   
+      implib = self.out_implib(target)
+      
+      args['ldflags'] = ['-shared',
+                         '-install_name @rpath/{}'.format(target.filename()),
+                         '-compatibility_version 0',
+                         '-current_version 0',
+                         '-rpath {}'.format(self.lib_dir),
+                         '-rpath {}'.format(self.bin_dir)]
+      args['ldflags'].extend(target.ldflags())
+
+      args['libs'] = [fmt_lib(l) for l in target.libs()]
+      return args
+
+   def exec_ldflags(self, target):
+      def fmt_lib(library):
+         if library in self.targets:
+            return self.project_dep(library)
+         return '-l{}'.format(self.lib_to_native(library))
+   
+      args = {}
+   
+      args['ldflags'] = ['-rpath {}'.format(self.lib_dir),
+                         '-rpath {}'.format(self.bin_dir)] 
+      args['ldflags'].extend(target.ldflags())
+
+      args['libs'] = [fmt_lib(l) for l in target.libs()]
+      return args
+      
+
+class MsvcBuildEnv(BuildEnv):
+   def __init__(self, options):
+      super().__init__(options)
+
+      self.CC  = os.environ.get('CC',  'clang-cl.exe')
+      self.CXX = os.environ.get('CXX', 'clang-cl.exe')
+      self.LD  = os.environ.get('LD',  'lld-link.exe')
+      self.AR  = os.environ.get('AR',  'llvm-lib.exe')
+      self.PYTHON = 'py.exe'
+
+      self.compiler = Compiler('clang-cl', clang_msvc_buildtype[self.buildtype])
+
+   def default_ldflags(self):
+      return list(set().union(LDFLAGS, clang_msvc_buildtype[self.buildtype]['ldflags']))
+
+   def format_obj_name(self, name):
+      return '{}.obj'.format(name)
+
+   def shlib_ldflags(self, target):
+      def fmt_lib(library):
+         if library in self.targets:
+            return self.project_dep(library)
+         return '{}.lib'.format(self.lib_to_native(library))
+
+      args = {}
+   
+      implib = self.out_implib(target)
+      # Add linker flags
+      args['ldflags'] = ['/dll', 
+                         '/debug' if self.is_debug_build() else '',
+                         '/implib:{}'.format(implib)] + \
+                         target.ldflags()
+      # Add libs
+      args['libs'] = [fmt_lib(l) for l in target.libs()]
+      return args
+
+   def exec_ldflags(self, target):
+      def fmt_lib(library):
+         if library in self.targets:
+            return self.project_dep(library)
+         return '{}.lib'.format(library)
+   
+      args = {}
+   
+      # Add linker flags
+      args['ldflags'] = ['/debug'] if self.is_debug_build() else []
+      args['ldflags'].extend(target.ldflags())
+      # Add libs
+      args['libs'] = [fmt_win_lib(l) for l in target.libs()]
+      return args
+      
+      
 
 #---------------------------------------------------------------------------------------------------
 
@@ -640,7 +689,7 @@ def main(argv):
    if len(args) != 1:
       parser.error("incorrect number of arguments")
 
-   build_env = BuildEnv(options)
+   build_env = DarwinBuildEnv(options)
 
    static_libs = {}
    shared_libs = {}
@@ -906,10 +955,11 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
          'lib/unittest/TestSuite.cpp'
       ],
      'sources-darwin' : [
-         'lib/debug/ModuleCache.cpp',
+      #   'lib/debug/ModuleCache.cpp',
+         'lib/debug/Stacktrace-darwin.cpp',
          'lib/debug/StacktraceFrame-posix.cpp',
-         'lib/debug/Symbols.cpp',
-         'lib/debug/dw/DwarfWrapper.cpp',
+      #   'lib/debug/Symbols.cpp',
+      #   'lib/debug/dw/DwarfWrapper.cpp',
          'lib/Module-darwin.cpp',
          'lib/System-darwin.cpp',
          'lib/Uuid-darwin.cpp'
