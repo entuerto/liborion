@@ -52,10 +52,10 @@ Connection<SocketT>::Connection(SocketT socket)
    : _local_endpoint()
    , _remote_endpoint()
    , _socket(std::move(socket))
-   , _read_deadline()
-   , _write_deadline()
-   , _read_deadline_timer(_socket.get_executor().context())
-   , _write_deadline_timer(_socket.get_executor().context())
+   , _read_timeout()
+   , _write_timeout()
+   , _read_timeout_timer(_socket.get_executor().context())
+   , _write_timeout_timer(_socket.get_executor().context())
 {
 }
 
@@ -77,8 +77,8 @@ void Connection<SocketT>::close()
    if (ec)
       log::error(ec, _src_loc);
 
-   read_deadline_timer().cancel();
-   write_deadline_timer().cancel();
+   read_timeout_timer().cancel();
+   write_timeout_timer().cancel();
 }
 
 template<typename SocketT>
@@ -106,43 +106,43 @@ void Connection<SocketT>::remote_endpoint(const EndPoint& value)
 }
 
 template<typename SocketT>
-std::error_code Connection<SocketT>::deadline(const std::chrono::seconds& sec)
+std::error_code Connection<SocketT>::timeouts(const std::chrono::seconds& sec)
 {
-   _read_deadline  = sec;
-   _write_deadline = sec;
+   _read_timeout  = sec;
+   _write_timeout = sec;
    return std::error_code();
 }
 
 template<typename SocketT>
-std::chrono::seconds Connection<SocketT>::deadline() const
+std::chrono::seconds Connection<SocketT>::timeouts() const
 {
-   return _read_deadline;
+   return _read_timeout;
 }
 
 template<typename SocketT>
-std::error_code Connection<SocketT>::read_deadline(const std::chrono::seconds& sec)
+std::error_code Connection<SocketT>::read_timeout(const std::chrono::seconds& sec)
 {
-   _read_deadline = sec;
+   _read_timeout = sec;
    return std::error_code();
 }
 
 template<typename SocketT>
-std::chrono::seconds Connection<SocketT>::read_deadline() const
+std::chrono::seconds Connection<SocketT>::read_timeout() const
 {
-   return _read_deadline;
+   return _read_timeout;
 }
 
 template<typename SocketT>
-std::error_code Connection<SocketT>::write_deadline(const std::chrono::seconds& sec)
+std::error_code Connection<SocketT>::write_timeout(const std::chrono::seconds& sec)
 {
-   _write_deadline = sec;
+   _write_timeout = sec;
    return std::error_code();
 }
 
 template<typename SocketT>
-std::chrono::seconds Connection<SocketT>::write_deadline() const
+std::chrono::seconds Connection<SocketT>::write_timeout() const
 {
-   return _write_deadline;
+   return _write_timeout;
 }
 
 template<typename SocketT>
@@ -174,37 +174,37 @@ void Connection<SocketT>::on_write_timeout(const std::error_code& ec)
 template<typename SocketT>
 void Connection<SocketT>::start_read_timer()
 {
-   if (read_deadline() == std::chrono::seconds::zero())
+   if (read_timeout() == std::chrono::seconds::zero())
       return;
 
-   _read_deadline_timer.expires_after(read_deadline());
+   _read_timeout_timer.expires_after(read_timeout());
 
-   _read_deadline_timer.async_wait(
+   _read_timeout_timer.async_wait(
       std::bind(&Connection::on_read_timeout, this, std::placeholders::_1));
 }
 
 template<typename SocketT>
 void Connection<SocketT>::start_write_timer()
 {
-   if (write_deadline() == std::chrono::seconds::zero())
+   if (write_timeout() == std::chrono::seconds::zero())
       return;
 
-   _write_deadline_timer.expires_after(write_deadline());
+   _write_timeout_timer.expires_after(write_timeout());
 
-   _write_deadline_timer.async_wait(
+   _write_timeout_timer.async_wait(
       std::bind(&Connection::on_write_timeout, this, std::placeholders::_1));
 }
 
 template<typename SocketT>
-asio::steady_timer& Connection<SocketT>::read_deadline_timer()
+asio::steady_timer& Connection<SocketT>::read_timeout_timer()
 {
-   return _read_deadline_timer;
+   return _read_timeout_timer;
 }
 
 template<typename SocketT>
-asio::steady_timer& Connection<SocketT>::write_deadline_timer()
+asio::steady_timer& Connection<SocketT>::write_timeout_timer()
 {
-   return _write_deadline_timer;
+   return _write_timeout_timer;
 }
 
 template<typename SocketT>

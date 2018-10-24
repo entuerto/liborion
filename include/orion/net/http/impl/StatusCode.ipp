@@ -13,6 +13,8 @@
 #include <orion/Log.h>
 #include <orion/Utils.h>
 
+#include <fmt/format.h>
+
 #include <exception>
 #include <map>
 #include <string>
@@ -29,10 +31,12 @@ static const std::map<StatusCode, std::string>& status_text()
    try
    {
       static const std::map<StatusCode, std::string> StatusText{
+         // 1xx Informational response
          {StatusCode::Continue, "Continue"},
          {StatusCode::SwitchingProtocols, "Switching Protocols"},
          {StatusCode::Processing, "Processing"},
-
+         {StatusCode::EarlyHints, "Early Hints"},
+         // 2xx Success
          {StatusCode::OK, "OK"},
          {StatusCode::Created, "Created"},
          {StatusCode::Accepted, "Accepted"},
@@ -43,7 +47,7 @@ static const std::map<StatusCode, std::string>& status_text()
          {StatusCode::MultiStatus, "Multi-Status"},
          {StatusCode::AlreadyReported, "Already Reported"},
          {StatusCode::IMUsed, "IM Used"},
-
+         // 3xx Redirection
          {StatusCode::MultipleChoices, "Multiple Choices"},
          {StatusCode::MovedPermanently, "Moved Permanently"},
          {StatusCode::Found, "Found"},
@@ -52,7 +56,7 @@ static const std::map<StatusCode, std::string>& status_text()
          {StatusCode::UseProxy, "Use Proxy"},
          {StatusCode::TemporaryRedirect, "Temporary Redirect"},
          {StatusCode::PermanentRedirect, "Permanent Redirect"},
-
+         // 4xx Client errors
          {StatusCode::BadRequest, "Bad Request"},
          {StatusCode::Unauthorized, "Unauthorized"},
          {StatusCode::PaymentRequired, "Payment Required"},
@@ -72,6 +76,7 @@ static const std::map<StatusCode, std::string>& status_text()
          {StatusCode::RequestedRangeNotSatisfiable, "Requested Range Not Satisfiable"},
          {StatusCode::ExpectationFailed, "Expectation Failed"},
          {StatusCode::Teapot, "I'm a teapot"},
+         {StatusCode::MisdirectedRequest, "Misdirected Request"},
          {StatusCode::UnprocessableEntity, "Unprocessable Entity"},
          {StatusCode::Locked, "Locked"},
          {StatusCode::FailedDependency, "Failed Dependency"},
@@ -96,10 +101,9 @@ static const std::map<StatusCode, std::string>& status_text()
    }
    catch (...)
    {
-      log::error("An unexpected, unknown exception was thrown: ",
+      log::fatal("An unexpected, unknown exception was thrown: ",
                  type_name(std::current_exception()),
                  _src_loc);
-      std::abort();
    }
 }
 
@@ -112,7 +116,7 @@ inline std::string to_string(StatusCode code)
    if (item != status_text().end())
       return item->second;
 
-   return "StatusCode: Unkown";
+   return "Unkown";
 }
 
 inline std::ostream& operator<<(std::ostream& o, StatusCode code)

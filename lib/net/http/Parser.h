@@ -10,8 +10,6 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <orion/net/http/Request.h>
-#include <orion/net/http/Response.h>
 #include <orion/net/http/Utils.h>
 
 #include <http-parser/http_parser.h>
@@ -24,6 +22,10 @@ namespace net
 {
 namespace http
 {
+// Forward declares
+class Request;
+class Response;
+
 ///
 class Parser
 {

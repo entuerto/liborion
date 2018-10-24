@@ -10,10 +10,7 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <fmt/format.h>
-
 #include <iostream>
-#include <map>
 #include <string>
 
 namespace orion
@@ -25,10 +22,12 @@ namespace http
 
 enum class StatusCode
 {
+   // 1xx Informational response
    Continue           = 100, // RFC 7231, 6.2.1
    SwitchingProtocols = 101, // RFC 7231, 6.2.2
    Processing         = 102, // RFC 2518, 10.1
-
+   EarlyHints         = 103, // RFC 8297
+   // 2xx Success
    OK                   = 200, // RFC 7231, 6.3.1
    Created              = 201, // RFC 7231, 6.3.2
    Accepted             = 202, // RFC 7231, 6.3.3
@@ -39,7 +38,7 @@ enum class StatusCode
    MultiStatus          = 207, // RFC 4918, 11.1
    AlreadyReported      = 208, // RFC 5842, 7.1
    IMUsed               = 226, // RFC 3229, 10.4.1
-
+   // 3xx Redirection
    MultipleChoices   = 300, // RFC 7231, 6.4.1
    MovedPermanently  = 301, // RFC 7231, 6.4.2
    Found             = 302, // RFC 7231, 6.4.3
@@ -48,7 +47,7 @@ enum class StatusCode
    UseProxy          = 305, // RFC 7231, 6.4.5
    TemporaryRedirect = 307, // RFC 7231, 6.4.7
    PermanentRedirect = 308, // RFC 7538, 3
-
+   // 4xx Client errors
    BadRequest                   = 400, // RFC 7231, 6.5.1
    Unauthorized                 = 401, // RFC 7235, 3.1
    PaymentRequired              = 402, // RFC 7231, 6.5.2
@@ -68,6 +67,7 @@ enum class StatusCode
    RequestedRangeNotSatisfiable = 416, // RFC 7233, 4.4
    ExpectationFailed            = 417, // RFC 7231, 6.5.14
    Teapot                       = 418, // RFC 7168, 2.3.3
+   MisdirectedRequest           = 421, // RFC 7540
    UnprocessableEntity          = 422, // RFC 4918, 11.2
    Locked                       = 423, // RFC 4918, 11.3
    FailedDependency             = 424, // RFC 4918, 11.4
@@ -76,7 +76,7 @@ enum class StatusCode
    TooManyRequests              = 429, // RFC 6585, 4
    RequestHeaderFieldsTooLarge  = 431, // RFC 6585, 5
    UnavailableForLegalReasons   = 451, // RFC 7725, 3
-
+   // 5xx Server errors
    InternalServerError           = 500, // RFC 7231, 6.6.1
    NotImplemented                = 501, // RFC 7231, 6.6.2
    BadGateway                    = 502, // RFC 7231, 6.6.3

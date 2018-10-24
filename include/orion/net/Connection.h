@@ -52,32 +52,32 @@ public:
    /// Set the remote network address.
    void remote_endpoint(const EndPoint& value);
 
-   /// Sets the read and write deadlines associated
+   /// Sets the read and write timeouts associated
    /// with the connection. It is equivalent to calling both
-   /// read_deadline and write_deadline.
+   /// read_timeout and write_timeout.
    ///
-   /// A deadline is an absolute time after which I/O operations
+   /// A timeout is an absolute time after which I/O operations
    /// fail with a timeout instead of blocking.
    ///
    /// A zero value for t means I/O operations will not time out.
-   std::error_code deadline(const std::chrono::seconds& sec);
+   std::error_code timeouts(const std::chrono::seconds& sec);
 
-   /// Get the current value of the read and write deadline.
-   std::chrono::seconds deadline() const;
+   /// Get the current value of the read and write timeout.
+   std::chrono::seconds timeouts() const;
 
-   /// Sets the deadline for future Read calls.
+   /// Sets the timeout for future Read calls.
    /// A zero value for t means Read will not time out.
-   std::error_code read_deadline(const std::chrono::seconds& sec);
+   std::error_code read_timeout(const std::chrono::seconds& sec);
 
-   /// Get the current value of the read deadline.
-   std::chrono::seconds read_deadline() const;
+   /// Get the current value of the read timeout.
+   std::chrono::seconds read_timeout() const;
 
-   /// Sets the deadline for future Write calls.
+   /// Sets the timeout for future Write calls.
    /// A zero value for t means Write will not time out.
-   std::error_code write_deadline(const std::chrono::seconds& sec);
+   std::error_code write_timeout(const std::chrono::seconds& sec);
 
-   /// Get the current value of the write deadline.
-   std::chrono::seconds write_deadline() const;
+   /// Get the current value of the write timeout.
+   std::chrono::seconds write_timeout() const;
 
    SocketT& socket();
 
@@ -86,8 +86,8 @@ public:
    void start_read_timer();
    void start_write_timer();
 
-   asio::steady_timer& read_deadline_timer();
-   asio::steady_timer& write_deadline_timer();
+   asio::steady_timer& read_timeout_timer();
+   asio::steady_timer& write_timeout_timer();
 
 protected:
    void dump_socket_options();
@@ -109,11 +109,11 @@ private:
    /// Socket for the connection.
    SocketT _socket;
 
-   std::chrono::seconds _read_deadline;
-   std::chrono::seconds _write_deadline;
+   std::chrono::seconds _read_timeout;
+   std::chrono::seconds _write_timeout;
 
-   asio::steady_timer _read_deadline_timer;
-   asio::steady_timer _write_deadline_timer;
+   asio::steady_timer _read_timeout_timer;
+   asio::steady_timer _write_timeout_timer;
 };
 
 /// Sets whether the operating system should send keepalive messages on the connection.

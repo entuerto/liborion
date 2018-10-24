@@ -14,6 +14,7 @@
 #include <orion/net/http/RequestMux.h>
 #include <orion/net/http/Utils.h>
 
+#include <chrono>
 #include <memory>
 #include <string>
 
@@ -47,6 +48,12 @@ public:
    bool is_running() const;
 
    RequestMux& request_mux();
+
+   // Sets TLS handshake timeout, which defaults to 60 seconds.
+   void tls_handshake_timeout(const std::chrono::seconds& t);
+
+   // Sets read timeout, which defaults to 60 seconds.
+   void read_timeout(const std::chrono::seconds& t);
 
    std::error_code listen_and_serve(EndPoint endpoint);
 

@@ -28,105 +28,40 @@ namespace http
 
 //-------------------------------------------------------------------------------------------------
 
-static const std::map<Method, std::string>& method_text()
+inline std::ostream& operator<<(std::ostream& o, const Method& m)
 {
-   try
-   {
-      static const std::map<Method, std::string> MethodText{{Method::Unknown, "UNKNOWN"},
-                                                            {Method::Delete, "DELETE"},
-                                                            {Method::Get, "GET"},
-                                                            {Method::Head, "HEAD"},
-                                                            {Method::Post, "POST"},
-                                                            {Method::Put, "PUT"},
-                                                            {Method::Connect, "CONNECT"},
-                                                            {Method::Options, "OPTIONS"},
-                                                            {Method::Trace, "TRACE"},
-                                                            {Method::Copy, "COPY"},
-                                                            {Method::Lock, "LOCK"},
-                                                            {Method::MkCol, "MKCOL"},
-                                                            {Method::Move, "MOVE"},
-                                                            {Method::PropFind, "PROPFIND"},
-                                                            {Method::PropPatch, "PROPPATCH"},
-                                                            {Method::Search, "SEARCH"},
-                                                            {Method::Unlock, "UNLOCK"},
-                                                            {Method::Bind, "BIND"},
-                                                            {Method::Rebind, "REBIND"},
-                                                            {Method::Unbind, "UNBIND"},
-                                                            {Method::Acl, "ACL"},
-                                                            {Method::Report, "REPORT"},
-                                                            {Method::MkActivity, "MKACTIVITY"},
-                                                            {Method::Checkout, "CHECKOUT"},
-                                                            {Method::Merge, "MERGE"},
-                                                            {Method::MSearch, "MSEARCH"},
-                                                            {Method::Notify, "NOTIFY"},
-                                                            {Method::Subscribe, "SUBSCRIBE"},
-                                                            {Method::Unsubscribe, "UNSUBSCRIBE"},
-                                                            {Method::Patch, "PATCH"},
-                                                            {Method::Purge, "PURGE"},
-                                                            {Method::MkCalendar, "MKCALENDAR"},
-                                                            {Method::Link, "LINK"},
-                                                            {Method::Unlink, "UNLINK"}};
-
-      return MethodText;
-   }
-   catch (...)
-   {
-      log::error("An unexpected, unknown exception was thrown: ",
-                 type_name(std::current_exception()),
-                 _src_loc);
-      std::abort();
-   }
-}
-
-inline std::ostream& operator<<(std::ostream& o, Method m)
-{
-   auto item = method_text().find(m);
-
-   if (item != method_text().end())
-      o << item->second;
-   else
-      o << "Method: Unkown";
-
+   o << m.get();
    return o;
 }
 
-inline bool operator==(Method m, const std::string& text)
+inline bool operator==(const Method& m, const std::string& text)
 {
-   auto item = method_text().find(m);
-
-   if (item != method_text().end())
-      return item->second == text;
-
-   return false;
+   return iequals(m.get(), text);
 }
 
-inline bool operator==(const std::string& text, Method m)
+inline bool operator==(const std::string& text, const Method& m)
 {
-   return operator==(m, text);
+   return iequals(m.get(), text);
 }
 
-inline std::string to_string(Method m)
+inline bool operator==(const Method& m1, const Method& m2)
 {
-   auto item = method_text().find(m);
-
-   if (item != method_text().end())
-      return item->second;
-
-   return "Method: Unkown";
+   return iequals(m1.get(), m2.get());
 }
 
-template<>
-inline Method from_string<Method>(const std::string& text)
+inline bool operator<(const Method& m1, const Method& m2)
 {
-   for (auto& item : method_text())
-   {
-      if (not iequals(item.second, text))
-         continue;
+   return iless(m1.get(), m2.get());
+}
 
-      return item.first;
-   }
+inline std::string to_string(const Method& m)
+{
+   return m.get();
+}
 
-   throw std::system_error(make_error_code(ErrorCode::MethodTextNotFound));
+inline Method make_method(const std::string& text)
+{
+   return Method{text};
 }
 
 //-------------------------------------------------------------------------------------------------

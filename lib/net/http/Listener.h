@@ -18,7 +18,10 @@
 
 #include <asio.hpp>
 
+#include <chrono>
 #include <system_error>
+
+using namespace std::literals::chrono_literals;
 
 namespace orion
 {
@@ -40,6 +43,8 @@ public:
 
    Listener(asio::io_context& io_context, EndPoint ep, RequestMux& mux)
       : _endpoint(std::move(ep))
+      , _read_timeout(60s)
+      , _tls_handshake_timeout(60s)
       , _acceptor(io_context)
       , _socket(io_context)
       , _mux(mux)
@@ -82,6 +87,34 @@ public:
    EndPoint endpoint() const override
    {
       return _endpoint;
+   }
+
+   /// Sets the timeout for future Read calls.
+   /// A zero value for sec means Read will not time out.
+   std::error_code read_timeout(const std::chrono::seconds& sec)
+   {
+      _read_timeout = sec;
+      return std::error_code();
+   }
+
+   /// Get the current value of the read timeout.
+   std::chrono::seconds read_timeout() const
+   {
+      return _read_timeout;
+   }
+
+   /// Sets the timeout for tls handshakes.
+   /// A zero value for sec means tls handshakes will not time out.
+   std::error_code tls_handshake_timeout(const std::chrono::seconds& sec)
+   {
+      _tls_handshake_timeout = sec;
+      return std::error_code();
+   }
+
+   /// Get the current value of the tls handshake timeout.
+   std::chrono::seconds tls_handshake_timeout() const
+   {
+      return _read_timeout;
    }
 
    bool is_listening() const override
@@ -134,6 +167,9 @@ protected:
 
       set_option(*_connection, KeepAlive{true});
 
+      _connection->read_timeout(_read_timeout);
+      //_connection->tls_handshake_timeout(_read_timeout);
+
       _connection->accept();
 
       do_accept();
@@ -141,6 +177,9 @@ protected:
 
 private:
    EndPoint _endpoint;
+
+   std::chrono::seconds _read_timeout;
+   std::chrono::seconds _tls_handshake_timeout;
 
    // Acceptor used to listen for incoming connections.
    asio::ip::tcp::acceptor _acceptor;

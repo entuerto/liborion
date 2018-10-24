@@ -42,6 +42,16 @@ RequestMux& Server::request_mux()
    return impl()->request_mux();
 }
 
+void Server::tls_handshake_timeout(const std::chrono::seconds& t)
+{
+   return impl()->tls_handshake_timeout(t);
+}
+
+void Server::read_timeout(const std::chrono::seconds& t)
+{
+   return impl()->read_timeout(t);
+}
+
 std::error_code Server::listen_and_serve(EndPoint endpoint)
 {
    return impl()->listen_and_serve(std::move(endpoint));

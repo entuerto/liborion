@@ -44,6 +44,12 @@ public:
 
    RequestMux& request_mux();
 
+   // Sets TLS handshake timeout, which defaults to 60 seconds.
+   void tls_handshake_timeout(const std::chrono::seconds& t);
+
+   // Sets read timeout, which defaults to 60 seconds.
+   void read_timeout(const std::chrono::seconds& t);
+
    std::error_code listen_and_serve(EndPoint endpoint);
    std::error_code listen_and_serve(EndPoint endpoint, RequestMux mux);
 
@@ -54,6 +60,9 @@ private:
 
    EndPoint _endpoint;
    RequestMux _mux;
+
+   std::chrono::seconds _read_timeout;
+   std::chrono::seconds _tls_handshake_timeout;
 
    // The io_context used to perform asynchronous operations.
    asio::io_context _io_context;

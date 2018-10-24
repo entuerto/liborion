@@ -24,7 +24,7 @@ namespace http
 {
 
 Request::Request()
-   : _method(Method::Get)
+   : _method("GET")
    , _url()
    , _version()
    , _header()
@@ -62,17 +62,22 @@ Request::Request(Request&& rhs) noexcept
 Request::~Request() = default;
 
 //! "GET", "POST", etc
-Method Request::method() const
+const Method& Request::method() const
 {
    return _method;
 }
 
-void Request::method(Method value)
+void Request::method(const Method& value)
 {
    _method = value;
 }
 
-Url Request::url() const
+Url& Request::url() 
+{
+   return _url;
+}
+
+const Url& Request::url() const
 {
    return _url;
 }

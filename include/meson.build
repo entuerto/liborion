@@ -14,7 +14,6 @@ _base_incl = files(
    'orion/Config.h',
    'orion/Datetime.h',
    'orion/Encoding.h',
-   'orion/ErrorMacros.h',
    'orion/Exception.h',
    'orion/Iterator.h',
    'orion/Log.h',

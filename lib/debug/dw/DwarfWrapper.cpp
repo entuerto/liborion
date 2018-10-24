@@ -1474,7 +1474,7 @@ DieChildIterator::DieChildIterator(const Die& parent)
 
 DieChildIterator& DieChildIterator::operator++()
 {
-   Expects(_child) // Incremented end DieChildIterator
+   Expects(_child); // Incremented end DieChildIterator
    if (_child)
    {
       Dwarf_Die raw_child_die;

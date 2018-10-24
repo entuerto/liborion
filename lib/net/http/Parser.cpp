@@ -8,6 +8,8 @@
 #include <net/http/Parser.h>
 
 #include <orion/Log.h>
+#include <orion/net/http/Request.h>
+#include <orion/net/http/Response.h>
 
 #include <iomanip>
 #include <iostream>
@@ -134,7 +136,7 @@ std::error_code Parser::parse(Request& request, asio::const_buffer buffer)
 
    if (_headers_complete)
    {
-      request.method(from_string<Method>(http_method_str(static_cast<http_method>(_parser.method))));
+      request.method(make_method(http_method_str(static_cast<http_method>(_parser.method))));
       request.version(Version{_parser.http_major, _parser.http_minor});
       request.url(Url{_url});
       request.header(_header);

@@ -36,8 +36,8 @@ public:
    T& get()             { return _value; }
    const T& get() const { return _value; }
 
-   operator const T&() const  { return get(); }
-   operator T&()              { return get(); }
+   explicit operator const T&() const  { return get(); }
+   explicit operator T&()              { return get(); }
 
    const T* operator->() const { return std::addressof(get()); }
    T* operator->()             { return std::addressof(get()); }
@@ -58,14 +58,14 @@ struct TypeNameSequence
 };
 
 /// Render an empty TypeNameSequence to an ostream.
-std::ostream& operator<<(std::ostream& os, const TypeNameSequence<>& value)
+inline std::ostream& operator<<(std::ostream& os, const TypeNameSequence<>& value)
 {
    return os;
 }
 
 /// Render a TypeNameSequence of a single type to an ostream.
 template<typename ArgT>
-std::ostream& operator<<(std::ostream& os, const TypeNameSequence<ArgT>& value)
+inline std::ostream& operator<<(std::ostream& os, const TypeNameSequence<ArgT>& value)
 {
    os << TypeName<ArgT>::name();
    return os;
@@ -73,7 +73,7 @@ std::ostream& operator<<(std::ostream& os, const TypeNameSequence<ArgT>& value)
 
 /// Render a TypeNameSequence of more than one type to an ostream.
 template<typename ArgT1, typename ArgT2, typename... ArgTs>
-std::ostream& operator<<(std::ostream& os, const TypeNameSequence<ArgT1, ArgT2, ArgTs...>& value)
+inline std::ostream& operator<<(std::ostream& os, const TypeNameSequence<ArgT1, ArgT2, ArgTs...>& value)
 {
    os << TypeName<ArgT1>::name() << ", " << TypeNameSequence<ArgT2, ArgTs...>();
    return os;

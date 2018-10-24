@@ -13,6 +13,8 @@
 
 #include <future>
 
+using namespace std::literals::chrono_literals;
+
 namespace orion
 {
 namespace net
@@ -23,6 +25,8 @@ namespace http
 ServerImpl::ServerImpl()
    : _endpoint()
    , _mux()
+   , _read_timeout(60s)
+   , _tls_handshake_timeout(60s)
    , _io_context()
    , _signals(_io_context)
    , _listener()
@@ -57,11 +61,24 @@ void ServerImpl::shutdown()
       log::error(ec, _src_loc);
 }
 
+void ServerImpl::tls_handshake_timeout(const std::chrono::seconds& t)
+{
+   _tls_handshake_timeout = t;
+}
+
+void ServerImpl::read_timeout(const std::chrono::seconds& t)
+{
+   _read_timeout = t;
+}
+
 std::error_code ServerImpl::listen_and_serve(EndPoint endpoint)
 {
    setup_signals();
 
    _listener = std::make_shared<http::Listener>(_io_context, std::move(endpoint), _mux);
+
+   _listener->read_timeout(_read_timeout);
+   _listener->tls_handshake_timeout(_tls_handshake_timeout);
 
    auto ec = _listener->start();
    if (ec)

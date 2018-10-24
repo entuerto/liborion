@@ -11,6 +11,7 @@
 #include <orion/Orion-Stddefs.h>
 
 #include <orion/String.h>
+#include <orion/Types.h>
 #include <orion/net/http/Error.h>
 
 #include <fmt/format.h>
@@ -50,7 +51,7 @@ struct Version
 //-------------------------------------------------------------------------------------------------
 
 template<typename T>
-T from_string(const std::string& text) {}
+T from_string(const std::string& text);
 
 //-------------------------------------------------------------------------------------------------
 
@@ -77,71 +78,23 @@ T from_string(const std::string& text) {}
 /// | PATCH        | RFC 5789 |    Yes   |   Yes    | No   |    No      |    Yes    |
 /// +--------------+----------+----------+----------+------+------------+-----------+
 ///
-enum class Method
-{
-   Unknown,
-
-   Delete,
-   Get,
-   Head,
-   Post,
-   Put,
-
-   // Pathological
-   Connect,
-   Options,
-   Trace,
-
-   // WebDAV
-   Copy,
-   Lock,
-   MkCol,
-   Move,
-   PropFind,
-   PropPatch,
-   Search,
-   Unlock,
-   Bind,
-   Rebind,
-   Unbind,
-   Acl,
-
-   // Subversion
-   Report,
-   MkActivity,
-   Checkout,
-   Merge,
-
-   // upnp
-   MSearch,
-   Notify,
-   Subscribe,
-   Unsubscribe,
-
-   // RFC-5789
-   Patch,
-   Purge,
-
-   // CalDAV
-   MkCalendar,
-
-   // RFC-2068, section 19.6.1.2
-   Link,
-   Unlink
-};
+using Method = BaseType<std::string, struct MethodTag>;
 
 //-------------------------------------------------------------------------------------------------
 
-std::string to_string(Method m);
+inline std::string to_string(const Method& m);
 
-std::ostream& operator<<(std::ostream& o, Method m);
+inline std::ostream& operator<<(std::ostream& o, const Method& m);
 
-bool operator==(Method m, const std::string& text);
+inline bool operator==(const Method& m, const std::string& text);
 
-bool operator==(const std::string& text, Method m);
+inline bool operator==(const std::string& text, const Method& m);
 
-template<>
-Method from_string<Method>(const std::string& text);
+inline bool operator==(const Method& m1, const Method& m2);
+
+inline bool operator<(const Method& m1, const Method& m2);
+
+inline Method make_method(const std::string& text);
 
 //-------------------------------------------------------------------------------------------------
 
@@ -240,16 +193,16 @@ enum class Field
 
 //-------------------------------------------------------------------------------------------------
 
-std::ostream& operator<<(std::ostream& o, Field f);
+inline std::ostream& operator<<(std::ostream& o, Field f);
 
-bool operator==(Field f, const std::string& text);
+inline bool operator==(Field f, const std::string& text);
 
-bool operator==(const std::string& text, Field f);
+inline bool operator==(const std::string& text, Field f);
 
-std::string to_string(Field f);
+inline std::string to_string(Field f);
 
 template<>
-Field from_string<Field>(const std::string& text);
+inline Field from_string<Field>(const std::string& text);
 
 //-------------------------------------------------------------------------------------------------
 

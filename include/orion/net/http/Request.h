@@ -47,13 +47,14 @@ public:
    Request& operator=(Request&& rhs) noexcept;
 
    /// method specifies the HTTP method (GET, POST, PUT, etc.).
-   Method method() const;
+   const Method& method() const;
 
    /// Set the HTTP method (GET, POST, PUT, etc.).
-   void method(Method value);
+   void method(const Method& value);
 
    //! URL-decoded URI
-   Url url() const;
+   Url& url();
+   const Url& url() const;
    void url(const Url& u);
 
    /// The protocol version for incoming server requests.
