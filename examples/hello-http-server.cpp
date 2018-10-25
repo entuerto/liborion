@@ -64,8 +64,8 @@ int main()
 
    RequestMux mux;
 
-   mux.handle(Method::Get, "/world", world);
-   mux.handle(Method::Get, "/hello", hello);
+   mux.handle(Method{"GET"}, "/world", world);
+   mux.handle(Method{"GET"}, "/hello", hello);
 
    log::write("Server listening on port: 9080\n");
 

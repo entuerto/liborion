@@ -42,11 +42,11 @@ struct Call
    }
 };
 
-Call Get{Method::Get};
-Call Post{Method::Post};
-Call Put{Method::Put};
-Call Patch{Method::Patch};
-Call Delete{Method::Delete};
+Call Get{Method{"GET"}};
+Call Post{Method{"POST"}};
+Call Put{Method{"PUT"}};
+Call Patch{Method{"PATCH"}};
+Call Delete{Method{"DELETE"}};
 
 } // namespace http
 } // namespace net

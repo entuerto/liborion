@@ -10,7 +10,7 @@
 
 #include <orion/Orion-Stddefs.h>
 
-#include <Debug/Symbols.h>
+#include <debug/Symbols.h>
 
 #include <unordered_map>
 

@@ -106,14 +106,16 @@ template<typename StringT>
 inline bool less(const StringT& str1, const StringT& str2)
 {
    return (str1.size() == str2.size()) and
-          std::lexicographical_compare(str1.begin(), str1.end(), str2.begin(), is_less{});
+          std::lexicographical_compare(
+             str1.begin(), str1.end(), str2.begin(), str2.end(), is_less{});
 }
 
 template<typename StringT>
 inline bool iless(const StringT& str1, const StringT& str2, const std::locale& loc = std::locale())
 {
    return (str1.size() == str2.size()) and
-          std::lexicographical_compare(str1.begin(), str1.end(), str2.begin(), is_iless{loc});
+          std::lexicographical_compare(
+             str1.begin(), str1.end(), str2.begin(), str2.end(), is_iless{loc});
 }
 
 template<typename StringT>

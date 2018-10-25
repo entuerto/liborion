@@ -39,14 +39,14 @@ class Platform(object):
          self._platform = 'freebsd'
       elif self._platform.startswith('openbsd'):
          self._platform = 'openbsd'
-      elif self._platform.startswith('mingw'):
-         self._platform = 'mingw'
+      elif self._platform.startswith('mingw') or os.environ.get('MSYSTEM', '').startswith('MINGW'):
+         self._platform = 'mingw' 
       elif self._platform.startswith('win'):
          self._platform = 'msvc'
       elif self._platform.startswith('netbsd'):
          self._platform = 'netbsd'
 
-      if self.is_windows():
+      if self.is_msvc():
          self._sysname = 'windows'  
       else: 
          self._sysname = self._platform
@@ -93,15 +93,16 @@ windows_libs = [
    'mincore',
    'kernel32', 
    'user32', 
-   'gdi32', 
-   'winspool', 
    'shell32', 
-   'ole32', 
-   'oleaut32',
-   'uuid', 
-   'comdlg32', 
-   'advapi32'
+   'advapi32', 
+   'mswsock', 
+   'ntdll', 
+   'psapi', 
+   'rpcrt4', 
+   'ws2_32'
 ]
+
+mingw_windows_libs = ['mincore', 'mswsock', 'ntdll', 'psapi', 'rpcrt4', 'ws2_32']
 
 # -Wno-c++11-narrowing
 default_warning = ['-Wshadow', '-Wundef', '-Wnon-virtual-dtor']
@@ -118,38 +119,30 @@ default_windows_defines = [
 
 buildtypes = ['debug', 'debugoptimized', 'release', 'minsize']
 
-clang_buildtype = {
+gnu_comp_args = {
    'debug': {
       'defines'  : ['-DDEBUG'],
-      'warnings' : ['-Wall'] + default_warning,
-      'cflags'   : ['-O0', '-g', '-pipe', '-Xclang -fcolor-diagnostics'],
-      'cxxflags' : ['-O0', '-g', '-pipe', '-Xclang -fcolor-diagnostics', '-std=c++14'],
-      'ldflags'  : []
+      'cflags'   : ['-O0', '-g'],
+      'cxxflags' : ['-O0', '-g'],
    },
    'debugoptimized': {
       'defines'  : ['-DDEBUG'],
-      'warnings' : ['-Wall'] + default_warning,
-      'cflags'   : ['-O1', '-g', '-pipe', '-Xclang -fcolor-diagnostics'],
-      'cxxflags' : ['-O1', '-g', '-pipe', '-Xclang -fcolor-diagnostics', '-std=c++14'],
-      'ldflags'  : []
+      'cflags'   : ['-O1', '-g'],
+      'cxxflags' : ['-O1', '-g'],
    },
    'release': {
       'defines'  : ['-DNDEBUG'],
-      'warnings' : ['-Wall'] + default_warning,
-      'cflags'   : ['-Os', '-pipe', '-Xclang -fcolor-diagnostics'],
-      'cxxflags' : ['-Os', '-pipe', '-Xclang -fcolor-diagnostics', '-std=c++14'],
-      'ldflags'  : []
+      'cflags'   : ['-Os'],
+      'cxxflags' : ['-Os'],
    },
    'minsize': {
       'defines'  : ['-DNDEBUG'],
-      'warnings' : ['-Wall'] + default_warning,
-      'cflags'   : ['-Oz', '-pipe', '-Xclang -fcolor-diagnostics'],
-      'cxxflags' : ['-Oz', '-pipe', '-Xclang -fcolor-diagnostics', '-std=c++14'],
-      'ldflags'  : []
+      'cflags'   : ['-Oz'],
+      'cxxflags' : ['-Oz'],
    }
 }
 
-clang_msvc_buildtype = {
+msvc_comp_args = {
    'debug': {
       'defines'  : default_windows_defines + ['-DDEBUG'],
       'warnings' : ['-W1'] + default_warning,
@@ -179,6 +172,51 @@ clang_msvc_buildtype = {
       'ldflags'  : []
    }
 }
+
+#---------------------------------------------------------------------------------------------------
+
+class Compiler:
+   def __init__(self, name):
+      self.name     = name
+      self.defines  = []
+      self.warnings = ['-Wall'] + default_warning
+      self.cflags   = ['-pipe']
+      self.cxxflags = self.cflags + ['-std=c++14']
+      self.ldflags  = []
+
+
+class ClangCompiler(Compiler):
+   def __init__(self, buildtype, platform):
+      super().__init__('clang')
+
+      self.defines  = gnu_comp_args[buildtype]['defines'] 
+      self.cflags   += gnu_comp_args[buildtype]['cflags'] + ['-fcolor-diagnostics']
+      self.cxxflags += gnu_comp_args[buildtype]['cxxflags'] + ['-fcolor-diagnostics']
+
+      if platform.is_windows():
+         self.defines += default_windows_defines
+
+      if platform.is_mingw():
+         self.cxxflags += ['-femulated-tls']
+
+
+class ClangclCompiler(Compiler):
+   def __init__(self, buildtype, platform):
+      super().__init__('clang-cl')
+
+      self.defines  = msvc_comp_args[buildtype]['defines']
+      self.warnings = msvc_comp_args[buildtype]['warnings']
+      self.cflags   = msvc_comp_args[buildtype]['cflags']
+      self.cxxflags = msvc_comp_args[buildtype]['cxxflags']
+      self.ldflags  = msvc_comp_args[buildtype]['ldflags']
+
+
+def make_compiler(name, buildenv):
+   if buildenv.platform.is_msvc():
+      return ClangclCompiler(buildenv.buildtype, buildenv.platform)
+   else: 
+      return ClangCompiler(buildenv.buildtype, buildenv.platform)
+
 
 #---------------------------------------------------------------------------------------------------
 # Name Templates
@@ -311,9 +349,20 @@ class BuildTarget(Target):
       return [self.build_env.src_to_obj(src_file) for src_file in files]
 
    def libs(self):
-      env_libs = 'libs-{}'.format(self._sysname)
-      platform_libs = windows_libs if self.build_env.platform.is_windows() else []
-      return platform_libs + self._settings.get(env_libs, []) + self._settings.get('libs', [])
+      platform_libs = []
+      env_libs = []
+
+      if self.build_env.platform.is_windows():
+         platform_libs = windows_libs
+         env_libs = self._settings.get('libs-{}'.format('windows'), [])
+
+         if self.build_env.platform.is_mingw():
+            platform_libs = mingw_windows_libs
+            env_libs += self._settings.get('libs-{}'.format('mingw'), [])
+      else:
+         env_libs += self._settings.get('libs-{}'.format(self._sysname), [])
+
+      return self._settings.get('libs', []) + platform_libs + env_libs  
       
 
 
@@ -419,25 +468,17 @@ class Executable(BuildTarget):
 
 #---------------------------------------------------------------------------------------------------
 
-class Compiler:
-   def __init__(self, name, buildtype):
-      self.name = name
-      self.defines = buildtype.get('defines', [])
-      self.warnings = buildtype.get('warnings', [])
-      self.cflags = buildtype.get('cflags', [])
-      self.cxxflags = buildtype.get('cxxflags', [])
-
 class BuildEnv:
-   def __init__(self, options):
+   def __init__(self, options, args, platform):
       self.targets = {}
       self.buildtype = options.buildtype
-      self.platform  = Platform(options.platform)
+      self.platform  = platform
       if options.host:
          self.host = Platform(options.host)
       else:
          self.host = self.platform
 
-      self.build_dir = os.path.join(root_dir, 'build')
+      self.build_dir = os.path.join(root_dir, args[0] if args[0] else 'build')
       if not os.path.isdir(self.build_dir):
          os.makedirs(self.build_dir)
 
@@ -450,7 +491,30 @@ class BuildEnv:
       self.AR  = os.environ.get('AR', 'ar')
       self.PYTHON = 'python3'
 
-      self.compiler = Compiler('clang', clang_buildtype[self.buildtype])
+      self.compiler = make_compiler('clang', self)
+
+   def __str__(self):
+      return '''
+      Build enviroment
+
+      Platform   : {}
+      Host       : {}
+      Build type : {}
+      Compiler   : {}
+
+      Directories
+      Root       : {}
+      Build      : {}
+      Bin        : {}
+      Lib        : {}
+      '''.format(self.platform.platform(), 
+                 self.host.platform(), 
+                 self.buildtype, 
+                 self.compiler.name,
+                 root_dir,
+                 self.build_dir,
+                 self.bin_dir,
+                 self.lib_dir)
 
    def is_debug_build(self):
       return self.buildtype == 'debug'
@@ -465,7 +529,7 @@ class BuildEnv:
       return list(set().union(CXXFLAGS, self.compiler.warnings, self.compiler.cxxflags))
 
    def default_ldflags(self):
-      return list(set().union(LDFLAGS, clang_buildtype[self.buildtype]['ldflags']))
+      return list(set().union(LDFLAGS, self.compiler.ldflags))
 
    def format_obj_name(self, name):
       return 'lib{}.o'.format(name)
@@ -558,13 +622,13 @@ class BuildEnv:
 
 
 class DarwinBuildEnv(BuildEnv):
-   def __init__(self, options):
-      super().__init__(options)
+   def __init__(self, options, args, platform):
+      super().__init__(options, args, platform)
 
    def default_ldflags(self):
       return list(set().union(LDFLAGS, 
                               ['-dead_strip_dylibs', '-headerpad_max_install_names'],
-                              clang_buildtype[self.buildtype]['ldflags']))
+                              self.compiler.ldflags))
 
    def project_dep(self, libname):
       t = self.targets[libname]
@@ -609,9 +673,47 @@ class DarwinBuildEnv(BuildEnv):
       return args
       
 
+class MingwBuildEnv(BuildEnv):
+   def __init__(self, options, args, platform):
+      super().__init__(options, args, platform)
+
+   def shlib_ldflags(self, target):
+      def fmt_lib(library):
+         if library in self.targets:
+            return self.project_dep(library)
+         return '-l{}'.format(self.lib_to_native(library))
+
+      args = {}
+   
+      implib = self.out_implib(target)
+      # Add linker flags
+      args['ldflags'] = ['-shared', 
+                         '-Wl,--no-undefined', 
+                         '-Wl,--as-needed',
+                         '-Wl,--out-implib={}'.format(implib)] + target.ldflags()
+      # Add libs
+      args['libs'] = [fmt_lib(l) for l in target.libs()]
+      return args
+
+
+   def exec_ldflags(self, target):
+      def fmt_lib(library):
+         if library in self.targets:
+            return self.project_dep(library)
+         return '-l{}'.format(self.lib_to_native(library))
+   
+      args = {}
+   
+      # Add linker flags
+      args['ldflags'] = ['-Wl,--no-undefined', '-Wl,--as-needed'] + target.ldflags()
+      # Add libs
+      args['libs'] = [fmt_lib(l) for l in target.libs()]
+      return args
+
+
 class MsvcBuildEnv(BuildEnv):
-   def __init__(self, options):
-      super().__init__(options)
+   def __init__(self, options, args, platform):
+      super().__init__(options, args, platform)
 
       self.CC  = os.environ.get('CC',  'clang-cl.exe')
       self.CXX = os.environ.get('CXX', 'clang-cl.exe')
@@ -619,10 +721,10 @@ class MsvcBuildEnv(BuildEnv):
       self.AR  = os.environ.get('AR',  'llvm-lib.exe')
       self.PYTHON = 'py.exe'
 
-      self.compiler = Compiler('clang-cl', clang_msvc_buildtype[self.buildtype])
+      self.compiler = make_compiler('clang-cl', self)
 
    def default_ldflags(self):
-      return list(set().union(LDFLAGS, clang_msvc_buildtype[self.buildtype]['ldflags']))
+      return list(set().union(LDFLAGS, self.compiler.ldflags))
 
    def format_obj_name(self, name):
       return '{}.obj'.format(name)
@@ -657,10 +759,21 @@ class MsvcBuildEnv(BuildEnv):
       args['ldflags'] = ['/debug'] if self.is_debug_build() else []
       args['ldflags'].extend(target.ldflags())
       # Add libs
-      args['libs'] = [fmt_win_lib(l) for l in target.libs()]
+      args['libs'] = [fmt_lib(l) for l in target.libs()]
       return args
       
       
+def make_buildenv(options, args):
+   platform = Platform(options.platform)
+   if platform.is_darwin():
+      return DarwinBuildEnv(options, args, platform)
+   elif platform.is_msvc():
+      return MsvcBuildEnv(options, args, platform)
+   elif platform.is_mingw():
+      return MingwBuildEnv(options, args, platform)
+   else: 
+      return BuildEnv(options, args, platform)
+
 
 #---------------------------------------------------------------------------------------------------
 
@@ -687,9 +800,11 @@ def main(argv):
 
    (options, args) = parser.parse_args()
    if len(args) != 1:
-      parser.error("incorrect number of arguments")
+      parser.error("Incorrect number of arguments, a build directory is needed!")
 
-   build_env = DarwinBuildEnv(options)
+   build_env = make_buildenv(options, args)
+
+   print(build_env)
 
    static_libs = {}
    shared_libs = {}
@@ -833,7 +948,7 @@ def write_ninja_rules(n, build_env):
    n.comment('------------------------------------------------------------------------------')
    n.newline()
 
-   if platform.is_windows():
+   if platform.is_msvc():
       n.rule('cc',
              command='$cc /showIncludes $defines $includes $cflags -c -o $out $in',
              deps='msvc',
@@ -887,7 +1002,7 @@ def write_ninja_rules(n, build_env):
              description='CXX $out')
       n.newline()
       n.rule('ar',
-             command='rm -f $out && $ar rcsT $out $in',
+             command='$ar rcsT $out $in',
              description='AR $out')
       n.rule('link',
              command='$ld $ldflags -o $out -Wl,--start-group $in $libs -Wl,--end-group $solibs',
@@ -954,7 +1069,7 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
          'lib/unittest/TestStdOutput.cpp', 
          'lib/unittest/TestSuite.cpp'
       ],
-     'sources-darwin' : [
+      'sources-darwin' : [
       #   'lib/debug/ModuleCache.cpp',
          'lib/debug/Stacktrace-darwin.cpp',
          'lib/debug/StacktraceFrame-posix.cpp',
@@ -964,12 +1079,25 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
          'lib/System-darwin.cpp',
          'lib/Uuid-darwin.cpp'
       ],
-     'sources-linux' : [
+      'sources-linux' : [
          'lib/Module-linux.cpp',
          'lib/System-linux.cpp',
          'lib/Uuid-linux.cpp'
       ],
-     'sources-windows' : [
+      'sources-mingw' : [
+         'lib/debug/ModuleCache.cpp',
+         'lib/debug/Stacktrace-win32.cpp',
+         'lib/debug/StacktraceFrame-posix.cpp',
+         'lib/debug/Symbols.cpp',
+         'lib/debug/dw/COFF.cpp',
+         'lib/debug/dw/DwarfWrapper.cpp',
+         'lib/host/win32/Debug.cpp',
+         'lib/io/MapFile-win32.cpp',
+         'lib/Module-win32.cpp',
+         'lib/System-win32.cpp',
+         'lib/Uuid-win32.cpp'
+      ],
+      'sources-windows' : [
          'lib/debug/Stacktrace-win32.cpp',
          'lib/debug/StacktraceFrame-win32.cpp',
          'lib/host/win32/Debug.cpp',
@@ -981,16 +1109,16 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
       'libs': [
         'fmt',
         'boost_program_options' # 'boost_program_options-vc140-mt-gd'
-     ],
-     'libs-windows': [
-        'dbghelp',
+      ],
+      'libs-mingw' : [
+         'dwarf',
+         'z'
+      ],
+      'libs-windows': [
+         'dbghelp',
          'dbgeng',
-         'Imagehlp',
-         'ws2_32',
-         'psapi',
-         'ntdll', 
-         'rpcrt4'
-     ]
+         'Imagehlp'
+      ]
    }
 
    shared_libraries['orion-net'] = {
@@ -1027,6 +1155,10 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
          'lib/net/AddressV4-darwin.cpp',
          'lib/net/AddressV6-darwin.cpp'
       ],
+      'sources-mingw' : [
+         'lib/net/AddressV4-win32.cpp',
+         'lib/net/AddressV6-win32.cpp'
+      ],
       'sources-windows' : [
          'lib/net/AddressV4-win32.cpp',
          'lib/net/AddressV6-win32.cpp'
@@ -1036,13 +1168,6 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
         'http-parser',
         'fmt'
       ],
-      'libs-windows': [
-         'ws2_32',
-         'mswsock',
-         'psapi', 
-         'ntdll', 
-         'rpcrt4' 
-      ]
    }
 
    #------------------------------------------------------------------------------------------------
@@ -1155,6 +1280,7 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
    executables['hello-http-server'] = {
       'tool'     : 'cxx',
       'includes' : ['include', 'deps'],
+      'defines'  : asio_defines,
       'sources'  : [
          'examples/hello-http-server.cpp'
       ],
@@ -1166,6 +1292,7 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
    executables['hello-http-client'] = {
       'tool'     : 'cxx',
       'includes' : ['include', 'deps'],
+      'defines'  : asio_defines,
       'sources'  : [
          'examples/hello-http-client.cpp'
       ],
