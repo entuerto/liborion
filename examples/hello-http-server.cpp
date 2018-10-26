@@ -11,6 +11,9 @@
 #include <orion/net/http/RequestMux.h>
 #include <orion/net/http/Response.h>
 
+#include <clara/clara.hpp>
+#include <fmt/format.h>
+
 #include <cstdio>
 #include <fstream>
 #include <iostream>
@@ -54,8 +57,36 @@ void setup_logger()
    logger.add_output_handler(std::move(cout_handler));
 }
 
-int main()
+bool parse_cmd_options(int argc, char* argv[], uint16_t& port)
 {
+   using namespace clara;
+
+   bool show_help = false;
+
+   auto options = Help(show_help)
+                | Opt(port, "port")["-p"]("port to listen"); 
+
+   auto result = options.parse(Args(argc, argv));
+   if (not result)
+   {
+      std::cerr << "Error: \n" << result.errorMessage() << "\n";
+      return false;
+   }
+   if (show_help)
+   {
+      options.writeToStream(std::cout);
+      return false;
+   }
+   return true;
+}
+
+int main(int argc, char* argv[])
+{
+   uint16_t port = 9080;
+
+   if (not parse_cmd_options(argc, argv, port))
+      return EXIT_FAILURE;
+
    setup_logger();
 
    log::start();
@@ -67,11 +98,11 @@ int main()
    mux.handle(Method{"GET"}, "/world", world);
    mux.handle(Method{"GET"}, "/hello", hello);
 
-   log::write("Server listening on port: 9080\n");
+   log::write(fmt::format("Server listening on port: {}\n", port));
 
    try
    {
-      auto ec = server.listen_and_serve({"0.0.0.0"_ipv4, 9080}, std::move(mux));
+      auto ec = server.listen_and_serve({"0.0.0.0"_ipv4, port}, std::move(mux));
 
       log::error_if(ec, ec);
    }
