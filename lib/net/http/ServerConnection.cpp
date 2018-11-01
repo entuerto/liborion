@@ -31,7 +31,6 @@ ServerConnection::ServerConnection(asio::ip::tcp::socket socket, RequestMux& mux
 
 ServerConnection::~ServerConnection() 
 {
-   log::debug2("~ServerConnection()");
 }
 
 void ServerConnection::do_read()
@@ -47,7 +46,7 @@ void ServerConnection::do_read()
             return;
          }
 
-         log::debug2("Connection::do_read() ", int(bytes_transferred));
+         log::debug2("ServerConnection::do_read() ", int(bytes_transferred));
 
          ec = _parser.parse(_request, asio::const_buffer(_in_buffer.data(), bytes_transferred));
          if (ec)
@@ -56,7 +55,6 @@ void ServerConnection::do_read()
             close();
             return;
          }
-         log::debug2("After parse");
 
          if (_parser.message_complete())
          {
@@ -64,7 +62,7 @@ void ServerConnection::do_read()
             do_write();
             return;
          }
-         log::debug2("Before do_read()");
+         
          do_read();
       });
 }
@@ -86,7 +84,7 @@ void ServerConnection::do_write()
             return;
          }
 
-         log::debug2("Connection::do_write() ", int(bytes_to_write), " ", int(bytes_written));
+         log::debug2("ServerConnection::do_write() ", int(bytes_to_write), " ", int(bytes_written));
 
          close();
       });

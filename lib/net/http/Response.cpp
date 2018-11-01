@@ -51,10 +51,9 @@ Response::Response(Response&& rhs) noexcept
    : _status_code(std::move(rhs._status_code))
    , _version(std::move(rhs._version))
    , _header(std::move(rhs._header))
-   , _header_streambuf()
+   , _header_streambuf(std::move(rhs._header_streambuf))
+   , _body_streambuf(std::move(rhs._body_streambuf))
 {
-   std::ostream o(&_body_streambuf);
-   o << &rhs._body_streambuf;
 }
 
 Response::~Response() = default;
@@ -65,9 +64,8 @@ Response& Response::operator=(Response&& rhs) noexcept
    _version     = std::move(rhs._version);
    _header      = std::move(rhs._header);
 
-   std::ostream o(&_body_streambuf);
-   o << &rhs._body_streambuf;
-
+   _header_streambuf = std::move(rhs._header_streambuf);
+   _body_streambuf   = std::move(rhs._body_streambuf);
    return *this;
 }
 
@@ -121,21 +119,46 @@ void Response::header(const Header& header)
    _header = header;
 }
 
-std::streambuf* Response::body_rdbuf() 
+std::streambuf* Response::body() const
 {
-   return &_body_streambuf;
+   init_body_buffer();
+
+   return _body_streambuf.get();
 }
 
 std::vector<asio::const_buffer> Response::to_buffers()
 {
    build_header_buffer();
 
-   return {_header_streambuf.data(), _body_streambuf.data()};
+   if (_body_streambuf == nullptr)
+      return {_header_streambuf->data()};
+
+   return {_header_streambuf->data(), _body_streambuf->data()};
 }
 
-void Response::build_header_buffer() 
+void Response::init_body_buffer() const
 {
-   std::size_t body_size = _body_streambuf.size();
+   if (_body_streambuf)
+      return;
+
+   auto tmp = std::make_unique<asio::streambuf>();
+   _body_streambuf.swap(tmp);
+}
+
+void Response::init_header_buffer() const
+{
+   if (_header_streambuf)
+      return;
+   
+   auto tmp = std::make_unique<asio::streambuf>();
+   _header_streambuf.swap(tmp);
+}
+
+void Response::build_header_buffer()
+{
+   init_header_buffer();
+
+   auto body_size = (_body_streambuf == nullptr) ? 0 : _body_streambuf->size();
 
    if (_status_code == StatusCode::OK and body_size == 0)
       _status_code = StatusCode::NoContent;
@@ -143,7 +166,7 @@ void Response::build_header_buffer()
    if (body_size != 0)
       header(Field::ContentLength, std::to_string(body_size));
 
-   std::ostream o(&_header_streambuf);
+   std::ostream o(_header_streambuf.get());
 
    auto v = version();
 

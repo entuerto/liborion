@@ -14,6 +14,7 @@
 #include <orion/Types.h>
 #include <orion/net/http/Error.h>
 
+#include <asio.hpp>
 #include <fmt/format.h>
 
 #include <functional>
@@ -26,6 +27,10 @@ namespace orion
 {
 namespace net
 {
+// Forward declarations
+// 
+//class EndPoint;
+
 namespace http
 {
 //-------------------------------------------------------------------------------------------------
@@ -39,6 +44,11 @@ using Header = std::map<std::string, std::string>;
 using HandlerFunc = std::function<std::error_code(const Request&, Response&)>;
 
 using Handlers = std::map<std::string, HandlerFunc>;
+
+using CloseHandler    = std::function<void()>;
+using ConnectHandler  = std::function<void(const asio::ip::tcp::endpoint&)>;
+using ErrorHandler    = std::function<void(const std::error_code&)>;
+using ResponseHandler = std::function<void(const Response&)>;
 
 //-------------------------------------------------------------------------------------------------
 

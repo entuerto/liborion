@@ -1299,6 +1299,30 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
       'libs': ['fmt', 'orion', 'orion-net']
    }
 
+   # Example: hello-tcp-server
+   #
+   executables['hello-tcp-server'] = {
+      'tool'     : 'cxx',
+      'includes' : ['include', 'deps'],
+      'defines'  : asio_defines,
+      'sources'  : [
+         'examples/hello-tcp-server.cpp'
+      ],
+      'libs': ['fmt', 'orion', 'orion-net']
+   }
+
+   # Example: hello-tcp-client
+   #
+   executables['hello-tcp-client'] = {
+      'tool'     : 'cxx',
+      'includes' : ['include', 'deps'],
+      'defines'  : asio_defines,
+      'sources'  : [
+         'examples/hello-tcp-client.cpp'
+      ],
+      'libs': ['fmt', 'orion', 'orion-net']
+   }
+
 #---------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':

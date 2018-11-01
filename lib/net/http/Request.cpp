@@ -30,8 +30,20 @@ Request::Request()
    , _header()
    , _should_keep_alive(true)
    , _upgrade(false)
-   , _header_streambuf(std::make_unique<asio::streambuf>())
-   , _body_streambuf(std::make_unique<asio::streambuf>())
+   , _header_streambuf()
+   , _body_streambuf()
+{
+}
+
+Request::Request(const Method& method, const Url& url)
+   : _method(method)
+   , _url(url)
+   , _version({1, 1})
+   , _header()
+   , _should_keep_alive(true)
+   , _upgrade(false)
+   , _header_streambuf()
+   , _body_streambuf()
 {
 }
 
@@ -42,8 +54,8 @@ Request::Request(const Method& method, const Url& url, const Version& version, c
    , _header(header)
    , _should_keep_alive(true)
    , _upgrade(false)
-   , _header_streambuf(std::make_unique<asio::streambuf>())
-   , _body_streambuf(std::make_unique<asio::streambuf>())
+   , _header_streambuf()
+   , _body_streambuf()
 {
 }
 
@@ -142,14 +154,19 @@ void Request::upgrade(bool value)
    _upgrade = value;
 }
 
-std::streambuf* Request::body_rdbuf() const
+std::streambuf* Request::body() const
 {
+   init_body_buffer();
+
    return _body_streambuf.get();
 }
 
 std::vector<asio::const_buffer> Request::to_buffers()
 {
    build_header_buffer();
+
+   if (_body_streambuf == nullptr)
+      return {_header_streambuf->data()};
 
    return {_header_streambuf->data(), _body_streambuf->data()};
 }
@@ -168,13 +185,33 @@ Request& Request::operator=(Request&& rhs) noexcept
    return *this;
 }
 
+void Request::init_body_buffer() const
+{
+   if (_body_streambuf)
+      return;
+
+   auto tmp = std::make_unique<asio::streambuf>();
+   _body_streambuf.swap(tmp);
+}
+
+void Request::init_header_buffer() const
+{
+   if (_header_streambuf)
+      return;
+   
+   auto tmp = std::make_unique<asio::streambuf>();
+   _header_streambuf.swap(tmp);
+}
+
 void Request::build_header_buffer() 
 {
+   init_header_buffer();
+
    auto u = url();
 
    header("Host", u.host());
 
-   std::size_t body_size = _header_streambuf->size();
+   auto body_size = (_body_streambuf == nullptr) ? 0 : _body_streambuf->size();
 
    if (body_size != 0)
       header(Field::ContentLength, std::to_string(body_size));

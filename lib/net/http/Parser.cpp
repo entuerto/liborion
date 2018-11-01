@@ -118,7 +118,7 @@ std::error_code Parser::parse(Request& request, asio::const_buffer buffer)
    http_parser_init(&_parser, HTTP_REQUEST);
    _parser.data = this;
 
-   _streambuf = request.body_rdbuf();
+   _streambuf = request.body();
 
    auto data = static_cast<const char*>(buffer.data());
    auto length = buffer.size();
@@ -152,7 +152,7 @@ std::error_code Parser::parse(Response& response, asio::const_buffer buffer)
    http_parser_init(&_parser, HTTP_RESPONSE);
    _parser.data = this;
 
-   _streambuf = response.body_rdbuf();
+   _streambuf = response.body();
 
    auto data = static_cast<const char*>(buffer.data());
    auto length = buffer.size();

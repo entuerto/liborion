@@ -28,7 +28,7 @@ std::error_code hello(const http::Request& request, http::Response& response)
    response.header(Field::ContentType, "text/plain; charset=utf-8");
    response.header(Field::Connection, "close");
 
-   std::ostream o(response.body_rdbuf());
+   std::ostream o(response.body());
 
    o << "Hello there";
 
@@ -40,7 +40,7 @@ std::error_code world(const http::Request& request, http::Response& response)
    response.header(Field::ContentType, "text/plain; charset=utf-8");
    response.header(Field::Connection, "close");
 
-   std::ostream o(response.body_rdbuf());
+   std::ostream o(response.body());
 
    o << "World turns round";
 

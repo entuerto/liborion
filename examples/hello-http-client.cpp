@@ -28,12 +28,8 @@ void setup_logger()
    logger.add_output_handler(std::move(cout_handler));
 }
 
-int main()
+void sync_call()
 {
-   setup_logger();
-
-   log::start();
-
    auto r = http::Get(Url{"http://127.0.0.1:9080/world"});
 
    try
@@ -43,7 +39,7 @@ int main()
       auto response = r.get();
 
       log::write(response);
-      log::write(response.body_rdbuf());
+      log::write(response.body());
    }
    catch (const std::future_error& e)
    {
@@ -53,6 +49,31 @@ int main()
    {
       LOG(Error) << e.code();
    }
+}
+
+void async_call()
+{
+   log::write("Asynchronous call\n");
+
+   auto res_handler = [](const http::Response& response) {
+      //auto& r = const_cast<http::Response&>(response);
+
+      log::write("Server response:");
+      log::write(response);
+      log::write(response.body());
+   };
+
+   http::AsyncGet(Url{"http://127.0.0.1:9080/world"}, res_handler);
+}
+
+int main()
+{
+   setup_logger();
+
+   log::start();
+
+   sync_call();
+   async_call();
 
    log::shutdown();
    return EXIT_SUCCESS;

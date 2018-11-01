@@ -74,13 +74,15 @@ public:
    /// Sets the header of the request.
    void header(const Header& header);
 
-   virtual std::streambuf* body_rdbuf();
+   virtual std::streambuf* body() const;
 
    std::vector<asio::const_buffer> to_buffers();
 
    friend API_EXPORT std::ostream& operator<<(std::ostream& o, const Response& r);
 
 private:
+   void init_body_buffer() const;
+   void init_header_buffer() const;
    void build_header_buffer();
 
 private:
@@ -88,8 +90,8 @@ private:
    Version _version;
    Header _header;
 
-   asio::streambuf _header_streambuf;
-   asio::streambuf _body_streambuf;
+   mutable std::unique_ptr<asio::streambuf> _header_streambuf;
+   mutable std::unique_ptr<asio::streambuf> _body_streambuf;
 };
 
 API_EXPORT log::Record& operator<<(log::Record& rec, const Response& r);

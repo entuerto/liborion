@@ -35,6 +35,8 @@ public:
    /// Default constructor
    Request();
 
+   Request(const Method& method, const Url& url);
+
    Request(const Method& method, const Url& url, const Version& version, const Header& header);
 
    /// Move constructor
@@ -52,9 +54,13 @@ public:
    /// Set the HTTP method (GET, POST, PUT, etc.).
    void method(const Method& value);
 
-   //! URL-decoded URI
+   /// A reference to the URL of this request.
    Url& url();
+
+   /// A const reference to the URL of this request.
    const Url& url() const;
+
+   /// Sets the URL of this request.
    void url(const Url& u);
 
    /// The protocol version for incoming server requests.
@@ -84,13 +90,15 @@ public:
    bool upgrade() const;
    void upgrade(bool value);
 
-   virtual std::streambuf* body_rdbuf() const;
+   virtual std::streambuf* body() const;
 
    std::vector<asio::const_buffer> to_buffers();
 
    friend API_EXPORT std::ostream& operator<<(std::ostream& o, const Request& r);
 
 private:
+   void init_body_buffer() const;
+   void init_header_buffer() const;
    void build_header_buffer();
 
 private:
@@ -101,8 +109,8 @@ private:
    bool _should_keep_alive;
    bool _upgrade;
 
-   std::unique_ptr<asio::streambuf> _header_streambuf;
-   std::unique_ptr<asio::streambuf> _body_streambuf;
+   mutable std::unique_ptr<asio::streambuf> _header_streambuf;
+   mutable std::unique_ptr<asio::streambuf> _body_streambuf;
 };
 
 API_EXPORT orion::log::Record& operator<<(orion::log::Record& rec, const Request& r);
