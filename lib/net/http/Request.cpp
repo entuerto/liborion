@@ -24,50 +24,30 @@ namespace http
 {
 
 Request::Request()
-   : _method("GET")
+   : Message()
+   , _method("GET")
    , _url()
-   , _version()
-   , _header()
-   , _should_keep_alive(true)
-   , _upgrade(false)
-   , _header_streambuf()
-   , _body_streambuf()
 {
 }
 
 Request::Request(const Method& method, const Url& url)
-   : _method(method)
+   : Message({1, 1})
+   , _method(method)
    , _url(url)
-   , _version({1, 1})
-   , _header()
-   , _should_keep_alive(true)
-   , _upgrade(false)
-   , _header_streambuf()
-   , _body_streambuf()
 {
 }
 
 Request::Request(const Method& method, const Url& url, const Version& version, const Header& header)
-   : _method(method)
+   : Message(version, header)
+   , _method(method)
    , _url(url)
-   , _version(version)
-   , _header(header)
-   , _should_keep_alive(true)
-   , _upgrade(false)
-   , _header_streambuf()
-   , _body_streambuf()
 {
 }
 
-Request::Request(Request&& rhs) noexcept
-   : _method(std::move(rhs._method))
-   , _url(std::move(rhs._url))
-   , _version(std::move(rhs._version))
-   , _header(std::move(rhs._header))
-   , _should_keep_alive(std::move(rhs._should_keep_alive))
-   , _upgrade(std::move(rhs._upgrade))
-   , _header_streambuf(std::move(rhs._header_streambuf))
-   , _body_streambuf(std::move(rhs._body_streambuf))
+Request::Request(Request&& other) noexcept
+   : Message(std::move(other))
+   , _method(std::move(other._method))
+   , _url(std::move(other._url))
 {
 }
 
@@ -84,7 +64,7 @@ void Request::method(const Method& value)
    _method = value;
 }
 
-Url& Request::url() 
+Url& Request::url()
 {
    return _url;
 }
@@ -99,111 +79,17 @@ void Request::url(const Url& u)
    _url = u;
 }
 
-Version Request::version() const
+Request& Request::operator=(Request&& other) noexcept
 {
-   return _version;
-}
+   _method = std::move(other._method);
+   _url    = std::move(other._url);
 
-void Request::version(const Version& v)
-{
-   _version = v;
-}
+   Message::operator=(std::move(other));
 
-std::string Request::header(const std::string& name) const
-{
-   auto it = _header.find(name);
-
-   if (it != _header.end())
-      return it->second;
-
-   return "";
-}
-
-void Request::header(Field f, const std::string& value)
-{
-   _header[to_string(f)] = value;
-}
-
-void Request::header(const std::string& name, const std::string& value)
-{
-   _header[name] = value;
-}
-
-void Request::header(const Header& header)
-{
-   _header = header;
-}
-
-bool Request::should_keep_alive() const
-{
-   return _should_keep_alive;
-}
-
-void Request::should_keep_alive(bool value)
-{
-   _should_keep_alive = value;
-}
-
-bool Request::upgrade() const
-{
-   return _upgrade;
-}
-
-void Request::upgrade(bool value)
-{
-   _upgrade = value;
-}
-
-std::streambuf* Request::body() const
-{
-   init_body_buffer();
-
-   return _body_streambuf.get();
-}
-
-std::vector<asio::const_buffer> Request::to_buffers()
-{
-   build_header_buffer();
-
-   if (_body_streambuf == nullptr)
-      return {_header_streambuf->data()};
-
-   return {_header_streambuf->data(), _body_streambuf->data()};
-}
-
-Request& Request::operator=(Request&& rhs) noexcept
-{
-   _method            = std::move(rhs._method);
-   _url               = std::move(rhs._url);
-   _version           = std::move(rhs._version);
-   _header            = std::move(rhs._header);
-   _should_keep_alive = std::move(rhs._should_keep_alive);
-   _upgrade           = std::move(rhs._upgrade);
-
-   _header_streambuf = std::move(rhs._header_streambuf);
-   _body_streambuf   = std::move(rhs._body_streambuf);
    return *this;
 }
 
-void Request::init_body_buffer() const
-{
-   if (_body_streambuf)
-      return;
-
-   auto tmp = std::make_unique<asio::streambuf>();
-   _body_streambuf.swap(tmp);
-}
-
-void Request::init_header_buffer() const
-{
-   if (_header_streambuf)
-      return;
-   
-   auto tmp = std::make_unique<asio::streambuf>();
-   _header_streambuf.swap(tmp);
-}
-
-void Request::build_header_buffer() 
+void Request::build_header_buffer()
 {
    init_header_buffer();
 
@@ -211,26 +97,15 @@ void Request::build_header_buffer()
 
    header("Host", u.host());
 
-   auto body_size = (_body_streambuf == nullptr) ? 0 : _body_streambuf->size();
-
-   if (body_size != 0)
-      header(Field::ContentLength, std::to_string(body_size));
-
-   std::ostream o(_header_streambuf.get());
+   std::ostream o(header_buffer());
 
    auto v = version();
 
-   // request-line = method SP request-target SP HTTP-version CRLF
    auto request_line = fmt::format("{0} {1} HTTP/{2}.{3}", method(), u.path(), v.major, v.minor);
 
    o << request_line << crlf;
 
-   for (const auto& item : _header)
-   {
-      o << item.first << ": " << item.second << crlf;
-   }
-
-   o << crlf;
+   Message::build_header_buffer();
 }
 
 std::ostream& operator<<(std::ostream& o, const Request& r)
@@ -240,27 +115,21 @@ Request Record
 Method             : {}
 URL                : {}
 Version            : {}.{}
-Should keep alive  : {}
-Upgrade            : {}
 )";
 
-   Version v = r._version;
+   Version v = r.version();
+
+   std::string upgrade = r.header(Field::Upgrade);
 
    o << std::left;
 
-   o << fmt::format(text,
-                    r._method,
-                    r._url.href(),
-                    v.major,
-                    v.minor,
-                    r._should_keep_alive,
-                    r._upgrade);
+   o << fmt::format(text, r.method(), r.url().href(), v.major, v.minor);
 
-   for (const auto& item : r._header)
+   for (const auto& item : r.header())
    {
       o << std::setw(18) << item.first << " : " << item.second << "\n";
    }
-    
+
    return o;
 }
 
@@ -275,6 +144,6 @@ orion::log::Record& operator<<(orion::log::Record& rec, const Request& r)
    return rec;
 }
 
-} // http
-} // net
-} // orion
+} // namespace http
+} // namespace net
+} // namespace orion

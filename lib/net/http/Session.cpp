@@ -147,6 +147,7 @@ bool SyncSession::connect(const std::string& host, int port, std::error_code& ec
    connected(true);
 
    socket().set_option(asio::ip::tcp::no_delay{true});
+   socket().set_option(asio::socket_base::keep_alive{true});
    return true;
 }
 
@@ -278,6 +279,7 @@ void AsyncSession::connect(const std::string& host, int port)
          }
          self->connected(true);
          self->socket().set_option(asio::ip::tcp::no_delay{true});
+         self->socket().set_option(asio::socket_base::keep_alive{true});
 
          log::info("Connected to host:");
          log::info("   Remote address: ", self->socket().remote_endpoint());

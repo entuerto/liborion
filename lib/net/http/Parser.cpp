@@ -140,8 +140,6 @@ std::error_code Parser::parse(Request& request, asio::const_buffer buffer)
       request.version(Version{_parser.http_major, _parser.http_minor});
       request.url(Url{_url});
       request.header(_header);
-      request.should_keep_alive(http_should_keep_alive(&_parser) == 1);
-      request.upgrade(_parser.upgrade == 1);
    }
 
    return std::error_code();
