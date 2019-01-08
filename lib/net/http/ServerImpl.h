@@ -12,8 +12,9 @@
 
 #include <orion/net/http/RequestMux.h>
 #include <orion/net/http/Utils.h>
+#include <orion/net/tcp/Listener.h>
 
-#include <net/http/Listener.h>
+#include <net/http/ServerConnection.h>
 
 #include <asio.hpp>
 
@@ -32,6 +33,8 @@ class ServerImpl
 public:
    NO_COPY(ServerImpl)
    NO_MOVE(ServerImpl)
+
+   using ListenerType = tcp::Listener<ServerConnection, RequestMux>;
 
    ServerImpl();
    ~ServerImpl();
@@ -70,7 +73,7 @@ private:
    // The signal_set is used to register for process termination notifications.
    asio::signal_set _signals;
 
-   std::shared_ptr<Listener> _listener;
+   std::shared_ptr<ListenerType> _listener;
 };
 
 } // http

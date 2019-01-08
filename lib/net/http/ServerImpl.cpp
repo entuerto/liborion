@@ -75,10 +75,10 @@ std::error_code ServerImpl::listen_and_serve(EndPoint endpoint)
 {
    setup_signals();
 
-   _listener = std::make_shared<http::Listener>(_io_context, std::move(endpoint), _mux);
+   _listener = std::make_shared<ListenerType>(_io_context, std::move(endpoint), _mux);
 
    _listener->read_timeout(_read_timeout);
-   _listener->tls_handshake_timeout(_tls_handshake_timeout);
+   //_listener->tls_handshake_timeout(_tls_handshake_timeout);
 
    auto ec = _listener->start();
    if (ec)

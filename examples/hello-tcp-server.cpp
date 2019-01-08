@@ -6,13 +6,17 @@
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 #include <orion/Log.h>
+#include <orion/net/tcp/Connection.h>
 #include <orion/net/tcp/Listener.h>
+#include <orion/net/tcp/Utils.h>
 
 #include <cstdio>
 #include <iostream>
 
 using namespace orion;
 using namespace orion::net;
+
+using TcpListener = tcp::Listener<tcp::Connection, tcp::Handler>;
 
 int main()
 {
@@ -39,7 +43,7 @@ int main()
    {
       asio::io_context io_context;
 
-      std::make_shared<tcp::Listener>(io_context, EndPoint{"0.0.0.0"_ipv4, 9000}, handler)->start();
+      std::make_shared<TcpListener>(io_context, EndPoint{"0.0.0.0"_ipv4, 9000}, handler)->start();
 
       io_context.run();
    }
