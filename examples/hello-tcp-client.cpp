@@ -17,24 +17,13 @@
 #include <thread>
 
 using namespace orion;
-using namespace orion::log;
 using namespace orion::net;
 
 using namespace std::chrono_literals;
 
-void setup_logger()
-{
-   auto cout_handler = make_stream_output_handler(std::cout);
-
-   Logger& logger = default_logger();
-
-   logger.level(Level::Debug);
-   logger.add_output_handler(std::move(cout_handler));
-}
-
 int main()
 {
-   setup_logger();
+   log::setup_logger(log::Level::Debug);
 
    log::start();
 

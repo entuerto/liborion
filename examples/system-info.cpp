@@ -17,7 +17,6 @@
 
 using namespace orion;
 using namespace orion::debug;
-using namespace orion::log;
 using namespace orion::sys;
 
 void function_a()
@@ -25,16 +24,6 @@ void function_a()
    Stacktrace st = make_stacktrace();
 
    std::cout << to_string(st);
-}
-
-void setup_logger()
-{
-   auto cout_handler = make_stream_output_handler(std::cout);
-
-   Logger& logger = default_logger();
-
-   logger.level(Level::Debug);
-   logger.add_output_handler(std::move(cout_handler));
 }
 
 std::string get_model(const CpuInfo& cpu)
@@ -46,7 +35,7 @@ std::string get_model(const CpuInfo& cpu)
 
 int main()
 {
-   setup_logger();
+   log::setup_logger(log::Level::Debug);
 
    log::start([]() { return std::string{}; });
 

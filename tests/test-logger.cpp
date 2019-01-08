@@ -53,7 +53,7 @@ static void setup_logger()
    logger.start([] { return ""; });
 }
 
-Section(OrionCore_Logger, Label{"Logger"}, SetupFunc{setup_logger})
+Section(OrionCore_Logger, Label{"Logger"}, SetupFunc{::setup_logger})
 {
 //----------------------------------------------------------------------------
 // Tests

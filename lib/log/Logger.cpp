@@ -38,6 +38,26 @@ Logger& default_logger()
    }
 }
 
+void setup_logger(Level level /* = Level::Info */)
+{
+   auto cout_handler = make_stream_output_handler(std::cout);
+
+   Logger& logger = default_logger();
+
+   logger.level(level);
+   logger.add_output_handler(std::move(cout_handler));
+}
+
+void setup_logger(Level level, std::ostream& stream)
+{
+   auto stream_handler = make_stream_output_handler(stream);
+
+   Logger& logger = default_logger();
+
+   logger.level(level);
+   logger.add_output_handler(std::move(stream_handler));
+}
+
 void start(SystemInfoFunc system_info /* = DefaultInfo */)
 {
    default_logger().start(std::move(system_info));

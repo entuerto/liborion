@@ -17,6 +17,7 @@
 #include <orion/log/LoggerService.h>
 
 #include <functional>
+#include <iosfwd>
 
 namespace orion
 {
@@ -75,6 +76,10 @@ void write(Args&&... args);
 
 /// Retreive the logger instance
 API_EXPORT Logger& default_logger();
+
+API_EXPORT void setup_logger(Level level = Level::Info);
+
+API_EXPORT void setup_logger(Level level, std::ostream& stream);
 
 API_EXPORT void start(SystemInfoFunc system_info = DefaultInfo);
 

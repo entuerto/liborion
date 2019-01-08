@@ -15,18 +15,7 @@
 #include <iostream>
 
 using namespace orion;
-using namespace orion::log;
 using namespace orion::net;
-
-void setup_logger()
-{
-   auto cout_handler = make_stream_output_handler(std::cout);
-
-   Logger& logger = default_logger();
-
-   logger.level(Level::Debug);
-   logger.add_output_handler(std::move(cout_handler));
-}
 
 void sync_call()
 {
@@ -68,7 +57,7 @@ void async_call()
 
 int main()
 {
-   setup_logger();
+   log::setup_logger(log::Level::Debug);
 
    log::start();
 

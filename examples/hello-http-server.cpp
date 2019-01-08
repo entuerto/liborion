@@ -19,7 +19,6 @@
 #include <iostream>
 
 using namespace orion;
-using namespace orion::log;
 using namespace orion::net;
 using namespace orion::net::http;
 
@@ -45,16 +44,6 @@ std::error_code world(const http::Request& request, http::Response& response)
    o << "World turns round";
 
    return std::error_code();
-}
-
-void setup_logger()
-{
-   auto cout_handler = make_stream_output_handler(std::cout);
-
-   Logger& logger = default_logger();
-
-   logger.level(Level::Debug);
-   logger.add_output_handler(std::move(cout_handler));
 }
 
 bool parse_cmd_options(int argc, char* argv[], uint16_t& port)
@@ -87,7 +76,7 @@ int main(int argc, char* argv[])
    if (not parse_cmd_options(argc, argv, port))
       return EXIT_FAILURE;
 
-   setup_logger();
+   log::setup_logger(log::Level::Debug);
 
    log::start();
 

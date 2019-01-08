@@ -1136,6 +1136,7 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
          'lib/net/Url.cpp',
          # HTTP files
          'lib/net/http/Error.cpp',
+         'lib/net/http/Message.cpp',
          'lib/net/http/Parser.cpp',
          'lib/net/http/Request.cpp',
          'lib/net/http/RequestMux.cpp',
