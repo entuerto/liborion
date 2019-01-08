@@ -228,6 +228,7 @@ void Connection<SocketT>::accept()
 
    start_read_timer();
 
+   do_accept();
    do_read();
 }
 

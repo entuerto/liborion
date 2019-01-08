@@ -34,8 +34,6 @@ class Listener
 public:
    NO_COPY(Listener)
 
-   //DEFAULT_MOVE(Listener)
-
    Listener(asio::io_context& io_context, EndPoint ep, Handler handler);
    ~Listener() override;
 

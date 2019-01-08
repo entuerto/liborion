@@ -93,6 +93,7 @@ public:
 
    /// Consists of the entire path section of the URL and the search section.
    std::string path() const;
+   void path(const std::string& value);
 
    /// Consists of the entire path section of the URL. This is everything following
    /// the host (including the port) and before the start of the query or hash components,
@@ -120,6 +121,7 @@ public:
 
 private:
    void parse(const std::string& value);
+   void parse_query(const std::string& value);
 
    UserInfo _userinfo;
    int _port;

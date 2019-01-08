@@ -96,6 +96,9 @@ protected:
    void on_read_timeout(const std::error_code& ec);
    void on_write_timeout(const std::error_code& ec);
 
+   /// Perform extra accept operations.
+   virtual void do_accept() {}
+
    /// Perform an asynchronous read operation.
    virtual void do_read() {}
 

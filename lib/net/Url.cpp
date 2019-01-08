@@ -498,6 +498,16 @@ std::string Url::path() const
    return out;
 }
 
+void Url::path(const std::string& value)
+{
+   std::vector<std::string> v = split(value, by_char{'?'});
+
+   auto p = v.at(0);
+   _pathname = priv::percent_decode(p.c_str(), p.size());
+
+   parse_query(v.at(1));
+}
+
 std::string Url::pathname() const
 {
    return _pathname;
@@ -627,24 +637,21 @@ void Url::parse(const std::string& value)
    {
       std::string p = priv::percent_decode(value.c_str() + u.field_data[UF_QUERY].off,
                                            u.field_data[UF_QUERY].len);
+      parse_query(p);
+   }
+   to_lower(_protocol);
+   to_lower(_hostname);
+}
 
-      std::vector<std::string> query_items = split(p, by_char{'&'});
+void Url::parse_query(const std::string& value)
+{
+   std::vector<std::string> query_items = split(value, by_char{'&'});
 
-      if (not query_items.empty())
+   if (not query_items.empty())
+   {
+      for (const auto& item : query_items)
       {
-         for (const auto& item : query_items)
-         {
-            std::vector<std::string> q = split(item, by_char{'='});
-            if (not q.empty())
-            {
-               std::string v = q.size() == 1 ? "" : q.back();
-               query(q.front(), v);
-            }
-         }
-      }
-      else
-      {
-         std::vector<std::string> q = split(p, by_char{'='});
+         std::vector<std::string> q = split(item, by_char{'='});
          if (not q.empty())
          {
             std::string v = q.size() == 1 ? "" : q.back();
@@ -652,8 +659,15 @@ void Url::parse(const std::string& value)
          }
       }
    }
-   to_lower(_protocol);
-   to_lower(_hostname);
+   else
+   {
+      std::vector<std::string> q = split(value, by_char{'='});
+      if (not q.empty())
+      {
+         std::string v = q.size() == 1 ? "" : q.back();
+         query(q.front(), v);
+      }
+   }
 }
 
 } // namespace net
