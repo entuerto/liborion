@@ -39,7 +39,11 @@ Connection::~Connection() = default;
 
 void Connection::do_read()
 {
+   log::debug2("Reading...");
+
    auto self = this->shared_from_this();
+
+   start_read_timer();
 
    auto b = _in_streambuf.prepare(_in_buffer_size);
 
@@ -50,7 +54,7 @@ void Connection::do_read()
          close();
          return;
       }
-      log::debug2("Connection::do_read() ", int(bytes_transferred));
+      log::debug2("Read - Bytes transferred: ", int(bytes_transferred));
 
       _in_streambuf.commit(bytes_transferred);
 
@@ -69,6 +73,12 @@ void Connection::do_read()
 
 void Connection::do_write()
 {
+   log::debug2("Writting...");
+
+   // Reset read deadline here, because normally client is sending
+   // something, it does not expect timeout while doing it.
+   start_read_timer();
+
    auto self = this->shared_from_this();
 
    asio::async_write(
@@ -83,7 +93,7 @@ void Connection::do_write()
 
          _out_streambuf.consume(bytes_written);
 
-         log::debug2("Connection::do_write() ", int(bytes_to_write), " ", int(bytes_written));
+         log::debug2("Write - Bytes written ", int(bytes_written), "/", int(bytes_to_write));
 
          if (bytes_to_write == bytes_written)
             return;

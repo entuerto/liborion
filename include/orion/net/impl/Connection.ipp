@@ -226,9 +226,8 @@ void Connection<SocketT>::accept()
    if (log::default_logger().is_enabled(log::Level::Debug))
       dump_socket_options();
 
-   start_read_timer();
-
    do_accept();
+
    do_read();
 }
 

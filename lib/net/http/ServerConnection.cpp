@@ -35,7 +35,11 @@ ServerConnection::~ServerConnection()
 
 void ServerConnection::do_read()
 {
+   log::debug2("Reading...");
+
    auto self = this->shared_from_this();
+
+   start_read_timer();
 
    socket().async_read_some(
       asio::buffer(_in_buffer), [this, self](std::error_code ec, std::size_t bytes_transferred) {
@@ -46,7 +50,7 @@ void ServerConnection::do_read()
             return;
          }
 
-         log::debug2("ServerConnection::do_read() ", int(bytes_transferred));
+         log::debug2("Read - Bytes transferred: ", int(bytes_transferred));
 
          ec = _parser.parse(_request, asio::const_buffer(_in_buffer.data(), bytes_transferred));
          if (ec)
@@ -69,6 +73,12 @@ void ServerConnection::do_read()
 
 void ServerConnection::do_write()
 {
+   log::debug2("Writting...");
+
+   // Reset read deadline here, because normally client is sending
+   // something, it does not expect timeout while doing it.
+   start_read_timer();
+
    auto self = this->shared_from_this();
 
    auto buffers = _response.to_buffers();
@@ -84,7 +94,7 @@ void ServerConnection::do_write()
             return;
          }
 
-         log::debug2("ServerConnection::do_write() ", int(bytes_to_write), " ", int(bytes_written));
+         log::debug2("Write - Bytes written ", int(bytes_written), "/", int(bytes_to_write));
 
          close();
       });
