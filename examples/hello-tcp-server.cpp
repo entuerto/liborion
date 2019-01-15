@@ -16,7 +16,31 @@
 using namespace orion;
 using namespace orion::net;
 
-using TcpListener = tcp::Listener<tcp::Connection, tcp::Handler>;
+class RawHandler : public tcp::Handler
+{
+public:
+   ~RawHandler() = default;
+   
+   std::error_code on_read(asio::streambuf& b) override
+   {
+      std::cout << "Received :\n";
+
+      std::cout << &b << "\n";
+
+      return {};
+   }
+
+   std::error_code on_write(asio::streambuf& b) override
+   {
+      std::ostream o(&b);
+
+      o << "Welcome" << '\n';
+      return {};
+   }
+
+};
+
+using TcpListener = tcp::Listener<tcp::Connection, RawHandler>;
 
 int main()
 {
@@ -24,26 +48,13 @@ int main()
 
    log::start();
 
-   auto handler = [&](asio::streambuf& in, asio::streambuf& out) {
-      std::cout << "Received :\n";
-
-      std::cout << &in << "\n";
-
-      std::ostream o(&out);
-
-      o << "Welcome"
-        << "\n";
-
-      return std::error_code();
-   };
-
-   std::cout << "Server listening on port: 9090\n";
+   std::cout << "Server listening on port: 9000\n";
 
    try
    {
       asio::io_context io_context;
 
-      std::make_shared<TcpListener>(io_context, EndPoint{"0.0.0.0"_ipv4, 9000}, handler)->start();
+      std::make_shared<TcpListener>(io_context, EndPoint{"0.0.0.0"_ipv4, 9000}, RawHandler{})->start();
 
       io_context.run();
    }

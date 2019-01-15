@@ -26,7 +26,7 @@ namespace tcp
 {
 //-------------------------------------------------------------------------------------------------
 
-using Handler = std::function<std::error_code(asio::streambuf&, asio::streambuf&)>;
+using HandlerFunc = std::function<std::error_code(asio::streambuf&, asio::streambuf&)>;
 
 using ConnectHandler = std::function<void(const std::error_code&)>;
 using AcceptHandler  = std::function<void(const std::error_code&)>;
@@ -38,6 +38,41 @@ std::unique_ptr<std::streambuf> make_buffer(std::size_t max_size = 0);
 //-------------------------------------------------------------------------------------------------
 // Tcp Options
 using NoDelay = Option<bool, struct NoDelayTag>;
+
+//-------------------------------------------------------------------------------------------------
+
+class API_EXPORT Handler 
+{
+public:
+   enum class State : uint8_t
+   {
+      Read,
+      Write,
+      Close
+   };
+
+   virtual ~Handler() = default;
+   
+   /// Returns true if session wants to receive data from the remote peer.
+   bool read_wanted() const;
+
+   /// Returns true if session wants to send data to the remote peer.
+   bool write_wanted() const;
+
+   bool should_stop() const;
+
+   State state() const;
+   void state(State value);
+
+   virtual void signal_write();
+   
+   virtual std::error_code on_read(asio::streambuf&) = 0;
+
+   virtual std::error_code on_write(asio::streambuf&) = 0;
+
+private:
+   State _state{State::Close};
+};
 
 } // tcp
 } // net

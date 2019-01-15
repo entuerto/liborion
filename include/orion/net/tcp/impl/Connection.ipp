@@ -26,7 +26,7 @@ inline std::error_code set_option(Connection& conn, const NoDelay& value)
 
 //--------------------------------------------------------------------------------------------------
 
-Connection::Connection(asio::ip::tcp::socket socket, const Handler& handler)
+Connection::Connection(asio::ip::tcp::socket socket, Handler& handler)
    : net::Connection<asio::ip::tcp::socket>(std::move(socket))
    , _handler(handler)
    , _in_streambuf()
@@ -43,7 +43,7 @@ void Connection::do_read()
 
    auto self = this->shared_from_this();
 
-   start_read_timer();
+   //start_read_timer();
 
    auto b = _in_streambuf.prepare(_in_buffer_size);
 
@@ -58,14 +58,21 @@ void Connection::do_read()
 
       _in_streambuf.commit(bytes_transferred);
 
-      ec = _handler(_in_streambuf, _out_streambuf);
+      ec = _handler.on_read(_in_streambuf);
       if (ec)
       {
          log::error(ec, _src_loc);
          close();
          return;
       }
+
       do_write();
+
+      if (not _writing and _handler.should_stop())
+      {
+         close();
+         return;
+      }
 
       do_read();
    });
@@ -73,23 +80,42 @@ void Connection::do_read()
 
 void Connection::do_write()
 {
+   if (_writing)
+      return;
+
+   std::error_code ec = _handler.on_write(_out_streambuf);
+   if (ec)
+   {
+      log::error(ec, _src_loc);
+      close();
+      return;
+   }
+
+   std::size_t bytes_to_write = _out_streambuf.size();
+
+   if (bytes_to_write == 0)
+   {
+      if (_handler.should_stop())
+         close();
+      return;
+   }
+
    log::debug2("Writting...");
 
    // Reset read deadline here, because normally client is sending
    // something, it does not expect timeout while doing it.
-   start_read_timer();
+   // start_read_timer();
 
    auto self = this->shared_from_this();
 
-   asio::async_write(
-      socket(), _out_streambuf.data(), [this, self](std::error_code ec, std::size_t bytes_written) {
+   asio::async_write(socket(), _out_streambuf.data(),
+      [this, self, bytes_to_write](std::error_code ec, std::size_t bytes_written) {
          if (ec)
          {
             log::error(ec, _src_loc);
             close();
             return;
          }
-         std::size_t bytes_to_write = _out_streambuf.size();
 
          _out_streambuf.consume(bytes_written);
 

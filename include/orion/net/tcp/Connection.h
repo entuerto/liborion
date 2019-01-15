@@ -27,7 +27,7 @@ namespace tcp
 class Connection : public net::Connection<asio::ip::tcp::socket>
 {
 public:
-   Connection(asio::ip::tcp::socket socket, const Handler& handler);
+   Connection(asio::ip::tcp::socket socket, Handler& handler);
    virtual ~Connection();
 
 protected:
@@ -39,7 +39,7 @@ protected:
 
 private:
    /// Request handler
-   const Handler& _handler;
+   Handler& _handler;
 
    /// Buffer for incoming data.
    asio::streambuf _in_streambuf;
@@ -48,6 +48,8 @@ private:
    asio::streambuf _out_streambuf;
 
    std::size_t _in_buffer_size;
+
+   bool _writing{false};
 };
 
 /// Controls whether the operating system should delay packet transmission in hopes of
