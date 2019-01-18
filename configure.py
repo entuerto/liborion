@@ -1182,6 +1182,7 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
       'includes' : ['include', 'lib', 'deps', 'tests'],
       'sources'  : [
          'tests/test-base.cpp',
+         'tests/test-chrono.cpp',
          'tests/test-encoding.cpp',
          'tests/test-logger.cpp',
          'tests/test-semver.cpp',
