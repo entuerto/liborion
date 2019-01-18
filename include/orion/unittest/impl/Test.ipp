@@ -72,10 +72,10 @@ inline void Test::xassert(const T& expected, const T& actual, Args... args)
          success = expected != actual;
          break;
       case ge:
-         success = expected > actual;
+         success = expected >= actual;
          break;
       case gt:
-         success = expected >= actual;
+         success = expected > actual;
          break;
       default:
          AssertUnreachable("Invalid operator");

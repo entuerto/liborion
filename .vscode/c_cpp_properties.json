@@ -12,8 +12,10 @@
                 "_UNICODE"
             ],
             "windowsSdkVersion": "10.0.14393.0",
-            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/cl.exe",
-            "intelliSenseMode": "msvc-x64"
+            "compilerPath": "C:/Tools/llvm/bin/clang-cl.exe",
+            "intelliSenseMode": "clang-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++14"
         }
     ],
     "version": 4

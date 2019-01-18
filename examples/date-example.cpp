@@ -28,10 +28,10 @@ int main()
              << "RFC3339:     " << to_string(now, RFC3339) << "\n"
              << "ISO8601:     " << to_string(now, ISO8601) << "\n\n";
 
-   auto y   = duration_cast<years>(now.time_since_epoch());
-   auto m   = duration_cast<months>(now.time_since_epoch());
-   auto d   = duration_cast<days>(now.time_since_epoch());
-   auto w   = duration_cast<weeks>(now.time_since_epoch());
+   auto y   = duration_cast<Years>(now.time_since_epoch());
+   auto m   = duration_cast<Months>(now.time_since_epoch());
+   auto d   = duration_cast<Days>(now.time_since_epoch());
+   auto w   = duration_cast<Weeks>(now.time_since_epoch());
    auto h   = duration_cast<hours>(now.time_since_epoch());
    auto min = duration_cast<minutes>(now.time_since_epoch());
    auto s   = duration_cast<seconds>(now.time_since_epoch());
@@ -44,7 +44,8 @@ int main()
    std::cout << "\nTime Since Epoch (01/01/1970)\n"
              << "\nyears:    " << y << "\nmonths:   " << m << "\ndays:     " << d
              << "\nweeks:    " << w << "\nhours:    " << h << "\nmins:     " << min
-             << "\nMillis:   " << ms << "\nMicro:    " << us << "\nNano:     " << ns << "\n"
+             << "\nsecs:     " << s << "\nMillis:   " << ms << "\nMicro:    " << us
+             << "\nNano:     " << ns << "\n"
              << "\nother:    " << o << "\n\n";
 
    return EXIT_SUCCESS;

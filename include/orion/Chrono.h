@@ -20,6 +20,14 @@ namespace orion
 // Types
 
 //
+// Durations
+//
+using Days = std::chrono::duration<int, std::ratio_multiply<std::ratio<24>, std::chrono::hours::period>>;
+using Weeks = std::chrono::duration<int, std::ratio_multiply<std::ratio<7>, Days::period>>;
+using Years = std::chrono::duration<int, std::ratio_multiply<std::ratio<146097, 400>, Days::period>>;
+using Months = std::chrono::duration<int, std::ratio_divide<Years::period, std::ratio<12>>>;
+
+//
 // Time points
 //
 template<typename D = std::chrono::nanoseconds>
@@ -27,14 +35,16 @@ using TimePoint = std::chrono::time_point<std::chrono::system_clock, D>;
 
 using HighResTimePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
-//
-// Durations
-//
-using days = std::chrono::duration<int, std::ratio_multiply<std::ratio<24>, std::chrono::hours::period>>;
-using weeks = std::chrono::duration<int, std::ratio_multiply<std::ratio<7>, days::period>>;
-using years = std::chrono::duration<int, std::ratio_multiply<std::ratio<146097, 400>, days::period>>;
-using months = std::chrono::duration<int, std::ratio_divide<years::period, std::ratio<12>>>;
+template <class Duration>
+using SystemTime    = std::chrono::time_point<std::chrono::system_clock, Duration>;
+using SystemSeconds = SystemTime<std::chrono::seconds>;
+using SystemDays    = SystemTime<Days>;
 
+struct local_t {};
+template<class Duration>
+using LocalTime    = std::chrono::time_point<local_t, Duration>;
+using LocalSeconds = LocalTime<std::chrono::seconds>;
+using LocalDays    = LocalTime<Days>;
 
 //-------------------------------------------------------------------------------------------------
 //
@@ -72,6 +82,13 @@ inline std::u32string to_u32string(const std::chrono::time_point<Clock>& tp, con
 
 // inline std::u32string to_u32string(const TimePoint<>& tp, const char32_t* fmt);
 
+//-------------------------------------------------------------------------------------------------
+//
+
+template<class CharT, class Traits, class Rep, class Period>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
+                                              const std::chrono::duration<Rep, Period>& d);
+                                              
 //-------------------------------------------------------------------------------------------------
 
 class Timer

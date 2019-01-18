@@ -21,7 +21,7 @@ void current_time()
    auto now = std::chrono::system_clock::now().time_since_epoch() + utc_offset;
 
    // Get duration in days
-   auto today = std::chrono::duration_cast<days>(now);
+   auto today = std::chrono::duration_cast<Days>(now);
 
    // Subtract off days, leaving now containing time since local midnight
    now -= today;
@@ -40,18 +40,31 @@ void current_time()
 
 int main()
 {
-   days date = Year{2017} / May / Day{17};
+   Date date = Year{2017}/May/Day{17};
 
-   int32_t year;
-   uint32_t month;
-   uint32_t day;
+   std::cout << "Date\n";
+   
+   std::cout << "Year{2017}/May/Day{17} = " << date << '\n';
 
-   // Convert days IntTo year/month/day
-   std::tie(year, month, day) = to_days(date.count());
+   date = Year{2017}/May/Last;
 
-   std::cout.fill('0');
-   std::cout << "Date is " << year << '-' << std::setw(2) << month << '-' << std::setw(2) << day
-             << "\n";
+   std::cout << "Year{2017}/May/Last    = " << date << '\n';
+
+   auto ym = Year{2018}/July;
+
+   std::cout << "Year{2018}/July        = " << ym << '\n';
+
+   auto md = June/Day{1};
+
+   std::cout << "June/Day{1}            = " << md << '\n';
+
+   md = June/Last;
+
+   std::cout << "June/Last              = " << md << '\n';
+
+   auto mwd = April/Monday[2];
+
+   std::cout << "April/Monday[2]        = " << mwd << '\n';
 
    current_time();
 
