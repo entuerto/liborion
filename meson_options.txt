@@ -1,6 +1,0 @@
-option('enable-examples', type : 'boolean', 
-                          value : false, 
-                          description : 'Compile the examples sources.')
-option('enable-tests', type : 'boolean', 
-                       value : false, 
-                       description : 'Compile the tests.')                          
