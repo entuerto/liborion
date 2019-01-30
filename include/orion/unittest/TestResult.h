@@ -36,28 +36,124 @@ enum class Result
 
 //-------------------------------------------------------------------------------------------------
 
-struct API_EXPORT Assertion
+struct Expression
 {
-   Result result;
+   std::string value;
 
-   std::string msg;
-   std::string expected;
-   std::string actual;
+   Expression() = default;
+   explicit Expression(std::string v)
+      : value(std::move(v)) {}
 
-   SourceLocation src_loc;
+   constexpr bool empty() const { return value.empty(); }
 };
+
+struct Actual
+{
+   std::string value;
+
+   Actual() = default;
+   explicit Actual(std::string v)
+      : value(std::move(v)) {}
+
+   constexpr bool empty() const { return value.empty(); }
+};
+
+struct Expected
+{
+   std::string value;
+
+   Expected() = default;
+   explicit Expected(std::string v)
+      : value(std::move(v)) {}
+
+   constexpr bool empty() const { return value.empty(); }
+};
+
+struct Message
+{
+   std::string value;
+
+   Message() = default;
+   explicit Message(std::string v)
+      : value(std::move(v)) {}
+
+   constexpr bool empty() const { return value.empty(); }
+};
+
+class Assertion
+{
+public:
+   Assertion(Result r);
+   Assertion(Result r, Expression ex);
+   Assertion(Result r, Expression ex, Actual a, Expected e);
+   Assertion(Result r, Expression ex, Actual a, Expected e, Message m);
+   Assertion(Result r, Expression ex, Actual a, Expected e, Message m, SourceLocation sl);
+   virtual ~Assertion() = default;
+
+   Result result() const;
+   Expression expression() const;
+   Actual actual() const;
+   Expected expected() const;
+   Message message() const;
+   SourceLocation source_location() const;
+
+private:
+   Result _result;
+
+   Expression _expression;
+   Actual _actual;
+   Expected _expected;
+   Message _msg;
+
+   SourceLocation _source_location;
+};
+
+class AssertionPassed : public Assertion
+{
+public:
+   AssertionPassed();
+   AssertionPassed(Message m);
+};
+
+class AssertionFailed : public Assertion
+{
+public:
+   AssertionFailed();
+   AssertionFailed(Expression ex, Actual a, Expected e);
+   AssertionFailed(Expression ex, Actual a, Expected e, Message m);
+   AssertionFailed(Expression ex, Actual a, Expected e, Message m, SourceLocation sl);
+   AssertionFailed(Expression ex, Actual a, Expected e, SourceLocation sl);
+   AssertionFailed(Message m, SourceLocation sl);
+};
+
+class AssertionException : public Assertion
+{
+public:
+   AssertionException();
+   AssertionException(std::exception_ptr eptr, SourceLocation sl);
+   AssertionException(std::exception_ptr eptr, Actual a, Expected e, Message m, SourceLocation sl);
+   AssertionException(std::exception_ptr eptr, Message m, SourceLocation sl);
+
+private:
+   std::exception_ptr _eptr;
+};
+
+class AssertionSkipped : public Assertion
+{
+public:
+   AssertionSkipped(Message m);
+   AssertionSkipped(Message m, SourceLocation sl);
+};
+
+//-------------------------------------------------------------------------------------------------
 
 ///
 /// Holds the results of a test case.
 ///
-class API_EXPORT TestResult
+class TestResult
 {
 public:
-   TestResult();
-   ~TestResult() = default;
-
-   DEFAULT_COPY(TestResult)
-   DEFAULT_MOVE(TestResult)
+   TestResult() = default;
 
    bool passed() const;
    bool failed() const;
@@ -65,30 +161,17 @@ public:
 
    const Counters& counters() const;
 
-   std::chrono::nanoseconds time_elapsed() const;
+   std::chrono::nanoseconds elapsed_time() const;
 
    const std::vector<Assertion>& assertions() const;
 
    void on_start();
    void on_end();
 
-   template<typename... Args>
-   void log_success(Args... args);
-
-   template<typename T, typename... Args>
-   void log_failure(const T& expected, const T& actual, Args... args);
-
-   template<typename... Args>
-   void log_failure(Args... args);
-
-   template<typename E, typename... Args>
-   void log_exception(const E& e, Args... args);
-
-   template<typename... Args>
-   void log_exception(std::exception_ptr eptr, Args... args);
-
-   template<typename... Args>
-   void log_skipped(Args... args);
+   void log(AssertionPassed&& ap);
+   void log(AssertionFailed&& af);
+   void log(AssertionException&& ae);
+   void log(AssertionSkipped&& as);
 
 private:
    Counters _counters;

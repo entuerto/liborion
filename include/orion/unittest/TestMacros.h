@@ -29,13 +29,13 @@ namespace Suite##Name
 
 //-------------------------------------------------------------------------------------------------
 
-#define RegisterTestCase(TestFunc, ...)                                \
-unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(), \
+#define RegisterTestCase(TestFunc, ...)                                               \
+unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),               \
                                                  #TestFunc, TestFunc, ##__VA_ARGS__)
 
 #define _TestCaseImpl(func, ...)           \
    static void func(Test& t);              \
-   RegisterTestCase(func, ##__VA_ARGS__); \
+   RegisterTestCase(func, ##__VA_ARGS__);  \
    static void func(Test& t)
 
 
@@ -52,7 +52,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(), \
       try                                                                                   \
       {                                                                                     \
          expr;                                                                              \
-         t.expected_exception_not_thrown(#expr, _src_loc, ##__VA_ARGS__);                   \
+         t.expected_exception_not_thrown(ORION_TOSTRING(expr), _src_loc, ##__VA_ARGS__);    \
       }                                                                                     \
       catch(...)                                                                            \
       {                                                                                     \
@@ -67,7 +67,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(), \
       try                                                                                   \
       {                                                                                     \
          expr;                                                                              \
-         t.expected_exception_not_thrown(#expr, _src_loc, ##__VA_ARGS__);                   \
+         t.expected_exception_not_thrown(ORION_TOSTRING(expr), _src_loc, ##__VA_ARGS__);    \
       }                                                                                     \
       catch(const exception_type& e)                                                        \
       {                                                                                     \
@@ -93,17 +93,79 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(), \
       }                                                                                     \
    } while((void)0, 0);   
 
-#define check_eq(ex, ac, ...) t.xassert<eq>((ex), (ac), _src_loc, ##__VA_ARGS__);
-#define check_ne(ex, ac, ...) t.xassert<ne>((ex), (ac), _src_loc, ##__VA_ARGS__);
-#define check_ge(ex, ac, ...) t.xassert<ge>((ex), (ac), _src_loc, ##__VA_ARGS__);
-#define check_gt(ex, ac, ...) t.xassert<gt>((ex), (ac), _src_loc, ##__VA_ARGS__);
-#define check_le(ex, ac, ...) t.xassert<le>((ex), (ac), _src_loc, ##__VA_ARGS__);
-#define check_lt(ex, ac, ...) t.xassert<lt>((ex), (ac), _src_loc, ##__VA_ARGS__);
-       
-#define check_true(exp, ...) t.xassert<true>((exp), _src_loc, ##__VA_ARGS__);
-#define check_false(exp, ...) t.xassert<false>((exp), _src_loc, ##__VA_ARGS__);
+#define check(...)                                                                          \
+   do                                                                                       \
+   {                                                                                        \
+      ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
+      t.asserter(ExpressionDecomposer() << __VA_ARGS__, ORION_TOSTRING(__VA_ARGS__), _src_loc); \
+      ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
+   } while((void)0, 0);   
 
-//#define check           
+#define check_eq(ex, ac, ...)                                                               \
+   do                                                                                       \
+   {                                                                                        \
+      ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
+      t.asserter(eval_eq(ex, ac, ORION_TOSTRING(ex == ac)), _src_loc, ##__VA_ARGS__);       \
+      ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
+   } while((void)0, 0);
+   
+
+#define check_ne(ex, ac, ...)                                                               \
+   do                                                                                       \
+   {                                                                                        \
+      ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
+      t.asserter(eval_ne(ex, ac, ORION_TOSTRING(ex != ac)), _src_loc, ##__VA_ARGS__);       \
+      ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
+   } while((void)0, 0);
+
+#define check_ge(ex, ac, ...)                                                               \
+   do                                                                                       \
+   {                                                                                        \
+      ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
+      t.asserter(eval_ge(ex, ac, ORION_TOSTRING(ex >= ac)), _src_loc, ##__VA_ARGS__);       \
+      ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
+   } while((void)0, 0);
+
+#define check_gt(ex, ac, ...)                                                               \
+   do                                                                                       \
+   {                                                                                        \
+      ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
+      t.asserter(eval_gt(ex, ac, ORION_TOSTRING(ex > ac)), _src_loc, ##__VA_ARGS__);        \
+      ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
+   } while((void)0, 0);
+
+#define check_le(ex, ac, ...)                                                               \
+   do                                                                                       \
+   {                                                                                        \
+      ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
+      t.asserter(eval_le(ex, ac, ORION_TOSTRING(ex <= ac)), _src_loc, ##__VA_ARGS__);       \
+      ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
+   } while((void)0, 0);
+
+#define check_lt(ex, ac, ...)                                                               \
+   do                                                                                       \
+   {                                                                                        \
+      ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
+      t.asserter(eval_lt(ex, ac, ORION_TOSTRING(ex < ac)), _src_loc, ##__VA_ARGS__);        \
+      ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
+   } while((void)0, 0);
+       
+#define check_true(exp, ...)                                                                \
+   do                                                                                       \
+   {                                                                                        \
+      ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
+      t.asserter(eval_true(exp, ORION_TOSTRING(exp)), _src_loc, ##__VA_ARGS__);             \
+      ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
+   } while((void)0, 0);
+
+#define check_false(exp, ...)                                                               \
+   do                                                                                       \
+   {                                                                                        \
+      ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
+      t.asserter(eval_false(exp, ORION_TOSTRING(exp)), _src_loc, ##__VA_ARGS__);            \
+      ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
+   } while((void)0, 0);
+
 
 // clang-format on
 

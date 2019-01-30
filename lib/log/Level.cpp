@@ -22,6 +22,8 @@ std::string to_string(Level level)
 {
    switch (level)
    {
+      case Level::NotSet:
+         return "Not Set   ";
       case Level::Debug3:
          return "Debug3    ";
       case Level::Debug2:

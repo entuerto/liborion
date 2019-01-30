@@ -1064,7 +1064,6 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
          # Unit test files
          'lib/unittest/Test.cpp', 
          'lib/unittest/TestUtils.cpp', 
-         'lib/unittest/TestResult.cpp', 
          'lib/unittest/TestRunner.cpp', 
          'lib/unittest/TestStdOutput.cpp', 
          'lib/unittest/TestSuite.cpp'

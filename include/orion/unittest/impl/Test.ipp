@@ -11,88 +11,184 @@
 #include <orion/Assert.h>
 #include <orion/Utils.h>
 
+#include <fmt/format.h>
+
+#include <sstream>
 #include <string>
+#include <type_traits>
 
 namespace orion
 {
 namespace unittest
 {
+//-------------------------------------------------------------------------------------------------
+// StringConcat
 
-template<class Func, typename T, typename... Args>
-inline void Test::xassert(const T& expected, const T& actual, Args... args)
+struct StringConcat
 {
-   auto t = std::make_tuple(args...);
+   std::string& text;
 
-   if (has_type<option::Disabled>(t))
+   template<typename T>
+   void operator()(T /*unused*/)
    {
-      set_option(get_value<option::Disabled>(t, option::Disabled{}));
-
-      _test_result.log_skipped(disabled_reason());
-      return;
    }
 
-   Func cmp;
+   void operator()(const char* v) { text += v; }
 
-   if (cmp(expected, actual))
+   void operator()(const std::string& v) { text += v; }
+};
+
+//-------------------------------------------------------------------------------------------------
+
+template<typename LhsT>
+class UnaryPredicate
+{
+public:
+   UnaryPredicate(const LhsT& lhs,
+                  std::string expr_text,
+                  std::string eval_text,
+                  Expected ex,
+                  UnaryPredFunc<LhsT> cmp_func)
+      : _lhs(lhs)
+      , _expr_text(std::move(expr_text))
+      , _eval_text(std::move(eval_text))
+      , _actual(_eval_text.value)
+      , _expected(std::move(ex))
+      , _cmp_func(cmp_func)
    {
-      _test_result.log_success();
-      return;
    }
 
-   _test_result.log_failure(expected, actual, args...);
+   Expression expression() const { return _expr_text; }
+   Expression evaluated() const { return _eval_text; }
+
+   Actual actual() const { return _actual; }
+   Expected expected() const { return _expected; }
+
+   bool compare() const { return _cmp_func(_lhs); }
+
+private:
+   LhsT _lhs;
+   Expression _expr_text;
+   Expression _eval_text;
+   Actual _actual;
+   Expected _expected;
+   UnaryPredFunc<LhsT> _cmp_func;
+};
+
+template<typename LhsT>
+UnaryPredicate<LhsT> eval_true(const LhsT& lhs, const std::string& expr_text)
+{
+   return UnaryPredicate<LhsT>{
+      lhs, std::move(expr_text), fmt::format("{}", lhs), Expected{"true"}, [](const LhsT& lhs) {
+         return lhs;
+      }};
 }
 
-template<int op, typename T, typename... Args>
-inline void Test::xassert(const T& expected, const T& actual, Args... args)
+template<typename LhsT>
+UnaryPredicate<LhsT> eval_false(const LhsT& lhs, const std::string& expr_text)
 {
-   auto t = std::make_tuple(args...);
-
-   if (has_type<option::Disabled>(t))
-   {
-      set_option(get_value<option::Disabled>(t, option::Disabled{}));
-
-      _test_result.log_skipped(disabled_reason());
-      return;
-   }
-
-   bool success = false;
-
-   switch (op)
-   {
-      case lt:
-         success = expected < actual;
-         break;
-      case le:
-         success = expected <= actual;
-         break;
-      case eq:
-         success = expected == actual;
-         break;
-      case ne:
-         success = expected != actual;
-         break;
-      case ge:
-         success = expected >= actual;
-         break;
-      case gt:
-         success = expected > actual;
-         break;
-      default:
-         AssertUnreachable("Invalid operator");
-         break;
-   }
-
-   if (success)
-   {
-      _test_result.log_success();
-      return;
-   }
-
-   _test_result.log_failure(expected, actual, args...);
+   return UnaryPredicate<LhsT>{
+      lhs, std::move(expr_text), fmt::format("{}", lhs), Expected{"false"}, [](const LhsT& lhs) {
+         return not lhs;
+      }};
 }
 
-template<bool ExpectedValue, typename... Args>
-inline void Test::xassert(bool value, Args... args)
+//-------------------------------------------------------------------------------------------------
+
+template<typename LhsT, typename RhsT>
+class BinaryPredicate
+{
+public:
+   BinaryPredicate(const LhsT& lhs,
+                   const RhsT& rhs,
+                   std::string expr_text,
+                   std::string eval_text,
+                   BinPredFunc<LhsT, RhsT> cmp_func)
+      : _lhs(lhs)
+      , _rhs(rhs)
+      , _expr_text(std::move(expr_text))
+      , _eval_text(std::move(eval_text))
+      , _cmp_func(cmp_func)
+   {
+   }
+
+   Expression expression() const { return _expr_text; }
+   Expression evaluated() const { return _eval_text; }
+
+   bool compare() const { return _cmp_func(_lhs, _rhs); }
+
+private:
+   LhsT _lhs;
+   RhsT _rhs;
+   Expression _expr_text;
+   Expression _eval_text;
+   BinPredFunc<LhsT, RhsT> _cmp_func;
+};
+
+template<typename LhsT, typename RhsT>
+BinaryPredicate<LhsT, RhsT> eval_eq(const LhsT& lhs, const RhsT& rhs, const std::string& expr_text)
+{
+   return BinaryPredicate<LhsT, RhsT>{lhs,
+                                      rhs,
+                                      std::move(expr_text),
+                                      fmt::format("{} == {}", lhs, rhs),
+                                      [](const LhsT& lhs, const RhsT& rhs) { return lhs == rhs; }};
+}
+
+template<typename LhsT, typename RhsT>
+BinaryPredicate<LhsT, RhsT> eval_ne(const LhsT& lhs, const RhsT& rhs, const std::string& expr_text)
+{
+   return BinaryPredicate<LhsT, RhsT>{lhs,
+                                      rhs,
+                                      std::move(expr_text),
+                                      fmt::format("{} != {}", lhs, rhs),
+                                      [](const LhsT& lhs, const RhsT& rhs) { return lhs != rhs; }};
+}
+
+template<typename LhsT, typename RhsT>
+BinaryPredicate<LhsT, RhsT> eval_ge(const LhsT& lhs, const RhsT& rhs, const std::string& expr_text)
+{
+   return BinaryPredicate<LhsT, RhsT>{lhs,
+                                      rhs,
+                                      std::move(expr_text),
+                                      fmt::format("{} >= {}", lhs, rhs),
+                                      [](const LhsT& lhs, const RhsT& rhs) { return lhs >= rhs; }};
+}
+
+template<typename LhsT, typename RhsT>
+BinaryPredicate<LhsT, RhsT> eval_gt(const LhsT& lhs, const RhsT& rhs, const std::string& expr_text)
+{
+   return BinaryPredicate<LhsT, RhsT>{lhs,
+                                      rhs,
+                                      std::move(expr_text),
+                                      fmt::format("{} > {}", lhs, rhs),
+                                      [](const LhsT& lhs, const RhsT& rhs) { return lhs > rhs; }};
+}
+
+template<typename LhsT, typename RhsT>
+BinaryPredicate<LhsT, RhsT> eval_le(const LhsT& lhs, const RhsT& rhs, const std::string& expr_text)
+{
+   return BinaryPredicate<LhsT, RhsT>{lhs,
+                                      rhs,
+                                      std::move(expr_text),
+                                      fmt::format("{} <= {}", lhs, rhs),
+                                      [](const LhsT& lhs, const RhsT& rhs) { return lhs <= rhs; }};
+}
+
+template<typename LhsT, typename RhsT>
+BinaryPredicate<LhsT, RhsT> eval_lt(const LhsT& lhs, const RhsT& rhs, const std::string& expr_text)
+{
+   return BinaryPredicate<LhsT, RhsT>{lhs,
+                                      rhs,
+                                      std::move(expr_text),
+                                      fmt::format("{} < {}", lhs, rhs),
+                                      [](const LhsT& lhs, const RhsT& rhs) { return lhs < rhs; }};
+}
+
+//-------------------------------------------------------------------------------------------------
+
+template<typename LhsT, typename RhsT, typename... Args>
+inline void Test::asserter(BinaryExpression<LhsT, RhsT> expr, const std::string& expr_text, Args... args)
 {
    auto t = std::make_tuple(args...);
 
@@ -100,23 +196,127 @@ inline void Test::xassert(bool value, Args... args)
    {
       set_option(get_value<option::Disabled>(t, option::Disabled{}));
 
-      _test_result.log_skipped(disabled_reason());
+      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+                                        get_value<SourceLocation>(t, SourceLocation{})});
       return;
    }
 
-   if (value == ExpectedValue)
+   if (expr.result())
    {
-      _test_result.log_success();
+      _test_result.log(AssertionPassed{});
       return;
    }
 
-   _test_result.log_failure(ExpectedValue, value, args...);
+   std::stringstream stream;
+
+   expr.to_stream(stream);
+
+   Actual actual{fmt::format("false ({})", stream.str())};
+
+   _test_result.log(AssertionFailed{Expression{expr_text},
+                                    actual,
+                                    Expected{"true"},
+                                    get_value<SourceLocation>(t, SourceLocation{})});
+}
+
+template<typename... Args>
+inline void Test::asserter(ExpressionLhs<bool> expr, const std::string& expr_text, Args... args)
+{
+   auto t = std::make_tuple(args...);
+
+   if (has_type<option::Disabled>(t))
+   {
+      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+
+      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+                                        get_value<SourceLocation>(t, SourceLocation{})});
+      return;
+   }
+
+   auto unary_expr = expr.make_unary_expression();
+
+   if (unary_expr.result())
+   {
+      _test_result.log(AssertionPassed{});
+      return;
+   }
+
+   std::stringstream stream;
+
+   unary_expr.to_stream(stream);
+
+   Actual actual{fmt::format("false ({})", stream.str())};
+
+   _test_result.log(AssertionFailed{Expression{expr_text},
+                                    actual,
+                                    Expected{"true"},
+                                    get_value<SourceLocation>(t, SourceLocation{})});
+}
+
+template<typename T, typename... Args>
+inline void Test::asserter(UnaryPredicate<T> pred, Args... args)
+{
+   auto t = std::make_tuple(args...);
+
+   if (has_type<option::Disabled>(t))
+   {
+      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+
+      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+                                        get_value<SourceLocation>(t, SourceLocation{})});
+      return;
+   }
+
+   if (pred.compare())
+   {
+      _test_result.log(AssertionPassed{});
+      return;
+   }
+
+   _test_result.log(AssertionFailed{pred.expression(),
+                                    pred.actual(),
+                                    pred.expected(),
+                                    get_value<SourceLocation>(t, SourceLocation{})});
+}
+
+template<typename T1, typename T2, typename... Args>
+inline void Test::asserter(BinaryPredicate<T1, T2> pred, Args... args)
+{
+   auto t = std::make_tuple(args...);
+
+   if (has_type<option::Disabled>(t))
+   {
+      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+
+      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+                                        get_value<SourceLocation>(t, SourceLocation{})});
+      return;
+   }
+
+   if (pred.compare())
+   {
+      _test_result.log(AssertionPassed{});
+      return;
+   }
+
+   Actual actual{fmt::format("false ({})", pred.evaluated())};
+
+   _test_result.log(AssertionFailed{pred.expression(),
+                                    actual,
+                                    Expected{"true"},
+                                    get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 template<typename... Args>
 inline void Test::fail(Args... args)
 {
-   _test_result.log_failure(args...);
+   auto t = std::make_tuple(args...);
+
+   std::string msg;
+
+   get_all_values(StringConcat{msg}, t);
+
+   _test_result.log(AssertionFailed{Message{msg}, get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 template<typename... Args>
@@ -128,55 +328,97 @@ inline void Test::fail_if(bool value, Args... args)
    {
       set_option(get_value<option::Disabled>(t, option::Disabled{}));
 
-      _test_result.log_skipped(disabled_reason());
+      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+                                        get_value<SourceLocation>(t, SourceLocation{})});
       return;
    }
 
    if (not value)
    {
-      _test_result.log_success();
+      _test_result.log(AssertionPassed{});
       return;
    }
 
-   _test_result.log_failure(false, value, args...);
+   _test_result.log(AssertionFailed{Expression{},
+                                    Actual{std::to_string(value)},
+                                    Expected{std::to_string(not value)},
+                                    get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 template<typename... Args>
-inline void Test::expected_exception_not_thrown(Args... args)
+inline void Test::expected_exception_not_thrown(std::string expr, Args... args)
 {
-   _test_result.log_failure("Expected exception not thrown: ", args...);
+   auto t = std::make_tuple(args...);
+
+   if (has_type<option::Disabled>(t))
+   {
+      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+
+      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+                       get_value<SourceLocation>(t, SourceLocation{})});
+      return;
+   }
+
+   _test_result.log(AssertionFailed{Expression{std::move(expr)},
+                                    Actual{},
+                                    Expected{},
+                                    Message{"Expected exception not thrown: "},
+                                    get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 template<typename ExceptionT, typename... Args>
 inline void Test::exception_thrown_as_expected(const ExceptionT& e, Args... args)
 {
-   std::string msg{"Exception thrown as expected: "};
+   auto t = std::make_tuple(args...);
 
-   msg += type_name(e);
+   if (has_type<option::Disabled>(t))
+   {
+      set_option(get_value<option::Disabled>(t, option::Disabled{}));
 
-   _test_result.log_success(msg, args...);
+      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+                       get_value<SourceLocation>(t, SourceLocation{})});
+      return;
+   }
+
+   _test_result.log(AssertionPassed{Message{"Exception thrown as expected: " + type_name(e)}});
 }
 
 template<typename... Args>
 inline void Test::exception_thrown_as_expected(std::exception_ptr eptr, Args... args)
 {
-   std::string msg{"Exception thrown as expected: "};
+   auto t = std::make_tuple(args...);
 
-   msg += type_name(std::move(eptr));
+   if (has_type<option::Disabled>(t))
+   {
+      set_option(get_value<option::Disabled>(t, option::Disabled{}));
 
-   _test_result.log_success(msg, args...);
+      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+                       get_value<SourceLocation>(t, SourceLocation{})});
+      return;
+   }
+
+   _test_result.log(
+      AssertionPassed{Message{"Exception thrown as expected: " + type_name(std::move(eptr))}});
 }
 
 template<typename ExceptionT, typename... Args>
 inline void Test::unexpected_exception_thrown(const ExceptionT& e, Args... args)
 {
-   _test_result.log_exception(e, "Unexpected exception thrown: ", args...);
+   auto t = std::make_tuple(args...);
+
+   _test_result.log(AssertionException{std::make_exception_ptr(e),
+                                       Message{"Unexpected exception thrown: "},
+                                       get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 template<typename... Args>
 inline void Test::unexpected_exception_thrown(std::exception_ptr eptr, Args... args)
 {
-   _test_result.log_exception(eptr, "Unexpected exception thrown: ", args...);
+   auto t = std::make_tuple(args...);
+
+   _test_result.log(AssertionException{eptr,
+                                       Message{"Unexpected exception thrown: "},
+                                       get_value<SourceLocation>(t, SourceLocation{})});
 }
 
 } // namespace unittest

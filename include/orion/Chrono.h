@@ -83,13 +83,6 @@ inline std::u32string to_u32string(const std::chrono::time_point<Clock>& tp, con
 // inline std::u32string to_u32string(const TimePoint<>& tp, const char32_t* fmt);
 
 //-------------------------------------------------------------------------------------------------
-//
-
-template<class CharT, class Traits, class Rep, class Period>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
-                                              const std::chrono::duration<Rep, Period>& d);
-                                              
-//-------------------------------------------------------------------------------------------------
 
 class Timer
 {

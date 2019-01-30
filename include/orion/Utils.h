@@ -18,6 +18,22 @@
 #include <string>
 #include <type_traits>
 
+//-------------------------------------------------------------------------------------------------
+   
+template <class T, std::size_t N>
+inline std::ostream& operator<<(std::ostream& o, const std::array<T, N>& arr)
+{
+   o << "[ "
+   << std::setbase(16)
+   << std::showbase;
+      
+   for (const auto& b : arr)
+      o << static_cast<uint64_t>(b) << " ";
+      
+   o << "]";
+   return o;
+}
+
 namespace orion
 {
 
@@ -44,23 +60,7 @@ constexpr size_t str_size(T (&)[N])
 {
    return N - 1;
 }
-
-//-------------------------------------------------------------------------------------------------
-   
-template <class T, std::size_t N>
-inline std::ostream& operator<<(std::ostream& o, const std::array<T, N>& arr)
-{
-   o << "[ "
-   << std::setbase(16)
-   << std::showbase;
-      
-   for (const auto& b : arr)
-      o << static_cast<uint64_t>(b) << " ";
-      
-   o << "]";
-   return o;
-}
-   
+  
 //-------------------------------------------------------------------------------------------------
 
 inline void write_to_stream(std::ostream& /* stream */)

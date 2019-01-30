@@ -7,6 +7,7 @@
 //
 #include <orion/unittest/Test.h>
 
+#include <orion/unittest/TestResult.h>
 #include <orion/unittest/TestSuite.h>
 
 #include <algorithm>
@@ -129,7 +130,7 @@ const TestResult& Test::invoke() const
 {
    if (not enabled())
    {
-      _test_result.log_skipped(_disabled_reason);
+      _test_result.log(AssertionSkipped{Message{_disabled_reason}});
       return _test_result;
    }
 
@@ -140,10 +141,23 @@ const TestResult& Test::invoke() const
       do_invoke();
       teardown();
    }
+   catch (const std::exception& e)
+   {
+      std::string msg{"An unexpected exception was thrown: "};
+
+      msg += e.what();
+
+      _test_result.log(AssertionException{std::make_exception_ptr(e), Message{msg}, _src_loc});
+   }
    catch (...)
    {
-      _test_result.log_exception(
-         std::current_exception(), "An unexpected, unknown exception was thrown: ", _src_loc);
+      std::string msg{"An unexpected, unknown exception was thrown: "};
+
+      auto cur_exp = std::current_exception();
+
+      msg += type_name(cur_exp);
+
+      _test_result.log(AssertionException{cur_exp, Message{msg}, _src_loc});
    }
    _test_result.on_end();
 

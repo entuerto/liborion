@@ -10,9 +10,6 @@
 
 #include <orion/Config.h>
 
-namespace orion
-{
-
 // Stringify an identifier
 #define ORION_TOSTRING_IMPL(...) #__VA_ARGS__
 #define ORION_TOSTRING(...) ORION_TOSTRING_IMPL(__VA_ARGS__)
@@ -50,6 +47,16 @@ namespace orion
 #   define ORION_ASSUME(cond) static_cast<void>((cond) ? 0 : 0)
 #endif
 
-} // namespace orion
+#ifdef ORION_CLANG
+#   define ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS \
+      _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wparentheses\"")
+
+#   define ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS _Pragma("clang diagnostic pop")
+#endif // ORION_CLANG
+
+#if !defined(ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS)
+#   define ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS
+#   define ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS
+#endif
 
 #endif // ORION_MACROS_H

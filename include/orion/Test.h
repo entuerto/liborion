@@ -12,6 +12,7 @@
 
 #include <orion/SourceLocation.h>
 #include <orion/unittest/Test.h>
+#include <orion/unittest/TestDecomposer.h>
 #include <orion/unittest/TestMacros.h>
 #include <orion/unittest/TestOptions.h>
 #include <orion/unittest/TestOutput.h>

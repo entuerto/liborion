@@ -158,7 +158,7 @@ const TestSuiteStats& TestSuite::run_tests(Output& output)
       }
 
       _stats.assertions += test_result.counters();
-      _stats.time_elapsed += test_result.time_elapsed();
+      _stats.time_elapsed += test_result.elapsed_time();
 
       output.test_end(test_result);
    }

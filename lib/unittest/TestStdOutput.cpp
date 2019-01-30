@@ -14,6 +14,7 @@
 #include <orion/unittest/TestSuite.h>
 
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 
 #include <chrono>
 #include <iomanip>
@@ -41,15 +42,17 @@ static const std::string text_item =
 
 static const std::string text_item_failed = R"(
   Failed: file {0}, line {1}
-     Expected: {2}
+     Value of: {2}
      Actual:   {3}
+     Expected: {4}
 )";
 
 static const std::string text_item_failed_msg = R"(
   Failed: file {0}, line {1}
      Message:  {2}
-     Expected: {3}
+     Value of: {3}
      Actual:   {4}
+     Expected: {5}
 )";
 
 static const std::string text_item_skipped = R"(
@@ -105,38 +108,41 @@ void StdOutput::test_end(const TestResult& test_result)
 {
    for (const auto& item : test_result.assertions())
    {
-      if (item.result == Result::Passed)
+      if (item.result() == Result::Passed)
          continue;
 
-      if (item.result == Result::Skipped)
+      const auto sl = item.source_location();
+
+      if (item.result() == Result::Skipped)
       {
-         _stream << fmt::format(text_item_skipped, _current_test, item.msg);
+         _stream << fmt::format(text_item_skipped, _current_test, item.message());
          continue;
       }
 
-      if (item.result == Result::Exception)
+      if (item.result() == Result::Exception)
       {
-         _stream << fmt::format(
-            text_item_exception, item.src_loc.file_name, item.src_loc.line_number, item.msg);
+         _stream << fmt::format(text_item_exception, sl.file_name, sl.line_number, item.message());
          continue;
       }
 
-      if (item.msg.empty())
+      if (item.message().empty())
       {
          _stream << fmt::format(text_item_failed,
-                                item.src_loc.file_name,
-                                item.src_loc.line_number,
-                                item.expected,
-                                item.actual);
+                                sl.file_name,
+                                sl.line_number,
+                                item.expression(),
+                                item.actual(),
+                                item.expected());
       }
       else
       {
          _stream << fmt::format(text_item_failed_msg,
-                                item.src_loc.file_name,
-                                item.src_loc.line_number,
-                                item.msg,
-                                item.expected,
-                                item.actual);
+                                sl.file_name,
+                                sl.line_number,
+                                item.message(),
+                                item.expression(),
+                                item.actual(),
+                                item.expected());
       }
    }
 
@@ -145,7 +151,7 @@ void StdOutput::test_end(const TestResult& test_result)
       auto& result_counters = test_result.counters();
 
       _test_stats.emplace(_current_test_suite,
-                          TestStats{_current_test, result_counters, test_result.time_elapsed()});
+                          TestStats{_current_test, result_counters, test_result.elapsed_time()});
    }
 }
 

@@ -9,7 +9,9 @@
 #define ORION_UNITTEST_TEST_H
 
 #include <orion/Orion-Stddefs.h>
+
 #include <orion/Utils.h>
+#include <orion/unittest/TestDecomposer.h>
 #include <orion/unittest/TestOptions.h>
 #include <orion/unittest/TestOutput.h>
 #include <orion/unittest/TestResult.h>
@@ -26,17 +28,21 @@ class Test;
 
 using TestCaseFunc = std::function<void(Test&)>;
 
-enum
-{
-   lt, // Less then
-   le, // Less equal then
-   eq, // Equals
-   ne, // Not equals
-   ge, // Greater equals then
-   gt  // Greater then
-};
+//-------------------------------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------------------
+template<typename LhsT>
+using UnaryPredFunc = std::function<bool(const LhsT& lhs)>;
+
+template<typename LhsT, typename RhsT>
+using BinPredFunc = std::function<bool(const LhsT& lhs, const RhsT& rhs)>;
+
+template<typename LhsT>
+class UnaryPredicate;
+
+template<typename LhsT, typename RhsT>
+class BinaryPredicate;
+
+//-------------------------------------------------------------------------------------------------
 
 ///
 ///
@@ -77,14 +83,17 @@ public:
    void set_option(option::Enabled opt);
    void set_option(option::Disabled opt);
 
-   template<class Func, typename T, typename... Args>
-   void xassert(const T& expected, const T& actual, Args... args);
+   template<typename LhsT, typename RhsT, typename... Args>
+   void asserter(BinaryExpression<LhsT, RhsT> expr, const std::string& expr_text, Args... args);
 
-   template<int op, typename T, typename... Args>
-   void xassert(const T& expected, const T& actual, Args... args);
+   template<typename... Args>
+   void asserter(ExpressionLhs<bool> expr, const std::string& expr_text, Args... args);
 
-   template<bool ExpectedValue, typename... Args>
-   void xassert(bool value, Args... args);
+   template<typename T, typename... Args>
+   void asserter(UnaryPredicate<T> pred, Args... args);
+
+   template<typename T1, typename T2, typename... Args>
+   void asserter(BinaryPredicate<T1, T2> pred, Args... args);
 
    template<typename... Args>
    void fail(Args... args);
@@ -97,7 +106,7 @@ public:
    // 
 
    template<typename... Args>
-   void expected_exception_not_thrown(Args... args);
+   void expected_exception_not_thrown(std::string expr, Args... args);
 
    template<typename ExceptionT, typename... Args>
    void exception_thrown_as_expected(const ExceptionT& e, Args... args);

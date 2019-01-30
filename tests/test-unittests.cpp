@@ -34,7 +34,7 @@ void throwing_function()
 TestCase("Passing with no failure")
 {
    Test passing_test("passing", TestSuite("testSuite"), [](Test& ft) { 
-      ft.xassert<true>(true); 
+      ft.asserter(eval_true(true, "true")); 
    });
 
    auto scope_test_result = passing_test.invoke();
@@ -45,7 +45,7 @@ TestCase("Passing with no failure")
 TestCase("Failing with no failure")
 {
    Test failing_test("failing", TestSuite("testSuite"), [](Test& ft) { 
-      ft.xassert<false>(false); 
+      ft.asserter(eval_false(false, "false")); 
    });
 
    auto scope_test_result = failing_test.invoke();
@@ -78,9 +78,9 @@ TestCase("Number of failed items")
 {
    auto tr = TestResult();
 
-   tr.log_failure("1");
-   tr.log_failure("2");
-   tr.log_failure("3");
+   tr.log(AssertionFailed{});
+   tr.log(AssertionFailed{});
+   tr.log(AssertionFailed{});
 
    check_eq(uint64_t{3}, tr.counters().failed);
 }
@@ -89,17 +89,17 @@ TestCase("Number of passed items")
 {
    auto tr = TestResult();
 
-   tr.log_success("1");
-   tr.log_success("2");
-   tr.log_success("3");
+   tr.log(AssertionPassed{});
+   tr.log(AssertionPassed{});
+   tr.log(AssertionPassed{});
 
-   check_eq(uint64_t{3}, tr.counters().passed);
+   check(uint64_t{3} == tr.counters().passed);
 }
 
 TestCase("Success on true")
 {
    Test scope_test("scope test", TestSuite("testSuite"), [](Test& st) { 
-      st.xassert<true>(true); 
+      st.asserter(eval_true(true, "true")); 
    });
    
    scope_test.invoke();
@@ -110,7 +110,7 @@ TestCase("Success on true")
 TestCase("Failure on false")
 {
    Test scope_test("scope test", TestSuite("testSuite"), [](Test& st) { 
-      st.xassert<false>(false); 
+      st.asserter(eval_false(false, "false")); 
    });
    
    scope_test.invoke();
@@ -121,7 +121,7 @@ TestCase("Failure on false")
 TestCase("Function failure with exception")
 {
    Test scope_test("scope test", TestSuite("testSuite"), [](Test& st) { 
-      st.xassert<eq>(calc_throwing_function(), 1); 
+      st.asserter(eval_true(calc_throwing_function() == 1, "calc_throwing_function() == 1")); 
    });
 
    scope_test.invoke();
@@ -184,7 +184,7 @@ TestCase("TestResult::log_success()")
 {
    auto test_result = TestResult();
 
-   test_result.log_success();
+   test_result.log(AssertionPassed{});
 
    check_false(test_result.failed());
 }
@@ -193,7 +193,7 @@ TestCase("TestResult::log_failure()")
 {
    auto test_result = TestResult();
 
-   test_result.log_failure();
+   test_result.log(AssertionFailed{});
 
    check_true(test_result.failed());
 }

@@ -15,6 +15,8 @@
 
 namespace orion
 {
+template<typename T>
+struct always_false : std::false_type {};
 
 template<typename T>
 struct Hashable
