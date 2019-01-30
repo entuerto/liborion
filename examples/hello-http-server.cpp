@@ -22,7 +22,7 @@ using namespace orion;
 using namespace orion::net;
 using namespace orion::net::http;
 
-std::error_code hello(const http::Request& request, http::Response& response)
+std::error_code hello(const http::Request& /* request */, http::Response& response)
 {
    response.header(Field::ContentType, "text/plain; charset=utf-8");
    response.header(Field::Connection, "close");
@@ -34,7 +34,7 @@ std::error_code hello(const http::Request& request, http::Response& response)
    return std::error_code();
 }
 
-std::error_code world(const http::Request& request, http::Response& response)
+std::error_code world(const http::Request& /* request */, http::Response& response)
 {
    response.header(Field::ContentType, "text/plain; charset=utf-8");
    response.header(Field::Connection, "close");

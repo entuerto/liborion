@@ -58,7 +58,7 @@ struct TypeNameSequence
 };
 
 /// Render an empty TypeNameSequence to an ostream.
-inline std::ostream& operator<<(std::ostream& os, const TypeNameSequence<>& value)
+inline std::ostream& operator<<(std::ostream& os, const TypeNameSequence<>& /* value */)
 {
    return os;
 }

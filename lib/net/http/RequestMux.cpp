@@ -32,7 +32,7 @@ static bool path_match(const std::string& pattern, const std::string& path)
 
 static HandlerFunc default_handler(StatusCode status_code)
 {
-   return [status_code](const Request& req, Response& res) {
+   return [status_code](const Request& /* req */, Response& res) {
       
       res = Response(status_code);
       res.header(Field::Connection, "close");
@@ -44,7 +44,7 @@ static HandlerFunc default_handler(StatusCode status_code)
 
 static HandlerFunc redirect_handler(StatusCode status_code, const std::string& path)
 {
-   return [status_code, path](const Request& req, Response& res) {
+   return [status_code, path](const Request& /* req */, Response& res) {
       res = Response(status_code);
       res.header(Field::Connection, "close");
       res.header(Field::XContentTypeOptions, "nosniff");

@@ -105,7 +105,7 @@ windows_libs = [
 mingw_windows_libs = ['mincore', 'mswsock', 'ntdll', 'psapi', 'rpcrt4', 'ws2_32']
 
 # -Wno-c++11-narrowing
-default_warning = ['-Wshadow', '-Wundef', '-Wnon-virtual-dtor']
+default_warning = ['-Wshadow', '-Wundef', '-Wnon-virtual-dtor', '-Wno-missing-field-initializers']
 
 default_windows_defines = [
    '-DUNICODE', 
@@ -145,28 +145,28 @@ gnu_comp_args = {
 msvc_comp_args = {
    'debug': {
       'defines'  : default_windows_defines + ['-DDEBUG'],
-      'warnings' : ['-W1'] + default_warning,
+      'warnings' : ['-W4'] + default_warning,
       'cflags'   : ['-MDd', '-Zi'],
       'cxxflags' : ['-MDd', '-Zi', '-EHsc', '-GR', '-std:c++14'],
       'ldflags'  : ['/debug']
    },
    'debugoptimized': {
       'defines'  : default_windows_defines + ['-DDEBUG'],
-      'warnings' : ['-W1'] + default_warning,
+      'warnings' : ['-W4'] + default_warning,
       'cflags'   : ['-MD', '-Zi', '-O2'],
       'cxxflags' : ['-MD', '-Zi', '-EHsc', '-GR', '-std:c++14'],
       'ldflags'  : []
    },
    'release': {
       'defines'  : default_windows_defines + ['-DNDEBUG'],
-      'warnings' : ['-W1'] + default_warning,
+      'warnings' : ['-W4'] + default_warning,
       'cflags'   : ['-MD', '-O2'],
       'cxxflags' : ['-MD', '-O2', '-EHsc', '-GR', '-std:c++14'],
       'ldflags'  : []
    },
    'minsize': {
       'defines'  : default_windows_defines + ['-DNDEBUG'],
-      'warnings' : ['-W1'] + default_warning,
+      'warnings' : ['-W4'] + default_warning,
       'cflags'   : ['-MD', '-Os'],
       'cxxflags' : ['-MD', '-Os', '-EHsc', '-GR', '-std:c++14'],
       'ldflags'  : []
@@ -179,7 +179,7 @@ class Compiler:
    def __init__(self, name):
       self.name     = name
       self.defines  = []
-      self.warnings = ['-Wall'] + default_warning
+      self.warnings = ['-Wall', '-Wextra'] + default_warning
       self.cflags   = ['-pipe']
       self.cxxflags = self.cflags + ['-std=c++14']
       self.ldflags  = []

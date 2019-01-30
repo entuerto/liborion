@@ -29,7 +29,7 @@ namespace orion
 template<typename CharT>
 inline std::basic_string<CharT> to_basic_string(const std::time_t& t, const CharT* fmt)
 {
-   std::tm tm{0};
+   std::tm tm{0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 #if _WIN32
    localtime_s(&tm, &t);
