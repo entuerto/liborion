@@ -20,7 +20,7 @@ namespace orion
 class API_EXPORT AsyncService
 {
 public:
-   NO_COPY(AsyncService)
+   NO_COPY(AsyncService) 
 
    explicit AsyncService(std::size_t pool_size = 1);
    ~AsyncService();
@@ -29,7 +29,7 @@ public:
    void run();
 
    /// Stop all IOService objects.
-   void stop();
+   void stop() noexcept;
 
    /// Get an IOService to use.
    asio::io_context& io_context();
@@ -44,7 +44,7 @@ private:
    std::list<io_context_work> _work;
 
    /// The next io_context to use for a connection.
-   std::size_t _next_io_context;
+   std::size_t _next_io_context{0u};
 };
 
 } // orion

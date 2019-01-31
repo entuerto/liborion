@@ -40,7 +40,7 @@ struct CpuInfo
    uint32_t    cpu_count_phys;
 };
 
-typedef std::vector<std::string> ModuleList;
+using ModuleList = std::vector<std::string>;
 
 API_EXPORT CpuInfo get_cpu_info();
 
@@ -60,9 +60,9 @@ API_EXPORT void get_loaded_modules(unsigned long process_id, ModuleList& modules
 
 API_EXPORT void get_loadavg(double avg[3]);
 
-API_EXPORT Value<si::Kilobyte> get_free_memory();
+API_EXPORT Size<si::Byte> get_free_memory();
 
-API_EXPORT Value<si::Kilobyte> get_total_memory();
+API_EXPORT Size<si::Byte> get_total_memory();
 
 } // namespace sys
 } // namespace orion

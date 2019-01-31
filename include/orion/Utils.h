@@ -150,7 +150,7 @@ inline constexpr T narrow_cast(U&& u) noexcept
 class NarrowingError : public orion::Exception
 {
 public:
-   NarrowingError(std::string text)
+   explicit NarrowingError(std::string text)
       : Exception(std::move(text))
    {
    }
@@ -167,7 +167,7 @@ struct is_same_signedness
 template<typename T>
 struct identity
 {
-   typedef T type;
+   using type = T;
 };
 
 template<typename T>

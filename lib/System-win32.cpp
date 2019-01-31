@@ -74,18 +74,18 @@ static uint32_t get_cpu_count_phys()
    DWORD offset                                    = 0;
    DWORD ncpus                                     = 0;
 
-   for(;;)
+   for (;;)
    {
       // GetLogicalProcessorInformationEx() is available from Windows 7
       // onward.
       if (GetLogicalProcessorInformationEx(RelationAll, buffer, &length) == TRUE)
          break;
-      
+
       if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
       {
          if (buffer != nullptr)
             free(buffer);
-            
+
          buffer = (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX)malloc(length);
          if (buffer == nullptr)
          {
@@ -101,25 +101,25 @@ static uint32_t get_cpu_count_phys()
 
       win32::format_error_message(GetLastError(), error_message);
       log::error(error_message, _src_loc);
-      return 0;      
+      return 0;
    }
 
    ptr = buffer;
-   while (ptr->Size > 0 and (offset + ptr->Size) <= length) 
+   while (ptr->Size > 0 and (offset + ptr->Size) <= length)
    {
-      if (ptr->Relationship == RelationProcessorCore) 
+      if (ptr->Relationship == RelationProcessorCore)
          ncpus += 1;
-        
+
       offset += ptr->Size;
       ptr = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*)(((char*)ptr) + ptr->Size);
    }
    return ncpus;
-} 
+}
 
 //-------------------------------------------------------------------------------------------------
 
 // Windows example values:
-// 
+//
 // struct CpuInfo
 // {
 //    std::string id;             Identifier:          Intel64 Family 6 Model 60 Stepping 3
@@ -129,16 +129,15 @@ static uint32_t get_cpu_count_phys()
 //    uint32_t    cpu_count;      The number of logical, active CPUs.
 //    uint32_t    cpu_count_phys; The number of physical CPU cores (hyper-thread CPU count excluded)
 // };
-// 
+//
 CpuInfo get_cpu_info()
 {
-   const char* key_to_open = "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
+   const char* key_to_open = R"(HARDWARE\DESCRIPTION\System\CentralProcessor\0)";
 
    win32::Registry reg;
 
    std::error_code ec = reg.open_key(HKEY_LOCAL_MACHINE, key_to_open, KEY_READ);
-   if (ec)
-      log::error(ec);
+   log::error_if(ec, _src_loc);
 
    std::wstring value;
    value.reserve(4096);
@@ -148,8 +147,7 @@ CpuInfo get_cpu_info()
    //
 
    ec = reg.query_value("Identifier", value);
-   if (ec)
-      log::error(ec);
+   log::error_if(ec, _src_loc);
 
    CpuInfo cpu;
 
@@ -160,28 +158,25 @@ CpuInfo get_cpu_info()
    //
 
    ec = reg.query_value("ProcessorNameString", value);
-   if (ec)
-      log::error(ec);
+   log::error_if(ec, _src_loc);
 
    cpu.name = win32::wstring_to_utf8(value);
 
    //
    // Vendor
    //
-   
+
    ec = reg.query_value("VendorIdentifier", value);
-   if (ec)
-      log::error(ec);
+   log::error_if(ec, _src_loc);
 
    cpu.vendor = win32::wstring_to_utf8(value);
 
    //
    // Speed
    //
-   
+
    ec = reg.query_value("~MHz", cpu.speed);
-   if (ec)
-      log::error(ec);
+   log::error_if(ec, _src_loc);
 
    //
    // Number of logical, active CPUs
@@ -236,7 +231,7 @@ CpuTimes get_cpu_times()
    {
       cpu_times.user += sppi[i].UserTime.QuadPart / 10000;
       cpu_times.nice += 0;
-      cpu_times.sys  += (sppi[i].KernelTime.QuadPart - sppi[i].IdleTime.QuadPart) / 10000;
+      cpu_times.sys += (sppi[i].KernelTime.QuadPart - sppi[i].IdleTime.QuadPart) / 10000;
       cpu_times.idle += sppi[i].IdleTime.QuadPart / 10000;
 #if 0 // ndef __MINGW64__
       cpu_times.irq  += sppi[i].InterruptTime.QuadPart / 10000;
@@ -255,11 +250,13 @@ std::string get_os_version()
 {
    DWORD size = GetFileVersionInfoSizeW(L"C:\\windows\\System32\\version.dll", nullptr);
    if (size == 0)
+   {
       return "Microsoft Windows (Unkown version)";
+   }
 
    std::unique_ptr<BYTE> data(new BYTE[size]);
 
-   if (not GetFileVersionInfoW(L"C:\\windows\\System32\\version.dll", 0, size, data.get()))
+   if (GetFileVersionInfoW(L"C:\\windows\\System32\\version.dll", 0, size, data.get()) == 0)
    {
       return "Microsoft Windows (Unkown version)";
    }
@@ -291,7 +288,7 @@ std::string get_host_name()
 {
    wchar_t hostname[100];
    DWORD size         = sizeof(hostname);
-   bool hostname_fail = not GetComputerNameW(hostname, &size);
+   bool hostname_fail = GetComputerNameW(hostname, &size) == 0;
 
    return hostname_fail ? "localhost" : win32::wstring_to_utf8(hostname);
 }
@@ -305,7 +302,7 @@ std::string get_user_name()
    uint32_t len = UNLEN + 1;
    wchar_t buffer[UNLEN + 1];
 
-   if (GetUserNameW(buffer, (LPDWORD)&len))
+   if (GetUserNameW(buffer, (LPDWORD)&len) != 0)
    {
       user_name = win32::wstring_to_utf8(buffer);
    }
@@ -325,7 +322,9 @@ std::string get_program_name()
 {
    HANDLE ph = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, get_process_id());
    if (ph == nullptr)
+   {
       return "";
+   }
 
    wchar_t module_name[MAX_PATH];
 
@@ -345,32 +344,32 @@ void get_loadavg(double avg[3])
 
 //-------------------------------------------------------------------------------------------------
 
-Value<si::Kilobyte> get_free_memory()
+Size<si::Byte> get_free_memory()
 {
    MEMORYSTATUSEX memory_status;
    memory_status.dwLength = sizeof(memory_status);
 
-   if (not GlobalMemoryStatusEx(&memory_status))
+   if (GlobalMemoryStatusEx(&memory_status) == 0)
    {
       return {};
    }
 
-   return Value<si::Byte>{static_cast<uintmax_t>(memory_status.ullAvailPhys)};
+   return Size<si::Byte>{static_cast<uintmax_t>(memory_status.ullAvailPhys)};
 }
 
 //-------------------------------------------------------------------------------------------------
 
-Value<si::Kilobyte> get_total_memory()
+Size<si::Byte> get_total_memory()
 {
    MEMORYSTATUSEX memory_status;
    memory_status.dwLength = sizeof(memory_status);
 
-   if (not GlobalMemoryStatusEx(&memory_status))
+   if (GlobalMemoryStatusEx(&memory_status) == 0)
    {
       return {};
    }
 
-   return  Value<si::Byte>{static_cast<uintmax_t>(memory_status.ullTotalPhys)};
+   return Size<si::Byte>{static_cast<uintmax_t>(memory_status.ullTotalPhys)};
 }
 
 } // namespace sys

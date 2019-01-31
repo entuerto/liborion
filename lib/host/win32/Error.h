@@ -60,7 +60,7 @@ inline const std::error_category& get_error_category()
 ///
 inline std::error_code make_error_code(uint32_t code) noexcept
 {
-   return std::error_code(static_cast<int>(code), get_error_category());
+   return {static_cast<int>(code), get_error_category()};
 }
 
 ///
@@ -68,7 +68,7 @@ inline std::error_code make_error_code(uint32_t code) noexcept
 ///
 inline std::error_code make_error_code(ErrorCode code) noexcept
 {
-   return std::error_code(static_cast<int>(code), get_error_category());
+   return {static_cast<int>(code), get_error_category()};
 }
 
 ///
@@ -76,7 +76,7 @@ inline std::error_code make_error_code(ErrorCode code) noexcept
 ///
 inline std::error_condition make_error_condition(ErrorCode code) noexcept
 {
-   return std::error_condition(static_cast<int>(code), get_error_category());
+   return {static_cast<int>(code), get_error_category()};
 }
 
 } // namespace win32

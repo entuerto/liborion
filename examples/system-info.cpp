@@ -7,6 +7,7 @@
 //
 #include <orion/Log.h>
 #include <orion/System.h>
+#include <orion/Units.h>
 #include <orion/debug/Stacktrace.h>
 
 #include <fmt/format.h>
@@ -49,8 +50,8 @@ int main()
              << "  CPU:        " << get_model(cpu) << "\n"
              << "\n"
              << "Memory\n"
-             << "  Free:       " << static_cast<Value<iec::Gibibyte>>(get_free_memory()) << "\n"
-             << "  Total:      " << static_cast<Value<iec::Gibibyte>>(get_total_memory()) << "\n"
+             << "  Free:       " << static_cast<Size<iec::Gibibyte>>(get_free_memory()) << "\n"
+             << "  Total:      " << static_cast<Size<iec::Gibibyte>>(get_total_memory()) << "\n"
              << "\n";
              
    std::cout << "Processor\n"

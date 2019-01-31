@@ -40,8 +40,8 @@ public:
    {
    }
 
-   LoggerService(const LoggerService&) = default;
-   LoggerService(LoggerService&&)      = default;
+   LoggerService(const LoggerService&) = delete;
+   LoggerService(LoggerService&&) noexcept = delete;
 
    ~LoggerService() override
    {
@@ -51,8 +51,8 @@ public:
       _work_thread.join();
    }
 
-   LoggerService& operator=(const LoggerService&) = default;
-   LoggerService& operator=(LoggerService&&) = default;
+   LoggerService& operator=(const LoggerService&) = delete;
+   LoggerService& operator=(LoggerService&&) noexcept = delete;
 
    /// Create a new logger implementation.
    void create(ImplType& impl) { impl.reset(new LoggerImpl(Level::Warning)); }

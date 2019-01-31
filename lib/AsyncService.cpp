@@ -41,7 +41,7 @@ AsyncService::AsyncService(std::size_t pool_size /* = 1 */)
    }
 }
 
-AsyncService::~AsyncService()
+AsyncService::~AsyncService() 
 {
    stop();
 }
@@ -68,10 +68,17 @@ void AsyncService::run()
    }
 }
 
-void AsyncService::stop()
+void AsyncService::stop() noexcept
 {
-   // Destroy all work objects to signals end of work
-   _work.clear();
+   try
+   {
+      // Destroy all work objects to signals end of work
+      _work.clear();
+   }
+   catch(const std::exception& e)
+   {
+      log::exception(e, _src_loc);
+   }
 }
 
 asio::io_context& AsyncService::io_context()

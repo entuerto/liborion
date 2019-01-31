@@ -22,7 +22,7 @@ namespace orion
 struct SourceLocation
 {
    std::string file_name;
-   int line_number;
+   int line_number{0};
    std::string function_name;
 };
 

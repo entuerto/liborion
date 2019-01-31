@@ -96,13 +96,13 @@ public:
          return win32::make_error_code(ret);
       }
 
-      return std::error_code();
+      return {};
    }
 
    /// open_key opens a new key with path relative to key.
    /// It accepts any open key, including HKEY_CURRENT_USER and others.
    /// The access parameter specifies desired access rights to the key to be opened.
-   std::error_code open_key(HKEY key, const std::string& path, REGSAM access)
+   std::error_code open_key(HKEY /* key */, const std::string& path, REGSAM /* access */)
    {
       std::wstring key_to_open = utf8_to_wstring(path);
 
@@ -113,7 +113,7 @@ public:
          return win32::make_error_code(ret);
       }
 
-      return std::error_code();
+      return {};
    }
 
    /// Deletes the subkey path of the open subkey and its values.
@@ -128,7 +128,7 @@ public:
          return win32::make_error_code(ret);
       }
 
-      return std::error_code();
+      return {};
    }
 
    // Close closes open registry key.
@@ -141,25 +141,26 @@ public:
          return win32::make_error_code(ret);
       }
 
-      return std::error_code();
+      return {};
    }
 
    // std::error_code set_value();
 
    std::error_code enum_value(std::vector<KeyValue>& values)
    {
-      KeyInfo ki;
+      KeyInfo ki{};
 
       auto ec = query_info_key(ki);
 
       if (ec)
+      {
          return ec;
-
+      }
       std::wstring value;
 
       value.reserve(ki.max_subkey_len);
 
-      wchar_t* data = const_cast<wchar_t*>(value.data());
+      auto data = const_cast<wchar_t*>(value.data());
 
       FILETIME last_write_time;
 
@@ -173,9 +174,10 @@ public:
                                       nullptr, 
                                       nullptr, 
                                       &last_write_time); 
-         if (ret != ERROR_SUCCESS)   
+         if (ret != ERROR_SUCCESS)
+         {   
             break;
-
+         }
          values.push_back(KeyValue{value, L"", last_write_time});
       }
 
@@ -214,12 +216,13 @@ public:
 
          values[i].value = value;
 
-         if (ret == ERROR_NO_MORE_ITEMS) 
+         if (ret == ERROR_NO_MORE_ITEMS)
+         { 
             break; 
-         
+         }
       }
 
-      return std::error_code();
+      return {};
    }
 
    /// Queries the value of a subkey name.
@@ -231,7 +234,7 @@ public:
       DWORD type   = REG_SZ;
       DWORD length = value.capacity();
 
-      LPBYTE data = reinterpret_cast<LPBYTE>(const_cast<wchar_t*>(value.data()));
+      auto data = reinterpret_cast<LPBYTE>(const_cast<wchar_t*>(value.data()));
 
       uint32_t ret = RegQueryValueExW(_subkey, value_name.c_str(), nullptr, &type, data, &length);
 
@@ -240,7 +243,7 @@ public:
          return win32::make_error_code(ret);
       }
 
-      return std::error_code();
+      return {};
    }
 
    /// Queries the value of a subkey name.
@@ -252,7 +255,7 @@ public:
       DWORD type   = REG_DWORD;
       DWORD length = sizeof(value);
 
-      LPBYTE data = reinterpret_cast<LPBYTE>(&value);
+      auto data = reinterpret_cast<LPBYTE>(&value);
 
       uint32_t ret = RegQueryValueExW(_subkey, value_name.c_str(), nullptr, &type, data, &length);
 
@@ -261,7 +264,7 @@ public:
          return win32::make_error_code(ret);
       }
 
-      return std::error_code();
+      return {};
    }
 
    /// Queries the value of a subkey name.
@@ -273,7 +276,7 @@ public:
       DWORD type   = REG_QWORD;
       DWORD length = sizeof(value);
 
-      LPBYTE data = reinterpret_cast<LPBYTE>(&value);
+      auto data = reinterpret_cast<LPBYTE>(&value);
 
       uint32_t ret = RegQueryValueExW(_subkey, value_name.c_str(), nullptr, &type, data, &length);
 
@@ -282,7 +285,7 @@ public:
          return win32::make_error_code(ret);
       }
 
-      return std::error_code();
+      return {};
    }
 
    std::error_code delete_value(const std::string& name)
@@ -296,7 +299,7 @@ public:
          return win32::make_error_code(ret);
       }
 
-      return std::error_code();
+      return {};
    }
 
    // query_mui_value retrieves the localized string value for the specified value name 
@@ -307,7 +310,7 @@ public:
 
       DWORD length = value.capacity();
 
-      wchar_t* data = const_cast<wchar_t*>(value.data());
+      auto data = const_cast<wchar_t*>(value.data());
 
       DWORD data_len = 0;
 
@@ -319,8 +322,9 @@ public:
       {
          auto err = expand_string(L"%SystemRoot%\\system32\\", dir);
          if (err)
+         {
             return err;
-
+         }
          ret = RegLoadMUIStringW(_subkey, value_name.c_str(), data, length, &data_len, 0, dir.c_str());
       }
 
@@ -328,7 +332,7 @@ public:
       {
          value.reserve(data_len);
 
-         wchar_t* d = const_cast<wchar_t*>(value.data());
+         auto d = const_cast<wchar_t*>(value.data());
 
          ret = RegLoadMUIStringW(_subkey, value_name.c_str(), d, data_len, &data_len, 0, dir.c_str());
       }
@@ -338,7 +342,7 @@ public:
          return win32::make_error_code(ret);
       }
 
-      return std::error_code();
+      return {};
    }
 
    // ExpandString expands environment-variable strings and replaces
@@ -347,29 +351,34 @@ public:
    std::error_code expand_string(const std::wstring& value, std::wstring& result)
    {
       if (value.empty())
-         return std::error_code();
+      {
+         return {};
+      }
 
       result.reserve(value.capacity() * 2);
    
       for (;;) 
       {
-         wchar_t* data = const_cast<wchar_t*>(value.data());
+         auto data = const_cast<wchar_t*>(value.data());
 
          auto char_count = ExpandEnvironmentStringsW(value.c_str(), data, result.capacity());
       
          // Error
          if (char_count == 0)
+         {
             return win32::make_error_code(GetLastError());
-
+         }
          // Success
          if (char_count <= result.size())
-            return std::error_code();
+         {   
+            return {};
+         }
          
          // More buffer
          result.reserve(char_count);
       }
 
-      return std::error_code();
+      return {};
    }
 
    std::error_code query_info_key(KeyInfo& ki)
@@ -394,11 +403,11 @@ public:
          return win32::make_error_code(ret);
       }
 
-      return std::error_code();
+      return {};
    }
 
 private:
-   HKEY _subkey;
+   HKEY _subkey{nullptr};
 };
 
 } // namespace win32

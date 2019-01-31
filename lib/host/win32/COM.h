@@ -38,7 +38,7 @@ public:
    InterfaceType* get() const noexcept { return _ptr; }
    InterfaceType* operator->() const noexcept { return _ptr; }
 
-   operator bool() const noexcept { return get() != nullptr; }
+   explicit operator bool() const noexcept { return get() != nullptr; }
 
    InterfaceType* detach() noexcept
    {
@@ -109,7 +109,6 @@ class ComInitializer
 {
 public:
    ComInitializer() noexcept
-      : _ok(false)
    {
       // COINIT_MULTITHREADED means that we must serialize access to the objects manually.
       // This is the fastest way to work. If user calls CoInitializeEx before us - we 
@@ -117,7 +116,7 @@ public:
       //
       // If we call CoInitializeEx befire user - user may end up with different mode, which is a problem.
       // So we need to call that initialization function as late as possible.
-      const auto res = ::CoInitializeEx(0, COINIT_MULTITHREADED);
+      const auto res = ::CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
       _ok = (res == S_OK or res == S_FALSE);
    }
@@ -131,7 +130,7 @@ public:
    }
 
 private:
-   bool _ok;
+   bool _ok{false};
 };
 
 } // namespace win32

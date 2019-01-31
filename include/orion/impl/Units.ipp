@@ -16,7 +16,7 @@ inline std::ostream& operator<<(std::ostream& os, const Unit<R>& u)
 {
    os << "Name:   " << Unit<R>::name() << "\t"
       << "Symbol: " << Unit<R>::symbol() << "\t"
-      << "Number: " << Unit<R>::ratio_number::num << "\n";
+      << "Number: " << Unit<R>::RatioNumber::num << "\n";
    return os;
 }
 
@@ -171,33 +171,88 @@ template<> const char* iec::Yobibyte::symbol = "YiB";
 */
 
 //-------------------------------------------------------------------------------------------------
-// Relational operators
+// Size
 
 template<class U, class T>
-inline bool operator==(const Value<U, T>& lhs, const int& rhs)
+inline constexpr Size<U, T>::Size(const Size<U, T>::ValueType& v)
+   : _value(v)
 {
-   T value1 = lhs * U::ratio_number::num;
-
-   return value1 == static_cast<T>(rhs);
 }
 
 template<class U, class T>
-inline bool operator!=(const Value<U, T>& lhs, const int& rhs)
+template<class OTHER_TYPE>
+inline constexpr Size<U, T>::Size(const Size<Size<U, T>::UnitType, OTHER_TYPE>& other)
+   : _value(static_cast<ValueType>(other._value))
+{
+}
+
+template<class U, class T>
+template<class OTHER_UNIT, class OTHER_TYPE>
+inline constexpr Size<U, T>::Size(const Size<OTHER_UNIT, OTHER_TYPE>& other)
+   : _value(static_cast<Size<U, T>::ValueType>(other._value))
+{
+   _value *= OTHER_UNIT::RatioNumber::num;
+   _value /= UnitType::RatioNumber::num;
+}
+
+template<class U, class T>
+template<class OTHER_TYPE>
+inline constexpr Size<U, T>& Size<U, T>::operator=(const Size<Size<U, T>::UnitType, OTHER_TYPE>& other)
+{
+   _value = static_cast<ValueType>(other._value);
+   return *this;
+}
+
+template<class U, class T>
+template<class OTHER_UNIT, class OTHER_TYPE>
+inline constexpr Size<U, T>& Size<U, T>::operator=(const Size<OTHER_UNIT, OTHER_TYPE>& other)
+{
+   *this = ThisType(other);
+   return *this;
+}
+
+//-------------------------------------------------------------------------------------------------
+// Relational operators
+
+template<class U, class T>
+inline constexpr bool operator==(const Size<U, T>& lhs, const int& rhs)
+{
+   T Size1 = static_cast<T>(lhs) * U::RatioNumber::num;
+
+   return Size1 == static_cast<T>(rhs);
+}
+
+template<class U, class T>
+inline constexpr bool operator==(const int& lhs, const Size<U, T>& rhs)
+{
+   T Size1 = static_cast<T>(rhs) * U::RatioNumber::num;
+
+   return Size1 == static_cast<T>(lhs);
+}
+
+template<class U, class T, class OU, class OT>
+inline constexpr bool operator==(const Size<U, T>& lhs, const Size<OU, OT>& rhs)
+{
+   T Size1  = static_cast<T>(lhs) * U::RatioNumber::num;
+   OT Size2 = static_cast<OT>(rhs) * OU::RatioNumber::num;
+
+   return Size1 == Size2;
+}
+
+template<class U, class T>
+inline constexpr bool operator!=(const Size<U, T>& lhs, const int& rhs)
+{
+   return not(lhs == rhs);
+}
+
+template<class U, class T>
+inline constexpr bool operator!=(const int& lhs, const Size<U, T>& rhs)
 {
    return not(lhs == rhs);
 }
 
 template<class U, class T, class OU, class OT>
-inline bool operator==(const Value<U, T>& lhs, const Value<OU, OT>& rhs)
-{
-   T value1  = lhs * U::ratio_number::num;
-   OT value2 = rhs * OU::ratio_number::num;
-
-   return value1 == value2;
-}
-
-template<class U, class T, class OU, class OT>
-inline bool operator!=(const Value<U, T>& lhs, const Value<OU, OT>& rhs)
+inline constexpr bool operator!=(const Size<U, T>& lhs, const Size<OU, OT>& rhs)
 {
    return not(lhs == rhs);
 }
@@ -205,120 +260,120 @@ inline bool operator!=(const Value<U, T>& lhs, const Value<OU, OT>& rhs)
 //-------------------------------------------------------------------------------------------------
 // literals
 
-inline Value<si::Byte> operator"" _b(unsigned long long value)
+inline Size<si::Byte> operator"" _b(unsigned long long s)
 {
-   return Value<si::Byte>(value);
+   return Size<si::Byte>{s};
 }
-inline Value<si::Kilobyte> operator"" _kb(unsigned long long value)
+inline Size<si::Kilobyte> operator"" _kb(unsigned long long s)
 {
-   return Value<si::Kilobyte>(value);
+   return Size<si::Kilobyte>{s};
 }
-inline Value<si::Megabyte> operator"" _mb(unsigned long long value)
+inline Size<si::Megabyte> operator"" _mb(unsigned long long s)
 {
-   return Value<si::Megabyte>(value);
+   return Size<si::Megabyte>{s};
 }
-inline Value<si::Gigabyte> operator"" _gb(unsigned long long value)
+inline Size<si::Gigabyte> operator"" _gb(unsigned long long s)
 {
-   return Value<si::Gigabyte>(value);
+   return Size<si::Gigabyte>{s};
 }
-inline Value<si::Terabyte> operator"" _tb(unsigned long long value)
+inline Size<si::Terabyte> operator"" _tb(unsigned long long s)
 {
-   return Value<si::Terabyte>(value);
+   return Size<si::Terabyte>{s};
 }
-inline Value<si::Petabyte> operator"" _pb(unsigned long long value)
+inline Size<si::Petabyte> operator"" _pb(unsigned long long s)
 {
-   return Value<si::Petabyte>(value);
+   return Size<si::Petabyte>{s};
 }
-inline Value<si::Exabyte> operator"" _eb(unsigned long long value)
+inline Size<si::Exabyte> operator"" _eb(unsigned long long s)
 {
-   return Value<si::Exabyte>(value);
-}
-
-inline Value<si::Byte, double> operator"" _b(long double value)
-{
-   return Value<si::Byte, double>(value);
-}
-inline Value<si::Kilobyte, double> operator"" _kb(long double value)
-{
-   return Value<si::Kilobyte, double>(value);
-}
-inline Value<si::Megabyte, double> operator"" _mb(long double value)
-{
-   return Value<si::Megabyte, double>(value);
-}
-inline Value<si::Gigabyte, double> operator"" _gb(long double value)
-{
-   return Value<si::Gigabyte, double>(value);
-}
-inline Value<si::Terabyte, double> operator"" _tb(long double value)
-{
-   return Value<si::Terabyte, double>(value);
-}
-inline Value<si::Petabyte, double> operator"" _pb(long double value)
-{
-   return Value<si::Petabyte, double>(value);
-}
-inline Value<si::Exabyte, double> operator"" _eb(long double value)
-{
-   return Value<si::Exabyte, double>(value);
+   return Size<si::Exabyte>{s};
 }
 
-inline Value<iec::Byte> operator"" _bi(unsigned long long value)
+inline Size<si::Byte, double> operator"" _b(long double s)
 {
-   return Value<iec::Byte>(value);
+   return Size<si::Byte, double>{s};
 }
-inline Value<iec::Kibibyte> operator"" _kib(unsigned long long value)
+inline Size<si::Kilobyte, double> operator"" _kb(long double s)
 {
-   return Value<iec::Kibibyte>(value);
+   return Size<si::Kilobyte, double>{s};
 }
-inline Value<iec::Mebibyte> operator"" _mib(unsigned long long value)
+inline Size<si::Megabyte, double> operator"" _mb(long double s)
 {
-   return Value<iec::Mebibyte>(value);
+   return Size<si::Megabyte, double>{s};
 }
-inline Value<iec::Gibibyte> operator"" _gib(unsigned long long value)
+inline Size<si::Gigabyte, double> operator"" _gb(long double s)
 {
-   return Value<iec::Gibibyte>(value);
+   return Size<si::Gigabyte, double>{s};
 }
-inline Value<iec::Tebibyte> operator"" _tib(unsigned long long value)
+inline Size<si::Terabyte, double> operator"" _tb(long double s)
 {
-   return Value<iec::Tebibyte>(value);
+   return Size<si::Terabyte, double>{s};
 }
-inline Value<iec::Pebibyte> operator"" _pib(unsigned long long value)
+inline Size<si::Petabyte, double> operator"" _pb(long double s)
 {
-   return Value<iec::Pebibyte>(value);
+   return Size<si::Petabyte, double>{s};
 }
-inline Value<iec::Exbibyte> operator"" _eib(unsigned long long value)
+inline Size<si::Exabyte, double> operator"" _eb(long double s)
 {
-   return Value<iec::Exbibyte>(value);
+   return Size<si::Exabyte, double>{s};
 }
 
-inline Value<iec::Byte, double> operator"" _bi(long double value)
+inline Size<iec::Byte> operator"" _bi(unsigned long long s)
 {
-   return Value<iec::Byte, double>(value);
+   return Size<iec::Byte>{s};
 }
-inline Value<iec::Kibibyte, double> operator"" _kib(long double value)
+inline Size<iec::Kibibyte> operator"" _kib(unsigned long long s)
 {
-   return Value<iec::Kibibyte, double>(value);
+   return Size<iec::Kibibyte>{s};
 }
-inline Value<iec::Mebibyte, double> operator"" _mib(long double value)
+inline Size<iec::Mebibyte> operator"" _mib(unsigned long long s)
 {
-   return Value<iec::Mebibyte, double>(value);
+   return Size<iec::Mebibyte>{s};
 }
-inline Value<iec::Gibibyte, double> operator"" _gib(long double value)
+inline Size<iec::Gibibyte> operator"" _gib(unsigned long long s)
 {
-   return Value<iec::Gibibyte, double>(value);
+   return Size<iec::Gibibyte>{s};
 }
-inline Value<iec::Tebibyte, double> operator"" _tib(long double value)
+inline Size<iec::Tebibyte> operator"" _tib(unsigned long long s)
 {
-   return Value<iec::Tebibyte, double>(value);
+   return Size<iec::Tebibyte>{s};
 }
-inline Value<iec::Pebibyte, double> operator"" _pib(long double value)
+inline Size<iec::Pebibyte> operator"" _pib(unsigned long long s)
 {
-   return Value<iec::Pebibyte, double>(value);
+   return Size<iec::Pebibyte>{s};
 }
-inline Value<iec::Exbibyte, double> operator"" _eib(long double value)
+inline Size<iec::Exbibyte> operator"" _eib(unsigned long long s)
 {
-   return Value<iec::Exbibyte, double>(value);
+   return Size<iec::Exbibyte>{s};
+}
+
+inline Size<iec::Byte, double> operator"" _bi(long double s)
+{
+   return Size<iec::Byte, double>{s};
+}
+inline Size<iec::Kibibyte, double> operator"" _kib(long double s)
+{
+   return Size<iec::Kibibyte, double>{s};
+}
+inline Size<iec::Mebibyte, double> operator"" _mib(long double s)
+{
+   return Size<iec::Mebibyte, double>{s};
+}
+inline Size<iec::Gibibyte, double> operator"" _gib(long double s)
+{
+   return Size<iec::Gibibyte, double>{s};
+}
+inline Size<iec::Tebibyte, double> operator"" _tib(long double s)
+{
+   return Size<iec::Tebibyte, double>{s};
+}
+inline Size<iec::Pebibyte, double> operator"" _pib(long double s)
+{
+   return Size<iec::Pebibyte, double>{s};
+}
+inline Size<iec::Exbibyte, double> operator"" _eib(long double s)
+{
+   return Size<iec::Exbibyte, double>{s};
 }
 
 } // namespace orion

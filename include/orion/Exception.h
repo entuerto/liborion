@@ -29,13 +29,13 @@ public:
    Exception(const Exception&) = default;
    Exception(Exception&&) noexcept = default;
 
-   virtual ~Exception() = default;
+   ~Exception() override = default;
 
    Exception& operator=(const Exception&) = default;
    Exception& operator=(Exception&&) noexcept = default;
 
    //! Returns the recorded source location
-   virtual const SourceLocation& source_location() const;
+   const SourceLocation& source_location() const;
 
    const char* what() const noexcept override;
 

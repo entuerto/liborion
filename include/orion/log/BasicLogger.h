@@ -56,6 +56,8 @@ public:
       _service.create(_impl);
    }
 
+   ~BasicLogger() = default;
+
    BasicLogger(BasicLogger&&) noexcept = default;
    BasicLogger& operator=(BasicLogger&&) noexcept = default;
 

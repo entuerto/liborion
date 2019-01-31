@@ -25,7 +25,7 @@ struct Unit
    static const char* name();
    static const char* symbol();
 
-   using ratio_number = R;
+   using RatioNumber = R;
 };
 
 template<class R>
@@ -58,142 +58,129 @@ using Exbibyte = Unit<std::ratio<1152921504606846976LL>>;
 }
 
 //-------------------------------------------------------------------------------------------------
-// Class Value
+// Class Size
 
 template<class U, class T = uintmax_t>
-class Value
+class Size
 {
 public:
    static_assert(std::is_arithmetic<T>::value, "The type must be integral or floating-point");
 
    template<class OTHER_UNIT, class OTHER_TYPE>
-   friend class Value;
+   friend class Size;
 
-   using this_type = Value<U, T>;
+   using ThisType = Size<U, T>;
 
-   using unit_type  = U;
-   using value_type = T;
+   using UnitType  = U;
+   using ValueType = T;
 
-   Value()
-      : _value(T(0))
-   {
-   }
+   Size() = default;
 
-   explicit Value(const value_type& v)
-      : _value(v)
-   {
-   }
+   constexpr explicit Size(const ValueType& v);
 
    template<class OTHER_TYPE>
-   Value(const Value<unit_type, OTHER_TYPE>& other)
-      : _value(static_cast<value_type>(other._value))
-   {
-   }
+   constexpr explicit Size(const Size<UnitType, OTHER_TYPE>& other);
 
    template<class OTHER_UNIT, class OTHER_TYPE>
-   Value(const Value<OTHER_UNIT, OTHER_TYPE>& other)
-      : _value(static_cast<value_type>(other._value))
-   {
-      _value *= OTHER_UNIT::ratio_number::num;
-      _value /= unit_type::ratio_number::num;
-   }
+   constexpr explicit Size(const Size<OTHER_UNIT, OTHER_TYPE>& other);
 
-   operator value_type() const { return _value; }
-
-   explicit operator value_type&() const { return _value; }
+   constexpr explicit operator ValueType() const { return _value; }
 
    template<class OTHER_TYPE>
-   this_type operator=(const Value<unit_type, OTHER_TYPE>& other)
-   {
-      _value = static_cast<value_type>(other._value);
-   }
+   constexpr Size& operator=(const Size<UnitType, OTHER_TYPE>& other);
 
    template<class OTHER_UNIT, class OTHER_TYPE>
-   this_type operator=(const Value<OTHER_UNIT, OTHER_TYPE>& other)
-   {
-      *this = this_type(other);
-      return *this;
-   }
+   constexpr Size& operator=(const Size<OTHER_UNIT, OTHER_TYPE>& other);
 
-   static constexpr Value zero() { return value_type(0); }
-   static constexpr Value min()  { return std::numeric_limits<value_type>::lowest(); }
-   static constexpr Value max()  { return std::numeric_limits<value_type>::max(); }
+   static constexpr Size zero() { return ValueType{0}; }
+   static constexpr Size min()  { return std::numeric_limits<ValueType>::lowest(); }
+   static constexpr Size max()  { return std::numeric_limits<ValueType>::max(); }
 
-   friend std::ostream& operator<<(std::ostream& os, const Value& value)
+   friend std::ostream& operator<<(std::ostream& os, const Size& s)
    {
-      os << value._value << " " << unit_type::symbol();
+      os << s._value << " " << UnitType::symbol();
       return os;
    }
 
 private:
-   unit_type _unit;
-   value_type _value;
+   UnitType _unit;
+   ValueType _value{0};
 };
 
 //-------------------------------------------------------------------------------------------------
 // Relational operators
 
 template<class U, class T>
-inline bool operator==(const Value<U, T>& lhs, const int& rhs);
+inline constexpr bool operator==(const Size<U, T>& lhs, const int& rhs);
 
 template<class U, class T>
-inline bool operator!=(const Value<U, T>& lhs, const int& rhs);
+inline constexpr bool operator==(const int& lhs, const Size<U, T>& rhs);
 
 template<class U, class T, class OU, class OT>
-inline bool operator==(const Value<U, T>& lhs, const Value<OU, OT>& rhs);
+inline constexpr bool operator==(const Size<U, T>& lhs, const Size<OU, OT>& rhs);
+
+template<class U, class T>
+inline constexpr bool operator!=(const Size<U, T>& lhs, const int& rhs);
+
+template<class U, class T>
+inline constexpr bool operator!=(const int& lhs, const Size<U, T>& rhs);
 
 template<class U, class T, class OU, class OT>
-inline bool operator!=(const Value<U, T>& lhs, const Value<OU, OT>& rhs);
+inline constexpr bool operator!=(const Size<U, T>& lhs, const Size<OU, OT>& rhs);
 
 //-------------------------------------------------------------------------------------------------
 // Convert functions
+template <class T>
+struct IsSize : std::false_type {};
 
-template<class N, class U, class T>
-inline Value<N, T> convert(const Value<U, T>& value)
-{
-   return (value * U::ratio_number::num) / N::ratio_number::num;
-}
+template <class U, class T>
+struct IsSize<Size<U, T>> : std::true_type  {};
 
-template<class N, class U>
-inline Value<N, double> convert(const Value<U, uintmax_t>& value)
+template <class U, class T>
+struct IsSize<const Size<U, T>> : std::true_type {};
+
+template<class ToSize, class U, class T>
+inline ToSize size_cast(const Size<U, T>& s)
 {
-   return double(value * U::ratio_number::num) / N::ratio_number::num;
+   static_assert(IsSize<ToSize>::value, "Must be a Size class");
+
+   return ToSize{s};
 }
 
 //-------------------------------------------------------------------------------------------------
 // literals
 
-inline Value<si::Byte>     operator"" _b(unsigned long long value);
-inline Value<si::Kilobyte> operator"" _kb(unsigned long long value);
-inline Value<si::Megabyte> operator"" _mb(unsigned long long value);
-inline Value<si::Gigabyte> operator"" _gb(unsigned long long value);
-inline Value<si::Terabyte> operator"" _tb(unsigned long long value);
-inline Value<si::Petabyte> operator"" _pb(unsigned long long value);
-inline Value<si::Exabyte>  operator"" _eb(unsigned long long value);
+inline Size<si::Byte>     operator"" _b(unsigned long long s);
+inline Size<si::Kilobyte> operator"" _kb(unsigned long long s);
+inline Size<si::Megabyte> operator"" _mb(unsigned long long s);
+inline Size<si::Gigabyte> operator"" _gb(unsigned long long s);
+inline Size<si::Terabyte> operator"" _tb(unsigned long long s);
+inline Size<si::Petabyte> operator"" _pb(unsigned long long s);
+inline Size<si::Exabyte>  operator"" _eb(unsigned long long s);
 
-inline Value<si::Byte,     double> operator"" _b(long double value);
-inline Value<si::Kilobyte, double> operator"" _kb(long double value);
-inline Value<si::Megabyte, double> operator"" _mb(long double value);
-inline Value<si::Gigabyte, double> operator"" _gb(long double value);
-inline Value<si::Terabyte, double> operator"" _tb(long double value);
-inline Value<si::Petabyte, double> operator"" _pb(long double value);
-inline Value<si::Exabyte,  double> operator"" _eb(long double value);
+inline Size<si::Byte,     double> operator"" _b(long double s);
+inline Size<si::Kilobyte, double> operator"" _kb(long double s);
+inline Size<si::Megabyte, double> operator"" _mb(long double s);
+inline Size<si::Gigabyte, double> operator"" _gb(long double s);
+inline Size<si::Terabyte, double> operator"" _tb(long double s);
+inline Size<si::Petabyte, double> operator"" _pb(long double s);
+inline Size<si::Exabyte,  double> operator"" _eb(long double s);
 
-inline Value<iec::Byte>     operator"" _bi(unsigned long long value);
-inline Value<iec::Kibibyte> operator"" _kib(unsigned long long value);
-inline Value<iec::Mebibyte> operator"" _mib(unsigned long long value);
-inline Value<iec::Gibibyte> operator"" _gib(unsigned long long value);
-inline Value<iec::Tebibyte> operator"" _tib(unsigned long long value);
-inline Value<iec::Pebibyte> operator"" _pib(unsigned long long value);
-inline Value<iec::Exbibyte> operator"" _eib(unsigned long long value);
+inline Size<iec::Byte>     operator"" _bi(unsigned long long s);
+inline Size<iec::Kibibyte> operator"" _kib(unsigned long long s);
+inline Size<iec::Mebibyte> operator"" _mib(unsigned long long s);
+inline Size<iec::Gibibyte> operator"" _gib(unsigned long long s);
+inline Size<iec::Tebibyte> operator"" _tib(unsigned long long s);
+inline Size<iec::Pebibyte> operator"" _pib(unsigned long long s);
+inline Size<iec::Exbibyte> operator"" _eib(unsigned long long s);
 
-inline Value<iec::Byte,     double> operator"" _bi(long double value);
-inline Value<iec::Kibibyte, double> operator"" _kib(long double value);
-inline Value<iec::Mebibyte, double> operator"" _mib(long double value);
-inline Value<iec::Gibibyte, double> operator"" _gib(long double value);
-inline Value<iec::Tebibyte, double> operator"" _tib(long double value);
-inline Value<iec::Pebibyte, double> operator"" _pib(long double value);
-inline Value<iec::Exbibyte, double> operator"" _eib(long double value);
+inline Size<iec::Byte,     double> operator"" _bi(long double s);
+inline Size<iec::Kibibyte, double> operator"" _kib(long double s);
+inline Size<iec::Mebibyte, double> operator"" _mib(long double s);
+inline Size<iec::Gibibyte, double> operator"" _gib(long double s);
+inline Size<iec::Tebibyte, double> operator"" _tib(long double s);
+inline Size<iec::Pebibyte, double> operator"" _pib(long double s);
+inline Size<iec::Exbibyte, double> operator"" _eib(long double s);
 
 } // namespace orion
 
