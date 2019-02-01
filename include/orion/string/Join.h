@@ -93,13 +93,13 @@ template<typename StrintT>
 class Joinner
 {
 public:
-   explicit Joinner(StrintT s)
+   constexpr explicit Joinner(StrintT s)
       : _separator(std::move(s))
    {
    }
 
    template<typename IteratorT>
-   StrintT operator()(IteratorT begin, IteratorT end, NoFormatter) const
+   StrintT operator()(IteratorT begin, IteratorT end, NoFormatter) const // NOLINT
    {
       // Construct container to hold the result
       StrintT result;

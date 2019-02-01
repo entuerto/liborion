@@ -39,7 +39,9 @@ public:
          f, l, [&](std::string::value_type c) { return _d.find(c) != std::string::npos; });
 
       if (it == l)
+      {
          return {l, l};
+      }
 
       auto it2 = std::find_if(
          it, l, [&](std::string::value_type c) { return _d.find(c) == std::string::npos; });
@@ -66,8 +68,9 @@ public:
       auto it = std::find(f, l, _d);
 
       if (it == l)
+      {
          return {l, l};
-
+      }
       auto it2 = it;
 
       // Advance by one position
@@ -114,7 +117,9 @@ private:
                             const PredicateType& pred) const
    {
       if (pat_first == pat_last)
+      {
          return make_range(first1, first1); // Everything matches an empty sequence
+      }
 
       while (true)
       {
@@ -122,11 +127,13 @@ private:
          while (true)
          {
             if (first1 == last1) // return last1 if no element matches *pat_first
+            {
                return make_range(last1, last1);
-
+            }
             if (pred(*first1, *pat_first))
+            {
                break;
-
+            }
             ++first1;
          }
          // *first1 matches *pat_first, now match elements after here
@@ -135,12 +142,13 @@ private:
          while (true)
          {
             if (++m2 == pat_last) // If pattern exhausted, first1 is the answer (works for 1
-                                  // element pattern)
+            {                     // element pattern)
                return make_range(first1, ++m1);
-
+            }
             if (++m1 == last1) // Otherwise if source exhaused, pattern not found
+            {
                return make_range(last1, last1);
-
+            }
             if (not pred(*m1, *m2)) // if there is a mismatch, restart with a new first1
             {
                ++first1;

@@ -31,13 +31,10 @@ public:
    using ValueIterator = typename BaseType::value_type::iterator;
 
    /// Default constructor
-   SplitIterator()
-      : _eof(true)
-   {
-   }
+   SplitIterator() = default;
 
    /// Construct a SplitIterator for a given range and finder.
-   SplitIterator(ValueIterator begin, ValueIterator end, FinderT finder)
+   constexpr SplitIterator(ValueIterator begin, ValueIterator end, FinderT finder)
       : _pos(std::move(begin))
       , _end(std::move(end))
       , _finder(std::move(finder))
@@ -47,7 +44,7 @@ public:
    }
 
    /// Copy constructor
-   SplitIterator(const SplitIterator& rhs)
+   constexpr SplitIterator(const SplitIterator& rhs)
       : BaseType(rhs)
       , _pos(rhs._pos)
       , _end(rhs._end)
@@ -57,30 +54,36 @@ public:
    {
    }
 
+   /// Move constructor
+   SplitIterator(SplitIterator&&) noexcept = delete;
+
    /// Destructor
    ~SplitIterator() = default;
 
-   bool eof() const { return not _finder or _eof; }
+   constexpr bool eof() const { return not _finder or _eof; }
 
    /// Copy assignable
    SplitIterator& operator=(const SplitIterator& rhs) = default;
 
-   friend bool operator==(const SplitIterator& si1, const SplitIterator& si2)
+   /// Move assignable
+   SplitIterator& operator=(SplitIterator&&) noexcept = delete;
+
+   friend constexpr bool operator==(const SplitIterator& si1, const SplitIterator& si2)
    {
       return si1.eof() or si2.eof()
                 ? si1.eof() == si2.eof()
                 : (si1._current == si2._current and si1._pos == si2._pos and si1._end == si2._end);
    }
 
-   friend bool operator!=(const SplitIterator& si1, const SplitIterator& si2)
+   friend constexpr bool operator!=(const SplitIterator& si1, const SplitIterator& si2)
    {
       return not(si1 == si2);
    }
 
 private:
-   const ValueType& value() const { return _current; }
+   constexpr const ValueType& value() const { return _current; }
 
-   void increment()
+   constexpr void increment()
    {
       auto match = _finder(_pos, _end);
 
@@ -102,7 +105,7 @@ private:
 
    FinderT _finder;
 
-   bool _eof = true;
+   bool _eof{true};
 };
 
 template<typename StrintT>
@@ -116,12 +119,12 @@ public:
    using iterator       = SplitIterator<ValueType, FinderType>;
    using const_iterator = SplitIterator<ValueType, FinderType>;
 
-   explicit Split(FinderType f)
+   explicit constexpr Split(FinderType f)
       : _finder(std::move(f))
    {
    }
 
-   Split(ValueType text, FinderType f)
+   constexpr Split(ValueType text, FinderType f)
       : _text(std::move(text))
       , _finder(std::move(f))
    {
@@ -131,10 +134,10 @@ public:
    // Range functions that iterate the split substrings.
    // These methods enable a Split object to be used in a range-based for loop.
    //
-   iterator begin() { return {_text.begin(), _text.end(), _finder}; }
-   iterator end() { return {}; }
+   constexpr iterator begin() { return {_text.begin(), _text.end(), _finder}; }
+   constexpr iterator end() { return {}; }
 
-   Split& operator|(const ValueType& text)
+   constexpr Split& operator|(const ValueType& text)
    {
       _text = text;
       return *this;
@@ -143,7 +146,7 @@ public:
    // An implicit conversion operator that is restricted to only those containers
    // that constructs with first, last InputIterators
    template<typename Container>
-   operator Container()
+   constexpr operator Container() // NOLINT
    {
       return Container{begin(), end()};
    }
@@ -159,7 +162,7 @@ class MaxSplits
 public:
    using Iterator = typename std::string::iterator;
 
-   MaxSplits(FinderT finder, int limit)
+   constexpr MaxSplits(FinderT finder, int limit)
       : _finder(std::move(finder))
       , _limit(limit)
       , _count(0)

@@ -28,7 +28,7 @@ public:
    Uuid();
    Uuid(const Uuid& rhs);
    Uuid(Uuid&& rhs) noexcept;
-   Uuid(const std::string& value);
+   explicit Uuid(const std::string& value);
    ~Uuid();
 
    bool is_null() const;

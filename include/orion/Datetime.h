@@ -182,7 +182,7 @@ public:
 
    Weekday() = default;
    explicit constexpr Weekday(unsigned w) noexcept;
-   constexpr Weekday(const SystemDays& sysdays) noexcept;
+   explicit constexpr Weekday(const SystemDays& sys_days) noexcept;
    explicit constexpr Weekday(const LocalDays& loc_days) noexcept;
 
    constexpr Weekday& operator++() noexcept;
