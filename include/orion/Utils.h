@@ -8,6 +8,7 @@
 #ifndef ORION_UTILS_H
 #define ORION_UTILS_H
 
+#include <orion/Assert.h>
 #include <orion/Exception.h>
 
 #include <array>
@@ -34,6 +35,8 @@ inline std::ostream& operator<<(std::ostream& o, const std::array<T, N>& arr)
    return o;
 }
 
+//-------------------------------------------------------------------------------------------------
+// Orion
 namespace orion
 {
 
@@ -50,17 +53,48 @@ make_array(T&&... t)
 //-------------------------------------------------------------------------------------------------
 
 template<typename T, size_t N>
-constexpr size_t array_size(T (&)[N])
+inline constexpr size_t array_size(T (&)[N])
 {
    return N;
 }
 
 template<typename T, size_t N>
-constexpr size_t str_size(T (&)[N])
+inline constexpr size_t str_size(T (&)[N])
 {
    return N - 1;
 }
   
+//-------------------------------------------------------------------------------------------------
+// at() - Bounds-checked access for static arrays, std::array, std::vector.
+
+template<class T, std::size_t N>
+inline constexpr T& at(T (&arr)[N], std::size_t index)
+{
+   Expects(index < N);
+   return arr[index];
+}
+
+template<class T, std::size_t N>
+inline constexpr T& at(std::array<T, N>& arr, std::size_t index)
+{
+   Expects(index < N);
+   return arr[index];
+}
+
+template<class Container>
+inline constexpr typename Container::value_type& at(Container& c, std::size_t index)
+{
+   Expects(index < c.size());
+   return c[index];
+}
+
+template<class T>
+inline constexpr const T& at(std::initializer_list<T> l, std::size_t index)
+{
+   Expects(index < l.size());
+   return *(l.begin() + index);
+}
+
 //-------------------------------------------------------------------------------------------------
 
 inline void write_to_stream(std::ostream& /* stream */)

@@ -11,6 +11,7 @@
 #include <orion/Utils.h>
 
 #include <limits> 
+#include <vector> 
 
 using namespace orion;
 using namespace orion::unittest;
@@ -130,6 +131,74 @@ TestCase("narrow")
 
     n = -42;
     check_throws_as(narrow<unsigned>(n), NarrowingError);
+}
+
+TestCase("at() - existing C-array element")
+{
+   int a[] = {1, 2, 3, 4};
+
+   check_eq(at(a, 0), 1);
+   check_eq(at(a, 1), 2);
+   check_eq(at(a, 2), 3);
+   check_eq(at(a, 3), 4);
+}
+
+TestCase("at() - non-existing C-array element")
+{
+   int a[] = {1, 2, 3, 4};
+
+   check_throws(at(a, 4));
+}
+
+TestCase("at() - existing std::array element")
+{
+   std::array<int, 4> a = {1, 2, 3, 4};
+
+   check_eq(at(a, 0), 1);
+   check_eq(at(a, 1), 2);
+   check_eq(at(a, 2), 3);
+   check_eq(at(a, 3), 4);
+}
+
+TestCase("at() - non-existing std::array element")
+{
+   std::array<int, 4> a = {1, 2, 3, 4};
+
+   check_throws(at(a, 4));
+}
+
+TestCase("at() - existing std::vector element")
+{
+   std::vector<int> v = {1, 2, 3, 4};
+
+   check_eq(at(v, 0), 1);
+   check_eq(at(v, 1), 2);
+   check_eq(at(v, 2), 3);
+   check_eq(at(v, 3), 4);
+}
+
+TestCase("at() - non-existing std::vector element")
+{
+   std::vector<int> v = {1, 2, 3, 4};
+
+   check_throws(at(v, 4));
+}
+
+TestCase("at() - existing std::initializer_list element")
+{
+   std::initializer_list<int> l = {1, 2, 3, 4};
+
+   check_eq(at(l, 0), 1);
+   check_eq(at(l, 1), 2);
+   check_eq(at(l, 2), 3);
+   check_eq(at(l, 3), 4);
+}
+
+TestCase("at() - non-existing std::initializer_list element")
+{
+   std::initializer_list<int> l = {1, 2, 3, 4};
+
+   check_throws(at(l, 4));
 }
 
 } // Section

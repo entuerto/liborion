@@ -615,9 +615,9 @@ public:
    }
 
 private:
-   std::chrono::hours _hrs;
-   std::chrono::minutes _mins;
-   std::chrono::seconds _secs;
+   std::chrono::hours _hrs{};
+   std::chrono::minutes _mins{};
+   std::chrono::seconds _secs{};
    precision _subs;
 };
 

@@ -107,7 +107,7 @@ inline constexpr bool is_leap(IntT y) noexcept
 inline constexpr uint32_t last_day_of_month_common_year(uint32_t m) noexcept
 {
    constexpr uint8_t a[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-   return a[m - 1];
+   return at(a, m - 1);
 }
 
 // Preconditions: m is in [1, 12]
@@ -436,7 +436,7 @@ inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, T
 
    if (m.ok())
    {
-      os << text[static_cast<uint32_t>(m) - 1];
+      os << at(text, static_cast<uint32_t>(m) - 1);
    }
    else
       os << static_cast<unsigned>(m) << " Is not a valid month";
@@ -707,7 +707,7 @@ inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, T
                                    "Saturday"};
    if (wd.ok())
    {
-      os << text[static_cast<uint32_t>(wd)];
+      os << at(text, static_cast<uint32_t>(wd));
    }
    else
       os << static_cast<unsigned>(wd) << " is not a valid weekday";
@@ -956,7 +956,7 @@ inline constexpr bool MonthDay::ok() const noexcept
                               Day{31},
                               Day{30},
                               Day{31}};
-   return _month.ok() and Day{1} <= _day and _day <= d[static_cast<unsigned>(_month) - 1];
+   return _month.ok() and Day{1} <= _day and _day <= at(d, static_cast<unsigned>(_month) - 1);
 }
 
 inline constexpr bool operator==(const MonthDay& lhs, const MonthDay& rhs) noexcept
