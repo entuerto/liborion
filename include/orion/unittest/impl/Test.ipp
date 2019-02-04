@@ -54,7 +54,7 @@ public:
       , _eval_text(std::move(eval_text))
       , _actual(_eval_text.value)
       , _expected(std::move(ex))
-      , _cmp_func(cmp_func)
+      , _cmp_func(std::move(cmp_func))
    {
    }
 
@@ -79,7 +79,7 @@ template<typename LhsT>
 UnaryPredicate<LhsT> eval_true(const LhsT& lhs, const std::string& expr_text)
 {
    return UnaryPredicate<LhsT>{
-      lhs, std::move(expr_text), fmt::format("{}", lhs), Expected{"true"}, [](const LhsT& lhs) {
+      lhs, expr_text, fmt::format("{}", lhs), Expected{"true"}, [](const LhsT& lhs) {
          return lhs;
       }};
 }
@@ -88,7 +88,7 @@ template<typename LhsT>
 UnaryPredicate<LhsT> eval_false(const LhsT& lhs, const std::string& expr_text)
 {
    return UnaryPredicate<LhsT>{
-      lhs, std::move(expr_text), fmt::format("{}", lhs), Expected{"false"}, [](const LhsT& lhs) {
+      lhs, expr_text, fmt::format("{}", lhs), Expected{"false"}, [](const LhsT& lhs) {
          return not lhs;
       }};
 }
@@ -99,16 +99,16 @@ template<typename LhsT, typename RhsT>
 class BinaryPredicate
 {
 public:
-   BinaryPredicate(const LhsT& lhs,
-                   const RhsT& rhs,
+   BinaryPredicate(LhsT lhs,
+                   RhsT rhs,
                    std::string expr_text,
                    std::string eval_text,
                    BinPredFunc<LhsT, RhsT> cmp_func)
-      : _lhs(lhs)
-      , _rhs(rhs)
+      : _lhs(std::move(lhs))
+      , _rhs(std::move(rhs))
       , _expr_text(std::move(expr_text))
       , _eval_text(std::move(eval_text))
-      , _cmp_func(cmp_func)
+      , _cmp_func(std::move(cmp_func))
    {
    }
 
@@ -130,7 +130,7 @@ BinaryPredicate<LhsT, RhsT> eval_eq(const LhsT& lhs, const RhsT& rhs, const std:
 {
    return BinaryPredicate<LhsT, RhsT>{lhs,
                                       rhs,
-                                      std::move(expr_text),
+                                      expr_text,
                                       fmt::format("{} == {}", lhs, rhs),
                                       [](const LhsT& lhs, const RhsT& rhs) { return lhs == rhs; }};
 }
@@ -140,7 +140,7 @@ BinaryPredicate<LhsT, RhsT> eval_ne(const LhsT& lhs, const RhsT& rhs, const std:
 {
    return BinaryPredicate<LhsT, RhsT>{lhs,
                                       rhs,
-                                      std::move(expr_text),
+                                      expr_text,
                                       fmt::format("{} != {}", lhs, rhs),
                                       [](const LhsT& lhs, const RhsT& rhs) { return lhs != rhs; }};
 }
@@ -150,7 +150,7 @@ BinaryPredicate<LhsT, RhsT> eval_ge(const LhsT& lhs, const RhsT& rhs, const std:
 {
    return BinaryPredicate<LhsT, RhsT>{lhs,
                                       rhs,
-                                      std::move(expr_text),
+                                      expr_text,
                                       fmt::format("{} >= {}", lhs, rhs),
                                       [](const LhsT& lhs, const RhsT& rhs) { return lhs >= rhs; }};
 }
@@ -160,7 +160,7 @@ BinaryPredicate<LhsT, RhsT> eval_gt(const LhsT& lhs, const RhsT& rhs, const std:
 {
    return BinaryPredicate<LhsT, RhsT>{lhs,
                                       rhs,
-                                      std::move(expr_text),
+                                      expr_text,
                                       fmt::format("{} > {}", lhs, rhs),
                                       [](const LhsT& lhs, const RhsT& rhs) { return lhs > rhs; }};
 }
@@ -170,7 +170,7 @@ BinaryPredicate<LhsT, RhsT> eval_le(const LhsT& lhs, const RhsT& rhs, const std:
 {
    return BinaryPredicate<LhsT, RhsT>{lhs,
                                       rhs,
-                                      std::move(expr_text),
+                                      expr_text,
                                       fmt::format("{} <= {}", lhs, rhs),
                                       [](const LhsT& lhs, const RhsT& rhs) { return lhs <= rhs; }};
 }
@@ -180,7 +180,7 @@ BinaryPredicate<LhsT, RhsT> eval_lt(const LhsT& lhs, const RhsT& rhs, const std:
 {
    return BinaryPredicate<LhsT, RhsT>{lhs,
                                       rhs,
-                                      std::move(expr_text),
+                                      expr_text,
                                       fmt::format("{} < {}", lhs, rhs),
                                       [](const LhsT& lhs, const RhsT& rhs) { return lhs < rhs; }};
 }
@@ -384,7 +384,7 @@ inline void Test::exception_thrown_as_expected(const ExceptionT& e, Args... args
 }
 
 template<typename... Args>
-inline void Test::exception_thrown_as_expected(std::exception_ptr eptr, Args... args)
+inline void Test::exception_thrown_as_expected(const std::exception_ptr& eptr, Args... args)
 {
    auto t = std::make_tuple(args...);
 
@@ -398,7 +398,7 @@ inline void Test::exception_thrown_as_expected(std::exception_ptr eptr, Args... 
    }
 
    _test_result.log(
-      AssertionPassed{Message{"Exception thrown as expected: " + type_name(std::move(eptr))}});
+      AssertionPassed{Message{"Exception thrown as expected: " + type_name(eptr)}});
 }
 
 template<typename ExceptionT, typename... Args>
@@ -412,7 +412,7 @@ inline void Test::unexpected_exception_thrown(const ExceptionT& e, Args... args)
 }
 
 template<typename... Args>
-inline void Test::unexpected_exception_thrown(std::exception_ptr eptr, Args... args)
+inline void Test::unexpected_exception_thrown(const std::exception_ptr& eptr, Args... args)
 {
    auto t = std::make_tuple(args...);
 

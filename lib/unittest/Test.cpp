@@ -23,7 +23,7 @@ using namespace orion::unittest::option;
 
 //---------------------------------------------------------------------------------------
 
-Test::Test(const std::string& name, const TestSuite& suite)
+Test::Test(const std::string& name)
    : _name(name)
    , _label(name)
    , _is_enabled(true)
@@ -31,7 +31,7 @@ Test::Test(const std::string& name, const TestSuite& suite)
 {
 }
 
-Test::Test(const std::string& name, const TestSuite& suite, TestCaseFunc&& f)
+Test::Test(const std::string& name, TestCaseFunc&& f)
    : _name(name)
    , _label(name)
    , _is_enabled(true)

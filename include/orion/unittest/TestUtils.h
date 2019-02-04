@@ -37,11 +37,11 @@ API_EXPORT std::ostream& operator<<(std::ostream& out, ReportLevel report_level)
 
 struct Counters
 {
-   uint64_t passed;
-   uint64_t failed;
-   uint64_t skipped;
+   uint64_t passed{0u};
+   uint64_t failed{0u};
+   uint64_t skipped{0u};
 
-   uint64_t total() const { return passed + failed + skipped; }
+   constexpr uint64_t total() const { return passed + failed + skipped; }
 };
 
 API_EXPORT Counters& operator+=(Counters& lhs, const Counters& rhs);
@@ -53,7 +53,7 @@ struct Totals
    Counters assertions;
    Counters tests;
 
-   std::chrono::nanoseconds time_elapsed;
+   std::chrono::nanoseconds time_elapsed{0};
 };
 
 struct TestSuiteStats
@@ -63,7 +63,7 @@ struct TestSuiteStats
    Counters assertions;
    Counters tests;
 
-   std::chrono::nanoseconds time_elapsed;
+   std::chrono::nanoseconds time_elapsed{0};
 };
 
 API_EXPORT TestSuiteStats& operator+=(TestSuiteStats& lhs, const TestSuiteStats& rhs);
@@ -74,7 +74,7 @@ struct TestStats
 
    Counters assertions;
 
-   std::chrono::nanoseconds time_elapsed;
+   std::chrono::nanoseconds time_elapsed{0};
 };
 
 API_EXPORT TestStats& operator+=(TestStats& lhs, const TestStats& rhs);

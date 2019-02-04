@@ -52,8 +52,8 @@ class API_EXPORT Test
 public:
    // NO_COPY(Test)
 
-   Test(const std::string& name, const TestSuite& suite);
-   Test(const std::string& name, const TestSuite& suite, TestCaseFunc&& f);
+   explicit Test(const std::string& name);
+   Test(const std::string& name, TestCaseFunc&& f);
    virtual ~Test();
 
    std::string name() const;
@@ -112,13 +112,13 @@ public:
    void exception_thrown_as_expected(const ExceptionT& e, Args... args);
 
    template<typename... Args>
-   void exception_thrown_as_expected(std::exception_ptr eptr, Args... args);
+   void exception_thrown_as_expected(const std::exception_ptr& eptr, Args... args);
 
    template<typename ExceptionT, typename... Args>
    void unexpected_exception_thrown(const ExceptionT& e, Args... args);
 
    template<typename... Args>
-   void unexpected_exception_thrown(std::exception_ptr eptr, Args... args);
+   void unexpected_exception_thrown(const std::exception_ptr& eptr, Args... args);
 
 protected:
    virtual void do_invoke() const;

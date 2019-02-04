@@ -30,8 +30,8 @@ public:
    NO_COPY(StdOutput)
    NO_MOVE(StdOutput)
 
-   StdOutput(std::ostream& stream, ReportLevel report_level = ReportLevel::Error);
-   virtual ~StdOutput();
+   explicit StdOutput(std::ostream& stream, ReportLevel report_level = ReportLevel::Error);
+   ~StdOutput() override;
 
    /// The test runner is starting
    void runner_start(const TestRunner& runner) override;

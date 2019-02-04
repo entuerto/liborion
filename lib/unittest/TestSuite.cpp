@@ -115,7 +115,7 @@ void TestSuite::teardown()
 
 Test& TestSuite::add_test(const std::string& name, TestCaseFunc f)
 {
-   Test t(name, *this, std::move(f));
+   Test t(name, std::move(f));
 
    return add_test(std::move(t));
 }

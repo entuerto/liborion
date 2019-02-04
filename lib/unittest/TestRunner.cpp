@@ -21,12 +21,7 @@ namespace orion
 namespace unittest
 {
 
-TestRunner::TestRunner()
-   : _level(ReportLevel::Detailed)
-{
-}
-
-uint32_t TestRunner::test_suite_count() const
+constexpr uint32_t TestRunner::test_suite_count() const
 {
    return _test_suites.size();
 }

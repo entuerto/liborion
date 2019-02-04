@@ -18,6 +18,43 @@ using namespace std::string_literals;
 
 namespace orion
 {
+//-------------------------------------------------------------------------------------------------
+
+inline Version::Version(uint32_t ma, uint32_t mi)
+   : major(ma)
+   , minor(mi)
+{
+}
+
+inline Version::Version(uint32_t ma, uint32_t mi, uint32_t pa)
+   : major(ma)
+   , minor(mi)
+   , patch(pa)
+{
+}
+
+inline Version::Version(uint32_t ma, uint32_t mi, uint32_t pa, std::vector<std::string> pre)
+   : major(ma)
+   , minor(mi)
+   , patch(pa)
+   , prerelease(std::move(pre))
+{
+}
+
+inline Version::Version(uint32_t ma,
+                        uint32_t mi,
+                        uint32_t pa,
+                        std::vector<std::string> pre,
+                        std::vector<std::string> b)
+   : major(ma)
+   , minor(mi)
+   , patch(pa)
+   , prerelease(std::move(pre))
+   , build(std::move(b))
+{
+}
+
+//-------------------------------------------------------------------------------------------------
 
 static constexpr const char* digits = "0123456789";
 static constexpr const char* alphas = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -37,52 +74,41 @@ inline int prerelease_compare(const std::string& v1, const std::string& v2) noex
    {
       return -1;
    }
-   else if (not is_v1_all_num and is_v2_all_num)
+
+   if (not is_v1_all_num and is_v2_all_num)
    {
       return 1;
    }
-   else if (is_v1_all_num and is_v2_all_num)
+
+   if (is_v1_all_num and is_v2_all_num)
    {
       auto v1_num = std::stoul(v1);
       auto v2_num = std::stoul(v2);
       return (v1_num == v2_num) ? 0 : (v1_num > v2_num) ? 1 : -1;
    }
-   else
-   {
-      return v1.compare(v2);
-   }
 
-   return 0;
+   return v1.compare(v2);
 }
 
 /// Compare compares two Versions
 ///  -1 == v1 is less than v2
 ///   0 == v1 is equal to v2
 ///   1 == v1 is greater than v2
-inline int compare(const Version& v1, const Version& v2) noexcept
+inline constexpr int compare(const Version& v1, const Version& v2) noexcept
 {
    if (v1.major != v2.major)
    {
-      if (v1.major < v2.major)
-         return -1;
-
-      return 1;
+      return (v1.major < v2.major) ? -1 : 1;
    }
 
    if (v1.minor != v2.minor)
    {
-      if (v1.minor < v2.minor)
-         return -1;
-
-      return 1;
+      return (v1.minor < v2.minor) ? -1 : 1;
    }
 
    if (v1.patch != v2.patch)
    {
-      if (v1.patch < v2.patch)
-         return -1;
-
-      return 1;
+      return (v1.patch < v2.patch) ? -1 : 1;
    }
 
    // Quick comparison if a version has no prerelease versions
@@ -90,11 +116,13 @@ inline int compare(const Version& v1, const Version& v2) noexcept
    {
       return 0;
    }
-   else if (v1.prerelease.empty() and not v2.prerelease.empty())
+
+   if (v1.prerelease.empty() and not v2.prerelease.empty())
    {
       return 1;
    }
-   else if (not v1.prerelease.empty() and v2.prerelease.empty())
+
+   if (not v1.prerelease.empty() and v2.prerelease.empty())
    {
       return -1;
    }
@@ -105,7 +133,9 @@ inline int compare(const Version& v1, const Version& v2) noexcept
       int res = prerelease_compare(v1.prerelease[i], v2.prerelease[i]);
 
       if (res != 0)
+      {
          return res;
+      }
    }
 
    // If all prerelease versions are equal but one has further prerelease
@@ -115,32 +145,32 @@ inline int compare(const Version& v1, const Version& v2) noexcept
              : (v1.prerelease.size() < v2.prerelease.size()) ? -1 : 1;
 }
 
-inline bool operator==(const Version& v1, const Version& v2) noexcept
+inline constexpr bool operator==(const Version& v1, const Version& v2) noexcept
 {
    return compare(v1, v2) == 0;
 }
 
-inline bool operator!=(const Version& v1, const Version& v2) noexcept
+inline constexpr bool operator!=(const Version& v1, const Version& v2) noexcept
 {
    return compare(v1, v2) != 0;
 }
 
-inline bool operator<(const Version& v1, const Version& v2) noexcept
+inline constexpr bool operator<(const Version& v1, const Version& v2) noexcept
 {
    return compare(v1, v2) == -1;
 }
 
-inline bool operator>(const Version& v1, const Version& v2) noexcept
+inline constexpr bool operator>(const Version& v1, const Version& v2) noexcept
 {
    return compare(v1, v2) == 1;
 }
 
-inline bool operator<=(const Version& v1, const Version& v2) noexcept
+inline constexpr bool operator<=(const Version& v1, const Version& v2) noexcept
 {
    return compare(v1, v2) <= 0;
 }
 
-inline bool operator>=(const Version& v1, const Version& v2) noexcept
+inline constexpr bool operator>=(const Version& v1, const Version& v2) noexcept
 {
    return compare(v1, v2) >= 0;
 }
@@ -229,8 +259,7 @@ Version parse_version(const std::string& value)
    {
       auto num =  std::stol(parts[0]);
 
-      if (num < 0)
-         throw_exception<VersionError>("Invalid major number (< 0)", _src_loc);
+      throw_if<VersionError>(num < 0, "Invalid major number (< 0)", _src_loc);
 
       v.major = num;
    }
@@ -246,8 +275,7 @@ Version parse_version(const std::string& value)
    {
       auto num =  std::stol(parts[1]);
 
-      if (num < 0)
-         throw_exception<VersionError>("Invalid minor number (< 0)", _src_loc);
+      throw_if<VersionError>(num < 0, "Invalid minor number (< 0)", _src_loc);
 
       v.minor = num;
    }
@@ -303,7 +331,9 @@ Version parse_version(const std::string& value)
    for (auto& item : v.prerelease)
    {
       if (item.find_first_not_of(alphanum) != std::string::npos)
+      {
          throw_exception<VersionError>("Invalid prerelease number", _src_loc);
+      }
    }
 
    // Build
@@ -314,7 +344,9 @@ Version parse_version(const std::string& value)
    for (auto& item : v.build)
    {
       if (item.find_first_not_of(alphanum) != std::string::npos)
+      {
          throw_exception<VersionError>("Invalid build number", _src_loc);
+      }
    }
 
    return v;

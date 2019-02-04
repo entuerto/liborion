@@ -96,7 +96,7 @@ public:
    bool is_binary() const { return _is_binary; }
    bool result() const { return _result; }
 
-   virtual void to_stream(std::ostream&) const {};
+   virtual void to_stream(std::ostream& /*unused*/) const {};
 
 private:
    bool _is_binary{false};
@@ -135,7 +135,7 @@ public:
    }
 
    template<typename T>
-   const BinaryExpression<LhsT, const RhsT&> operator&&(T) const
+   const BinaryExpression<LhsT, const RhsT&> operator&&(T /*unused*/) const
    {
       static_assert(always_false<T>::value,
                     "Chained comparisons are not supported inside assertions, "
@@ -143,7 +143,7 @@ public:
    }
 
    template<typename T>
-   const BinaryExpression<LhsT, const RhsT&> operator||(T) const 
+   const BinaryExpression<LhsT, const RhsT&> operator||(T /*unused*/) const 
    {
       static_assert(always_false<T>::value,
                     "Chained comparisons are not supported inside assertions, "
@@ -151,7 +151,7 @@ public:
    }
 
    template<typename T>
-   const BinaryExpression<LhsT, const RhsT&> operator==(T) const
+   const BinaryExpression<LhsT, const RhsT&> operator==(T /*unused*/) const
    {
       static_assert(always_false<T>::value,
                     "Chained comparisons are not supported inside assertions, "
@@ -159,7 +159,7 @@ public:
    }
 
    template<typename T>
-   const BinaryExpression<LhsT, const RhsT&> operator!=(T) const 
+   const BinaryExpression<LhsT, const RhsT&> operator!=(T /*unused*/) const 
    {
       static_assert(always_false<T>::value,
                     "Chained comparisons are not supported inside assertions, "
@@ -167,7 +167,7 @@ public:
    }
 
    template<typename T>
-   const BinaryExpression<LhsT, const RhsT&> operator>(T) const 
+   const BinaryExpression<LhsT, const RhsT&> operator>(T /*unused*/) const 
    {
       static_assert(always_false<T>::value,
                     "Chained comparisons are not supported inside assertions, "
@@ -175,7 +175,7 @@ public:
    }
 
    template<typename T>
-   const BinaryExpression<LhsT, const RhsT&> operator<(T) const 
+   const BinaryExpression<LhsT, const RhsT&> operator<(T /*unused*/) const 
    {
       static_assert(always_false<T>::value,
                     "Chained comparisons are not supported inside assertions, "
@@ -183,7 +183,7 @@ public:
    }
 
    template<typename T>
-   const BinaryExpression<LhsT, const RhsT&> operator>=(T) const 
+   const BinaryExpression<LhsT, const RhsT&> operator>=(T /*unused*/) const 
    {
       static_assert(always_false<T>::value,
                     "Chained comparisons are not supported inside assertions, "
@@ -191,7 +191,7 @@ public:
    }
 
    template<typename T>
-   const BinaryExpression<LhsT, const RhsT&> operator<=(T) const 
+   const BinaryExpression<LhsT, const RhsT&> operator<=(T /*unused*/) const 
    {
       static_assert(always_false<T>::value,
                     "Chained comparisons are not supported inside assertions, "
@@ -271,7 +271,7 @@ public:
    }
 
    template<typename RhsT>
-   BinaryExpression<LhsT, const RhsT&> operator&&(const RhsT&) const
+   BinaryExpression<LhsT, const RhsT&> operator&&(const RhsT& /*unused*/) const
    {
       static_assert(always_false<RhsT>::value,
                     "operator&& is not supported inside assertions, "
@@ -279,7 +279,7 @@ public:
    }
 
    template<typename RhsT>
-   BinaryExpression<LhsT, const RhsT&> operator||(const RhsT&)  const
+   BinaryExpression<LhsT, const RhsT&> operator||(const RhsT& /*unused*/)  const
    {
       static_assert(always_false<RhsT>::value,
                     "operator|| is not supported inside assertions, "

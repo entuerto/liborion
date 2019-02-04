@@ -33,7 +33,7 @@ void throwing_function()
 
 TestCase("Passing with no failure")
 {
-   Test passing_test("passing", TestSuite("testSuite"), [](Test& ft) { 
+   Test passing_test("passing", [](Test& ft) { 
       ft.asserter(eval_true(true, "true")); 
    });
 
@@ -44,7 +44,7 @@ TestCase("Passing with no failure")
 
 TestCase("Failing with no failure")
 {
-   Test failing_test("failing", TestSuite("testSuite"), [](Test& ft) { 
+   Test failing_test("failing", [](Test& ft) { 
       ft.asserter(eval_false(false, "false")); 
    });
 
@@ -55,7 +55,7 @@ TestCase("Failing with no failure")
 
 TestCase("Throwing reported as failure")
 {
-   Test crashing_test("throwing", TestSuite("testSuite"), [](Test&) { 
+   Test crashing_test("throwing", [](Test&) { 
       throw std::logic_error("Oh boy"); 
    });
 
@@ -98,7 +98,7 @@ TestCase("Number of passed items")
 
 TestCase("Success on true")
 {
-   Test scope_test("scope test", TestSuite("testSuite"), [](Test& st) { 
+   Test scope_test("scope test", [](Test& st) { 
       st.asserter(eval_true(true, "true")); 
    });
    
@@ -109,7 +109,7 @@ TestCase("Success on true")
 
 TestCase("Failure on false")
 {
-   Test scope_test("scope test", TestSuite("testSuite"), [](Test& st) { 
+   Test scope_test("scope test", [](Test& st) { 
       st.asserter(eval_false(false, "false")); 
    });
    
@@ -120,7 +120,7 @@ TestCase("Failure on false")
 
 TestCase("Function failure with exception")
 {
-   Test scope_test("scope test", TestSuite("testSuite"), [](Test& st) { 
+   Test scope_test("scope test", [](Test& st) { 
       st.asserter(eval_true(calc_throwing_function() == 1, "calc_throwing_function() == 1")); 
    });
 

@@ -54,22 +54,32 @@ public:
 ///
 struct Version
 {
-   uint32_t major;
-   uint32_t minor;
-   uint32_t patch;
+   uint32_t major{0};
+   uint32_t minor{0};
+   uint32_t patch{0};
 
    std::vector<std::string> prerelease;
    std::vector<std::string> build;
+
+   Version() = default;
+   Version(uint32_t ma, uint32_t mi);
+   Version(uint32_t ma, uint32_t mi, uint32_t pa);
+   Version(uint32_t ma, uint32_t mi, uint32_t pa, std::vector<std::string> pre);
+   Version(uint32_t ma,
+           uint32_t mi,
+           uint32_t pa,
+           std::vector<std::string> pre,
+           std::vector<std::string> b);
 };
 
 inline Version make_version(const std::string& value);
 
-bool operator==(const Version& v1, const Version& v2) noexcept;
-bool operator!=(const Version& v1, const Version& v2) noexcept;
-bool operator<(const Version& v1, const Version& v2) noexcept;
-bool operator>(const Version& v1, const Version& v2) noexcept;
-bool operator<=(const Version& v1, const Version& v2) noexcept;
-bool operator>=(const Version& v1, const Version& v2) noexcept;
+constexpr bool operator==(const Version& v1, const Version& v2) noexcept;
+constexpr bool operator!=(const Version& v1, const Version& v2) noexcept;
+constexpr bool operator<(const Version& v1, const Version& v2) noexcept;
+constexpr bool operator>(const Version& v1, const Version& v2) noexcept;
+constexpr bool operator<=(const Version& v1, const Version& v2) noexcept;
+constexpr bool operator>=(const Version& v1, const Version& v2) noexcept;
 
 inline std::string to_string(const Version& v);
 

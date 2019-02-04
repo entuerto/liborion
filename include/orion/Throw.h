@@ -34,7 +34,9 @@ void throw_if(bool condition,
               const SourceLocation& src_loc = SourceLocation{})
 {
    if (condition)
+   {
       throw_exception<E>(msg, src_loc);
+   }
 }
 
 template<typename E, typename T>
@@ -43,7 +45,9 @@ void throw_if_null(const T* value,
                    const SourceLocation& src_loc = SourceLocation{})
 {
    if (value == nullptr)
+   {
       throw_exception<E>(msg, src_loc);
+   }
 }
 
 } // namespace orion

@@ -62,7 +62,7 @@ inline Assertion::Assertion(Result r)
 
 inline Assertion::Assertion(Result r, Expression ex)
    : _result(r)
-   , _expression(ex)
+   , _expression(std::move(ex))
 {
 }
 
@@ -179,13 +179,13 @@ inline AssertionException::AssertionException()
 {
 }
 
-inline AssertionException::AssertionException(std::exception_ptr eptr, SourceLocation sl)
+inline AssertionException::AssertionException(const std::exception_ptr& eptr, SourceLocation sl)
    : Assertion(Result::Exception, Expression{}, Actual{}, Expected{}, Message{}, std::move(sl))
    , _eptr(eptr)
 {
 }
 
-inline AssertionException::AssertionException(std::exception_ptr eptr,
+inline AssertionException::AssertionException(const std::exception_ptr& eptr,
                                               Actual a,
                                               Expected e,
                                               Message m,
@@ -200,7 +200,9 @@ inline AssertionException::AssertionException(std::exception_ptr eptr,
 {
 }
 
-inline AssertionException::AssertionException(std::exception_ptr eptr, Message m, SourceLocation sl)
+inline AssertionException::AssertionException(const std::exception_ptr& eptr,
+                                              Message m,
+                                              SourceLocation sl)
    : Assertion(Result::Exception, Expression{}, Actual{}, Expected{}, std::move(m), std::move(sl))
    , _eptr(eptr)
 {

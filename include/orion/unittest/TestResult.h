@@ -83,12 +83,11 @@ struct Message
 class Assertion
 {
 public:
-   Assertion(Result r);
+   explicit Assertion(Result r);
    Assertion(Result r, Expression ex);
    Assertion(Result r, Expression ex, Actual a, Expected e);
    Assertion(Result r, Expression ex, Actual a, Expected e, Message m);
    Assertion(Result r, Expression ex, Actual a, Expected e, Message m, SourceLocation sl);
-   virtual ~Assertion() = default;
 
    Result result() const;
    Expression expression() const;
@@ -112,7 +111,7 @@ class AssertionPassed : public Assertion
 {
 public:
    AssertionPassed();
-   AssertionPassed(Message m);
+   explicit AssertionPassed(Message m);
 };
 
 class AssertionFailed : public Assertion
@@ -130,9 +129,9 @@ class AssertionException : public Assertion
 {
 public:
    AssertionException();
-   AssertionException(std::exception_ptr eptr, SourceLocation sl);
-   AssertionException(std::exception_ptr eptr, Actual a, Expected e, Message m, SourceLocation sl);
-   AssertionException(std::exception_ptr eptr, Message m, SourceLocation sl);
+   AssertionException(const std::exception_ptr& eptr, SourceLocation sl);
+   AssertionException(const std::exception_ptr& eptr, Actual a, Expected e, Message m, SourceLocation sl);
+   AssertionException(const std::exception_ptr& eptr, Message m, SourceLocation sl);
 
 private:
    std::exception_ptr _eptr;
@@ -141,7 +140,7 @@ private:
 class AssertionSkipped : public Assertion
 {
 public:
-   AssertionSkipped(Message m);
+   explicit AssertionSkipped(Message m);
    AssertionSkipped(Message m, SourceLocation sl);
 };
 
@@ -174,7 +173,7 @@ public:
    void log(AssertionSkipped&& as);
 
 private:
-   Counters _counters;
+   Counters _counters{};
 
    HighResTimePoint _time_point_start;
    HighResTimePoint _time_point_end;
