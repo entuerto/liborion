@@ -42,7 +42,7 @@ TestCase("Equals no case")
    std::string str1 = "sdGWASgeWEF";
    std::string str2 = "SDGWASGEWEF";
 
-   check_ne(str1, str2, _src_loc);
+   check_ne(str1, str2);
 
    check_true(iequals(str1, str2));
 }

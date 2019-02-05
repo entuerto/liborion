@@ -8,7 +8,7 @@
 #ifndef ORION_UNITTEST_OPTIONS_H
 #define ORION_UNITTEST_OPTIONS_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <chrono>
 #include <functional>

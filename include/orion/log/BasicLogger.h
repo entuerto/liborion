@@ -8,13 +8,13 @@
 #ifndef ORION_LOG_BASICLOGGER_H
 #define ORION_LOG_BASICLOGGER_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
-#include <orion/Exception.h>
 #include <orion/log/Level.h>
 #include <orion/log/OutputHandler.h>
 
 #include <asio.hpp>
+
 #include <functional>
 
 namespace orion

@@ -8,7 +8,7 @@
 #ifndef ORION_NET_ADDRESSV4_H
 #define ORION_NET_ADDRESSV4_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <orion/net/Address.h>
 #include <orion/net/Types.h>

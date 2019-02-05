@@ -65,7 +65,7 @@ std::string OnelineFormatter::format(const Record& record)
    }
    auto sl = record.source_location();
 
-   if (sl.line_number != 0)
+   if (sl.line_number() != 0)
       stream << "|" << sl;
 
    return stream.str();
@@ -128,7 +128,7 @@ std::string MultilineFormatter::format_source_info(const std::string& prefix,
 {
    std::ostringstream stream;
 
-   if (src_loc.line_number == 0)
+   if (src_loc.line_number() == 0)
       return stream.str();
 
    stream << prefix << src_loc << "\n";

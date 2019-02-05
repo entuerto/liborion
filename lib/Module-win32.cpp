@@ -7,13 +7,13 @@
 //
 #include <orion/Module.h>
 
-#include <orion/Assert.h>
 #include <orion/Log.h>
-#include <orion/SourceLocation.h>
-#include <orion/Throw.h>
 
 #include <host/win32/String.h>
 
+#ifndef WIN32_LEAN_AND_MEAN
+#   define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 
 namespace orion
@@ -80,7 +80,7 @@ void Module::open(const std::string& file_name)
       std::string error_message;
 
       win32::format_error_message(GetLastError(), error_message);
-      throw_exception<ModuleError>(error_message, _src_loc);
+      throw_exception<ModuleError>(error_message, DbgSrcLoc);
    }
 
    _impl->is_open = true;
@@ -114,7 +114,7 @@ void* Module::find_symbol_address(const std::string& symbol_name)
       std::string error_message;
 
       win32::format_error_message(GetLastError(), error_message);
-      throw_exception<SymbolNotFoundError>(error_message, _src_loc);
+      throw_exception<SymbolNotFoundError>(error_message, DbgSrcLoc);
    }
 
    return symbol;

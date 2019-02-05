@@ -8,7 +8,7 @@
 #ifndef ORION_NET_RPC_SERVICE_H
 #define ORION_NET_RPC_SERVICE_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <orion/Log.h>
 #include <orion/Utils.h>
@@ -87,7 +87,7 @@ public:
    std::error_code listen_and_serve(EndPoint endpoint)
    {
       auto handler = [&](asio::streambuf& in, asio::streambuf& out) {
-         log::debug("handler", _src_loc);
+         log::debug("handler", DbgSrcLoc);
 
          typename Protocol::Requests requests;
 

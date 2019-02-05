@@ -8,9 +8,7 @@
 #ifndef ORION_MODULE_H
 #define ORION_MODULE_H
 
-#include <orion/Orion-Stddefs.h>
-
-#include <orion/Exception.h>
+#include <orion/Common.h>
 
 #include <functional>
 #include <memory>

@@ -8,8 +8,6 @@
 #ifndef ORION_NET_HTTP_STATUSCODE_IPP
 #define ORION_NET_HTTP_STATUSCODE_IPP
 
-#include <orion/Orion-Stddefs.h>
-
 #include <orion/Log.h>
 #include <orion/Utils.h>
 
@@ -103,7 +101,7 @@ static const std::map<StatusCode, std::string>& status_text()
    {
       log::fatal("An unexpected, unknown exception was thrown: ",
                  type_name(std::current_exception()),
-                 _src_loc);
+                 DbgSrcLoc);
    }
 }
 

@@ -8,7 +8,7 @@
 #ifndef ORION_ASYNCSERVICE_H
 #define ORION_ASYNCSERVICE_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <asio.hpp>
 

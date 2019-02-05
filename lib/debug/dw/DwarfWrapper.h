@@ -8,7 +8,7 @@
 #ifndef ORION_DEBUG_DW_DWARF_H
 #define ORION_DEBUG_DW_DWARF_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <dwarf.h>
 #include <libdwarf.h>

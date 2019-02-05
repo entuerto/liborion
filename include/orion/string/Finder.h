@@ -8,7 +8,7 @@
 #ifndef ORION_FINDER_H
 #define ORION_FINDER_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <orion/Iterator.h>
 

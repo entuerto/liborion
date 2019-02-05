@@ -121,15 +121,15 @@ void StdOutput::test_end(const TestResult& test_result)
 
       if (item.result() == Result::Exception)
       {
-         _stream << fmt::format(text_item_exception, sl.file_name, sl.line_number, item.message());
+         _stream << fmt::format(text_item_exception, sl.file_name(), sl.line_number(), item.message());
          continue;
       }
 
       if (item.message().empty())
       {
          _stream << fmt::format(text_item_failed,
-                                sl.file_name,
-                                sl.line_number,
+                                sl.file_name(),
+                                sl.line_number(),
                                 item.expression(),
                                 item.actual(),
                                 item.expected());
@@ -137,8 +137,8 @@ void StdOutput::test_end(const TestResult& test_result)
       else
       {
          _stream << fmt::format(text_item_failed_msg,
-                                sl.file_name,
-                                sl.line_number,
+                                sl.file_name(),
+                                sl.line_number(),
                                 item.message(),
                                 item.expression(),
                                 item.actual(),

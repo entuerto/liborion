@@ -8,9 +8,8 @@
 #ifndef ORION_UNITTEST_TEST_H
 #define ORION_UNITTEST_TEST_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
-#include <orion/Utils.h>
 #include <orion/unittest/TestDecomposer.h>
 #include <orion/unittest/TestOptions.h>
 #include <orion/unittest/TestOutput.h>
@@ -50,8 +49,6 @@ class BinaryPredicate;
 class API_EXPORT Test
 {
 public:
-   // NO_COPY(Test)
-
    explicit Test(const std::string& name);
    Test(const std::string& name, TestCaseFunc&& f);
    virtual ~Test();

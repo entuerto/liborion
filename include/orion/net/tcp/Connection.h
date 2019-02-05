@@ -8,7 +8,7 @@
 #ifndef ORION_NET_TCP_CONNECTION_H
 #define ORION_NET_TCP_CONNECTION_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <orion/net/Connection.h>
 #include <orion/net/tcp/Utils.h>

@@ -8,7 +8,7 @@
 #ifndef ORION_SPLIT_H
 #define ORION_SPLIT_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <orion/Iterator.h>
 

@@ -8,7 +8,7 @@
 #ifndef ORION_COMPARE_H
 #define ORION_COMPARE_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <algorithm>
 #include <locale>

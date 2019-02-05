@@ -8,9 +8,6 @@
 #ifndef ORION_RPC_PROTOCOL_IPP
 #define ORION_RPC_PROTOCOL_IPP
 
-#include <orion/Orion-Stddefs.h>
-
-#include <orion/Assert.h>
 
 namespace orion
 {

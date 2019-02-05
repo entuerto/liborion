@@ -326,7 +326,7 @@ void AsyncSession::do_read()
       [self](std::error_code ec, std::size_t bytes_transferred) {
          if (ec)
          {
-            log::error(ec, _src_loc);
+            log::error(ec, DbgSrcLoc);
             self->close();
             return;
          }
@@ -339,7 +339,7 @@ void AsyncSession::do_read()
          ec = parser.parse(self->_response, self->_in_buffer.data());
          if (ec)
          {
-            log::error(ec, _src_loc);
+            log::error(ec, DbgSrcLoc);
             self->close();
             return;
          }
@@ -371,7 +371,7 @@ void AsyncSession::do_write()
       [self, bytes_to_write](const std::error_code& ec, std::size_t bytes_written) {
          if (ec)
          {
-            log::error(ec, _src_loc);
+            log::error(ec, DbgSrcLoc);
             self->close();
             return;
          }

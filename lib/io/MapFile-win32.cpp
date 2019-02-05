@@ -7,10 +7,6 @@
 //
 #include <orion/io/MapFile.h>
 
-#include <orion/Exception.h>
-#include <orion/SourceLocation.h>
-#include <orion/Throw.h>
-
 #include <host/win32/Error.h>
 #include <host/win32/String.h>
 

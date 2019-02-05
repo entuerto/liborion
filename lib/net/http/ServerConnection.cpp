@@ -45,7 +45,7 @@ void ServerConnection::do_read()
       asio::buffer(_in_buffer), [this, self](std::error_code ec, std::size_t bytes_transferred) {
          if (ec)
          {
-            log::error(ec, _src_loc);
+            log::error(ec, DbgSrcLoc);
             close();
             return;
          }
@@ -55,7 +55,7 @@ void ServerConnection::do_read()
          ec = _parser.parse(_request, asio::const_buffer(_in_buffer.data(), bytes_transferred));
          if (ec)
          {
-            log::error(ec, _src_loc);
+            log::error(ec, DbgSrcLoc);
             close();
             return;
          }
@@ -89,7 +89,7 @@ void ServerConnection::do_write()
       socket(), buffers, [this, self, bytes_to_write](std::error_code ec, std::size_t bytes_written) {
          if (ec)
          {
-            log::error(ec, _src_loc);
+            log::error(ec, DbgSrcLoc);
             close();
             return;
          }

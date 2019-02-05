@@ -8,7 +8,7 @@
 #ifndef ORION_JOIN_H
 #define ORION_JOIN_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <fmt/format.h>
 

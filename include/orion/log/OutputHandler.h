@@ -8,7 +8,7 @@
 #ifndef ORION_LOG_OUTPUTHANDLER_H
 #define ORION_LOG_OUTPUTHANDLER_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 #include <orion/log/Formatter.h>
 
 #include <iosfwd>

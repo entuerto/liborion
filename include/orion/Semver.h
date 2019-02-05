@@ -8,9 +8,7 @@
 #ifndef ORION_SEMVER_H
 #define ORION_SEMVER_H
 
-#include <orion/Orion-Stddefs.h>
-
-#include <orion/Exception.h>
+#include <orion/Common.h>
 
 #include <fmt/format.h>
 

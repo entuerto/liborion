@@ -7,8 +7,6 @@
 //
 #include <orion/Module.h>
 
-#include <orion/Assert.h>
-#include <orion/Exception.h>
 #include <orion/Log.h>
 #include <dlfcn.h>
 
@@ -69,7 +67,7 @@ void Module::open(const std::string& file_name)
    _impl->handle = dlopen(file_name, RTLD_LAZY);
 
    if (_impl->handle == nullptr)
-      throw_exception<ModuleException>(dlerror(), _src_loc);
+      throw_exception<ModuleException>(dlerror(), DbgSrcLoc);
 
    _impl->is_open = true;
    _impl->name    = file_name;
@@ -99,7 +97,7 @@ void* Module::find_symbol_address(const std::string& symbol_name)
    void* symbol = dlsym(_impl->handle, symbol_name);
 
    if (symbol == nullptr)
-      throw_exception<ModuleSymbolNotFoundException>(dlerror(), _src_loc);
+      throw_exception<ModuleSymbolNotFoundException>(dlerror(), DbgSrcLoc);
 
    return symbol;
 }

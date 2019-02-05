@@ -8,7 +8,7 @@
 #ifndef ORION_NET_RPC_METHOD_H
 #define ORION_NET_RPC_METHOD_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <orion/Semver.h>
 #include <orion/Types.h>

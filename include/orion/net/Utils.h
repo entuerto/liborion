@@ -8,7 +8,7 @@
 #ifndef ORION_NET_UTILS_H
 #define ORION_NET_UTILS_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <initializer_list>
 #include <string>

@@ -12,7 +12,7 @@
 #define LOG(lvl)                                                    \
    \
 if(orion::log::default_logger().is_enabled(orion::log::Level::lvl)) \
-      orion::log::default_logger() += orion::log::Record(orion::log::Level::lvl, "", _src_loc)
+      orion::log::default_logger() += orion::log::Record(orion::log::Level::lvl, "", DbgSrcLoc)
 #endif
 
 #ifndef LOG_FUNCTION

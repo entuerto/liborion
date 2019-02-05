@@ -77,7 +77,7 @@ void AsyncService::stop() noexcept
    }
    catch(const std::exception& e)
    {
-      log::exception(e, _src_loc);
+      log::exception(e, DbgSrcLoc);
    }
 }
 

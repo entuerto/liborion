@@ -8,7 +8,7 @@
 #ifndef ORION_HOST_WIN32_COM_H
 #define ORION_HOST_WIN32_COM_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <guiddef.h>
 #include <objbase.h>

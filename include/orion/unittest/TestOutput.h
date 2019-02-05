@@ -8,9 +8,7 @@
 #ifndef ORION_UNITTEST_TESTOUTPUT_H
 #define ORION_UNITTEST_TESTOUTPUT_H
 
-#include <orion/Orion-Stddefs.h>
-
-#include <cstdint>
+#include <orion/Config.h>
 
 namespace orion
 {

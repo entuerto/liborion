@@ -7,11 +7,8 @@
 //
 #include <orion/net/http/RequestMux.h>
 
-#include <orion/Assert.h>
-#include <orion/Exception.h>
 #include <orion/Log.h>
 #include <orion/String.h>
-#include <orion/Throw.h>
 
 #include <algorithm>
 
@@ -61,14 +58,14 @@ RequestMux::~RequestMux() = default;
 
 void RequestMux::handle(Method method, const std::string& pattern, HandlerFunc h)
 {
-   throw_if<InvalidArgumentError>(pattern.empty(), "Pattern is empty", _src_loc);
-   throw_if<InvalidArgumentError>(not h, "Handler function not valid", _src_loc);
+   throw_if<InvalidArgumentError>(pattern.empty(), "Pattern is empty", DbgSrcLoc);
+   throw_if<InvalidArgumentError>(not h, "Handler function not valid", DbgSrcLoc);
 
    auto it = _mux.find(pattern);
 
    throw_if<InvalidArgumentError>((it != _mux.end() and it->second.user_defined),
                                   "Multiple registrations for " + pattern,
-                                  _src_loc);
+                                  DbgSrcLoc);
 
    // Helpful behavior:
    // If pattern is /tree/, insert an implicit permanent redirect for /tree.
@@ -113,7 +110,7 @@ void RequestMux::handle(Method method, const std::string& pattern, HandlerFunc h
 
 void RequestMux::handle(StatusCode status_code, HandlerFunc h)
 {
-   throw_if<InvalidArgumentError>(not h, "Handler function not valid", _src_loc);
+   throw_if<InvalidArgumentError>(not h, "Handler function not valid", DbgSrcLoc);
 
    _status_handlers.emplace(status_code, std::move(h));
 }

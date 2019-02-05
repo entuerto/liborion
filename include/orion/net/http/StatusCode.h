@@ -8,7 +8,7 @@
 #ifndef ORION_NET_HTTP_STATUSCODE_H
 #define ORION_NET_HTTP_STATUSCODE_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <iostream>
 #include <string>

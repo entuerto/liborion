@@ -8,7 +8,7 @@
 #ifndef ORION_TRIM_H
 #define ORION_TRIM_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <locale>
 #include <string>

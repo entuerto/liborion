@@ -31,7 +31,7 @@ AddressV6& AddressV6::zero()
    catch (...)
    {
       log::fatal(type_name(std::current_exception()), 
-         "An unexpected, unknown exception was thrown: ", _src_loc);
+         "An unexpected, unknown exception was thrown: ", DbgSrcLoc);
    }
 }
 
@@ -45,7 +45,7 @@ AddressV6& AddressV6::unspecified()
    catch (...)
    {
       log::fatal(type_name(std::current_exception()), 
-         "An unexpected, unknown exception was thrown: ", _src_loc);
+         "An unexpected, unknown exception was thrown: ", DbgSrcLoc);
    }
 }
 
@@ -59,7 +59,7 @@ AddressV6& AddressV6::loopback()
    catch (...)
    {
       log::fatal(type_name(std::current_exception()), 
-         "An unexpected, unknown exception was thrown: ", _src_loc);
+         "An unexpected, unknown exception was thrown: ", DbgSrcLoc);
    }
 }
 
@@ -73,7 +73,7 @@ AddressV6& AddressV6::interface_local_all_nodes()
    catch (...)
    {
       log::fatal(type_name(std::current_exception()), 
-         "An unexpected, unknown exception was thrown: ", _src_loc);
+         "An unexpected, unknown exception was thrown: ", DbgSrcLoc);
    }
 }
 
@@ -87,7 +87,7 @@ AddressV6& AddressV6::link_local_all_nodes()
    catch (...)
    {
       log::fatal(type_name(std::current_exception()), 
-         "An unexpected, unknown exception was thrown: ", _src_loc);
+         "An unexpected, unknown exception was thrown: ", DbgSrcLoc);
    }
 }
 
@@ -101,7 +101,7 @@ AddressV6& AddressV6::link_local_all_routers()
    catch (...)
    {
       log::fatal(type_name(std::current_exception()), 
-         "An unexpected, unknown exception was thrown: ", _src_loc);
+         "An unexpected, unknown exception was thrown: ", DbgSrcLoc);
    }
 }
 

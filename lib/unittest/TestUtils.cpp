@@ -7,7 +7,6 @@
 //
 #include <orion/unittest/TestUtils.h>
 
-#include <orion/Assert.h>
 #include <orion/String.h>
 
 #include <iostream>

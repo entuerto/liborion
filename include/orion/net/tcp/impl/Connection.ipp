@@ -8,8 +8,6 @@
 #ifndef ORION_TCP_CONNECTION_IPP
 #define ORION_TCP_CONNECTION_IPP
 
-#include <orion/Orion-Stddefs.h>
-
 namespace orion
 {
 namespace net
@@ -50,7 +48,7 @@ void Connection::do_read()
    socket().async_read_some(b, [this, self](std::error_code ec, std::size_t bytes_transferred) {
       if (ec)
       {
-         log::error(ec, _src_loc);
+         log::error(ec, DbgSrcLoc);
          close();
          return;
       }
@@ -61,7 +59,7 @@ void Connection::do_read()
       ec = _handler.on_read(_in_streambuf);
       if (ec)
       {
-         log::error(ec, _src_loc);
+         log::error(ec, DbgSrcLoc);
          close();
          return;
       }
@@ -86,7 +84,7 @@ void Connection::do_write()
    std::error_code ec = _handler.on_write(_out_streambuf);
    if (ec)
    {
-      log::error(ec, _src_loc);
+      log::error(ec, DbgSrcLoc);
       close();
       return;
    }
@@ -112,7 +110,7 @@ void Connection::do_write()
       [this, self, bytes_to_write](std::error_code ec, std::size_t bytes_written) {
          if (ec)
          {
-            log::error(ec, _src_loc);
+            log::error(ec, DbgSrcLoc);
             close();
             return;
          }

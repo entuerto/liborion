@@ -8,8 +8,7 @@
 #ifndef ORION_UTILS_H
 #define ORION_UTILS_H
 
-#include <orion/Assert.h>
-#include <orion/Exception.h>
+#include <orion/Common.h>
 
 #include <array>
 #include <cstring>
@@ -63,37 +62,6 @@ inline constexpr size_t str_size(T (&)[N])
 {
    return N - 1;
 }
-  
-//-------------------------------------------------------------------------------------------------
-// at() - Bounds-checked access for static arrays, std::array, std::vector.
-
-template<class T, std::size_t N>
-inline constexpr T& at(T (&arr)[N], std::size_t index)
-{
-   Expects(index < N);
-   return arr[index];
-}
-
-template<class T, std::size_t N>
-inline constexpr T& at(std::array<T, N>& arr, std::size_t index)
-{
-   Expects(index < N);
-   return arr[index];
-}
-
-template<class Container>
-inline constexpr typename Container::value_type& at(Container& c, std::size_t index)
-{
-   Expects(index < c.size());
-   return c[index];
-}
-
-template<class T>
-inline constexpr const T& at(std::initializer_list<T> l, std::size_t index)
-{
-   Expects(index < l.size());
-   return *(l.begin() + index);
-}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -121,105 +89,6 @@ std::string get_as_string(const Args&... args)
 }
 
 //--------------------------------------------------------------------------------------------------
-
-/// 
-/// FinalAction allows you to ensure something gets run at the end of a scope
-///
-template<class F>
-class FinalAction
-{
-public:
-   explicit FinalAction(F action) noexcept
-      : _action(std::move(action))
-      , _invoke(true)
-   {
-   }
-
-   FinalAction(FinalAction&& other) noexcept
-      : _action(std::move(other._action))
-      , _invoke(other._invoke)
-   {
-      other._invoke = false;
-   }
-
-   virtual ~FinalAction() noexcept
-   {
-      if (_invoke)
-         _action();
-   }
-
-   FinalAction(const FinalAction&) = delete;
-   FinalAction& operator=(const FinalAction&) = delete;
-   FinalAction& operator=(FinalAction&&) = delete;
-
-protected:
-   void dismiss() noexcept { _invoke = false; }
-
-private:
-   F _action;
-   bool _invoke;
-};
-
-template<class F>
-inline FinalAction<F> finally(F const& action) noexcept
-{
-   return FinalAction<F>{action};
-}
-
-template<class F>
-inline FinalAction<F> finally(F&& action) noexcept
-{
-   return FinalAction<F>{std::forward<F>(action)};
-}
-
-//--------------------------------------------------------------------------------------------------
-// narrow_cast
-
-template<class T, class U>
-inline constexpr T narrow_cast(U&& u) noexcept
-{
-   return static_cast<T>(std::forward<U>(u));
-}
-
-class NarrowingError : public orion::Exception
-{
-public:
-   explicit NarrowingError(std::string text)
-      : Exception(std::move(text))
-   {
-   }
-};
-
-namespace details
-{
-template<class T, class U>
-struct is_same_signedness
-   : public std::integral_constant<bool, std::is_signed<T>::value == std::is_signed<U>::value>
-{
-};
-
-template<typename T>
-struct identity
-{
-   using type = T;
-};
-
-template<typename T>
-using identity_t = typename identity<T>::type;
-
-} // namespace details
-
-// narrow() : a checked version of narrow_cast() that throws if the cast changed the value
-template<class T, class U>
-T narrow(U u) 
-{
-   T t = narrow_cast<T>(u);
-   if (static_cast<U>(t) != u)
-      throw NarrowingError{"Lost information"};
-   if (not details::is_same_signedness<T, U>::value and ((t < T{}) != (u < U{})))
-      throw NarrowingError{"To small"};
-   return t;
-}
 
 // abseil
 // 

@@ -8,7 +8,7 @@
 #ifndef ORION_NET_TYPES_H
 #define ORION_NET_TYPES_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #if defined(ORION_WINDOWS)
 #include <winsock2.h>

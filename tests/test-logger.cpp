@@ -122,9 +122,9 @@ TestCase("Log output record")
    auto sl = output_record.source_location();
 
    check_eq(Level::Message, output_record.level());
-   check_eq(std::string{"FileName"}, sl.file_name);
-   check_eq(99, sl.line_number);
-   check_eq(std::string{"function name"}, sl.function_name);
+   check_eq(std::string{"FileName"}, sl.file_name());
+   check_eq(99, sl.line_number());
+   check_eq(std::string{"function name"}, sl.function_name());
    check_eq(std::string{"message"}, output_record.message());
 }
 

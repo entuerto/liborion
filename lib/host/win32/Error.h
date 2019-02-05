@@ -8,7 +8,7 @@
 #ifndef ORION_HOST_WIN32_ERROR_H
 #define ORION_HOST_WIN32_ERROR_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <host/win32/String.h>
 

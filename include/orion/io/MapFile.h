@@ -8,7 +8,7 @@
 #ifndef ORION_IO_MAPFILE_H
 #define ORION_IO_MAPFILE_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <memory>
 #include <system_error>

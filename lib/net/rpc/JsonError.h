@@ -8,7 +8,7 @@
 #ifndef ORION_NET_RPC_JSONERROR_H
 #define ORION_NET_RPC_JSONERROR_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <orion/net/rpc/Error.h>
 

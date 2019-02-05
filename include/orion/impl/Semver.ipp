@@ -9,7 +9,6 @@
 #define ORION_SEMVER_IPP
 
 #include <orion/String.h>
-#include <orion/Throw.h>
 
 #include <regex>
 #include <string>
@@ -242,46 +241,46 @@ bool has_leading_zero(const std::string& text)
 // Parse parses version string and returns a validated Version or error
 Version parse_version(const std::string& value)
 {
-   throw_if<InvalidArgumentError>(value.empty(), "Empty value to parse", _src_loc);
+   throw_if<InvalidArgumentError>(value.empty(), "Empty value to parse", DbgSrcLoc);
 
    // Split into major.minor.(patch+pr+meta)
    std::vector<std::string> parts = split_max(by_char{'.'}, 3) | value;
 
    // Error when not 3 parts
-   throw_if<VersionError>(parts.size() != 3, "No Major.Minor.Patch elements found", _src_loc);
+   throw_if<VersionError>(parts.size() != 3, "No Major.Minor.Patch elements found", DbgSrcLoc);
 
    Version v;
 
    // Major
-   throw_if<VersionError>(has_leading_zero(parts[0]), "Leading zero for major", _src_loc);
+   throw_if<VersionError>(has_leading_zero(parts[0]), "Leading zero for major", DbgSrcLoc);
 
    try
    {
       auto num =  std::stol(parts[0]);
 
-      throw_if<VersionError>(num < 0, "Invalid major number (< 0)", _src_loc);
+      throw_if<VersionError>(num < 0, "Invalid major number (< 0)", DbgSrcLoc);
 
       v.major = num;
    }
    catch (std::invalid_argument& ia)
    {
-      throw_exception<VersionError>(ia.what(), _src_loc);
+      throw_exception<VersionError>(ia.what(), DbgSrcLoc);
    }
 
    // Minor
-   throw_if<VersionError>(has_leading_zero(parts[1]), "Leading zero for minor", _src_loc);
+   throw_if<VersionError>(has_leading_zero(parts[1]), "Leading zero for minor", DbgSrcLoc);
 
    try
    {
       auto num =  std::stol(parts[1]);
 
-      throw_if<VersionError>(num < 0, "Invalid minor number (< 0)", _src_loc);
+      throw_if<VersionError>(num < 0, "Invalid minor number (< 0)", DbgSrcLoc);
 
       v.minor = num;
    }
    catch (std::invalid_argument& ia)
    {
-      throw_exception<VersionError>(ia.what(), _src_loc);
+      throw_exception<VersionError>(ia.what(), DbgSrcLoc);
    }
 
    std::string build;
@@ -320,7 +319,7 @@ Version parse_version(const std::string& value)
    }
    catch (std::invalid_argument& ia)
    {
-      throw_exception<VersionError>(ia.what(), _src_loc);
+      throw_exception<VersionError>(ia.what(), DbgSrcLoc);
    }
 
    // Prerelease
@@ -332,7 +331,7 @@ Version parse_version(const std::string& value)
    {
       if (item.find_first_not_of(alphanum) != std::string::npos)
       {
-         throw_exception<VersionError>("Invalid prerelease number", _src_loc);
+         throw_exception<VersionError>("Invalid prerelease number", DbgSrcLoc);
       }
    }
 
@@ -345,7 +344,7 @@ Version parse_version(const std::string& value)
    {
       if (item.find_first_not_of(alphanum) != std::string::npos)
       {
-         throw_exception<VersionError>("Invalid build number", _src_loc);
+         throw_exception<VersionError>("Invalid build number", DbgSrcLoc);
       }
    }
 

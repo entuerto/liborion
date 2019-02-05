@@ -8,8 +8,9 @@
 #ifndef ORION_TYPETRAITS_H
 #define ORION_TYPETRAITS_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
+#include <string>
 #include <tuple>
 #include <typeinfo>
 

@@ -17,7 +17,7 @@ namespace unittest
 //---------------------------------------------------------------------------------------
 
 /// Constructor
-TestSuite::TestSuite(const std::string& name)
+TestSuite::TestSuite(const std::string& name) noexcept
    : _name(name)
    , _label(name)
    , _is_enabled(true)
@@ -113,20 +113,20 @@ void TestSuite::teardown()
       _teardown_func();
 }
 
-Test& TestSuite::add_test(const std::string& name, TestCaseFunc f)
+Test& TestSuite::add_test(const std::string& name, TestCaseFunc f) noexcept
 {
    Test t(name, std::move(f));
 
    return add_test(std::move(t));
 }
 
-Test& TestSuite::add_test(Test&& test)
+Test& TestSuite::add_test(Test&& test) noexcept
 {
    _tests.push_back(std::move(test));
    return _tests.back();
 }
 
-void TestSuite::add_tests(std::initializer_list<Test> l)
+void TestSuite::add_tests(std::initializer_list<Test> l) noexcept
 {
    _tests.insert(_tests.end(), l);
 }

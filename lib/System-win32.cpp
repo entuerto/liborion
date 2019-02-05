@@ -15,6 +15,9 @@
 
 #include <fmt/format.h>
 
+#ifndef WIN32_LEAN_AND_MEAN
+#   define WIN32_LEAN_AND_MEAN
+#endif
 #include <lmcons.h> /* For UNLEN */
 #include <process.h>
 #include <windows.h>
@@ -92,7 +95,7 @@ static uint32_t get_cpu_count_phys()
             std::string error_message;
 
             win32::format_error_message(GetLastError(), error_message);
-            log::error(error_message, _src_loc);
+            log::error(error_message, DbgSrcLoc);
             return 0;
          }
          continue;
@@ -100,7 +103,7 @@ static uint32_t get_cpu_count_phys()
       std::string error_message;
 
       win32::format_error_message(GetLastError(), error_message);
-      log::error(error_message, _src_loc);
+      log::error(error_message, DbgSrcLoc);
       return 0;
    }
 
@@ -137,7 +140,7 @@ CpuInfo get_cpu_info()
    win32::Registry reg;
 
    std::error_code ec = reg.open_key(HKEY_LOCAL_MACHINE, key_to_open, KEY_READ);
-   log::error_if(ec, _src_loc);
+   log::error_if(ec, DbgSrcLoc);
 
    std::wstring value;
    value.reserve(4096);
@@ -147,7 +150,7 @@ CpuInfo get_cpu_info()
    //
 
    ec = reg.query_value("Identifier", value);
-   log::error_if(ec, _src_loc);
+   log::error_if(ec, DbgSrcLoc);
 
    CpuInfo cpu;
 
@@ -158,7 +161,7 @@ CpuInfo get_cpu_info()
    //
 
    ec = reg.query_value("ProcessorNameString", value);
-   log::error_if(ec, _src_loc);
+   log::error_if(ec, DbgSrcLoc);
 
    cpu.name = win32::wstring_to_utf8(value);
 
@@ -167,7 +170,7 @@ CpuInfo get_cpu_info()
    //
 
    ec = reg.query_value("VendorIdentifier", value);
-   log::error_if(ec, _src_loc);
+   log::error_if(ec, DbgSrcLoc);
 
    cpu.vendor = win32::wstring_to_utf8(value);
 
@@ -176,7 +179,7 @@ CpuInfo get_cpu_info()
    //
 
    ec = reg.query_value("~MHz", cpu.speed);
-   log::error_if(ec, _src_loc);
+   log::error_if(ec, DbgSrcLoc);
 
    //
    // Number of logical, active CPUs

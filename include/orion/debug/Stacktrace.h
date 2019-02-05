@@ -8,7 +8,7 @@
 #ifndef ORION_DEBUG_STACKTRACE_H
 #define ORION_DEBUG_STACKTRACE_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 // #include <iosfwd>
 #include <string>

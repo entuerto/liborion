@@ -7,7 +7,6 @@
 //
 #include <orion/Module.h>
 
-#include <orion/Assert.h>
 #include <orion/Log.h>
 
 namespace orion

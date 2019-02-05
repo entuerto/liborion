@@ -8,7 +8,7 @@
 #ifndef ORION_SIGNAL_H
 #define ORION_SIGNAL_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <functional>
 #include <memory>

@@ -8,7 +8,7 @@
 #ifndef ORION_LOG_LOGGERIMPL_H
 #define ORION_LOG_LOGGERIMPL_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <orion/log/OutputHandler.h>
 #include <orion/log/Record.h>

@@ -8,7 +8,7 @@
 #ifndef ORION_HOST_MINGW64_DEBUG_H
 #define ORION_HOST_MINGW64_DEBUG_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <orion/debug/Stacktrace.h>
 

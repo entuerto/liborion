@@ -8,9 +8,7 @@
 #ifndef ORION_DATETIME_IPP
 #define ORION_DATETIME_IPP
 
-#include <orion/Orion-Stddefs.h>
-
-#include <orion/Utils.h>
+#include <orion/Common.h>
 
 #include <chrono>
 #include <iostream>

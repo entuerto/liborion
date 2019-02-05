@@ -8,7 +8,7 @@
 #ifndef ORION_NET_RPC_RESULT_H
 #define ORION_NET_RPC_RESULT_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 namespace orion
 {

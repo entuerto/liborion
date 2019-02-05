@@ -8,8 +8,6 @@
 #ifndef ORION_CONNECTION_IPP
 #define ORION_CONNECTION_IPP
 
-#include <orion/Orion-Stddefs.h>
-
 #include <orion/Log.h>
 #include <orion/net/AddressV4.h>
 #include <orion/net/AddressV6.h>
@@ -75,7 +73,7 @@ void Connection<SocketT>::close()
    // Send a TCP shutdown
    _socket.shutdown(asio::ip::tcp::socket::shutdown_send, ec);
    if (ec)
-      log::error(ec, _src_loc);
+      log::error(ec, DbgSrcLoc);
 
    read_timeout_timer().cancel();
    write_timeout_timer().cancel();

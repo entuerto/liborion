@@ -8,9 +8,8 @@
 #ifndef ORION_UNITTEST_TESTRESULT_H
 #define ORION_UNITTEST_TESTRESULT_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 #include <orion/Chrono.h>
-#include <orion/SourceLocation.h>
 #include <orion/Utils.h>
 
 #include <orion/unittest/TestUtils.h>

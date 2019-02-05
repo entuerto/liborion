@@ -8,7 +8,7 @@
 #ifndef ORION_ENCODING_H
 #define ORION_ENCODING_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <array>
 #include <cstdint>

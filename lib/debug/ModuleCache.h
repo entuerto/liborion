@@ -8,7 +8,7 @@
 #ifndef ORION_DEBUG_MODULEPOOL_H
 #define ORION_DEBUG_MODULEPOOL_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <debug/Symbols.h>
 

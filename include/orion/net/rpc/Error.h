@@ -8,7 +8,7 @@
 #ifndef ORION_NET_RPC_ERROR_H
 #define ORION_NET_RPC_ERROR_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <memory>
 #include <string>

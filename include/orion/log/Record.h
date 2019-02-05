@@ -8,10 +8,9 @@
 #ifndef ORION_LOG_RECORD_H
 #define ORION_LOG_RECORD_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <orion/Chrono.h>
-#include <orion/SourceLocation.h>
 #include <orion/log/Level.h>
 
 #include <sstream>

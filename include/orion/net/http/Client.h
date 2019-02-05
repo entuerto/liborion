@@ -8,7 +8,7 @@
 #ifndef ORION_NET_HTTP_CLIENT_H
 #define ORION_NET_HTTP_CLIENT_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <orion/AsyncService.h>
 #include <orion/Log.h>

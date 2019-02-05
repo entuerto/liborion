@@ -8,7 +8,7 @@
 #ifndef ORION_LOG_LOGGERSERVICE_H
 #define ORION_LOG_LOGGERSERVICE_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <asio.hpp>
 

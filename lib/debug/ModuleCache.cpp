@@ -66,7 +66,7 @@ bool Module::find_symbol(uintptr_t address, LocationInfo& info)
    }
    catch (std::exception& e)
    {
-      log::exception(e, _src_loc);
+      log::exception(e, DbgSrcLoc);
    }
    return false;
 }

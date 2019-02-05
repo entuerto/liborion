@@ -8,7 +8,7 @@
 #ifndef ORION_NET_HTTP_MESSAGE_H
 #define ORION_NET_HTTP_MESSAGE_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <orion/net/http/Utils.h>
 

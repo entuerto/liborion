@@ -7,8 +7,6 @@
 //
 #include <orion/log/Level.h>
 
-#include <orion/Assert.h>
-
 #include <iostream>
 
 namespace orion

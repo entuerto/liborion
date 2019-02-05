@@ -8,7 +8,7 @@
 #ifndef ORION_NET_HTTP_RESPONSE_H
 #define ORION_NET_HTTP_RESPONSE_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 #include <orion/log/Record.h>
 #include <orion/net/http/Message.h>
 #include <orion/net/http/StatusCode.h>

@@ -8,8 +8,6 @@
 #ifndef ORION_RPC_SERVICE_IPP
 #define ORION_RPC_SERVICE_IPP
 
-#include <orion/Orion-Stddefs.h>
-
 namespace orion
 {
 namespace net

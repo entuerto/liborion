@@ -8,7 +8,7 @@
 #ifndef ORION_HOST_MINGW64_MODULEPOOL_H
 #define ORION_HOST_MINGW64_MODULEPOOL_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <Debug/Symbols.h>
 

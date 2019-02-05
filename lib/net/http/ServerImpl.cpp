@@ -58,7 +58,7 @@ void ServerImpl::shutdown()
    std::error_code ec = _listener->close();
 
    if (ec)
-      log::error(ec, _src_loc);
+      log::error(ec, DbgSrcLoc);
 }
 
 void ServerImpl::tls_handshake_timeout(const std::chrono::seconds& t)
@@ -100,7 +100,7 @@ void ServerImpl::do_await_close()
 {
    _signals.async_wait([this](std::error_code ec, int /*signo*/) {
       if (ec)
-         log::error(ec, _src_loc);
+         log::error(ec, DbgSrcLoc);
 
       // The server is stopped by cancelling all outstanding asynchronous
       // operations. Once all operations have finished the io_context::run()

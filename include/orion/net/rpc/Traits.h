@@ -8,7 +8,7 @@
 #ifndef ORION_NET_RPC_TRAITS_H
 #define ORION_NET_RPC_TRAITS_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <orion/net/rpc/Error.h>
 #include <orion/net/rpc/Serializer.h>

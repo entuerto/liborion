@@ -8,8 +8,6 @@
 #ifndef ORION_NET_TCP_LISTENER_IPP
 #define ORION_NET_TCP_LISTENER_IPP
 
-#include <orion/Orion-Stddefs.h>
-
 #include <orion/Log.h>
 
 #include <functional>
@@ -73,7 +71,7 @@ void Listener<ConnectionT, HandlerT>::init()
    _acceptor.open(endpoint.protocol(), ec);
    if (ec)
    {
-      log::error("Openning the acceptor. ", ec, _src_loc);
+      log::error("Openning the acceptor. ", ec, DbgSrcLoc);
       return;
    }
 
@@ -83,7 +81,7 @@ void Listener<ConnectionT, HandlerT>::init()
    _acceptor.bind(endpoint, ec);
    if (ec)
    {
-      log::error("Binding the endpoint. ", ec, _src_loc);
+      log::error("Binding the endpoint. ", ec, DbgSrcLoc);
       return;
    }
 }
@@ -170,7 +168,7 @@ void Listener<ConnectionT, HandlerT>::do_accept()
 
       if (ec)
       {
-         log::error("Listener::on_accept() ", ec, _src_loc);
+         log::error("Listener::on_accept() ", ec, DbgSrcLoc);
          return;
       }
 

@@ -8,7 +8,7 @@
 #ifndef ORION_TYPES_H
 #define ORION_TYPES_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <ostream>
 

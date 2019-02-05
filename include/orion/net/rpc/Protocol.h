@@ -8,7 +8,7 @@
 #ifndef ORION_NET_RPC_PROTOCOL_H
 #define ORION_NET_RPC_PROTOCOL_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <orion/Utils.h>
 #include <orion/net/rpc/Error.h>

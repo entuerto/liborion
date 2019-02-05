@@ -8,7 +8,7 @@
 #ifndef MODULE_EXAMPLE_H
 #define MODULE_EXAMPLE_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 struct Hello
 {

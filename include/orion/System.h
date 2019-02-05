@@ -8,7 +8,7 @@
 #ifndef ORION_SYSTEM_H
 #define ORION_SYSTEM_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <orion/Units.h>
 

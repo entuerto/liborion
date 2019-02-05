@@ -5,9 +5,7 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-#include <orion/Exception.h>
 #include <orion/Log.h>
-#include <orion/Throw.h>
 
 #include <chrono>
 #include <iostream>
@@ -33,7 +31,7 @@ void function_b()
 
 void function_c()
 {
-   throw_exception<InvalidArgumentError>("No arguments in function c", _src_loc);
+   throw_exception<InvalidArgumentError>("No arguments in function c", DbgSrcLoc);
 }
 
 //----------------------------------------------------------
@@ -62,7 +60,7 @@ int main()
    }
    catch (const std::exception& e)
    {
-      log::exception(e, _src_loc);
+      log::exception(e, DbgSrcLoc);
    }
 
    try
@@ -71,7 +69,7 @@ int main()
    }
    catch (const Exception& e)
    {
-      log::exception(e, _src_loc);
+      log::exception(e, DbgSrcLoc);
    }
 
    log::shutdown();

@@ -33,7 +33,7 @@ Logger& default_logger()
    catch (...)
    {
       log::error(type_name(std::current_exception()), 
-         "An unexpected, unknown exception was thrown: ", _src_loc);
+         "An unexpected, unknown exception was thrown: ", DbgSrcLoc);
       std::terminate();
    }
 }

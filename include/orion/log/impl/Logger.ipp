@@ -8,8 +8,6 @@
 #ifndef ORION_LOG_LOGGER_IPP
 #define ORION_LOG_LOGGER_IPP
 
-#include <orion/Orion-Stddefs.h>
-
 #include <orion/Utils.h>
 #include <orion/log/ExceptionRecord.h>
 #include <orion/log/Record.h>

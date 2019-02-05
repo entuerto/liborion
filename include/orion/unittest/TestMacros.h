@@ -52,11 +52,11 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
       try                                                                                   \
       {                                                                                     \
          expr;                                                                              \
-         t.expected_exception_not_thrown(ORION_TOSTRING(expr), _src_loc, ##__VA_ARGS__);    \
+         t.expected_exception_not_thrown(ORION_TOSTRING(expr), DbgSrcLoc, ##__VA_ARGS__);   \
       }                                                                                     \
       catch(...)                                                                            \
       {                                                                                     \
-         t.exception_thrown_as_expected(std::current_exception(), _src_loc, ##__VA_ARGS__); \
+         t.exception_thrown_as_expected(std::current_exception(), DbgSrcLoc, ##__VA_ARGS__); \
       }                                                                                     \
    } while((void)0, 0);
   
@@ -67,15 +67,15 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
       try                                                                                   \
       {                                                                                     \
          expr;                                                                              \
-         t.expected_exception_not_thrown(ORION_TOSTRING(expr), _src_loc, ##__VA_ARGS__);    \
+         t.expected_exception_not_thrown(ORION_TOSTRING(expr), DbgSrcLoc, ##__VA_ARGS__);   \
       }                                                                                     \
       catch(const exception_type& e)                                                        \
       {                                                                                     \
-         t.exception_thrown_as_expected(e, _src_loc, ##__VA_ARGS__);                        \
+         t.exception_thrown_as_expected(e, DbgSrcLoc, ##__VA_ARGS__);                       \
       }                                                                                     \
       catch(...)                                                                            \
       {                                                                                     \
-         t.unexpected_exception_thrown(std::current_exception(), _src_loc, ##__VA_ARGS__);  \
+         t.unexpected_exception_thrown(std::current_exception(), DbgSrcLoc, ##__VA_ARGS__); \
       }                                                                                     \
    } while((void)0, 0);
 
@@ -89,7 +89,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
       }                                                                                     \
       catch(...)                                                                            \
       {                                                                                     \
-         t.unexpected_exception_thrown(std::current_exception(), _src_loc, ##__VA_ARGS__);  \
+         t.unexpected_exception_thrown(std::current_exception(), DbgSrcLoc, ##__VA_ARGS__); \
       }                                                                                     \
    } while((void)0, 0);   
 
@@ -97,7 +97,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(ExpressionDecomposer() << __VA_ARGS__, ORION_TOSTRING(__VA_ARGS__), _src_loc); \
+      t.asserter(ExpressionDecomposer() << __VA_ARGS__, ORION_TOSTRING(__VA_ARGS__), DbgSrcLoc); \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);   
 
@@ -105,7 +105,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_eq(ex, ac, ORION_TOSTRING(ex == ac)), _src_loc, ##__VA_ARGS__);       \
+      t.asserter(eval_eq(ex, ac, ORION_TOSTRING(ex == ac)), DbgSrcLoc, ##__VA_ARGS__);      \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
    
@@ -114,7 +114,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_ne(ex, ac, ORION_TOSTRING(ex != ac)), _src_loc, ##__VA_ARGS__);       \
+      t.asserter(eval_ne(ex, ac, ORION_TOSTRING(ex != ac)), DbgSrcLoc, ##__VA_ARGS__);      \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 
@@ -122,7 +122,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_ge(ex, ac, ORION_TOSTRING(ex >= ac)), _src_loc, ##__VA_ARGS__);       \
+      t.asserter(eval_ge(ex, ac, ORION_TOSTRING(ex >= ac)), DbgSrcLoc, ##__VA_ARGS__);      \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 
@@ -130,7 +130,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_gt(ex, ac, ORION_TOSTRING(ex > ac)), _src_loc, ##__VA_ARGS__);        \
+      t.asserter(eval_gt(ex, ac, ORION_TOSTRING(ex > ac)), DbgSrcLoc, ##__VA_ARGS__);       \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 
@@ -138,7 +138,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_le(ex, ac, ORION_TOSTRING(ex <= ac)), _src_loc, ##__VA_ARGS__);       \
+      t.asserter(eval_le(ex, ac, ORION_TOSTRING(ex <= ac)), DbgSrcLoc, ##__VA_ARGS__);      \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 
@@ -146,7 +146,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_lt(ex, ac, ORION_TOSTRING(ex < ac)), _src_loc, ##__VA_ARGS__);        \
+      t.asserter(eval_lt(ex, ac, ORION_TOSTRING(ex < ac)), DbgSrcLoc, ##__VA_ARGS__);       \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
        
@@ -154,7 +154,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_true(exp, ORION_TOSTRING(exp)), _src_loc, ##__VA_ARGS__);             \
+      t.asserter(eval_true(exp, ORION_TOSTRING(exp)), DbgSrcLoc, ##__VA_ARGS__);            \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 
@@ -162,7 +162,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_false(exp, ORION_TOSTRING(exp)), _src_loc, ##__VA_ARGS__);            \
+      t.asserter(eval_false(exp, ORION_TOSTRING(exp)), DbgSrcLoc, ##__VA_ARGS__);           \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 

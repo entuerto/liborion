@@ -8,7 +8,7 @@
 #ifndef ORION_CHRONO_IPP
 #define ORION_CHRONO_IPP
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <fmt/format.h>
 

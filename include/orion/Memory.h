@@ -8,7 +8,8 @@
 #ifndef ORION_MEMORY_UTILS_H
 #define ORION_MEMORY_UTILS_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
+
 #include <memory>
 
 namespace orion

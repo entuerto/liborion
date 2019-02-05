@@ -8,7 +8,7 @@
 #ifndef ORION_NET_HTTP_UTILS_H
 #define ORION_NET_HTTP_UTILS_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <orion/String.h>
 #include <orion/Types.h>

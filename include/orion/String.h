@@ -8,7 +8,7 @@
 #ifndef ORION_STRING_H
 #define ORION_STRING_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <orion/string/Compare.h>
 #include <orion/string/Finder.h>

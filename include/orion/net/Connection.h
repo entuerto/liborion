@@ -8,7 +8,7 @@
 #ifndef ORION_NET_CONNECTION_H
 #define ORION_NET_CONNECTION_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
 #include <orion/net/EndPoint.h>
 #include <orion/net/Options.h>

@@ -147,7 +147,7 @@ const TestResult& Test::invoke() const
 
       msg += e.what();
 
-      _test_result.log(AssertionException{std::make_exception_ptr(e), Message{msg}, _src_loc});
+      _test_result.log(AssertionException{std::make_exception_ptr(e), Message{msg}, DbgSrcLoc});
    }
    catch (...)
    {
@@ -157,7 +157,7 @@ const TestResult& Test::invoke() const
 
       msg += type_name(cur_exp);
 
-      _test_result.log(AssertionException{cur_exp, Message{msg}, _src_loc});
+      _test_result.log(AssertionException{cur_exp, Message{msg}, DbgSrcLoc});
    }
    _test_result.on_end();
 

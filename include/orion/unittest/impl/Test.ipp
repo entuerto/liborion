@@ -8,10 +8,11 @@
 #ifndef ORION_UNITTEST_TEST_IPP
 #define ORION_UNITTEST_TEST_IPP
 
-#include <orion/Assert.h>
+#include <orion/Common.h>
 #include <orion/Utils.h>
 
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 
 #include <sstream>
 #include <string>

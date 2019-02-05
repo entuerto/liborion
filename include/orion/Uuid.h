@@ -8,7 +8,8 @@
 #ifndef UUID_H
 #define UUID_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
+
 #include <memory>
 #include <string>
 

@@ -7,7 +7,7 @@
 #ifndef ORION_CHRONO_H
 #define ORION_CHRONO_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <chrono>
 #include <string>

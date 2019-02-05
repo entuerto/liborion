@@ -8,7 +8,7 @@
 #ifndef ORION_UNITTEST_TESTSTDOUTPUT_H
 #define ORION_UNITTEST_TESTSTDOUTPUT_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 #include <orion/unittest/TestOutput.h>
 #include <orion/unittest/TestUtils.h>
 

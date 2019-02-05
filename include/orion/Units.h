@@ -8,7 +8,8 @@
 #ifndef ORION_UNITS_H
 #define ORION_UNITS_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
+
 #include <iostream>
 #include <limits>
 #include <ratio>

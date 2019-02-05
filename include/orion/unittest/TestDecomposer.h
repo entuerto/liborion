@@ -8,7 +8,7 @@
 #ifndef ORION_UNITTEST_TESTDECOMPOSER_H
 #define ORION_UNITTEST_TESTDECOMPOSER_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <orion/TypeTraits.h>
 

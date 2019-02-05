@@ -7,7 +7,7 @@
 //
 #include <orion/Test.h>
 
-#include <orion/Assert.h>
+#include <orion/Common.h>
 #include <orion/Utils.h>
 
 #include <limits> 
@@ -106,7 +106,7 @@ TestCase("narrow_cast")
     check_true(c == 120);
 
     n = 300;
-    unsigned char uc = narrow_cast<unsigned char>(n);
+    auto uc = narrow_cast<unsigned char>(n);
     check_true(uc == 44);
 }
 
@@ -199,6 +199,91 @@ TestCase("at() - non-existing std::initializer_list element")
    std::initializer_list<int> l = {1, 2, 3, 4};
 
    check_throws(at(l, 4));
+}
+
+TestCase("Span<>: Default construction")
+{
+   Span<int> s;
+   check_true((s.empty() and s.data() == nullptr));
+
+   Span<const int> cs;
+   check_true((cs.empty() and cs.data() == nullptr));
+}
+
+TestCase("Span<>: Construct from a nullptr and a zero size")
+{
+   using IndexType = Span<int>::index_type;
+
+   Span<int> v{nullptr, IndexType{0}};
+   Span<const int> w{nullptr, IndexType{0}};
+
+   check_eq(v.size(), 0);
+   check_eq(w.size(), 0);
+
+   auto macro = []() { const Span<int> s{nullptr, 1}; };
+
+   check_throws(macro());
+
+   auto const_macro = []() { const Span<const int> cs{nullptr, 1}; };
+
+   check_throws(const_macro());
+}
+
+TestCase("Span<>: Construct from a C-array")
+{
+   int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, };
+
+   Span<int> v{arr};
+   Span<const int> w{arr};
+
+   check_true(std::equal(v.begin(), v.end(), arr));
+   check_true(std::equal(w.begin(), w.end(), arr));
+}
+
+TestCase("Span<>: Construct from a C-array")
+{
+   const int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, };
+
+   Span<const int> v{arr};
+
+   check_true(std::equal(v.begin(), v.end(), arr));
+}
+
+TestCase("Span<>: Construct from a C-array with size via decay to pointer")
+{
+   int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, };
+
+   Span<int> v{arr, array_size(arr)};
+   Span<const int> w{arr, array_size(arr)};
+
+   check_true(std::equal(v.begin(), v.end(), arr));
+   check_true(std::equal(w.begin(), w.end(), arr));
+}
+
+TestCase("Span<>: Construct from a std::array<>")
+{
+   std::array<int, 9> arr = {{ 1, 2, 3, 4, 5, 6, 7, 8, 9, }};
+
+   Span<int> v{arr};
+
+   check_true(std::equal(v.begin(), v.end(), arr.begin()));
+
+   std::array<const int, 9> carr = {{ 1, 2, 3, 4, 5, 6, 7, 8, 9, }};
+
+   Span<const int> cv{arr};
+
+   check_true(std::equal(cv.begin(), cv.end(), carr.begin()));
+}
+
+TestCase("Span<>: Construct from a container (std::vector<>)")
+{
+   std::vector<int> vec = {{ 1, 2, 3, 4, 5, 6, 7, 8, 9, }};
+
+   Span<int> v{vec};
+   Span<const int> w{vec};
+
+   check_true(std::equal(v.begin(), v.end(), vec.begin()));
+   check_true(std::equal(w.begin(), w.end(), vec.begin()));
 }
 
 } // Section

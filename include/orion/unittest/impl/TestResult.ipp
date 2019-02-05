@@ -8,9 +8,7 @@
 #ifndef ORION_UNITTEST_TESTRESULT_IPP
 #define ORION_UNITTEST_TESTRESULT_IPP
 
-#include <orion/SourceLocation.h>
-#include <orion/TypeTraits.h>
-#include <orion/Utils.h>
+#include <orion/Common.h>
 
 #include <iostream>
 #include <string>

@@ -8,9 +8,7 @@
 #ifndef ORION_LOG_FORMATTER_H
 #define ORION_LOG_FORMATTER_H
 
-#include <orion/Orion-Stddefs.h>
-
-#include <orion/SourceLocation.h>
+#include <orion/Common.h>
 
 #include <memory>
 #include <string>

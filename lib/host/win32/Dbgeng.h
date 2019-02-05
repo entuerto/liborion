@@ -8,7 +8,7 @@
 #ifndef ORION_HOST_WIN32_DBGENG_H
 #define ORION_HOST_WIN32_DBGENG_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <host/win32/COM.h>
 

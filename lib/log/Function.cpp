@@ -19,7 +19,7 @@ namespace log
 /// 
 Function::Function(Level level, const SourceLocation& src_loc)
    : _level(level)
-   , _name(src_loc.function_name)
+   , _name(src_loc.function_name())
 {
    Logger& logger = default_logger();
 

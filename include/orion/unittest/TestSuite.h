@@ -8,7 +8,7 @@
 #ifndef ORION_UNITTEST_TESTSUITE_H
 #define ORION_UNITTEST_TESTSUITE_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 #include <orion/unittest/Test.h>
 #include <orion/unittest/TestOutput.h>
 #include <orion/unittest/TestUtils.h>
@@ -28,7 +28,7 @@ namespace unittest
 class API_EXPORT TestSuite
 {
 public:
-   explicit TestSuite(const std::string& name);
+   explicit TestSuite(const std::string& name) noexcept;
    virtual ~TestSuite() = default;
 
    DEFAULT_COPY(TestSuite)
@@ -65,11 +65,11 @@ public:
    /// Executes the tests and logs then to output.
    const TestSuiteStats& run_tests(Output& output);
 
-   Test& add_test(Test&& test);
+   Test& add_test(Test&& test) noexcept;
 
-   Test& add_test(const std::string& name, TestCaseFunc f);
+   Test& add_test(const std::string& name, TestCaseFunc f) noexcept;
 
-   void add_tests(std::initializer_list<Test> l);
+   void add_tests(std::initializer_list<Test> l) noexcept;
 
 private:
    std::string _name;
@@ -89,16 +89,16 @@ private:
 
 //-------------------------------------------------------------------------------------------------
 
-inline void set_options(TestSuite& /* unused */) {}
+inline void set_options(TestSuite& /* unused */) noexcept {}
 
 template<typename O>
-void set_options(TestSuite& suite, O&& opt)
+void set_options(TestSuite& suite, O&& opt) noexcept
 {
    suite.set_option(std::forward<decltype(opt)>(opt));
 }
 
 template<typename O, typename... Opts>
-void set_options(TestSuite& suite, O&& opt, Opts&&... opts)
+void set_options(TestSuite& suite, O&& opt, Opts&&... opts) noexcept
 {
    set_options(suite, std::forward<decltype(opt)>(opt));
    set_options(suite, std::forward<decltype(opts)>(opts)...);

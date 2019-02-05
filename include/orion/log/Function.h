@@ -8,10 +8,10 @@
 #ifndef ORION_LOG_FUNCTION_H
 #define ORION_LOG_FUNCTION_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
-#include <orion/SourceLocation.h>
 #include <orion/log/Level.h>
+
 #include <string>
 
 namespace orion

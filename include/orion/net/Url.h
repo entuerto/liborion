@@ -8,7 +8,7 @@
 #ifndef ORION_NET_URL_H
 #define ORION_NET_URL_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <map>
 #include <string>

@@ -147,28 +147,28 @@ msvc_comp_args = {
       'defines'  : default_windows_defines + ['-DDEBUG'],
       'warnings' : ['-W4'] + default_warning,
       'cflags'   : ['-MDd', '-Zi'],
-      'cxxflags' : ['-MDd', '-Zi', '-EHsc', '-GR', '-std:c++14'],
+      'cxxflags' : ['-MDd', '-Zi', '-EHsc', '-GR', '-std:c++17'],
       'ldflags'  : ['/debug']
    },
    'debugoptimized': {
       'defines'  : default_windows_defines + ['-DDEBUG'],
       'warnings' : ['-W4'] + default_warning,
       'cflags'   : ['-MD', '-Zi', '-O2'],
-      'cxxflags' : ['-MD', '-Zi', '-EHsc', '-GR', '-std:c++14'],
+      'cxxflags' : ['-MD', '-Zi', '-EHsc', '-GR', '-std:c++17'],
       'ldflags'  : []
    },
    'release': {
       'defines'  : default_windows_defines + ['-DNDEBUG'],
       'warnings' : ['-W4'] + default_warning,
       'cflags'   : ['-MD', '-O2'],
-      'cxxflags' : ['-MD', '-O2', '-EHsc', '-GR', '-std:c++14'],
+      'cxxflags' : ['-MD', '-O2', '-EHsc', '-GR', '-std:c++17'],
       'ldflags'  : []
    },
    'minsize': {
       'defines'  : default_windows_defines + ['-DNDEBUG'],
       'warnings' : ['-W4'] + default_warning,
       'cflags'   : ['-MD', '-Os'],
-      'cxxflags' : ['-MD', '-Os', '-EHsc', '-GR', '-std:c++14'],
+      'cxxflags' : ['-MD', '-Os', '-EHsc', '-GR', '-std:c++17'],
       'ldflags'  : []
    }
 }
@@ -181,7 +181,7 @@ class Compiler:
       self.defines  = []
       self.warnings = ['-Wall', '-Wextra'] + default_warning
       self.cflags   = ['-pipe']
-      self.cxxflags = self.cflags + ['-std=c++14']
+      self.cxxflags = self.cflags + ['-std=c++17']
       self.ldflags  = []
 
 

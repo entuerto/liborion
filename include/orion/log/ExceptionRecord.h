@@ -8,9 +8,8 @@
 #ifndef ORION_LOG_EXCEPTIONRECORD_H
 #define ORION_LOG_EXCEPTIONRECORD_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Common.h>
 
-#include <orion/SourceLocation.h>
 #include <orion/log/Record.h>
 
 namespace orion

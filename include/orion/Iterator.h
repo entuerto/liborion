@@ -8,7 +8,7 @@
 #ifndef ORION_ITERATOR_H
 #define ORION_ITERATOR_H
 
-#include <orion/Orion-Stddefs.h>
+#include <orion/Config.h>
 
 #include <iterator>
 #include <utility>
