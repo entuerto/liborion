@@ -20,8 +20,15 @@ namespace Suite##Name                                                    \
 {                                                                        \
    inline TestSuite& _current_test_suite()                               \
    {                                                                     \
+      try                                                                \
+      {                                                                  \
       static RegisterTestSuiteHelper suite_##Name(#Name, ##__VA_ARGS__); \
       return suite_##Name.suite;                                         \
+      }                                                                  \
+      catch (const std::exception& e)                                    \
+      {                                                                  \
+      log::fatal("An unexpected, exception was thrown: ", e, DbgSrcLoc); \
+      }                                                                  \
    }                                                                     \
 }                                                                        \
                                                                          \
@@ -40,7 +47,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
 
 
 #define TestCase(label, ...) \
-   _TestCaseImpl(ORION_ANONYMOUS(_test_case_), unittest::option::Label{label}, ##__VA_ARGS__)
+   _TestCaseImpl(ORION_ANONYMOUS(_test_case_), unittest::Label{label}, ##__VA_ARGS__)
 
 
 //-------------------------------------------------------------------------------------------------

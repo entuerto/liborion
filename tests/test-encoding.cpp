@@ -6,6 +6,7 @@
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 #include <orion/Encoding.h>
+#include <orion/Log.h>
 #include <orion/Test.h>
 
 #include <limits>
@@ -13,7 +14,6 @@
 using namespace orion;
 using namespace orion::encoding;
 using namespace orion::unittest;
-using namespace orion::unittest::option;
 
 Section(OrionCore_Encoding, Label{"Encoding"})
 {

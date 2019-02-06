@@ -50,6 +50,11 @@ struct Concatenate
              << ec.message();
    }
 
+   void operator()(const std::exception& e) 
+   {
+      buffer << e.what(); 
+   }
+
    void operator()(SourceLocation& /*unused*/) {}
 };
 } // namespace detail

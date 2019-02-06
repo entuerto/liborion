@@ -5,13 +5,13 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
+#include <orion/Log.h>
 #include <orion/net/Url.h>
 #include <orion/Test.h>
 
 using namespace orion;
 using namespace orion::net;
 using namespace orion::unittest;
-using namespace orion::unittest::option;
 
 using namespace std::string_literals;
 

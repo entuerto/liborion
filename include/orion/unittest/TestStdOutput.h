@@ -54,7 +54,7 @@ public:
 private:
    void write_sections();
 
-   std::string fit_text(const std::string& text, int len);
+   std::string fit_text(const std::string& text, std::size_t len);
 
 private:
    std::ostream& _stream;

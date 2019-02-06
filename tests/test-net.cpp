@@ -9,12 +9,12 @@
 #include <orion/net/AddressV4.h>
 #include <orion/net/AddressV6.h>
 #include <orion/net/EndPoint.h>
+#include <orion/Log.h>
 #include <orion/Test.h>
 
 using namespace orion;
 using namespace orion::net;
 using namespace orion::unittest;
-using namespace orion::unittest::option;
 
 using namespace std::string_literals;
 

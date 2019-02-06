@@ -1030,7 +1030,6 @@ def write_ninja_rules(n, build_env):
 
 def declare_build_targets(platform, static_libraries, shared_libraries, executables):
    asio_defines = ['-DASIO_STANDALONE', '-DASIO_NO_DEPRECATED', '-DASIO_HAS_MOVE']
-   boost_defines = ['-DBOOST_LIB_DIAGNOSTIC', '-DBOOST_ALL_NO_LIB', '-DBOOST_ALL_DYN_LINK']
 
    static_libraries['http-parser'] = {
       'tool'    : 'cc', 
@@ -1062,11 +1061,8 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
          'lib/log/OutputHandler.cpp', 
          'lib/log/Record.cpp', 
          # Unit test files
-         'lib/unittest/Test.cpp', 
-         'lib/unittest/TestUtils.cpp', 
          'lib/unittest/TestRunner.cpp', 
-         'lib/unittest/TestStdOutput.cpp', 
-         'lib/unittest/TestSuite.cpp'
+         'lib/unittest/TestStdOutput.cpp'
       ],
       'sources-darwin' : [
       #   'lib/debug/ModuleCache.cpp',
@@ -1106,8 +1102,7 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
          'lib/Uuid-win32.cpp'
       ],
       'libs': [
-        'fmt',
-        'boost_program_options' # 'boost_program_options-vc140-mt-gd'
+        'fmt'
       ],
       'libs-mingw' : [
          'dwarf',

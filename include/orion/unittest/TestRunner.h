@@ -50,7 +50,7 @@ private:
 private:
    std::vector<TestSuite> _test_suites;
 
-   ReportLevel _level{ReportLevel::Detailed};
+   ReportLevel _level{ReportLevel::Error};
 };
 
 //-------------------------------------------------------------------------------------------------

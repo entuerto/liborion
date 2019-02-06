@@ -1,11 +1,12 @@
 //
-// TestUtils.cpp
+// TestUtils.ipp
 //
-// Copyright (c) 2013-2017 Tomas Palazuelos
+// Copyright (c) 2013-2019 Tomas Palazuelos
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-#include <orion/unittest/TestUtils.h>
+#ifndef ORION_UNITTEST_TESTUTILS_IPP
+#define ORION_UNITTEST_TESTUTILS_IPP
 
 #include <orion/String.h>
 
@@ -19,7 +20,7 @@ namespace unittest
 
 using namespace std::string_literals;
 
-std::string to_string(ReportLevel rl)
+inline std::string to_string(ReportLevel rl)
 {
    switch (rl)
    {
@@ -36,7 +37,7 @@ std::string to_string(ReportLevel rl)
    return "Error";
 }
 
-std::istream& operator>>(std::istream& in, ReportLevel& report_level)
+inline std::istream& operator>>(std::istream& in, ReportLevel& report_level)
 {
    std::string token;
    in >> token;
@@ -61,13 +62,13 @@ std::istream& operator>>(std::istream& in, ReportLevel& report_level)
    return in;
 }
 
-std::ostream& operator<<(std::ostream& out, ReportLevel report_level)
+inline std::ostream& operator<<(std::ostream& out, ReportLevel report_level)
 {
    out << to_string(report_level);
    return out;
 }
 
-Counters& operator+=(Counters& lhs, const Counters& rhs)
+inline constexpr Counters& operator+=(Counters& lhs, const Counters& rhs)
 {
    lhs.passed  += rhs.passed;
    lhs.failed  += rhs.failed;
@@ -76,7 +77,7 @@ Counters& operator+=(Counters& lhs, const Counters& rhs)
    return lhs;
 }
 
-TestSuiteStats& operator+=(TestSuiteStats& lhs, const TestSuiteStats& rhs)
+inline constexpr TestSuiteStats& operator+=(TestSuiteStats& lhs, const TestSuiteStats& rhs)
 {
    lhs.assertions += rhs.assertions;
    lhs.tests      += rhs.tests;
@@ -86,7 +87,7 @@ TestSuiteStats& operator+=(TestSuiteStats& lhs, const TestSuiteStats& rhs)
    return lhs;
 }
 
-TestStats& operator+=(TestStats& lhs, const TestStats& rhs)
+inline constexpr TestStats& operator+=(TestStats& lhs, const TestStats& rhs)
 {
    lhs.assertions += rhs.assertions;
 
@@ -97,3 +98,5 @@ TestStats& operator+=(TestStats& lhs, const TestStats& rhs)
 
 } // namespace unittest
 } // namespace orion
+
+#endif // ORION_UNITTEST_TESTUTILS_IPP

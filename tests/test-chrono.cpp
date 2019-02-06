@@ -9,10 +9,10 @@
 
 #include <orion/Chrono.h>
 #include <orion/Datetime.h>
+#include <orion/Log.h>
 
 using namespace orion;
 using namespace orion::unittest;
-using namespace orion::unittest::option;
 
 Section(OrionCore_Chrono, Label{"Chrono"})
 {

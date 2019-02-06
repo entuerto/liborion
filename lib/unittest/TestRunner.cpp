@@ -10,11 +10,9 @@
 #include <orion/unittest/TestOutput.h>
 #include <orion/unittest/TestStdOutput.h>
 
-#include <boost/program_options.hpp>
+#include <clara/clara.hpp>
 
 #include <iostream>
-
-namespace opts = boost::program_options;
 
 namespace orion
 {
@@ -40,20 +38,33 @@ uint32_t TestRunner::test_case_count() const
 
 bool TestRunner::parse(int argc, char* argv[])
 {
-   opts::options_description desc("Test options");
+   using namespace clara;
 
-   desc.add_options()("help,h", "Help message")(
-      "level,l",
-      opts::value<ReportLevel>(&_level)->default_value(ReportLevel::Error),
-      "Set report output level");
+   bool show_help = false;
 
-   opts::variables_map vm;
-   opts::store(opts::parse_command_line(argc, argv, desc), vm);
-   opts::notify(vm);
+   auto options = Help(show_help)
+                | Opt(_level, "level")["-l"]("Set report output level"); 
 
-   if (vm.count("help") != 0u)
+   try
    {
-      std::cout << desc << "\n";
+      auto result = options.parse(Args(argc, argv));
+      if (not result)
+      {
+         std::cerr << "Error: \n" << result.errorMessage() << "\n\n";
+         
+         show_help = true;
+      }
+   }
+   catch(const std::exception& e)
+   {
+      std::cerr << "Error: \n" << e.what() << "\n\n";
+
+      show_help = true;
+   }
+
+   if (show_help)
+   {
+      options.writeToStream(std::cout);
       return false;
    }
 

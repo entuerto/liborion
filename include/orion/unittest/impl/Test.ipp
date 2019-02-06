@@ -188,16 +188,83 @@ BinaryPredicate<LhsT, RhsT> eval_lt(const LhsT& lhs, const RhsT& rhs, const std:
 
 //-------------------------------------------------------------------------------------------------
 
+inline Test::Test(std::string name)
+   : TestInfo(std::move(name))
+   , _test_result()
+{
+}
+
+inline Test::Test(std::string name, TestCaseFunc&& f)
+   : TestInfo(std::move(name))
+   , _test_result()
+   , _func(std::move(f))
+{
+}
+
+inline const TestResult& Test::test_result() const
+{
+   return _test_result;
+}
+
+inline TestCaseFunc& Test::case_func()
+{
+   return _func;
+}
+
+inline void Test::do_invoke() const
+{
+   if (_func)
+      _func(*const_cast<Test*>(this));
+}
+
+inline const TestResult& Test::invoke() const
+{
+   if (not enabled())
+   {
+      _test_result.log(AssertionSkipped{Message{disabled()}});
+      return _test_result;
+   }
+
+   _test_result.on_start();
+   try
+   {
+      invoke_setup_func();
+      do_invoke();
+      invoke_teardown_func();
+   }
+   catch (const std::exception& e)
+   {
+      std::string msg{"An unexpected exception was thrown: "};
+
+      msg += e.what();
+
+      _test_result.log(AssertionException{std::make_exception_ptr(e), Message{msg}, DbgSrcLoc});
+   }
+   catch (...)
+   {
+      std::string msg{"An unexpected, unknown exception was thrown: "};
+
+      auto cur_exp = std::current_exception();
+
+      msg += type_name(cur_exp);
+
+      _test_result.log(AssertionException{cur_exp, Message{msg}, DbgSrcLoc});
+   }
+   _test_result.on_end();
+
+   return _test_result;
+}
+
 template<typename LhsT, typename RhsT, typename... Args>
 inline void Test::asserter(BinaryExpression<LhsT, RhsT> expr, const std::string& expr_text, Args... args)
 {
    auto t = std::make_tuple(args...);
 
-   if (has_type<option::Disabled>(t))
+   if (has_type<Disabled>(t))
    {
-      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+      set_option(get_value<Disabled>(t, Disabled{}));
 
-      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+      _test_result.log(AssertionSkipped{Message{disabled()},
                                         get_value<SourceLocation>(t, SourceLocation{})});
       return;
    }
@@ -225,11 +292,11 @@ inline void Test::asserter(ExpressionLhs<bool> expr, const std::string& expr_tex
 {
    auto t = std::make_tuple(args...);
 
-   if (has_type<option::Disabled>(t))
+   if (has_type<Disabled>(t))
    {
-      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+      set_option(get_value<Disabled>(t, Disabled{}));
 
-      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+      _test_result.log(AssertionSkipped{Message{disabled()},
                                         get_value<SourceLocation>(t, SourceLocation{})});
       return;
    }
@@ -259,11 +326,11 @@ inline void Test::asserter(UnaryPredicate<T> pred, Args... args)
 {
    auto t = std::make_tuple(args...);
 
-   if (has_type<option::Disabled>(t))
+   if (has_type<Disabled>(t))
    {
-      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+      set_option(get_value<Disabled>(t, Disabled{}));
 
-      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+      _test_result.log(AssertionSkipped{Message{disabled()},
                                         get_value<SourceLocation>(t, SourceLocation{})});
       return;
    }
@@ -285,11 +352,11 @@ inline void Test::asserter(BinaryPredicate<T1, T2> pred, Args... args)
 {
    auto t = std::make_tuple(args...);
 
-   if (has_type<option::Disabled>(t))
+   if (has_type<Disabled>(t))
    {
-      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+      set_option(get_value<Disabled>(t, Disabled{}));
 
-      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+      _test_result.log(AssertionSkipped{Message{disabled()},
                                         get_value<SourceLocation>(t, SourceLocation{})});
       return;
    }
@@ -325,11 +392,11 @@ inline void Test::fail_if(bool value, Args... args)
 {
    auto t = std::make_tuple(args...);
 
-   if (has_type<option::Disabled>(t))
+   if (has_type<Disabled>(t))
    {
-      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+      set_option(get_value<Disabled>(t, Disabled{}));
 
-      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+      _test_result.log(AssertionSkipped{Message{disabled()},
                                         get_value<SourceLocation>(t, SourceLocation{})});
       return;
    }
@@ -351,11 +418,11 @@ inline void Test::expected_exception_not_thrown(std::string expr, Args... args)
 {
    auto t = std::make_tuple(args...);
 
-   if (has_type<option::Disabled>(t))
+   if (has_type<Disabled>(t))
    {
-      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+      set_option(get_value<Disabled>(t, Disabled{}));
 
-      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+      _test_result.log(AssertionSkipped{Message{disabled()},
                        get_value<SourceLocation>(t, SourceLocation{})});
       return;
    }
@@ -372,11 +439,11 @@ inline void Test::exception_thrown_as_expected(const ExceptionT& e, Args... args
 {
    auto t = std::make_tuple(args...);
 
-   if (has_type<option::Disabled>(t))
+   if (has_type<Disabled>(t))
    {
-      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+      set_option(get_value<Disabled>(t, Disabled{}));
 
-      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+      _test_result.log(AssertionSkipped{Message{disabled()},
                        get_value<SourceLocation>(t, SourceLocation{})});
       return;
    }
@@ -389,11 +456,11 @@ inline void Test::exception_thrown_as_expected(const std::exception_ptr& eptr, A
 {
    auto t = std::make_tuple(args...);
 
-   if (has_type<option::Disabled>(t))
+   if (has_type<Disabled>(t))
    {
-      set_option(get_value<option::Disabled>(t, option::Disabled{}));
+      set_option(get_value<Disabled>(t, Disabled{}));
 
-      _test_result.log(AssertionSkipped{Message{disabled_reason()},
+      _test_result.log(AssertionSkipped{Message{disabled()},
                        get_value<SourceLocation>(t, SourceLocation{})});
       return;
    }

@@ -5,12 +5,12 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
+#include <orion/Log.h>
 #include <orion/Units.h>
 #include <orion/Test.h>
 
 using namespace orion;
 using namespace orion::unittest;
-using namespace orion::unittest::option;
 
 Section(OrionCore_Units, Label{"Units"})
 {

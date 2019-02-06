@@ -10,8 +10,8 @@
 
 #include <orion/Config.h>
 
+#include <orion/unittest/TestBase.h>
 #include <orion/unittest/TestDecomposer.h>
-#include <orion/unittest/TestOptions.h>
 #include <orion/unittest/TestOutput.h>
 #include <orion/unittest/TestResult.h>
 
@@ -46,39 +46,18 @@ class BinaryPredicate;
 ///
 ///
 ///
-class API_EXPORT Test
+class Test : public TestInfo
 {
 public:
-   explicit Test(const std::string& name);
-   Test(const std::string& name, TestCaseFunc&& f);
-   virtual ~Test();
-
-   std::string name() const;
-   std::string label() const;
-   std::string description() const;
-
-   bool enabled() const;
-
-   std::string disabled_reason() const;
+   explicit Test(std::string name);
+   Test(std::string name, TestCaseFunc&& f);
+   ~Test() override = default;
 
    const TestResult& test_result() const;
-
-   // Sets up the test fixture.
-   void setup() const;
-
-   // Tears down the test fixture.
-   void teardown() const;
 
    TestCaseFunc& case_func();
 
    const TestResult& invoke() const;
-
-   void set_option(option::Label opt);
-   void set_option(option::Description opt);
-   void set_option(option::SetupFunc opt);
-   void set_option(option::TeardownFunc opt);
-   void set_option(option::Enabled opt);
-   void set_option(option::Disabled opt);
 
    template<typename LhsT, typename RhsT, typename... Args>
    void asserter(BinaryExpression<LhsT, RhsT> expr, const std::string& expr_text, Args... args);
@@ -121,39 +100,10 @@ protected:
    virtual void do_invoke() const;
 
 private:
-   std::string _name;
-   std::string _label;
-   std::string _description;
-
-   bool _is_enabled;
-   std::string _disabled_reason;
-
    mutable TestResult _test_result;
-
-   std::function<void()> _setup_func;
-   std::function<void()> _teardown_func;
 
    TestCaseFunc _func;
 };
-
-//---------------------------------------------------------------------------------------
-
-inline void set_options(Test& /* test */)
-{
-}
-
-template<typename O>
-void set_options(Test& test, O&& opt)
-{
-   test.set_option(std::forward<decltype(opt)>(opt));
-}
-
-template<typename O, typename... Opts>
-void set_options(Test& test, O&& opt, Opts&&... opts)
-{
-   set_options(test, std::forward<decltype(opt)>(opt));
-   set_options(test, std::forward<decltype(opts)>(opts)...);
-}
 
 } // namespace unittest
 } // namespace orion

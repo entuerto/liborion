@@ -28,10 +28,10 @@ enum class ReportLevel
    Detailed = 2
 };
 
-API_EXPORT std::string to_string(ReportLevel rl);
+std::string to_string(ReportLevel rl);
 
-API_EXPORT std::istream& operator>>(std::istream& in, ReportLevel& report_level);
-API_EXPORT std::ostream& operator<<(std::ostream& out, ReportLevel report_level);
+std::istream& operator>>(std::istream& in, ReportLevel& report_level);
+std::ostream& operator<<(std::ostream& out, ReportLevel report_level);
 
 //-------------------------------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ struct Counters
    constexpr uint64_t total() const { return passed + failed + skipped; }
 };
 
-API_EXPORT Counters& operator+=(Counters& lhs, const Counters& rhs);
+constexpr Counters& operator+=(Counters& lhs, const Counters& rhs);
 
 //-------------------------------------------------------------------------------------------------
 
@@ -66,7 +66,7 @@ struct TestSuiteStats
    std::chrono::nanoseconds time_elapsed{0};
 };
 
-API_EXPORT TestSuiteStats& operator+=(TestSuiteStats& lhs, const TestSuiteStats& rhs);
+constexpr TestSuiteStats& operator+=(TestSuiteStats& lhs, const TestSuiteStats& rhs);
 
 struct TestStats
 {
@@ -77,9 +77,11 @@ struct TestStats
    std::chrono::nanoseconds time_elapsed{0};
 };
 
-API_EXPORT TestStats& operator+=(TestStats& lhs, const TestStats& rhs);
+constexpr TestStats& operator+=(TestStats& lhs, const TestStats& rhs);
 
 } // namespace unittest
 } // namespace orion
 
-#endif /* ORION_UNITTEST_TESTUTILS_H */
+#include <orion/unittest/impl/TestUtils.ipp>
+
+#endif // ORION_UNITTEST_TESTUTILS_H 

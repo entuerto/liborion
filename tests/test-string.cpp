@@ -5,6 +5,7 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
+#include <orion/Log.h>
 #include <orion/String.h>
 #include <orion/Test.h>
 
@@ -12,7 +13,6 @@ using namespace std::string_literals;
 
 using namespace orion;
 using namespace orion::unittest;
-using namespace orion::unittest::option;
 
 Section(OrionCore_String, Label{"String"})
 {

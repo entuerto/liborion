@@ -11,7 +11,6 @@
 using namespace orion;
 using namespace orion::log;
 using namespace orion::unittest;
-using namespace orion::unittest::option;
 
 Record output_record;
 Logger& logger = default_logger();

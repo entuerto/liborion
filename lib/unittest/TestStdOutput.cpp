@@ -245,7 +245,7 @@ void StdOutput::write_sections()
                           millis.count());
 }
 
-std::string StdOutput::fit_text(const std::string& text, int len)
+std::string StdOutput::fit_text(const std::string& text, std::size_t len)
 {
    return (text.size() > len) ? text.substr(0, len - 3) + "..." : text;
 }

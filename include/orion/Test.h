@@ -13,7 +13,6 @@
 #include <orion/unittest/Test.h>
 #include <orion/unittest/TestDecomposer.h>
 #include <orion/unittest/TestMacros.h>
-#include <orion/unittest/TestOptions.h>
 #include <orion/unittest/TestOutput.h>
 #include <orion/unittest/TestResult.h>
 #include <orion/unittest/TestRunner.h>
