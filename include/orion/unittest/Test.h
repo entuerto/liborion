@@ -53,9 +53,9 @@ public:
    Test(std::string name, TestCaseFunc&& f);
    ~Test() override = default;
 
-   const TestResult& test_result() const;
+   constexpr const TestResult& test_result() const;
 
-   TestCaseFunc& case_func();
+   constexpr TestCaseFunc& case_func();
 
    const TestResult& invoke() const;
 

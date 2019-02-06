@@ -18,17 +18,16 @@ namespace unittest
 /// Constructor
 inline TestSuite::TestSuite(std::string name) noexcept
    : TestInfo(std::move(name))
-   , _stats()
 {
    _stats.label = label();
 }
 
-inline const TestSuiteStats& TestSuite::stats() const
+inline constexpr const TestSuiteStats& TestSuite::stats() const
 {
    return _stats;
 }
 
-inline const std::vector<Test>& TestSuite::tests() const
+inline constexpr const std::vector<Test>& TestSuite::tests() const
 {
    return _tests;
 }

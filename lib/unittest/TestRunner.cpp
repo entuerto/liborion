@@ -7,6 +7,8 @@
 //
 #include <orion/unittest/TestRunner.h>
 
+#include <orion/String.h>
+#include <orion/unittest/TestBase.h>
 #include <orion/unittest/TestOutput.h>
 #include <orion/unittest/TestStdOutput.h>
 
@@ -19,6 +21,8 @@ namespace orion
 namespace unittest
 {
 
+using namespace std::string_literals;
+
 constexpr uint32_t TestRunner::test_suite_count() const
 {
    return _test_suites.size();
@@ -30,6 +34,9 @@ uint32_t TestRunner::test_case_count() const
 
    for (auto& item : _test_suites)
    {
+      if (filter_test_suite(item.label()))
+         continue;
+         
       count += item.test_count();
    }
 
@@ -40,10 +47,24 @@ bool TestRunner::parse(int argc, char* argv[])
 {
    using namespace clara;
 
+   const auto verbosity = [&](const std::string& v) {
+      if (iequals(v, "error"s))
+         _config.level = ReportLevel::Error;
+      else if (iequals(v, "normal"s))
+         _config.level = ReportLevel::Short;
+      else if (iequals(v, "high"s))
+         _config.level = ReportLevel::Detailed;
+      else
+         return ParserResult::runtimeError("Unrecognised verbosity, '" + v + "'");
+      return ParserResult::ok(ParseResultType::Matched);
+   };
+
    bool show_help = false;
 
    auto options = Help(show_help)
-                | Opt(_level, "level")["-l"]("Set report output level"); 
+         | Opt(_config.list_tests)["-l"]["--list-tests"]("list all tests")
+         | Opt(_config.suite_name, "name")["-n"]["--name"]("suite name")
+         | Opt(verbosity, "error|normal|high")["-v"]["--verbosity"]("set output verbosity");
 
    try
    {
@@ -51,7 +72,7 @@ bool TestRunner::parse(int argc, char* argv[])
       if (not result)
       {
          std::cerr << "Error: \n" << result.errorMessage() << "\n\n";
-         
+
          show_help = true;
       }
    }
@@ -82,12 +103,18 @@ bool TestRunner::run(int argc, char* argv[])
    if (not parse(argc, argv))
       return false;
 
-   StdOutput output(std::cout, _level);
+   if (_config.list_tests)
+   {
+      print_tests_suites();
+      return true;
+   }
+
+   StdOutput output(std::cout, _config.level);
 
    return run_tests(output);
 }
 
-bool TestRunner::run_tests(Output& output, const std::string& /*suite_name*/ /* = "" */)
+bool TestRunner::run_tests(Output& output)
 {
    Totals totals{};
 
@@ -97,6 +124,9 @@ bool TestRunner::run_tests(Output& output, const std::string& /*suite_name*/ /* 
 
    for (auto& item : _test_suites)
    {
+      if (filter_test_suite(item.label()))
+         continue;
+
       auto& suite_stats = item.run_tests(output);
 
       totals.assertions += suite_stats.assertions;
@@ -109,6 +139,38 @@ bool TestRunner::run_tests(Output& output, const std::string& /*suite_name*/ /* 
 
    output.runner_end(totals);
    return totals.tests.failed == 0;
+}
+
+void TestRunner::print_tests_suites()
+{
+   std::cout << "Test names" << '\n' << '\n';
+
+   try
+   {
+      for (const auto& item : _test_suites)
+      {
+         std::cout << fmt::format(
+            "  {0:<30}  {1:<50}\n", fit_text(item.label(), 30), fit_text(item.description(), 50));
+      }
+   }
+   catch (const std::exception& e)
+   {
+      std::cerr << e.what() << '\n';
+   }
+   std::cout << '\n';
+}
+
+bool TestRunner::filter_test_suite(const std::string& name) const
+{
+   if (_config.suite_name.empty())
+      return false;
+
+   return not iequals(_config.suite_name, name);
+}
+
+std::string TestRunner::fit_text(const std::string& text, std::size_t len)
+{
+   return (text.size() > len) ? text.substr(0, len - 3) + "..." : text;
 }
 
 TestRunner& TestRunner::runner()

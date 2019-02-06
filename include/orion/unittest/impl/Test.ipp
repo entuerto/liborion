@@ -190,23 +190,21 @@ BinaryPredicate<LhsT, RhsT> eval_lt(const LhsT& lhs, const RhsT& rhs, const std:
 
 inline Test::Test(std::string name)
    : TestInfo(std::move(name))
-   , _test_result()
 {
 }
 
 inline Test::Test(std::string name, TestCaseFunc&& f)
    : TestInfo(std::move(name))
-   , _test_result()
    , _func(std::move(f))
 {
 }
 
-inline const TestResult& Test::test_result() const
+inline constexpr const TestResult& Test::test_result() const
 {
    return _test_result;
 }
 
-inline TestCaseFunc& Test::case_func()
+inline constexpr TestCaseFunc& Test::case_func()
 {
    return _func;
 }
@@ -214,7 +212,9 @@ inline TestCaseFunc& Test::case_func()
 inline void Test::do_invoke() const
 {
    if (_func)
+   {
       _func(*const_cast<Test*>(this));
+   }
 }
 
 inline const TestResult& Test::invoke() const

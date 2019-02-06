@@ -36,9 +36,9 @@ public:
    DEFAULT_COPY(TestSuite)
    DEFAULT_MOVE(TestSuite)
 
-   const TestSuiteStats& stats() const;
+   constexpr const TestSuiteStats& stats() const;
 
-   const std::vector<Test>& tests() const;
+   constexpr const std::vector<Test>& tests() const;
 
    constexpr uint64_t test_count() const;
 

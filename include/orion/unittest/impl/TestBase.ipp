@@ -8,6 +8,8 @@
 #ifndef ORION_UNITTEST_TESTBASE_IPP
 #define ORION_UNITTEST_TESTBASE_IPP
 
+#include <fmt/format.h>
+
 namespace orion
 {
 namespace unittest
@@ -66,7 +68,7 @@ inline void TestInfo::set_option(TeardownFunc opt)
 
 inline void TestInfo::set_option(Enabled opt)
 {
-   _enabled = std::move(opt);
+   _enabled = opt;
 }
 
 inline void TestInfo::set_option(Disabled opt)
@@ -78,15 +80,59 @@ inline void TestInfo::set_option(Disabled opt)
 inline void TestInfo::invoke_setup_func() const
 {
    if (_setup_func.value)
+   {
       _setup_func.value();
+   }
 }
 
 inline void TestInfo::invoke_teardown_func() const
 {
    if (_teardown_func.value)
+   {
       _teardown_func.value();
+   }
 }
 
 } // namespace unittest
 } // namespace orion
+
+//--------------------------------------------------------------------------------------------------
+// Formatters for fmtlib
+
+namespace fmt
+{
+template<>
+struct formatter<orion::unittest::Label>
+{
+   template<typename ParseContext>
+   constexpr auto parse(ParseContext& ctx)
+   {
+      return ctx.begin();
+   }
+
+   template<typename FormatContext>
+   auto format(const orion::unittest::Label& l, FormatContext& ctx)
+   {
+      return fmt::format_to(ctx.out(), "{}", l.value);
+   }
+};
+
+template<>
+struct formatter<orion::unittest::Description>
+{
+   template<typename ParseContext>
+   constexpr auto parse(ParseContext& ctx)
+   {
+      return ctx.begin();
+   }
+
+   template<typename FormatContext>
+   auto format(const orion::unittest::Description& d, FormatContext& ctx)
+   {
+      return fmt::format_to(ctx.out(), "{}", d.value);
+   }
+};
+
+} // namespace fmt
+
 #endif // ORION_UNITTEST_TESTBASE_IPP

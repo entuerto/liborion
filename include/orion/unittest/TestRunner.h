@@ -25,6 +25,15 @@ class Output;
 
 //-------------------------------------------------------------------------------------------------
 
+struct Config
+{
+   bool list_tests{false};
+   std::string suite_name;
+   ReportLevel level{ReportLevel::Error};
+};
+
+//-------------------------------------------------------------------------------------------------
+
 ///
 /// Runs the defined tests.
 ///
@@ -40,17 +49,23 @@ public:
 
    bool run(int argc, char* argv[]);
 
-   bool run_tests(Output& output, const std::string& suite_name = "");
+   bool run_tests(Output& output);
 
    static TestRunner& runner();
 
 private:
    bool parse(int argc, char* argv[]);
 
+   bool filter_test_suite(const std::string& name) const;
+
+   void print_tests_suites();
+
+   std::string fit_text(const std::string& text, std::size_t len);
+
 private:
    std::vector<TestSuite> _test_suites;
 
-   ReportLevel _level{ReportLevel::Error};
+   Config _config;
 };
 
 //-------------------------------------------------------------------------------------------------
