@@ -14,36 +14,53 @@
 
 //-------------------------------------------------------------------------------------------------
 
-#define Section(Name, ...)                                               \
-                                                                         \
-namespace Suite##Name                                                    \
-{                                                                        \
-   inline TestSuite& _current_test_suite()                               \
-   {                                                                     \
-      try                                                                \
-      {                                                                  \
-      static RegisterTestSuiteHelper suite_##Name(#Name, ##__VA_ARGS__); \
-      return suite_##Name.suite;                                         \
-      }                                                                  \
-      catch (const std::exception& e)                                    \
-      {                                                                  \
-      log::fatal("An unexpected, exception was thrown: ", e, DbgSrcLoc); \
-      }                                                                  \
-   }                                                                     \
-}                                                                        \
-                                                                         \
+#define Section(Name, ...)                                                  \
+                                                                            \
+namespace Suite##Name                                                       \
+{                                                                           \
+   inline TestSuite& _current_test_suite()                                  \
+   {                                                                        \
+      try                                                                   \
+      {                                                                     \
+         static RegisterTestSuiteHelper suite_##Name(#Name, ##__VA_ARGS__); \
+         return suite_##Name.suite;                                         \
+      }                                                                     \
+      catch (const std::exception& e)                                       \
+      {                                                                     \
+         log::fatal("An unexpected, exception was thrown: ", e, DbgSrcLoc); \
+      }                                                                     \
+   }                                                                        \
+}                                                                           \
+                                                                            \
 namespace Suite##Name
 
 //-------------------------------------------------------------------------------------------------
 
-#define RegisterTestCase(TestFunc, ...)                                               \
-unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),               \
-                                                 #TestFunc, TestFunc, ##__VA_ARGS__)
+#define RegisterTestCase(TestName, ...)  \
+const TestName AutoReg_##TestName = make_test<TestName>(_current_test_suite(), ##__VA_ARGS__)
 
-#define _TestCaseImpl(func, ...)           \
-   static void func(Test& t);              \
-   RegisterTestCase(func, ##__VA_ARGS__);  \
-   static void func(Test& t)
+//-------------------------------------------------------------------------------------------------
+
+#define _TestCaseImpl(TestName, ...)                          \
+class TestName : public unittest::Test                        \
+{                                                             \
+public:                                                       \
+   DEFAULT_COPY(TestName)                                     \
+   DEFAULT_MOVE(TestName)                                     \
+                                                              \
+   TestName()                                                 \
+      : Test(ORION_TOSTRING(TestName))                        \
+   {                                                          \
+   }                                                          \
+   ~TestName() override = default;                            \
+                                                              \
+protected:                                                    \
+   void do_invoke() const override;                           \
+};                                                            \
+                                                              \
+RegisterTestCase(TestName, ##__VA_ARGS__);  \
+                                                              \
+void TestName::do_invoke() const
 
 
 #define TestCase(label, ...) \
@@ -59,11 +76,11 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
       try                                                                                   \
       {                                                                                     \
          expr;                                                                              \
-         t.expected_exception_not_thrown(ORION_TOSTRING(expr), DbgSrcLoc, ##__VA_ARGS__);   \
+         expected_exception_not_thrown(ORION_TOSTRING(expr), DbgSrcLoc, ##__VA_ARGS__);     \
       }                                                                                     \
       catch(...)                                                                            \
       {                                                                                     \
-         t.exception_thrown_as_expected(std::current_exception(), DbgSrcLoc, ##__VA_ARGS__); \
+         exception_thrown_as_expected(std::current_exception(), DbgSrcLoc, ##__VA_ARGS__);  \
       }                                                                                     \
    } while((void)0, 0);
   
@@ -74,15 +91,15 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
       try                                                                                   \
       {                                                                                     \
          expr;                                                                              \
-         t.expected_exception_not_thrown(ORION_TOSTRING(expr), DbgSrcLoc, ##__VA_ARGS__);   \
+         expected_exception_not_thrown(ORION_TOSTRING(expr), DbgSrcLoc, ##__VA_ARGS__);     \
       }                                                                                     \
       catch(const exception_type& e)                                                        \
       {                                                                                     \
-         t.exception_thrown_as_expected(e, DbgSrcLoc, ##__VA_ARGS__);                       \
+         exception_thrown_as_expected(e, DbgSrcLoc, ##__VA_ARGS__);                         \
       }                                                                                     \
       catch(...)                                                                            \
       {                                                                                     \
-         t.unexpected_exception_thrown(std::current_exception(), DbgSrcLoc, ##__VA_ARGS__); \
+         unexpected_exception_thrown(std::current_exception(), DbgSrcLoc, ##__VA_ARGS__);   \
       }                                                                                     \
    } while((void)0, 0);
 
@@ -96,7 +113,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
       }                                                                                     \
       catch(...)                                                                            \
       {                                                                                     \
-         t.unexpected_exception_thrown(std::current_exception(), DbgSrcLoc, ##__VA_ARGS__); \
+         unexpected_exception_thrown(std::current_exception(), DbgSrcLoc, ##__VA_ARGS__);   \
       }                                                                                     \
    } while((void)0, 0);   
 
@@ -104,7 +121,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(ExpressionDecomposer() << __VA_ARGS__, ORION_TOSTRING(__VA_ARGS__), DbgSrcLoc); \
+      asserter(ExpressionDecomposer() << __VA_ARGS__, ORION_TOSTRING(__VA_ARGS__), DbgSrcLoc); \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);   
 
@@ -112,7 +129,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_eq(ex, ac, ORION_TOSTRING(ex == ac)), DbgSrcLoc, ##__VA_ARGS__);      \
+      asserter(eval_eq(ex, ac, ORION_TOSTRING(ex == ac)), DbgSrcLoc, ##__VA_ARGS__);        \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
    
@@ -121,7 +138,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_ne(ex, ac, ORION_TOSTRING(ex != ac)), DbgSrcLoc, ##__VA_ARGS__);      \
+      asserter(eval_ne(ex, ac, ORION_TOSTRING(ex != ac)), DbgSrcLoc, ##__VA_ARGS__);        \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 
@@ -129,7 +146,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_ge(ex, ac, ORION_TOSTRING(ex >= ac)), DbgSrcLoc, ##__VA_ARGS__);      \
+      asserter(eval_ge(ex, ac, ORION_TOSTRING(ex >= ac)), DbgSrcLoc, ##__VA_ARGS__);        \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 
@@ -137,7 +154,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_gt(ex, ac, ORION_TOSTRING(ex > ac)), DbgSrcLoc, ##__VA_ARGS__);       \
+      asserter(eval_gt(ex, ac, ORION_TOSTRING(ex > ac)), DbgSrcLoc, ##__VA_ARGS__);         \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 
@@ -145,7 +162,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_le(ex, ac, ORION_TOSTRING(ex <= ac)), DbgSrcLoc, ##__VA_ARGS__);      \
+      asserter(eval_le(ex, ac, ORION_TOSTRING(ex <= ac)), DbgSrcLoc, ##__VA_ARGS__);        \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 
@@ -153,7 +170,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_lt(ex, ac, ORION_TOSTRING(ex < ac)), DbgSrcLoc, ##__VA_ARGS__);       \
+      asserter(eval_lt(ex, ac, ORION_TOSTRING(ex < ac)), DbgSrcLoc, ##__VA_ARGS__);         \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
        
@@ -161,7 +178,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_true(exp, ORION_TOSTRING(exp)), DbgSrcLoc, ##__VA_ARGS__);            \
+      asserter(eval_true(exp, ORION_TOSTRING(exp)), DbgSrcLoc, ##__VA_ARGS__);              \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 
@@ -169,7 +186,7 @@ unittest::RegisterTestHelper _AutoReg_##TestFunc(_current_test_suite(),         
    do                                                                                       \
    {                                                                                        \
       ORION_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS                                          \
-      t.asserter(eval_false(exp, ORION_TOSTRING(exp)), DbgSrcLoc, ##__VA_ARGS__);           \
+      asserter(eval_false(exp, ORION_TOSTRING(exp)), DbgSrcLoc, ##__VA_ARGS__);             \
       ORION_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS                                        \
    } while((void)0, 0);
 

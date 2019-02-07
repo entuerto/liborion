@@ -20,7 +20,6 @@ namespace orion
 namespace unittest
 {
 // Forward declaration
-//class Test;
 class Output;
 
 //-------------------------------------------------------------------------------------------------
@@ -69,7 +68,7 @@ private:
 //-------------------------------------------------------------------------------------------------
 
 ///
-struct API_EXPORT RegisterTestSuiteHelper
+struct RegisterTestSuiteHelper
 {
    template<typename... Args>
    explicit RegisterTestSuiteHelper(const std::string& name, Args... args)
@@ -81,17 +80,6 @@ struct API_EXPORT RegisterTestSuiteHelper
    TestSuite& suite;
 };
 
-//-------------------------------------------------------------------------------------------------
-
-struct API_EXPORT RegisterTestHelper
-{
-   template<typename... Args>
-   RegisterTestHelper(TestSuite& suite, const std::string& name, TestCaseFunc f, Args... args)
-   {
-      auto& t = suite.add_test(name, std::move(f));
-      set_options(t, args...);
-   }
-};
 } // namespace orion
 } // namespace unittest
 

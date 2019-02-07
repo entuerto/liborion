@@ -23,9 +23,8 @@ namespace orion
 namespace unittest
 {
 // Forward declaration
-class Test;
+class TestSuite;
 
-using TestCaseFunc = std::function<void(Test&)>;
 
 //-------------------------------------------------------------------------------------------------
 
@@ -49,61 +48,63 @@ class BinaryPredicate;
 class Test : public TestInfo
 {
 public:
+   DEFAULT_COPY(Test)
+   DEFAULT_MOVE(Test)
+
    explicit Test(std::string name);
-   Test(std::string name, TestCaseFunc&& f);
    ~Test() override = default;
 
-   constexpr const TestResult& test_result() const;
-
-   constexpr TestCaseFunc& case_func();
+   constexpr const TestResult& result() const;
 
    const TestResult& invoke() const;
 
    template<typename LhsT, typename RhsT, typename... Args>
-   void asserter(BinaryExpression<LhsT, RhsT> expr, const std::string& expr_text, Args... args);
+   void asserter(BinaryExpression<LhsT, RhsT> expr, const std::string& expr_text, Args... args) const;
 
    template<typename... Args>
-   void asserter(ExpressionLhs<bool> expr, const std::string& expr_text, Args... args);
+   void asserter(ExpressionLhs<bool> expr, const std::string& expr_text, Args... args) const;
 
    template<typename T, typename... Args>
-   void asserter(UnaryPredicate<T> pred, Args... args);
+   void asserter(UnaryPredicate<T> pred, Args... args) const;
 
    template<typename T1, typename T2, typename... Args>
-   void asserter(BinaryPredicate<T1, T2> pred, Args... args);
+   void asserter(BinaryPredicate<T1, T2> pred, Args... args) const;
 
    template<typename... Args>
-   void fail(Args... args);
+   void fail(Args... args) const;
 
    template<typename... Args>
-   void fail_if(bool value, Args... args);
+   void fail_if(bool value, Args... args) const;
 
    //
    // Exception handling
    // 
 
    template<typename... Args>
-   void expected_exception_not_thrown(std::string expr, Args... args);
+   void expected_exception_not_thrown(std::string expr, Args... args) const;
 
    template<typename ExceptionT, typename... Args>
-   void exception_thrown_as_expected(const ExceptionT& e, Args... args);
+   void exception_thrown_as_expected(const ExceptionT& e, Args... args) const;
 
    template<typename... Args>
-   void exception_thrown_as_expected(const std::exception_ptr& eptr, Args... args);
+   void exception_thrown_as_expected(const std::exception_ptr& eptr, Args... args) const;
 
    template<typename ExceptionT, typename... Args>
-   void unexpected_exception_thrown(const ExceptionT& e, Args... args);
+   void unexpected_exception_thrown(const ExceptionT& e, Args... args) const;
 
    template<typename... Args>
-   void unexpected_exception_thrown(const std::exception_ptr& eptr, Args... args);
+   void unexpected_exception_thrown(const std::exception_ptr& eptr, Args... args) const;
 
 protected:
-   virtual void do_invoke() const;
+   virtual void do_invoke() const =0;
 
 private:
-   mutable TestResult _test_result;
-
-   TestCaseFunc _func;
+   mutable TestResult _result;
 };
+
+
+template<typename TestT, typename... Args>
+TestT make_test(TestSuite& suite, Args... args);
 
 } // namespace unittest
 } // namespace orion

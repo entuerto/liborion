@@ -24,6 +24,8 @@ namespace unittest
 {
 //---------------------------------------------------------------------------------------
 
+using Tests = std::vector<const Test*>;
+
 ///
 /// A test Suite is a set of tests that all share the same fixture.
 ///
@@ -38,21 +40,17 @@ public:
 
    constexpr const TestSuiteStats& stats() const;
 
-   constexpr const std::vector<Test>& tests() const;
+   constexpr const Tests& tests() const;
 
    constexpr uint64_t test_count() const;
 
    /// Executes the tests and logs then to output.
    const TestSuiteStats& run_tests(Output& output);
 
-   Test& add_test(Test&& test) noexcept;
-
-   Test& add_test(const std::string& name, TestCaseFunc f) noexcept;
-
-   void add_tests(std::initializer_list<Test> l) noexcept;
+   void add_test(const Test& test) noexcept;
 
 private:
-   std::vector<Test> _tests;
+   Tests _tests;
 
    TestSuiteStats _stats;
 };

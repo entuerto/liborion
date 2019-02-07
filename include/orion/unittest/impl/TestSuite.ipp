@@ -27,7 +27,7 @@ inline constexpr const TestSuiteStats& TestSuite::stats() const
    return _stats;
 }
 
-inline constexpr const std::vector<Test>& TestSuite::tests() const
+inline constexpr const Tests& TestSuite::tests() const
 {
    return _tests;
 }
@@ -37,22 +37,9 @@ inline constexpr uint64_t TestSuite::test_count() const
    return _tests.size();
 }
 
-inline Test& TestSuite::add_test(const std::string& name, TestCaseFunc f) noexcept
+inline void TestSuite::add_test(const Test& test) noexcept
 {
-   Test t(name, std::move(f));
-
-   return add_test(std::move(t));
-}
-
-inline Test& TestSuite::add_test(Test&& test) noexcept
-{
-   _tests.push_back(std::move(test));
-   return _tests.back();
-}
-
-inline void TestSuite::add_tests(std::initializer_list<Test> l) noexcept
-{
-   _tests.insert(_tests.end(), l);
+   _tests.push_back(&test);
 }
 
 /// Executes the tests and logs then to output.
@@ -62,11 +49,11 @@ inline const TestSuiteStats& TestSuite::run_tests(Output& output)
 
    invoke_setup_func();
 
-   for (auto& test : _tests)
+   for (auto test : _tests)
    {
-      output.test_start(test);
+      output.test_start(*test);
 
-      auto& test_result = test.invoke();
+      auto& test_result = test->invoke();
 
       if (test_result.skipped())
       {

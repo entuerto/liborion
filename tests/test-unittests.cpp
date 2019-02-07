@@ -16,6 +16,26 @@ using namespace orion::unittest;
 Section(OrionCore_Test, Label{"Test"})
 {
 
+class ScopeTest : public Test
+{
+public:
+   ScopeTest(std::string name, std::function<void(const Test&)> f)
+      : Test(std::move(name))
+      , func(std::move(f))
+   {
+   }
+   ~ScopeTest() override = default;
+
+protected:
+   void do_invoke() const override
+   {
+      func(*this);
+   }
+
+   std::function<void(const Test&)> func;
+};
+                                                              
+
 int calc_function()
 {
    return 0;
@@ -33,7 +53,7 @@ void throwing_function()
 
 TestCase("Passing with no failure")
 {
-   Test passing_test("passing", [](Test& ft) { 
+   ScopeTest passing_test("passing", [](const Test& ft) { 
       ft.asserter(eval_true(true, "true")); 
    });
 
@@ -44,7 +64,7 @@ TestCase("Passing with no failure")
 
 TestCase("Failing with no failure")
 {
-   Test failing_test("failing", [](Test& ft) { 
+   ScopeTest failing_test("failing", [](const Test& ft) { 
       ft.asserter(eval_false(false, "false")); 
    });
 
@@ -55,7 +75,7 @@ TestCase("Failing with no failure")
 
 TestCase("Throwing reported as failure")
 {
-   Test crashing_test("throwing", [](Test&) { 
+   ScopeTest crashing_test("throwing", [](const Test&) { 
       throw std::logic_error("Oh boy"); 
    });
 
@@ -66,7 +86,7 @@ TestCase("Throwing reported as failure")
 
 TestCase("Initial values")
 {
-   auto tr = TestResult();
+   auto tr = TestResult{};
 
    check_true(tr.passed());
    check_false(tr.failed());
@@ -76,7 +96,7 @@ TestCase("Initial values")
 
 TestCase("Number of failed items")
 {
-   auto tr = TestResult();
+   auto tr = TestResult{};
 
    tr.log(AssertionFailed{});
    tr.log(AssertionFailed{});
@@ -87,7 +107,7 @@ TestCase("Number of failed items")
 
 TestCase("Number of passed items")
 {
-   auto tr = TestResult();
+   auto tr = TestResult{};
 
    tr.log(AssertionPassed{});
    tr.log(AssertionPassed{});
@@ -98,35 +118,35 @@ TestCase("Number of passed items")
 
 TestCase("Success on true")
 {
-   Test scope_test("scope test", [](Test& st) { 
+   ScopeTest scope_test("scope test", [](const Test& st) { 
       st.asserter(eval_true(true, "true")); 
    });
    
    scope_test.invoke();
 
-   check_true(scope_test.test_result().passed());
+   check_true(scope_test.result().passed());
 }
 
 TestCase("Failure on false")
 {
-   Test scope_test("scope test", [](Test& st) { 
+   ScopeTest scope_test("scope test", [](const Test& st) { 
       st.asserter(eval_false(false, "false")); 
    });
    
    scope_test.invoke();
 
-   check_false(scope_test.test_result().failed());
+   check_false(scope_test.result().failed());
 }
 
 TestCase("Function failure with exception")
 {
-   Test scope_test("scope test", [](Test& st) { 
+   ScopeTest scope_test("scope test", [](const Test& st) { 
       st.asserter(eval_true(calc_throwing_function() == 1, "calc_throwing_function() == 1")); 
    });
 
    scope_test.invoke();
    
-   check_true(scope_test.test_result().failed());
+   check_true(scope_test.result().failed());
 }
 
 TestCase("Close success on equal", Disabled{"Not implemented"})
@@ -144,7 +164,7 @@ TestCase("Close success on equal", Disabled{"Not implemented"})
 
    EXPECT_TRUE(not failure);
 */
-   t.fail("Not implemented");
+   fail("Not implemented");
 }
 
 TestCase("Close fails on not equal", Disabled{"Not implemented"})
@@ -162,7 +182,7 @@ TestCase("Close fails on not equal", Disabled{"Not implemented"})
 
    EXPECT_TRUE(failure);
 */
-   t.fail("Not implemented");
+   fail("Not implemented");
 }
 
 TestCase("Not expected exception")
@@ -182,7 +202,7 @@ TestCase("Expected specific exception")
 
 TestCase("TestResult::log_success()")
 {
-   auto test_result = TestResult();
+   auto test_result = TestResult{};
 
    test_result.log(AssertionPassed{});
 
@@ -191,7 +211,7 @@ TestCase("TestResult::log_success()")
 
 TestCase("TestResult::log_failure()")
 {
-   auto test_result = TestResult();
+   auto test_result = TestResult{};
 
    test_result.log(AssertionFailed{});
 

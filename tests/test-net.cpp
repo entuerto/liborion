@@ -171,7 +171,7 @@ TestCase("EndPoint from AddressV4")
 
    auto addr = AddressV4{10, 1, 2, 173};
 
-   t.fail_if(end_point.address() == nullptr);
+   fail_if(end_point.address() == nullptr);
 
    if (end_point.address() != nullptr)
    {
@@ -186,7 +186,7 @@ TestCase("EndPoint from AddressV6")
 
    auto addr = AddressV6{0x20, 0x1, 0xd, 0xb8, 0, 0, 0, 0, 0, 0, 0x1, 0x23, 0, 0x12, 0, 0x1};
 
-   t.fail_if(end_point.address() == nullptr);
+   fail_if(end_point.address() == nullptr);
 
    if (end_point.address() != nullptr)
    {
