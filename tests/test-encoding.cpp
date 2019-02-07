@@ -36,7 +36,7 @@ TestCase("BigEndian put_uint16()")
 
    uint16_t v16 = 256;
 
-   BigEndian::put_uint16(v16, b.data());
+   BigEndian::put_uint16(v16, b);
 
    check_eq(result, b);
 }
@@ -57,7 +57,7 @@ TestCase("LittleEndian put_uint16()")
 
    uint16_t v16 = 256;
 
-   LittleEndian::put_uint16(v16, b.data());
+   LittleEndian::put_uint16(v16, b);
 
    check_eq(result, b);
 }
@@ -110,23 +110,23 @@ TestCase("Encode varint32 (unsigned)")
 
    for (uint32_t x: numbers32)  
    {
-      int n = enc_varint<uint32_t>(x, buf.data());
+      int n = enc_varint<uint32_t>(x, buf);
 
-      uint32_t y = dec_varint(buf.data(), n);
+      uint32_t y = dec_varint(buf, n);
 
       check_eq(x, y);
    }
 }
 
-TestCase("Encoce varint64 (unsigned)")
+TestCase("Encode varint64 (unsigned)")
 {
    std::array<uint8_t, 12> buf;
 
    for (uint64_t x: numbers64)  
    {
-      int n = enc_varint<uint64_t>(x, buf.data());
+      int n = enc_varint<uint64_t>(x, buf);
 
-      uint64_t y = dec_varint<uint64_t>(buf.data(), n);
+      uint64_t y = dec_varint<uint64_t>(buf, n);
  
       check_eq(x, y);
    }
@@ -139,39 +139,13 @@ TestCase("Encode varint64 (signed)")
 
    for (int64_t x: numbers64)  
    {
-      int n = enc_varint<int64_t>(x, buf.data());
+      int n = enc_varint<int64_t>(x, buf);
 
-      int64_t y = dec_varint<int64_t>(buf.data(), n); 
+      int64_t y = dec_varint<int64_t>(buf, n); 
 
       check_eq(x, y);
    }
 
 }
-
-/*
-TestCase(TestEncVarint64_uint64)
-{
-   std::array<uint8_t, 12> buf;
-
-   std::cout << "-- TestEncVarint64_uint64 -- \n";
-
-   //int64_t x = -9223372036854775807;
-   int64_t x = -1;
-
-   std::cout << "int64_t  x = " << x << "\n";
-   std::cout << "uint64_t x =  " << uint64_t(x) << "\n"; 
-
-   int n = enc_varint<int64_t>(x, buf.data());
-
-   int64_t y = dec_varint<int64_t>(buf.data(), n);
- 
-   std::cout << "(n = " << n << ")\t"  
-             << "x = " << x << "\t y = " << y << "\n";
-
-   EXPECT(x == int64_t(y));
-
-   //std::cout << (uint64_t(1 << 63) - 1) << "\n";
-}
-*/
 
 }

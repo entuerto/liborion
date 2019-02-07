@@ -560,33 +560,33 @@ public:
    }
 
    template<std::size_t N>
-   constexpr explicit Span(element_type (&arr)[N]) noexcept
+   constexpr Span(element_type (&arr)[N]) noexcept
       : _first(std::addressof(arr[0]))    
       , _last(std::addressof(arr[0]) + N)
    {
    }
 
    template<std::size_t N, class = std::enable_if_t<(N > 0)>>
-   constexpr explicit Span(std::array<std::remove_const_t<element_type>, N>& arr) noexcept
+   constexpr Span(std::array<std::remove_const_t<element_type>, N>& arr) noexcept
       : _first(arr.data())    
       , _last(arr.data() + N)
    {
    }
 
-   constexpr explicit Span(std::array<std::remove_const_t<element_type>, 0>& /*unused*/) noexcept
+   constexpr Span(std::array<std::remove_const_t<element_type>, 0>& /*unused*/) noexcept
       : _first(nullptr)    
       , _last(nullptr)
    {
    }
 
    template<std::size_t N, class = std::enable_if_t<(N > 0)>>
-   constexpr explicit Span(const std::array<std::remove_const_t<element_type>, N>& arr) noexcept
+   constexpr Span(const std::array<std::remove_const_t<element_type>, N>& arr) noexcept
       : _first(arr.data())    
       , _last(arr.data() + N)
    {
    }
 
-   constexpr explicit Span(const std::array<std::remove_const_t<element_type>, 0>& /*unused*/) noexcept
+   constexpr Span(const std::array<std::remove_const_t<element_type>, 0>& /*unused*/) noexcept
       : _first(nullptr)    
       , _last(nullptr)
    {
@@ -598,7 +598,7 @@ public:
                std::is_convertible<typename Container::pointer, pointer>::value &&
                std::is_convertible<typename Container::pointer,
                                    decltype(std::declval<Container>().data())>::value>>
-   constexpr explicit Span(Container& cont)
+   constexpr Span(Container& cont)
       : Span(cont.data(), narrow<index_type>(cont.size()))
    {
    }
@@ -609,7 +609,7 @@ public:
                std::is_convertible<typename Container::pointer, pointer>::value &&
                std::is_convertible<typename Container::pointer,
                                    decltype(std::declval<Container>().data())>::value>>
-   constexpr explicit Span(const Container& cont)
+   constexpr Span(const Container& cont)
       : Span(cont.data(), narrow<index_type>(cont.size()))
    {
    }
