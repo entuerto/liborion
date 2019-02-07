@@ -60,8 +60,6 @@ private:
 
    void print_tests_suites();
 
-   std::string fit_text(const std::string& text, std::size_t len);
-
 private:
    std::vector<TestSuite> _test_suites;
 

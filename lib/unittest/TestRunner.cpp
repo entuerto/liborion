@@ -16,12 +16,38 @@
 
 #include <iostream>
 
+using namespace std::string_literals;
+
 namespace orion
 {
 namespace unittest
 {
 
-using namespace std::string_literals;
+namespace detail
+{
+   
+std::string fit_text(const std::string& text, std::size_t len)
+{
+   return (text.size() > len) ? text.substr(0, len - 3) + "..." : text;
+}
+
+std::string desc_text(const TestSuite& s, std::size_t len)
+{
+   std::string desc = fit_text(s.description(), len);
+
+   return desc.empty() ? "None" : desc;
+}
+
+std::string status_text(const TestSuite& s, std::size_t /* len */)
+{
+
+   return fmt::format("Tests({}), {}",
+                      s.test_count(),
+                      (s.enabled() ? "Enabled" : "Disabled: "s + s.disabled().value));
+}
+
+} // namespace detail
+
 
 constexpr uint32_t TestRunner::test_suite_count() const
 {
@@ -143,14 +169,18 @@ bool TestRunner::run_tests(Output& output)
 
 void TestRunner::print_tests_suites()
 {
-   std::cout << "Test names" << '\n' << '\n';
+   std::cout << "Unit tests" << '\n' << '\n';
+
+   std::cout << fmt::format(" {0:<25}  {1:<50} {2}\n", "Test Suites", "Description", "Status");
 
    try
    {
       for (const auto& item : _test_suites)
       {
-         std::cout << fmt::format(
-            "  {0:<30}  {1:<50}\n", fit_text(item.label(), 30), fit_text(item.description(), 50));
+         std::cout << fmt::format("  {0:<25} {1:<50} {2}\n", 
+                                  detail::fit_text(item.label(), 25), 
+                                  detail::desc_text(item, 50),
+                                  detail::status_text(item, 20));
       }
    }
    catch (const std::exception& e)
@@ -166,11 +196,6 @@ bool TestRunner::filter_test_suite(const std::string& name) const
       return false;
 
    return not iequals(_config.suite_name, name);
-}
-
-std::string TestRunner::fit_text(const std::string& text, std::size_t len)
-{
-   return (text.size() > len) ? text.substr(0, len - 3) + "..." : text;
 }
 
 TestRunner& TestRunner::runner()
