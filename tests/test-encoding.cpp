@@ -38,7 +38,7 @@ TestCase("BigEndian put_uint16()")
 
    BigEndian::put_uint16(v16, b.data());
 
-   //check_eq(result, b);
+   check_eq(result, b);
 }
 
 TestCase("LittleEndian to_uint16()")
@@ -59,7 +59,7 @@ TestCase("LittleEndian put_uint16()")
 
    LittleEndian::put_uint16(v16, b.data());
 
-   //check_eq(result, b);
+   check_eq(result, b);
 }
 
 std::array<int64_t, 18> numbers64 = {{
