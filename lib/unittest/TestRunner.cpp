@@ -33,7 +33,7 @@ std::string fit_text(const std::string& text, std::size_t len)
 
 std::string desc_text(const TestSuite& s, std::size_t len)
 {
-   std::string desc = fit_text(s.description(), len);
+   std::string desc = fit_text(as_string(s.description()), len);
 
    return desc.empty() ? "None" : desc;
 }
@@ -60,7 +60,7 @@ uint32_t TestRunner::test_case_count() const
 
    for (auto& item : _test_suites)
    {
-      if (filter_test_suite(item.label()))
+      if (filter_test_suite(as_string(item.label())))
          continue;
          
       count += item.test_count();
@@ -150,7 +150,7 @@ bool TestRunner::run_tests(Output& output)
 
    for (auto& item : _test_suites)
    {
-      if (filter_test_suite(item.label()))
+      if (filter_test_suite(as_string(item.label())))
          continue;
 
       auto& suite_stats = item.run_tests(output);
@@ -178,7 +178,7 @@ void TestRunner::print_tests_suites()
       for (const auto& item : _test_suites)
       {
          std::cout << fmt::format("  {0:<25} {1:<50} {2}\n", 
-                                  detail::fit_text(item.label(), 25), 
+                                  detail::fit_text(as_string(item.label()), 25), 
                                   detail::desc_text(item, 50),
                                   detail::status_text(item, 20));
       }

@@ -26,7 +26,7 @@ struct Option
 {
    T value;
 
-   constexpr operator T() const noexcept { return value; }
+   constexpr explicit operator T() const noexcept { return value; }
 };
 
 

@@ -19,7 +19,7 @@ namespace unittest
 inline TestSuite::TestSuite(std::string name) noexcept
    : TestInfo(std::move(name))
 {
-   _stats.label = label();
+   _stats.label = as_string(label());
 }
 
 inline constexpr const TestSuiteStats& TestSuite::stats() const

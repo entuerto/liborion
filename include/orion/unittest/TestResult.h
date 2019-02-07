@@ -43,7 +43,15 @@ struct Expression
    explicit Expression(std::string v)
       : value(std::move(v)) {}
 
+   // Convertible to string
+   template <typename T>
+   explicit Expression(T v)
+      : value(static_cast<std::string>(v)) {}
+
    constexpr bool empty() const { return value.empty(); }
+
+   constexpr explicit operator const std::string&() const  { return value; }
+   constexpr explicit operator std::string&()              { return value; }   
 };
 
 struct Actual
@@ -54,7 +62,15 @@ struct Actual
    explicit Actual(std::string v)
       : value(std::move(v)) {}
 
+   // Convertible to string
+   template <typename T>
+   explicit Actual(T v)
+      : value(static_cast<std::string>(v)) {}
+
    constexpr bool empty() const { return value.empty(); }
+
+   constexpr explicit operator const std::string&() const  { return value; }
+   constexpr explicit operator std::string&()              { return value; }   
 };
 
 struct Expected
@@ -65,7 +81,15 @@ struct Expected
    explicit Expected(std::string v)
       : value(std::move(v)) {}
 
+   // Convertible to string
+   template <typename T>
+   explicit Expected(T v)
+      : value(static_cast<std::string>(v)) {}
+
    constexpr bool empty() const { return value.empty(); }
+
+   constexpr explicit operator const std::string&() const  { return value; }
+   constexpr explicit operator std::string&()              { return value; }   
 };
 
 struct Message
@@ -76,7 +100,15 @@ struct Message
    explicit Message(std::string v)
       : value(std::move(v)) {}
 
+   // Convertible to string
+   template <typename T>
+   explicit Message(T v)
+      : value(static_cast<std::string>(v)) {}
+
    constexpr bool empty() const { return value.empty(); }
+
+   constexpr explicit operator const std::string&() const  { return value; }
+   constexpr explicit operator std::string&()              { return value; }
 };
 
 class Assertion

@@ -101,7 +101,7 @@ void StdOutput::suite_start(const TestSuite& suite)
 
 void StdOutput::test_start(const Test& test)
 {
-   _current_test = test.label();
+   _current_test = as_string(test.label());
 }
 
 void StdOutput::test_end(const TestResult& test_result)

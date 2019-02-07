@@ -467,6 +467,15 @@ T narrow(U u)
 }
 
 //-------------------------------------------------------------------------------------------------
+// As functions
+
+template<class T>
+inline std::string as_string(const T& v)
+{
+   return static_cast<std::string>(v);
+}
+
+//-------------------------------------------------------------------------------------------------
 // Views: Span
 
 // implementation details
