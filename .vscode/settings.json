@@ -78,7 +78,11 @@
       "xtree": "cpp",
       "xutility": "cpp",
       "regex": "cpp",
-      "strstream": "cpp"
+      "strstream": "cpp",
+      "clocale": "cpp",
+      "forward_list": "cpp",
+      "numeric": "cpp",
+      "valarray": "cpp"
    },
    "C_Cpp.default.cStandard": "c11",
    "C_Cpp.default.cppStandard": "c++14",

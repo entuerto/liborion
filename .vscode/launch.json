@@ -8,7 +8,7 @@
          "name": "(Windows) Launch",
          "type": "cppvsdbg",
          "request": "launch",
-         "program": "c:/users/palatoma/documents/github/liborion/build/bin/hello-http2-server.exe",
+         "program": "c:/users/palatoma/documents/github/liborion/build/bin/test-orion.exe",
          "args": [],
          "stopAtEntry": false,
          "cwd": "${workspaceFolder}",
