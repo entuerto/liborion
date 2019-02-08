@@ -48,6 +48,32 @@ template <class ElementType>
 class Span;
 
 //-------------------------------------------------------------------------------------------------
+
+struct NonCopyable
+{
+   NonCopyable() = default;
+   ~NonCopyable() = default;
+   
+   NonCopyable(NonCopyable const&) = delete;
+   NonCopyable(NonCopyable&&) = delete;
+
+   NonCopyable& operator=(NonCopyable const&) = delete;
+   NonCopyable& operator=(NonCopyable&&) = delete;
+};
+
+//-------------------------------------------------------------------------------------------------
+
+template<typename... Ts>
+inline constexpr void ignore_unused(const Ts&...)
+{
+}
+
+template<typename... Ts>
+inline constexpr void ignore_unused()
+{
+}
+
+//-------------------------------------------------------------------------------------------------
 // -- Source file location 
 
 #define DbgSrcLoc \
