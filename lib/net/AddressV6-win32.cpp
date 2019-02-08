@@ -39,7 +39,7 @@ AddressV6 make_address_v6(const std::string& s)
 
    std::wstring ws_value = win32::utf8_to_wstring(s);
 
-   RtlIpv6StringToAddressExW(ws_value.c_str(), &addr, (PULONG)&scope_id, &port);
+   RtlIpv6StringToAddressExW(ws_value.c_str(), &addr, reinterpret_cast<PULONG>(&scope_id), &port);
 
    auto ec = std::error_code(::GetLastError(), std::system_category());
    if (ec)

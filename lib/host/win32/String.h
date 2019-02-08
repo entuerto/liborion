@@ -45,14 +45,14 @@ inline std::string wstring_to_utf8(const std::wstring& str)
 
 inline void format_error_message(DWORD last_error_code, std::string& error_message)
 {
-   wchar_t* buffer;
+   wchar_t* buffer = nullptr;
 
    FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
                   FORMAT_MESSAGE_IGNORE_INSERTS,
                   nullptr,
                   last_error_code,
                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                  (LPWSTR)&buffer,
+                  buffer,
                   0,
                   nullptr);
 

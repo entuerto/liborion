@@ -51,7 +51,7 @@ Uuid::Uuid(const std::string& value)
 {
    std::wstring str_uuid = win32::utf8_to_wstring(value);
 
-   RPC_STATUS ret = UuidFromStringW((RPC_WSTR)str_uuid.data(), &(_impl->_uuid));
+   RPC_STATUS ret = UuidFromStringW(reinterpret_cast<RPC_WSTR>(str_uuid.data()), &(_impl->_uuid));
 
    if (ret != RPC_S_OK)
       UuidCreateNil(&(_impl->_uuid));
@@ -107,14 +107,14 @@ bool Uuid::operator!=(const Uuid& rhs) const
 
 std::string to_string(const Uuid& id)
 {
-   RPC_WSTR str_uuid;
+   RPC_WSTR str_uuid = nullptr;
 
    if (UuidToStringW(&(id._impl->_uuid), &str_uuid) != RPC_S_OK)
    {
       return "";
    }
 
-   return win32::wstring_to_utf8((wchar_t*)str_uuid);
+   return win32::wstring_to_utf8(reinterpret_cast<wchar_t*>(str_uuid));
 }
 
 } // namespace orion

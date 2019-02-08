@@ -25,7 +25,7 @@ static std::error_code capture_stacktrace_impl(std::vector<debug::Frame>& frames
                                                int max_depth,
                                                CONTEXT& context)
 {
-   STACKFRAME64 stack_frame = {};
+   STACKFRAME64 stack_frame{};
 
 #if defined(_M_X64)
    stack_frame.AddrPC.Offset    = context.Rip;
@@ -103,7 +103,7 @@ static std::error_code capture_stacktrace_impl(std::vector<debug::Frame>& frames
 
 std::error_code capture_stacktrace(std::vector<debug::Frame>& frames, int skip, int max_depth)
 {
-   CONTEXT context = {};
+   CONTEXT context{};
 
    ::RtlCaptureContext(&context);
 

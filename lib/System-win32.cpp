@@ -49,7 +49,7 @@ void get_loaded_modules(unsigned long process_id, ModuleList& modules)
    if (EnumProcessModulesEx(
           handle, module_handles, sizeof(module_handles), &cbNeeded, LIST_MODULES_ALL))
    {
-      int count = int(cbNeeded / sizeof(HMODULE));
+      int count = static_cast<int>(cbNeeded / sizeof(HMODULE));
 
       for (int i = 0; i < count; i++)
       {
@@ -72,10 +72,7 @@ void get_loaded_modules(unsigned long process_id, ModuleList& modules)
 static uint32_t get_cpu_count_phys()
 {
    PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX buffer = nullptr;
-   PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX ptr    = nullptr;
    DWORD length                                    = 0;
-   DWORD offset                                    = 0;
-   DWORD ncpus                                     = 0;
 
    for (;;)
    {
@@ -89,7 +86,7 @@ static uint32_t get_cpu_count_phys()
          if (buffer != nullptr)
             free(buffer);
 
-         buffer = (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX)malloc(length);
+         buffer = static_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX>(malloc(length));
          if (buffer == nullptr)
          {
             std::string error_message;
@@ -107,14 +104,14 @@ static uint32_t get_cpu_count_phys()
       return 0;
    }
 
-   ptr = buffer;
-   while (ptr->Size > 0 and (offset + ptr->Size) <= length)
-   {
-      if (ptr->Relationship == RelationProcessorCore)
-         ncpus += 1;
+   Span<SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX> slpi = make_span(buffer, sizeof(buffer));
 
-      offset += ptr->Size;
-      ptr = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*)(((char*)ptr) + ptr->Size);
+   uint32_t ncpus = 0;
+
+   for (auto item : slpi)
+   {
+      if (item.Relationship == RelationProcessorCore)
+         ++ncpus;
    }
    return ncpus;
 }
@@ -211,38 +208,34 @@ CpuTimes get_cpu_times()
 
    GetSystemInfo(&system_info);
 
-   int32_t cpu_count = system_info.dwNumberOfProcessors;
+   uint32_t cpu_count = system_info.dwNumberOfProcessors;
+   ULONG result_size  = 0u;
+   DWORD sppi_size    = cpu_count * sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION);
 
-   SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION* sppi = nullptr;
-   ULONG result_size;
-
-   DWORD sppi_size = cpu_count * sizeof(*sppi);
-   sppi            = (SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION*)malloc(sppi_size);
+   std::vector<SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION> sppi{cpu_count};
 
    NTSTATUS status = NtQuerySystemInformation(
-      SystemProcessorPerformanceInformation, sppi, sppi_size, &result_size);
+      SystemProcessorPerformanceInformation, sppi.data(), sppi_size, &result_size);
 
    if (not NT_SUCCESS(status))
    {
       // err = RtlNtStatusToDosError(status);
       RtlNtStatusToDosError(status);
-      free(sppi);
       return cpu_times;
    }
 
-   for (int i = 0; i < cpu_count; i++)
+   for (const auto& item : sppi)
    {
-      cpu_times.user += sppi[i].UserTime.QuadPart / 10000;
+      cpu_times.user += item.UserTime.QuadPart / 10000;
       cpu_times.nice += 0;
-      cpu_times.sys += (sppi[i].KernelTime.QuadPart - sppi[i].IdleTime.QuadPart) / 10000;
-      cpu_times.idle += sppi[i].IdleTime.QuadPart / 10000;
+      cpu_times.sys += (item.KernelTime.QuadPart - item.IdleTime.QuadPart) / 10000;
+      cpu_times.idle += item.IdleTime.QuadPart / 10000;
 #if 0 // ndef __MINGW64__
-      cpu_times.irq  += sppi[i].InterruptTime.QuadPart / 10000;
+      cpu_times.irq  += item.InterruptTime.QuadPart / 10000;
 #else
-      cpu_times.irq += sppi[i].Reserved1[0].QuadPart / 10000;
+      cpu_times.irq += item.Reserved1[0].QuadPart / 10000;
 #endif
    }
-   free(sppi);
 
    return cpu_times;
 }
@@ -267,7 +260,7 @@ std::string get_os_version()
    VS_FIXEDFILEINFO* file_info = nullptr;
    UINT len                    = 0;
 
-   if (not VerQueryValue(data.get(), TEXT("\\"), (LPVOID*)&file_info, &len))
+   if (not VerQueryValueW(data.get(), TEXT("\\"), reinterpret_cast<LPVOID*>(&file_info), &len))
    {
       return "Microsoft Windows (Unkown version)";
    }
@@ -305,7 +298,7 @@ std::string get_user_name()
    uint32_t len = UNLEN + 1;
    wchar_t buffer[UNLEN + 1];
 
-   if (GetUserNameW(buffer, (LPDWORD)&len) != 0)
+   if (GetUserNameW(buffer, reinterpret_cast<LPDWORD>(&len)) != 0)
    {
       user_name = win32::wstring_to_utf8(buffer);
    }

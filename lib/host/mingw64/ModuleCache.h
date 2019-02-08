@@ -21,7 +21,7 @@ namespace mingw64
 
 //--------------------------------------------------------------------------------------------------
 
-struct API_EXPORT Module
+struct Module
 {
    uint64_t base;
    std::wstring file_name;
@@ -35,7 +35,7 @@ struct API_EXPORT Module
 
 //--------------------------------------------------------------------------------------------------
 
-class API_EXPORT ModuleCache
+class ModuleCache
 {
 public:
    ModuleCache();
