@@ -56,6 +56,8 @@ static std::error_code capture_stacktrace_impl(std::vector<debug::Frame>& frames
    // Initialize the symbol handler.
    SymInitialize(process, nullptr, TRUE);
 
+   int i = 0;
+
    while (true)
    {
       if (StackWalk64(IMAGE_FILE_MACHINE_AMD64,
@@ -72,10 +74,24 @@ static std::error_code capture_stacktrace_impl(std::vector<debug::Frame>& frames
          break;
       }
 
+      if (skip > 0)
+      {
+         --skip;
+         continue;
+      }
+
       if (stack_frame.AddrFrame.Offset == 0)
+      {   
          break;
+      }
 
       frames.emplace_back(debug::Frame{stack_frame.AddrPC.Offset});
+
+      if (i >= max_depth)
+      {
+         break;
+      }
+      ++i;
    }
 
    SymCleanup(process);

@@ -96,7 +96,7 @@ void SessionImpl::connect(EndPoint endpoint)
    auto self = shared_from_this();
 
    asio::async_connect(_socket, it,
-      [self](const std::error_code& ec, const asio::ip::tcp::endpoint& endpoint)
+      [self](const std::error_code& ec, const asio::ip::tcp::endpoint& /* endpoint */)
       {
          if (not ec)
             self->_connected = true;

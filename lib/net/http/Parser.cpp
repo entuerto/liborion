@@ -123,7 +123,7 @@ std::error_code Parser::parse(Request& request, asio::const_buffer buffer)
    auto data = static_cast<const char*>(buffer.data());
    auto length = buffer.size();
 
-   int nparsed = http_parser_execute(&_parser, &_settings, data, length);
+   std::size_t nparsed = http_parser_execute(&_parser, &_settings, data, length);
 
    if (_parser.upgrade)
    {

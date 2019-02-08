@@ -153,6 +153,7 @@ TestCase("Weekday")
    check_true(sun != mon);
    check_true(mon != sun);
 
+#if 0
    constexpr unsigned a[7][7] =
    {// -    Sun Mon Tue Wed Thu Fri Sat
     /*Sun*/ {0,  6,  5,  4,  3,  2,  1},
@@ -163,7 +164,7 @@ TestCase("Weekday")
     /*Fri*/ {5,  4,  3,  2,  1,  0,  6},
     /*Sat*/ {6,  5,  4,  3,  2,  1,  0}
    };
-/*
+
    for (unsigned x = 0; x < 7; ++x)
    {
       for (unsigned y = 0; y < 7; ++y)
@@ -210,7 +211,7 @@ TestCase("Weekday")
       check_eq(wx - Weekday{x}, Days{1});
       check_eq(--wx - Weekday{x}, Days{0});
    }
-*/
+#endif
 }
 
 TestCase("WeekdayIndexed")

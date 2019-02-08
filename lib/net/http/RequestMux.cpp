@@ -84,7 +84,7 @@ void RequestMux::handle(Method method, const std::string& pattern, HandlerFunc h
 
          if (it == _mux.end())
          {
-            Entry entry{false, pattern};
+            Entry entry{false, pattern, {}};
 
             entry.handlers.emplace(method, redirect_handler(StatusCode::MovedPermanently, path));
 
@@ -92,7 +92,7 @@ void RequestMux::handle(Method method, const std::string& pattern, HandlerFunc h
          }
          else
          {
-            Entry entry{false, pattern};
+            Entry entry{false, pattern, {}};
 
             entry.handlers.emplace(method, redirect_handler(StatusCode::MovedPermanently, path));
 
@@ -101,7 +101,7 @@ void RequestMux::handle(Method method, const std::string& pattern, HandlerFunc h
       }
    }
 
-   Entry entry{false, pattern};
+   Entry entry{false, pattern, {}};
 
    entry.handlers.emplace(method, std::move(h));
 
