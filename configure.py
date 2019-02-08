@@ -105,7 +105,14 @@ windows_libs = [
 mingw_windows_libs = ['mincore', 'mswsock', 'ntdll', 'psapi', 'rpcrt4', 'ws2_32']
 
 # -Wno-c++11-narrowing
-default_warning = ['-Wshadow', '-Wundef', '-Wnon-virtual-dtor', '-Wno-missing-field-initializers']
+default_warning = [
+   '-Wshadow', 
+   '-Wundef', 
+   '-Wnon-virtual-dtor', 
+   '-Wno-missing-field-initializers', 
+   '-Wold-style-cast', 
+   '-Wcast-align'
+]
 
 default_windows_defines = [
    '-DUNICODE', 
