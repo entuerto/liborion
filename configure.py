@@ -1129,10 +1129,6 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
       'defines'   : asio_defines + ['-DORION_SHARED_EXPORTS'],
       'soversion' : '0',
       'sources'   : [
-         'lib/net/Address.cpp',
-         'lib/net/AddressV4.cpp',
-         'lib/net/AddressV6.cpp',
-         'lib/net/EndPoint.cpp',
          'lib/net/Error.cpp',
          'lib/net/Url.cpp',
          # HTTP files

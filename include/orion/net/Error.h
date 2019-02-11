@@ -29,12 +29,12 @@ enum class ErrorCode
 ///
 /// Make an error code object
 ///
-std::error_code make_error_code(ErrorCode code) noexcept;
+API_EXPORT std::error_code make_error_code(ErrorCode code) noexcept;
 
 ///
 /// Make an error condition object
 ///
-std::error_condition make_error_condition(ErrorCode code) noexcept;
+API_EXPORT std::error_condition make_error_condition(ErrorCode code) noexcept;
 
 } // namespace net
 } // namespace orion

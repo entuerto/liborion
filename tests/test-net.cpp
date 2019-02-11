@@ -6,8 +6,6 @@
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
 #include <orion/net/Address.h>
-#include <orion/net/AddressV4.h>
-#include <orion/net/AddressV6.h>
 #include <orion/net/EndPoint.h>
 #include <orion/Log.h>
 #include <orion/Test.h>
@@ -25,7 +23,7 @@ TestCase("AddressV4 is unspecified")
 {
    check_true(AddressV4::zero().is_unspecified());
 
-   AddressV4 addr{127, 0, 0, 1};
+   AddressV4 addr{{127, 0, 0, 1}};
 
    check_false(addr.is_unspecified());
 }
@@ -38,13 +36,13 @@ TestCase("AddressV6 is unspecified")
 
 TestCase("AddressV4 is loopback")
 {
-   AddressV4 addr1{127, 0, 0, 1};
+   AddressV4 addr1{{127, 0, 0, 1}};
    check_true(addr1.is_loopback());
 
-   AddressV4 addr2{127, 255, 255, 254};
+   AddressV4 addr2{{127, 255, 255, 254}};
    check_true(addr2.is_loopback());
 
-   AddressV4 addr3{128, 1, 2, 3};
+   AddressV4 addr3{{128, 1, 2, 3}};
    check_false(addr3.is_loopback());
 }
 
@@ -56,13 +54,13 @@ TestCase("AddressV6 is loopback")
 
 TestCase("AddressV4 is multicast")
 {
-   AddressV4 addr1{224, 0, 0, 0};
+   AddressV4 addr1{{224, 0, 0, 0}};
    check_true(addr1.is_multicast());
 
-   AddressV4 addr2{239, 0, 0, 0};
+   AddressV4 addr2{{239, 0, 0, 0}};
    check_true(addr2.is_multicast());
 
-   AddressV4 addr3{240, 0, 0, 0};
+   AddressV4 addr3{{240, 0, 0, 0}};
    check_false(addr3.is_multicast());
 }
 
@@ -79,7 +77,7 @@ TestCase("AddressV6 is multicast")
 
 TestCase("AddressV4 to_string")
 {
-   check_eq(to_string(AddressV4{127, 0, 0, 1}), "127.0.0.1"s);
+   check_eq(to_string(AddressV4{{127, 0, 0, 1}}), "127.0.0.1"s);
 
    check_throws_as([]() { 
       Address* inv_addr = nullptr; 
@@ -130,11 +128,11 @@ TestCase("AddressV6 copy")
 
 TestCase("AddressV4 move")
 {
-   AddressV4 addr(AddressV4{255, 255, 255, 255});
+   AddressV4 addr(AddressV4{{255, 255, 255, 255}});
 
    check_eq(addr, AddressV4::broadcast());
 
-   addr = AddressV4{224, 0, 0, 1};
+   addr = AddressV4{{224, 0, 0, 1}};
 
    check_eq(addr, AddressV4::all_systems());
 }
@@ -153,14 +151,14 @@ TestCase("AddressV6 move")
 
 TestCase("AddressV4 ipv4 literal")
 {
-   AddressV4 addr{224, 0, 0, 1};
+   AddressV4 addr{{224, 0, 0, 1}};
 
    check_eq(addr, "224.0.0.1"_ipv4);
 }
 
 TestCase("AddressV6 ipv6 literal")
 {
-   auto addr = AddressV6{0x20, 0x1, 0xd, 0xb8, 0, 0, 0, 0, 0, 0, 0x1, 0x23, 0, 0x12, 0, 0x1};
+   auto addr = AddressV6{{0x20, 0x1, 0xd, 0xb8, 0, 0, 0, 0, 0, 0, 0x1, 0x23, 0, 0x12, 0, 0x1}};
 
    check_eq(addr, "2001:db8::123:12:1"_ipv6);
 }
@@ -169,7 +167,7 @@ TestCase("EndPoint from AddressV4")
 {
    EndPoint end_point(make_address_v4("10.1.2.173"), 22);
 
-   auto addr = AddressV4{10, 1, 2, 173};
+   auto addr = AddressV4{{10, 1, 2, 173}};
 
    fail_if(end_point.address() == nullptr);
 
@@ -184,7 +182,7 @@ TestCase("EndPoint from AddressV6")
 {
    EndPoint end_point(make_address_v6("2001:db8::123:12:1"), 22);
 
-   auto addr = AddressV6{0x20, 0x1, 0xd, 0xb8, 0, 0, 0, 0, 0, 0, 0x1, 0x23, 0, 0x12, 0, 0x1};
+   auto addr = AddressV6{{0x20, 0x1, 0xd, 0xb8, 0, 0, 0, 0, 0, 0, 0x1, 0x23, 0, 0x12, 0, 0x1}};
 
    fail_if(end_point.address() == nullptr);
 

@@ -5,7 +5,7 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-#include <orion/net/AddressV6.h>
+#include <orion/net/Address.h>
 
 #include <host/win32/String.h>
 

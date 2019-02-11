@@ -11,8 +11,6 @@
 #include <orion/Config.h>
 
 #include <orion/net/Address.h>
-#include <orion/net/AddressV4.h>
-#include <orion/net/AddressV6.h>
 
 #include <memory>
 #include <string>
@@ -23,10 +21,10 @@ namespace net
 {
 
 /// EndPoint represents the address of an IP end point.
-class API_EXPORT EndPoint
+class EndPoint
 {
 public:
-   EndPoint();
+   EndPoint() = default;
    /// Construct an endpoint using a port number and an IPv4 address.
    EndPoint(const AddressV4& addr, uint16_t port);
    /// Construct an endpoint using a port number and an IPv6 address.
@@ -34,24 +32,27 @@ public:
 
    EndPoint(const EndPoint& other);
    EndPoint(EndPoint&& other) noexcept;
-   virtual ~EndPoint();
+   ~EndPoint() = default;
 
-   EndPoint& operator=(const EndPoint& rhs);
-   EndPoint& operator=(EndPoint&& rhs) noexcept;
+   constexpr EndPoint& operator=(const EndPoint& rhs);
+   constexpr EndPoint& operator=(EndPoint&& rhs) noexcept;
 
-   virtual Address* address() const;
+   constexpr Address* address() const;
 
-   virtual uint16_t port() const;
+   constexpr uint16_t port() const;
 
 private:
    std::unique_ptr<Address> _addr;
-   uint16_t _port;
+   uint16_t _port{0};
 };
 
-API_EXPORT std::string to_string(const EndPoint& ep);
+std::string to_string(const EndPoint& ep);
 
-API_EXPORT std::ostream& operator<<(std::ostream& o, const EndPoint& ep);
+std::ostream& operator<<(std::ostream& o, const EndPoint& ep);
 
 } // namespace net
 } // namespace orion
+
+#include <orion/net/impl/EndPoint.ipp>
+
 #endif // ORION_NET_ENDPOINT_H

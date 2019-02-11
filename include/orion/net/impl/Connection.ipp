@@ -9,8 +9,7 @@
 #define ORION_CONNECTION_IPP
 
 #include <orion/Log.h>
-#include <orion/net/AddressV4.h>
-#include <orion/net/AddressV6.h>
+#include <orion/net/Address.h>
 #include <orion/net/Utils.h>
 
 #include <fmt/format.h>

@@ -5,7 +5,7 @@
 //
 // Distributed under the MIT Software License. (See accompanying file LICENSE.md)
 //
-#include <orion/net/AddressV4.h>
+#include <orion/net/Address.h>
 
 #include <orion/String.h>
 #include <orion/net/Types.h>
