@@ -7,7 +7,7 @@
 //
 #include <orion/Log.h>
 #include <orion/Test.h>
-
+#include <orion/net/http2/Server.h>
 #include <orion/net/http2/Settings.h>
 
 using namespace orion;
@@ -78,6 +78,11 @@ TestCase("Settings - Valid MaxFrameSize")
 
    check_false(Settings::is_valid(MaxFrameSize{16383}));
    check_false(Settings::is_valid(MaxFrameSize{16777216}));
+}
+
+TestCase("Server - Contruction")
+{
+   Server s = make_server();
 }
 
 } // TestSuite(OrionNet)

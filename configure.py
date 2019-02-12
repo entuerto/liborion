@@ -1142,10 +1142,15 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
          'lib/net/http/ServerImpl.cpp',
          'lib/net/http/ServerConnection.cpp',
          'lib/net/http/Session.cpp',
+         # HTTPv2 files
+         'lib/net/http2/Error.cpp',
+         'lib/net/http2/Handler.cpp',
+         'lib/net/http2/Server.cpp',
+         'lib/net/http2/BasicServerImpl.cpp',
+         'lib/net/http2/ServerConnection.cpp',         
          # TCP files
          'lib/net/tcp/Session.cpp',
          'lib/net/tcp/SessionImpl.cpp',
-         'lib/net/tcp/Utils.cpp',
          # RPC files
          'lib/net/rpc/Error.cpp'
       ],
@@ -1197,6 +1202,7 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
       'tool'     : 'cxx',
       'includes' : ['include', 'lib', 'deps', 'tests'],
       'sources'  : [
+         'tests/test-http2.cpp',
          'tests/test-net.cpp',
          'tests/test-url.cpp',
          'tests/test-main.cpp'
@@ -1294,6 +1300,18 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
       'defines'  : asio_defines,
       'sources'  : [
          'examples/hello-http-client.cpp'
+      ],
+      'libs': ['fmt', 'orion', 'orion-net']
+   }
+
+   # Example: hello-http2-server
+   #
+   executables['hello-http2-server'] = {
+      'tool'     : 'cxx',
+      'includes' : ['include', 'deps'],
+      'defines'  : asio_defines,
+      'sources'  : [
+         'examples/hello-http2-server.cpp'
       ],
       'libs': ['fmt', 'orion', 'orion-net']
    }
