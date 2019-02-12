@@ -47,13 +47,13 @@ template<typename ConnectionT, typename HandlerT>
 Listener<ConnectionT, HandlerT>::~Listener() = default;
 
 template<typename ConnectionT, typename HandlerT>
-EndPoint Listener<ConnectionT, HandlerT>::endpoint() const
+inline constexpr const EndPoint& Listener<ConnectionT, HandlerT>::endpoint() const
 {
    return _endpoint;
 }
 
 template<typename ConnectionT, typename HandlerT>
-bool Listener<ConnectionT, HandlerT>::is_listening() const
+inline constexpr bool Listener<ConnectionT, HandlerT>::is_listening() const
 {
    return _acceptor.is_open();
 }
@@ -117,40 +117,38 @@ std::error_code Listener<ConnectionT, HandlerT>::close()
 }
 
 template<typename ConnectionT, typename HandlerT>
-int Listener<ConnectionT, HandlerT>::backlog() const
+inline constexpr int Listener<ConnectionT, HandlerT>::backlog() const
 {
    return _backlog;
 }
 
 template<typename ConnectionT, typename HandlerT>
-void Listener<ConnectionT, HandlerT>::backlog(int value)
+inline constexpr void Listener<ConnectionT, HandlerT>::backlog(int value)
 {
    _backlog = value;
 }
 
 template<typename ConnectionT, typename HandlerT>
-std::error_code Listener<ConnectionT, HandlerT>::read_timeout(const std::chrono::seconds& sec)
+inline constexpr void Listener<ConnectionT, HandlerT>::read_timeout(std::chrono::seconds sec)
 {
-   _read_timeout = sec;
-   return std::error_code();
+   _read_timeout = std::move(sec);
 }
 
 template<typename ConnectionT, typename HandlerT>
-std::chrono::seconds Listener<ConnectionT, HandlerT>::read_timeout() const
+inline constexpr std::chrono::seconds Listener<ConnectionT, HandlerT>::read_timeout() const
 {
    return _read_timeout;
 }
 
 template<typename ConnectionT, typename HandlerT>
-std::error_code Listener<ConnectionT, HandlerT>::tls_handshake_timeout(
-   const std::chrono::seconds& sec)
+inline constexpr void Listener<ConnectionT, HandlerT>::tls_handshake_timeout(
+   std::chrono::seconds sec)
 {
-   _tls_handshake_timeout = sec;
-   return std::error_code();
+   _tls_handshake_timeout = std::move(sec);
 }
 
 template<typename ConnectionT, typename HandlerT>
-std::chrono::seconds Listener<ConnectionT, HandlerT>::tls_handshake_timeout() const
+inline constexpr std::chrono::seconds Listener<ConnectionT, HandlerT>::tls_handshake_timeout() const
 {
    return _read_timeout;
 }

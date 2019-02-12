@@ -29,19 +29,18 @@ namespace tcp
 template<typename ConnectionT, typename HandlerT>
 class Listener 
    : public std::enable_shared_from_this<Listener<ConnectionT, HandlerT>>
+   , NonCopyable
 {
 public:
-   NO_COPY(Listener)
-
    Listener(asio::io_context& io_context, EndPoint ep, HandlerT handler);
    Listener(asio::io_context& io_context, EndPoint ep, HandlerT handler, int backlog);
    ~Listener();
 
    /// Endpoint where it will accepts incoming connections. 
-   EndPoint endpoint() const;
+   constexpr const EndPoint& endpoint() const;
 
    /// Indicates if we are still listening for incoming connections.
-   bool is_listening() const;
+   constexpr bool is_listening() const;
 
    /// Start accepting incoming connections
    std::error_code start();
@@ -49,23 +48,23 @@ public:
    /// Close closes the listener.
    std::error_code close();
 
-   int backlog() const; 
+   constexpr int backlog() const; 
 
-   void backlog(int value);
+   constexpr void backlog(int value);
 
    /// Sets the timeout for future Read calls.
    /// A zero value for sec means Read will not time out.
-   std::error_code read_timeout(const std::chrono::seconds& sec);
+   constexpr void read_timeout(std::chrono::seconds sec);
 
    /// Get the current value of the read timeout.
-   std::chrono::seconds read_timeout() const;
+   constexpr std::chrono::seconds read_timeout() const;
 
    /// Sets the timeout for tls handshakes.
    /// A zero value for sec means tls handshakes will not time out.
-   std::error_code tls_handshake_timeout(const std::chrono::seconds& sec);
+   constexpr void tls_handshake_timeout(std::chrono::seconds sec);
 
    /// Get the current value of the tls handshake timeout.
-   std::chrono::seconds tls_handshake_timeout() const;
+   constexpr std::chrono::seconds tls_handshake_timeout() const;
 
 protected:
    void init();
