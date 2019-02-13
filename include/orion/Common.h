@@ -670,25 +670,25 @@ public:
    // 26.7.3.3 Subviews [span.sub]
    //
 
-   constexpr Span first(index_type count) const noexcept
+   constexpr Span first(index_type count) const 
    {
       Expects(0 <= count and count <= this->size());
       return {this->data(), count};
    }
 
-   constexpr Span last(index_type count) const noexcept
+   constexpr Span last(index_type count) const 
    {
       Expects(0 <= count and count <= this->size());
       return {this->data() + this->size() - count, count};
    }
 
-   constexpr Span subspan(index_type offset) const noexcept
+   constexpr Span subspan(index_type offset) const 
    {
       Expects(0 <= offset and offset <= this->size());
       return {this->data() + offset, this->size() - offset};
    }
 
-   constexpr Span subspan(index_type offset, index_type count) const noexcept
+   constexpr Span subspan(index_type offset, index_type count) const 
    {
       Expects(0 <= offset and offset <= this->size() and 0 <= count and
               count <= this->size() - offset);
@@ -758,7 +758,7 @@ public:
    }
 
    template<class U>
-   Span<U> as_span() const noexcept
+   Span<U> as_span() const 
    {
       Expects((this->size_bytes() % sizeof(U)) == 0);
       return Span<U>(reinterpret_cast<U*>(this->data()), this->size_bytes() / sizeof(U)); // NOLINT
