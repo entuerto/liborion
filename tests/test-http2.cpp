@@ -7,6 +7,8 @@
 //
 #include <orion/Log.h>
 #include <orion/Test.h>
+#include <orion/net/http2/Error.h>
+#include <orion/net/http2/Frame.h>
 #include <orion/net/http2/Server.h>
 #include <orion/net/http2/Settings.h>
 
@@ -78,6 +80,75 @@ TestCase("Settings - Valid MaxFrameSize")
 
    check_false(Settings::is_valid(MaxFrameSize{16383}));
    check_false(Settings::is_valid(MaxFrameSize{16777216}));
+}
+
+TestCase("Frame - Contruction")
+{
+   Frame f{FrameType::DATA, 0u};
+
+   check_eq(f.type(), FrameType::DATA);
+   check_eq(f.stream_id(), 0u);
+   check_eq(f.length(), Frame::HeaderSize);
+
+   Frame f2{FrameType::HEADERS, 1u, FrameFlags::ACK};
+
+   check_eq(f2.type(), FrameType::HEADERS);
+   check_eq(f2.stream_id(), 1u);
+   check_eq(f2.flags(), FrameFlags::ACK);
+   check_eq(f2.length(), Frame::HeaderSize);
+
+   Frame f3{FrameType::HEADERS, 1u, FrameFlags::ACK | FrameFlags::END_HEADERS};
+
+   check_eq(f3.type(), FrameType::HEADERS);
+   check_eq(f3.stream_id(), 1u);
+   check_eq(f3.flags(), FrameFlags::ACK | FrameFlags::END_HEADERS);
+   check_eq(f3.length(), Frame::HeaderSize);
+}
+
+TestCase("Frame - fields")
+{
+   Frame f{FrameType::DATA, 0u};
+
+   check_eq(f.type(), FrameType::DATA);
+   check_eq(f.stream_id(), 0u);
+
+   f.length(100u);
+
+   check_eq(f.length(), 100u);
+
+   f.flags(FrameFlags::END_HEADERS);
+
+   check_eq(f.flags(), FrameFlags::END_HEADERS);
+
+   f.flags(FrameFlags::ACK | FrameFlags::END_HEADERS);
+
+   check_eq(f.flags(), FrameFlags::ACK | FrameFlags::END_HEADERS);
+}
+
+TestCase("Frame - encode/decode")
+{
+   std::array<uint8_t, 10> data;
+
+   Frame f{FrameType::DATA, 1000u, data};
+
+   std::array<uint8_t, 100> buffer;
+
+   auto n = Frame::encode(buffer, f);
+
+   check_eq(n, 19u);
+
+   Frame f2{};
+
+   n = Frame::decode(buffer, f2);
+
+   check_eq(n, 19u);
+
+   check_eq(f.length(), f2.length());
+   check_eq(f.type(), f2.type());
+   check_eq(f.flags(), f2.flags());
+   check_eq(f.stream_id(), f2.stream_id());
+   check_eq(f.get().size(), f2.get().size());
+
 }
 
 TestCase("Server - Contruction")
