@@ -16,6 +16,10 @@ namespace net
 namespace http2
 {
 static const std::map<ErrorCode, std::string> ErrorText{
+   {ErrorCode::SettingsInvalidAck, "Invalid SETTINGS frame (+ACK)."},
+   {ErrorCode::SettingsInvalidFrame, "Invalid SETTINGS frame."},
+   {ErrorCode::SettingsInvalidStreamId, "Invalid stream id in SETTINGS frame."},
+
    {ErrorCode::InvalidArgument, "Invalid argument passed."},
    {ErrorCode::BufferError, "Out of buffer space."},
    {ErrorCode::UnsupportedVersion, "The specified protocol version is not supported."},

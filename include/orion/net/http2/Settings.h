@@ -79,6 +79,10 @@ public:
    static constexpr bool is_valid(const InitialWindowSize& value);
    static constexpr bool is_valid(const MaxFrameSize& value);
 
+   static std::size_t encode(Span<uint8_t> b, const Settings& s);
+
+   static std::error_code update(Span<const uint8_t> b, Settings& s);
+
 private:
    HeaderTableSize _header_table_size{DEFAULT_SETTINGS_HEADER_TABLE_SIZE};
    EnablePush _enable_push{DEFAULT_SETTINGS_ENABLE_PUSH};

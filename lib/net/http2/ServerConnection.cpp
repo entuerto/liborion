@@ -52,7 +52,7 @@ void ServerConnection::do_read()
 
          log::debug2("Read - Bytes transferred: ", int(bytes_transferred));
 
-         ec = _handler->on_read(asio::buffer(_in_buffer), bytes_transferred);
+         ec = _handler->on_read(_in_buffer, bytes_transferred);
          if (ec)
          {
             log::error(ec, DbgSrcLoc);
@@ -80,9 +80,7 @@ void ServerConnection::do_write()
 
    std::size_t bytes_to_write{0};
 
-   asio::mutable_buffer b = asio::buffer(_out_buffer);
-
-   std::error_code ec = _handler->on_write(b, bytes_to_write);
+   std::error_code ec = _handler->on_write(_out_buffer, bytes_to_write);
    if (ec)
    {
       log::error(ec, DbgSrcLoc);

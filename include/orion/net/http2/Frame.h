@@ -19,6 +19,10 @@ namespace net
 namespace http2
 {
 //-------------------------------------------------------------------------------------------------
+// Forward declarations
+class Settings;
+
+//-------------------------------------------------------------------------------------------------
 // FrameType
 
 enum class FrameType : uint8_t
@@ -44,6 +48,7 @@ std::string to_string(FrameType ft);
 
 enum class FrameFlags : uint8_t
 {
+   NONE        = 0x0,
    ACK         = 0x1,
    END_STREAM  = 0x1,
    END_HEADERS = 0x4,
@@ -52,6 +57,10 @@ enum class FrameFlags : uint8_t
 };
 
 constexpr uint8_t operator|(FrameFlags lhs, FrameFlags rhs);
+
+constexpr FrameFlags operator&(FrameFlags lhs, FrameFlags rhs);
+constexpr FrameFlags operator&(uint8_t lhs, FrameFlags rhs);
+constexpr FrameFlags operator&(FrameFlags lhs, uint8_t rhs);
 
 constexpr bool operator==(uint8_t lhs, FrameFlags rhs);
 constexpr bool operator==(FrameFlags lhs, uint8_t rhs);
@@ -79,7 +88,7 @@ std::string to_string(FrameFlags ff);
 class Frame
 {
 public:
-   static constexpr const std::size_t HeaderSize{9u};
+   static constexpr const int32_t HeaderSize{9u};
    
    Frame() = default;
 
@@ -128,16 +137,19 @@ public:
 
    /// Decode a frame 
    /// Returns the number of bytes decoded
-   static std::size_t decode(Span<const uint8_t> b, Frame& f);
+   static std::size_t decode(const Settings& s, Span<const uint8_t> b, Frame& f, std::error_code& ec);
 
 private:
-   mutable uint32_t _length{HeaderSize};
+   mutable uint32_t _length{0u};
    FrameType _type{FrameType::UNKNOWN};
    uint8_t _flags{0};
    uint32_t _stream_id{0u};
 
    std::vector<uint8_t> _payload;
 };
+
+
+Frame make_frame(const Settings& s);
 
 } // namespace http2
 } // namespace net

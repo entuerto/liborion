@@ -10,8 +10,11 @@
 
 #include <orion/Encoding.h>
 #include <orion/String.h>
+#include <orion/net/http2/Settings.h>
 
 #include <fmt/format.h>
+
+#include <iostream>
 
 namespace orion
 {
@@ -59,6 +62,21 @@ inline std::string to_string(FrameType ft)
 inline constexpr uint8_t operator|(FrameFlags lhs, FrameFlags rhs)
 {
    return static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs);
+}
+
+inline constexpr FrameFlags operator&(FrameFlags lhs, FrameFlags rhs)
+{
+   return static_cast<FrameFlags>(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs));
+}
+
+inline constexpr FrameFlags operator&(uint8_t lhs, FrameFlags rhs)
+{
+   return static_cast<FrameFlags>(lhs & static_cast<uint8_t>(rhs));
+}
+
+inline constexpr FrameFlags operator&(FrameFlags lhs, uint8_t rhs)
+{
+   return static_cast<FrameFlags>(static_cast<uint8_t>(lhs) & rhs);
 }
 
 inline constexpr bool operator==(uint8_t lhs, FrameFlags rhs)
@@ -112,7 +130,7 @@ inline Frame::Frame(FrameType t, uint32_t id)
 }
 
 inline Frame::Frame(FrameType t, uint32_t id, Span<uint8_t> p)
-   : _length(HeaderSize + p.size())
+   : _length(p.size())
    , _type(t)
    , _stream_id(id)
    , _payload(p.begin(), p.end())
@@ -127,7 +145,7 @@ inline Frame::Frame(FrameType t, uint32_t id, uint8_t flags)
 }
 
 inline Frame::Frame(FrameType t, uint32_t id, uint8_t flags, Span<uint8_t> p)
-   : _length(HeaderSize + p.size())
+   : _length(p.size())
    , _type(t)
    , _flags(flags)
    , _stream_id(id)
@@ -192,61 +210,98 @@ inline Span<const uint8_t> Frame::get() const
 
 inline std::size_t Frame::encode(Span<uint8_t> b, const Frame& f)
 {
-   std::size_t n = 0u;
-
    // Length
-   encoding::BigEndian::put_uint24(Frame::HeaderSize + f._payload.size(), b);
-   n += 3;
+   encoding::BigEndian::put_uint24(f._payload.size(), b);
 
    // Type
    b[3] = static_cast<uint8_t>(f._type);
-   n += 1;
 
    // Flags
    b[4] = f._flags;
-   n += 1;
 
    // Stream Id
    encoding::BigEndian::put_uint32(f._stream_id, b.subspan(5));
-   n += 4;
 
    if (not f._payload.empty())
    { 
       auto p = b.subspan(Frame::HeaderSize + 1);
       std::copy(std::begin(f._payload), std::end(f._payload), std::begin(p));
-      n += f._payload.size();
    }
-   return n;
+   return Frame::HeaderSize + f._payload.size();
 }
 
-inline std::size_t Frame::decode(Span<const uint8_t> b, Frame& f)
+inline std::size_t Frame::decode(const Settings& s, Span<const uint8_t> b, Frame& f, std::error_code& ec)
 {
-   std::size_t n = 0u;
+   if (b.empty())
+   {
+      return 0u;
+   }
+   
+   if (b.size() < Frame::HeaderSize)
+   {   
+      ec = make_error_code(ErrorCode::InsuffBufsize);
+      return 0u;
+   }
 
    // Length
    f._length = encoding::BigEndian::to_uint24(b);
-   n += 3;
 
    // Type
    f._type = static_cast<FrameType>(b[3]);
-    n += 1;
 
    // Flags
    f._flags = b[4];
-    n += 1;
 
    // Stream Id
-   f._stream_id = encoding::BigEndian::to_uint32(b.subspan(5));
-   n += 4;
+   f._stream_id = encoding::BigEndian::to_uint32(b.subspan(5)) & 0x7FFFFFFFUL;
 
-   if (static_cast<std::size_t>(b.size()) > Frame::HeaderSize)
+   if (f._length > s.get<MaxFrameSize>())
    {
-      auto p = b.subspan(Frame::HeaderSize + 1, f._length - Frame::HeaderSize);
-      f.set(p);
-      n += p.size();
+      ec = make_error_code(ErrorCode::FrameSizeError);
+      return Frame::HeaderSize;
    }
 
-   return n;
+   if (b.size() < Frame::HeaderSize + f._length)
+   {   
+      ec = make_error_code(ErrorCode::InsuffBufsize);
+      return Frame::HeaderSize;
+   }
+
+   if (f._length > 0u)
+   {
+      auto p = b.subspan(Frame::HeaderSize, f._length);
+      f.set(p);
+   }
+
+   return f._length + Frame::HeaderSize;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+inline Frame make_frame(const Settings& s)
+{
+   std::array<uint8_t, 32> data;
+
+   Settings::encode(data, s);
+
+   return {FrameType::SETTINGS, 0, data};
+}
+
+//-------------------------------------------------------------------------------------------------
+
+inline std::ostream& operator<<(std::ostream& os, const Frame& f)
+{
+   static const std::string text = R"(
+Frame:
+   Type      : {}
+   Flags     : {}
+   Stream Id : {}
+   Length    : {}
+)";
+
+   os << fmt::format(text, f.type(), f.flags(), f.stream_id(), f.length());
+
+   return os;
 }
 
 } // namespace http2

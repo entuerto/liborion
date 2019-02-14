@@ -12,6 +12,7 @@
 
 #include <orion/Chrono.h>
 #include <orion/net/http/RequestMux.h>
+#include <orion/net/http2/Frame.h>
 #include <orion/net/http2/Settings.h>
 #include <orion/net/http2/Utils.h>
 
@@ -31,6 +32,14 @@ class Stream;
 class Handler : public std::enable_shared_from_this<Handler>
 {
 public:
+   enum class State : uint8_t
+   {
+      ExpectingPreface,
+      Read,
+      Write,
+      Closed
+   };
+
    Handler(asio::io_context& io_context, http::RequestMux& mux);
 
    ~Handler();
@@ -51,9 +60,14 @@ public:
    /// Signals the connection to write data.
    void signal_write();
 
-   std::error_code on_read(asio::const_buffer buffer, std::size_t len);
+   State state() const;
+   void state(State value);
 
-   std::error_code on_write(asio::mutable_buffer& buffer, std::size_t& len);
+   void submit(const Frame& frame);
+
+   std::error_code on_read(Span<const uint8_t> buffer, std::size_t len);
+
+   std::error_code on_write(Span<uint8_t> buffer, std::size_t& len);
 
    struct Statistics
    {
@@ -75,8 +89,28 @@ public:
    const Statistics& statistics() const { return _statistics; }
 
 private:
+   std::error_code decode_input(Span<const uint8_t> buffer);
+
+   // Frame Handlers
+   //
+   void on_handle_frame(const Frame& frame);
+
+   std::error_code on_handle_settings(const Frame& frame);
+
+   //void handle_data_frame(const Frame& frame);
+   //void handle_goaway_frame(const Frame& frame);
+   //void handle_headers_frame(const Frame& frame);
+   //void handle_priority_frame(const Frame& frame);
+   //void handle_settings_frame(const Frame& frame);
+   //void handle_ping_frame(const Frame& frame);
+   //void handle_altsvc_frame(const Frame& frame);
+   //void handle_origin_frame(const Frame& frame);
+
+private:
    asio::io_context& _io_context;
    http::RequestMux& _mux;
+
+   State _state{State::ExpectingPreface};
 
    Settings _local_settings;
    Settings _remote_settings;

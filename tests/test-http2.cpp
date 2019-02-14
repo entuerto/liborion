@@ -88,21 +88,21 @@ TestCase("Frame - Contruction")
 
    check_eq(f.type(), FrameType::DATA);
    check_eq(f.stream_id(), 0u);
-   check_eq(f.length(), Frame::HeaderSize);
+   check_eq(f.length(), 0u);
 
    Frame f2{FrameType::HEADERS, 1u, FrameFlags::ACK};
 
    check_eq(f2.type(), FrameType::HEADERS);
    check_eq(f2.stream_id(), 1u);
    check_eq(f2.flags(), FrameFlags::ACK);
-   check_eq(f2.length(), Frame::HeaderSize);
+   check_eq(f2.length(), 0u);
 
    Frame f3{FrameType::HEADERS, 1u, FrameFlags::ACK | FrameFlags::END_HEADERS};
 
    check_eq(f3.type(), FrameType::HEADERS);
    check_eq(f3.stream_id(), 1u);
    check_eq(f3.flags(), FrameFlags::ACK | FrameFlags::END_HEADERS);
-   check_eq(f3.length(), Frame::HeaderSize);
+   check_eq(f3.length(), 0u);
 }
 
 TestCase("Frame - fields")
@@ -127,6 +127,8 @@ TestCase("Frame - fields")
 
 TestCase("Frame - encode/decode")
 {
+   std::error_code ec;
+   Settings s;
    std::array<uint8_t, 10> data;
 
    Frame f{FrameType::DATA, 1000u, data};
@@ -139,7 +141,7 @@ TestCase("Frame - encode/decode")
 
    Frame f2{};
 
-   n = Frame::decode(buffer, f2);
+   n = Frame::decode(s, buffer, f2, ec);
 
    check_eq(n, 19u);
 
