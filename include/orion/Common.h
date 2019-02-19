@@ -377,6 +377,13 @@ inline constexpr typename Container::value_type& at(Container& c, std::size_t in
    return c[index];
 }
 
+template<class Container>
+inline constexpr const typename Container::value_type& at(const Container& c, std::size_t index)
+{
+   Expects(index < c.size());
+   return c[index];
+}
+
 template<class T>
 inline constexpr const T& at(std::initializer_list<T> l, std::size_t index)
 {

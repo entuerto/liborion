@@ -76,6 +76,9 @@ public:
    template<typename... Args>
    void fail_if(bool value, Args... args) const;
 
+   template<typename... Args>
+   void fail_if(const std::error_code& ec, Args... args) const;
+
    //
    // Exception handling
    // 

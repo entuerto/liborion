@@ -389,6 +389,32 @@ inline void Test::fail_if(bool value, Args... args) const
 }
 
 template<typename... Args>
+inline void Test::fail_if(const std::error_code& ec, Args... args) const
+{
+   auto t = std::make_tuple(args...);
+
+   if (has_type<Disabled>(t))
+   {
+      auto d = get_value<Disabled>(t, Disabled{});
+
+      _result.log(AssertionSkipped{Message{d}, get_value<SourceLocation>(t, SourceLocation{})});
+      return;
+   }
+
+   if (not ec)
+   {
+      _result.log(AssertionPassed{});
+      return;
+   }
+
+   std::string msg = ec.message();
+
+   get_all_values(StringConcat{msg}, t);
+
+   _result.log(AssertionFailed{Message{msg}, get_value<SourceLocation>(t, SourceLocation{})});
+}
+
+template<typename... Args>
 inline void Test::expected_exception_not_thrown(std::string expr, Args... args) const
 {
    auto t = std::make_tuple(args...);
