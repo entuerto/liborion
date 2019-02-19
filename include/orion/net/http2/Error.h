@@ -49,7 +49,7 @@ enum class ErrorCode
    InvalidState            = -619,
    TemporalCallbackFailure = -621,
    FrameSizeError          = -622, // Used
-   HeaderComp              = -623,
+   HeaderComp              = -623, // Used
    FlowControl             = -624,
    InsuffBufsize           = -625, // Used
    Pause                   = -626,
