@@ -41,6 +41,22 @@ namespace orion
 
 //-------------------------------------------------------------------------------------------------
 
+template<typename Container>
+inline constexpr Container& operator+=(Container& lhs, const Container& rhs)
+{
+   std::copy(std::begin(rhs), std::end(rhs), std::back_inserter(lhs));
+   return lhs;
+}
+
+template<typename Container, typename Container2>
+inline constexpr Container& operator+=(Container& lhs, const Container2& rhs)
+{
+   std::copy(std::begin(rhs), std::end(rhs), std::back_inserter(lhs));
+   return lhs;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 template<typename... T>
 constexpr std::array<typename std::decay<typename std::common_type<T...>::type>::type, sizeof...(T)>
 make_array(T&&... t)

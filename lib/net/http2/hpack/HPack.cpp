@@ -8,6 +8,7 @@
 #include "HPack.h"
 
 #include <orion/Log.h>
+#include <orion/Utils.h>
 #include <orion/net/http2/Error.h>
 
 #include <fmt/format.h>
@@ -22,12 +23,6 @@ namespace http2
 {
 namespace hpack
 {
-
-template<class From, class To>
-inline constexpr void insert_back(const From& from, To& to)
-{
-   std::copy(std::begin(from), std::end(from), std::back_inserter(to));
-}
 
 static constexpr const uint8_t INDEX_NEVER = 0x10;
 static constexpr const uint8_t INDEX_INCREMENTAL = 0x40;
@@ -263,7 +258,7 @@ std::vector<uint8_t> Encoder::encode(const Headers& headers, bool use_huffman)
    // to signal all changes since last emission appropriately.
    if (_header_table.resized())
    {
-      insert_back(encode_table_size_change(), encoded);
+      encoded += encode_table_size_change();
 
       _header_table.resized(false);
    }
@@ -271,9 +266,7 @@ std::vector<uint8_t> Encoder::encode(const Headers& headers, bool use_huffman)
    // Add each header to the header block
    for (const auto& header : headers)
 	{
-		auto enc_header = add(header, not header.indexable, use_huffman);
-
-		insert_back(enc_header, encoded);
+		encoded += add(header, not header.indexable, use_huffman);
 	}
 
    return encoded;
@@ -363,11 +356,11 @@ std::vector<uint8_t> Encoder::encode_literal(const Header& h, uint8_t indexbit, 
       // Encode name
       _huffman.encode(h.name, enc_nv);
 
-      auto name_len  = encode_integer(enc_nv.size(), 7);
-      name_len[0]  |= 0x80;
+      auto name_len = encode_integer(enc_nv.size(), 7);
+      name_len[0] |= 0x80;
 
-      insert_back(name_len, enc_bytes);
-      insert_back(enc_nv, enc_bytes);
+      enc_bytes += name_len;
+      enc_bytes += enc_nv;
 
       enc_nv.clear();
 
@@ -377,19 +370,16 @@ std::vector<uint8_t> Encoder::encode_literal(const Header& h, uint8_t indexbit, 
       auto value_len = encode_integer(enc_nv.size(), 7);
       value_len[0] |= 0x80;
 
-      insert_back(value_len, enc_bytes);
-      insert_back(enc_nv, enc_bytes);
+      enc_bytes += value_len;
+      enc_bytes += enc_nv;
       
       return enc_bytes;
    }
 
-   auto name_len  = encode_integer(h.name.size(), 7);
-   auto value_len = encode_integer(h.value.size(), 7);
-
-   insert_back(name_len, enc_bytes);
-   insert_back(h.name, enc_bytes);
-   insert_back(value_len, enc_bytes);
-   insert_back(h.value, enc_bytes);
+   enc_bytes += encode_integer(h.name.size(), 7);
+   enc_bytes += h.name;
+   enc_bytes += encode_integer(h.value.size(), 7);
+   enc_bytes += h.value;
 
    return enc_bytes;
 }
@@ -414,16 +404,16 @@ std::vector<uint8_t> Encoder::encode_indexed_literal(int index,
       auto enc_value_len = encode_integer(enc_value.size(), 7);
       enc_value_len[0] |= 0x80;
 
-      insert_back(enc_value_len, prefix);
-      insert_back(enc_value, prefix);
+      prefix += enc_value_len;
+      prefix += enc_value;
 
       return prefix;
    }
 
    auto value_len = encode_integer(value.size(), 7);
 
-   insert_back(value_len, prefix);
-   insert_back(value, prefix);
+   prefix += value_len;
+   prefix += value;
 
    return prefix;
 }
@@ -438,7 +428,7 @@ std::vector<uint8_t> Encoder::encode_table_size_change()
 		std::vector<uint8_t> size_bytes = encode_integer(table_size, 5);
 		size_bytes[0] |= 0x20;
 
-		insert_back(size_bytes, block);
+      block += size_bytes;
 	}
 
 	_table_size_changes.clear();

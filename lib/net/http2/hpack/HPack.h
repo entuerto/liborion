@@ -35,7 +35,8 @@ struct Header
    std::string value;
    bool indexable{true};
 
-   std::size_t size() const { return name.size() + value.size(); }
+   // Calculates the size of a single entry + 32
+   std::size_t size() const { return name.size() + value.size() + 32; }
 };
 
 inline bool operator==(const Header& h1, const Header& h2) noexcept
