@@ -31,11 +31,6 @@ void HuffmanEncoder::encode(std::string_view str, std::vector<uint8_t>& bytes_en
 
 void HuffmanEncoder::encode(Span<const uint8_t> bytes_to_encode, std::vector<uint8_t>& bytes_encoded)
 {
-   if (bytes_to_encode.empty())
-   {
-      return;
-   }
-
    uint64_t code = 0;
    int bits      = 0;
 

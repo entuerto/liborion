@@ -12,7 +12,7 @@
 
 #include <fmt/format.h>
 
-#include <map>
+#include <iterator>
 
 namespace orion
 {
@@ -23,15 +23,23 @@ namespace http2
 namespace hpack
 {
 
+template<class From, class To>
+inline constexpr void insert_back(const From& from, To& to)
+{
+   std::copy(std::begin(from), std::end(from), std::back_inserter(to));
+}
+
+static constexpr const uint8_t INDEX_NEVER = 0x10;
+static constexpr const uint8_t INDEX_INCREMENTAL = 0x40;
+
 static constexpr auto PREFIX_BIT_MAX_NUMBERS =
    std::array<uint8_t, 9>{{0, 1, 3, 7, 15, 31, 63, 127, 255}};
 
 //--------------------------------------------------------------------------------------------------
 //
-static constexpr const int HPACK_STATIC_TABLE_SIZE{61};
 
 // Constant list of static headers. See RFC7541 Section 2.3.1 and Appendix A
-static const std::array<Header, HPACK_STATIC_TABLE_SIZE> STATIC_TABLE = {
+static const std::array<Header, STATIC_TABLE_SIZE> STATIC_TABLE = {
    {{":authority", ""},
     {":method", "GET"},
     {":method", "POST"},
@@ -94,68 +102,50 @@ static const std::array<Header, HPACK_STATIC_TABLE_SIZE> STATIC_TABLE = {
     {"via", ""},
     {"www-authenticate", ""}}};
 
+//-------------------------------------------------------------------------------------------------
 
+// Calculates the size of a single entry
+// 
+// The 32 extra bytes are considered the "maximum" overhead that would be required to 
+// represent each entry in the table.
+//
+// See RFC7541 Section 4.1
+inline constexpr uint64_t table_entry_size(std::string_view name, std::string_view value)
+{
+   return name.size() + value.size() + 32;
+}
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 // HeaderTable implementation
 
 void HeaderTable::max_size(uint32_t value)
 {
    log::debug2(fmt::format("Resizing header table to {} from {}", value, _max_size));
 
+   _resized = _max_size != value;
+
    _max_size = value;
+
+   if (value <= 0)
+   {
+      _entries.clear();
+      _current_size = 0u;
+   }
 
    shrink();
 }
 
 uint64_t HeaderTable::size() const
 {
-   uint64_t s = 0;
+   return _current_size;
+}
 
-   for (const auto& item : _entries)
-   {
-      uint64_t nl = item.name.length();
-      uint64_t vl = item.value.length();
-      uint64_t tl = 0;
-
-      if (vl > std::numeric_limits<uint64_t>::max() or
-          nl > std::numeric_limits<uint64_t>::max() - vl)
-         throw std::runtime_error("HeaderTable::size() Additive integer overflow encountered");
-
-      tl = nl + vl;
-
-      if (tl > std::numeric_limits<uint64_t>::max() - s)
-         throw std::runtime_error("HeaderTable::size() Additive integer overflow encountered");
-
-      s += tl;
-   }
-
-   return s;
+void HeaderTable::resized(bool value)
+{
+   _resized = value;
 }
 
 const Header& HeaderTable::at(std::size_t idx) const
-{
-   // Adjust for 0 base arrays
-   --idx;
-
-   if (idx > _entries.size())
-   {
-      if (idx < HPACK_STATIC_TABLE_SIZE)
-      {   
-         throw std::runtime_error{"HeaderTable::at(): Invalid/out-of-bounds index specified"};
-      }
-
-      idx -= HPACK_STATIC_TABLE_SIZE;
-
-      if (idx > _entries.size())
-      {
-         throw std::runtime_error{"HeaderTable::at(): Invalid/out-of-bounds index specified"};
-      }
-   }
-   return ::orion::at(_entries, idx);
-}
-
-const Header& HeaderTable::header(std::size_t idx) const
 {
    // Adjust for 0 base arrays
    --idx;
@@ -165,57 +155,296 @@ const Header& HeaderTable::header(std::size_t idx) const
       return STATIC_TABLE.at(idx);
    }
    
-   if (idx > STATIC_TABLE.size() and idx < STATIC_TABLE.size() + _entries.size())
+   idx -= STATIC_TABLE.size();
+   if (idx < _entries.size())
    {
-      return _entries.at(idx - STATIC_TABLE.size());
+      return _entries.at(idx);
    }
 
-   throw std::runtime_error("HPACK::ringtable_t::get_header(): Invalid index/header not found");
+   throw_exception<HeaderTableError>(fmt::format("Invalid table index {}", idx + 1), DbgSrcLoc);
 }
 
 void HeaderTable::add(const std::string& name, const std::string& value)
 {
-   const auto size = name.length() + value.length();
+   const auto size = table_entry_size(name, value);
 
    // We just clear the table if the entry is too big
    if (size > _max_size)
-      throw std::runtime_error("HeaderTable::add(): Entry is too big.");
+   {
+      _entries.clear();
+      _current_size = 0u;
+      return;
+   }
+
+   // Add new entry
+   _entries.emplace_front(Header{name, value});
+   _current_size += size;
 
    shrink();
-
-   _entries.emplace_front(Header{name, value});
 }
 
-std::optional<int> HeaderTable::find(const std::string& name, const std::string& value) const
+void HeaderTable::add(const Header& h)
 {
-   int idx = 0;
+   add(h.name, h.value);
+}
 
-   for (const auto& item : _entries)
+std::optional<HeaderTable::Result> HeaderTable::find(const std::string& name, const std::string& value) const
+{
+   std::optional<Result> partial;
+
+   std::size_t idx = 1;
+
+   for (const auto& item : STATIC_TABLE)
    {
       if (item.name == name and item.value == value)
       {
-         return STATIC_TABLE.size() + idx;
+         return Result{idx, item.name, item.value};
       }
       
       if (item.name == name)
       {
-         return STATIC_TABLE.size() + idx;
+         partial = Result{idx, item.name, {}};
+         break;
       }
       ++idx;
    }
-   return {};
+
+   idx = STATIC_TABLE_SIZE + 1;
+   for (const auto& item : _entries)
+   {
+      if (item.name == name and item.value == value)
+      {
+         return Result{idx, item.name, item.value};
+      }
+
+      if (item.name == name)
+      {
+         return Result{idx, item.name, {}};
+      }
+   }
+
+   return partial;
 }
 
 void HeaderTable::shrink()
 {
-   while (size() >= _max_size)
+   while (_current_size >= _max_size)
    {
+      const auto& h = _entries.back();
+
+      _current_size -= table_entry_size(h.name, h.value);
+
+      log::debug2(fmt::format("Evicting {}: {} from the header table", h.name, h.value));
+
       _entries.pop_back();
    }
 }
 
 //--------------------------------------------------------------------------------------------------
 // Encoder implementation
+
+// Controls the size of the HPACK header table.
+void Encoder::header_table_size(uint32_t value)
+{
+   _header_table.max_size(value);
+
+   if (_header_table.resized())
+   {
+      _table_size_changes.emplace_back(value);
+   }
+}
+
+/// Takes a set of headers and encodes them into a HPACK-encoded header block.
+std::vector<uint8_t> Encoder::encode(const Headers& headers, bool use_huffman)
+{
+   std::vector<uint8_t> encoded;
+
+   // Before we begin, if the header table size has been changed we need
+   // to signal all changes since last emission appropriately.
+   if (_header_table.resized())
+   {
+      insert_back(encode_table_size_change(), encoded);
+
+      _header_table.resized(false);
+   }
+            
+   // Add each header to the header block
+   for (const auto& header : headers)
+	{
+		auto enc_header = add(header, not header.indexable, use_huffman);
+
+		insert_back(enc_header, encoded);
+	}
+
+   return encoded;
+}
+
+/// This function takes a header key-value and serializes it.
+std::vector<uint8_t> Encoder::add(const Header& h, bool is_sensitive, bool use_huffman)
+{
+   // Set our indexing mode
+   const uint8_t indexbit = (is_sensitive) ? INDEX_NEVER : INDEX_INCREMENTAL;
+
+   // Search for a matching header in the header table.
+   auto result = _header_table.find(h.name, h.value);
+
+   if (not result)
+   {
+      // Not in the header table. Encode using the literal syntax,
+      // and add it to the header table.
+      if (not is_sensitive)
+      {
+         _header_table.add(h.name, h.value);
+      }
+      return encode_literal(h, indexbit, use_huffman);
+   }
+
+   // The header is in the table, break out the values. If we matched
+   // perfectly, we can use the indexed representation: otherwise we
+   // can use the indexed literal.
+   if (not result->value.empty())
+   {
+      return encode_indexed(result->index);
+   }
+
+   if (not is_sensitive)
+   {
+      _header_table.add(h.name, h.value);
+   }
+   return encode_indexed_literal(result->index, h.value, indexbit, use_huffman);
+}
+
+// This encodes an integer according to the integer encoding rules defined in the HPACK spec.
+std::vector<uint8_t> Encoder::encode_integer(uint32_t integer, uint8_t prefix_bits)
+{
+   Expects(prefix_bits >= 1 and prefix_bits <= 8);
+
+   const auto& max_number = PREFIX_BIT_MAX_NUMBERS[prefix_bits];
+
+   if (integer < max_number)
+   {
+      return {static_cast<uint8_t>(integer)};
+   }
+
+   std::vector<uint8_t> enc_bytes{max_number};
+   integer -= max_number;
+
+   while (integer >= 128)
+   {
+      enc_bytes.emplace_back((integer & 0x7f) + 0x80);
+      integer >>= 7;
+   }
+
+   enc_bytes.emplace_back(integer);
+
+   return enc_bytes;
+}
+
+/// Encodes a header using the indexed representation.
+std::vector<uint8_t> Encoder::encode_indexed(int index)
+{
+	auto field = encode_integer(index, 7);
+	field[0] |= 0x80;
+
+	return field;
+}
+
+/// Encodes a header with a literal name and literal value. If ``indexing``
+/// is True, the header will be added to the header table: otherwise it
+/// will not.
+std::vector<uint8_t> Encoder::encode_literal(const Header& h, uint8_t indexbit, bool use_huffman)
+{
+   std::vector<uint8_t> enc_bytes{indexbit};
+
+   if (use_huffman)
+   {
+      std::vector<uint8_t> enc_nv;
+
+      // Encode name
+      _huffman.encode(h.name, enc_nv);
+
+      auto name_len  = encode_integer(enc_nv.size(), 7);
+      name_len[0]  |= 0x80;
+
+      insert_back(name_len, enc_bytes);
+      insert_back(enc_nv, enc_bytes);
+
+      enc_nv.clear();
+
+      // Encode value
+      _huffman.encode(h.value, enc_nv);
+
+      auto value_len = encode_integer(enc_nv.size(), 7);
+      value_len[0] |= 0x80;
+
+      insert_back(value_len, enc_bytes);
+      insert_back(enc_nv, enc_bytes);
+      
+      return enc_bytes;
+   }
+
+   auto name_len  = encode_integer(h.name.size(), 7);
+   auto value_len = encode_integer(h.value.size(), 7);
+
+   insert_back(name_len, enc_bytes);
+   insert_back(h.name, enc_bytes);
+   insert_back(value_len, enc_bytes);
+   insert_back(h.value, enc_bytes);
+
+   return enc_bytes;
+}
+
+/// Encodes a header with an indexed name and a literal value and performs incremental indexing.
+std::vector<uint8_t> Encoder::encode_indexed_literal(int index,
+                                                     const std::string& value,
+                                                     uint8_t indexbit,
+                                                     bool use_huffman)
+{
+   std::vector<uint8_t> prefix =
+      (indexbit != INDEX_INCREMENTAL) ? encode_integer(index, 4) : encode_integer(index, 6);
+
+   prefix[0] |= indexbit;
+
+   if (use_huffman)
+   {
+      std::vector<uint8_t> enc_value;
+
+      _huffman.encode(value, enc_value);
+
+      auto enc_value_len = encode_integer(enc_value.size(), 7);
+      enc_value_len[0] |= 0x80;
+
+      insert_back(enc_value_len, prefix);
+      insert_back(enc_value, prefix);
+
+      return prefix;
+   }
+
+   auto value_len = encode_integer(value.size(), 7);
+
+   insert_back(value_len, prefix);
+   insert_back(value, prefix);
+
+   return prefix;
+}
+
+/// Produces the encoded form of all header table size change context updates.
+std::vector<uint8_t> Encoder::encode_table_size_change()
+{
+	std::vector<uint8_t> block;
+
+	for (const auto& table_size : _table_size_changes)
+	{
+		std::vector<uint8_t> size_bytes = encode_integer(table_size, 5);
+		size_bytes[0] |= 0x20;
+
+		insert_back(size_bytes, block);
+	}
+
+	_table_size_changes.clear();
+
+	return block;
+}
 
 //--------------------------------------------------------------------------------------------------
 // Decoder implementation
@@ -228,10 +457,7 @@ void HeaderTable::shrink()
 ///    second = consumed bytes
 std::pair<int, int> Decoder::decode_integer(Span<const uint8_t> data, int prefix_bits)
 {
-   if (prefix_bits < 1 or prefix_bits > 8)
-   {
-      throw std::invalid_argument("ValueError(Prefix bits must be between 1 and 8)");
-   }
+   Expects(prefix_bits >= 1 and prefix_bits <= 8);
 
    const auto& max_number = PREFIX_BIT_MAX_NUMBERS[prefix_bits];
 
@@ -276,7 +502,7 @@ std::pair<Header, int> Decoder::decode_indexed(Span<const uint8_t> data)
 {
    const auto [index, consumed] = decode_integer(data, 7);
 
-   const auto& h = _header_table.header(index);
+   const auto& h = _header_table.at(index);
 
    //log::debug2(fmt::format("Decoded {}, consumed {}", h, consumed));
 
@@ -372,7 +598,7 @@ int Decoder::update_encoding_context(Span<const uint8_t> data)
 
 	if (new_size > _max_header_list_size)
 	{
-		throw std::runtime_error("InvalidTableSizeError: Encoder exceeded max allowable table size");
+      throw_exception<HeaderTableError>("Encoder exceeded max allowable table size", DbgSrcLoc);
 	}
 
 	_header_table.max_size(new_size);
@@ -421,7 +647,7 @@ std::pair<Header, int> Decoder::decode_literal(Span<const uint8_t> data, bool sh
 		const auto [index, pos] = decode_integer(data, name_len);
 		consumed = pos;
 
-		name = _header_table.header(index).name;
+		name = _header_table.at(index).name;
 
 		total_consumed = consumed;
 	}

@@ -156,6 +156,67 @@ TestCase("Frame - encode/decode")
 
 }
 
+TestCase("HeaderTable - Dynamic table by index")
+{
+   hpack::HeaderTable ht;
+
+   hpack::Header h{"TestName", "TestValue"};
+
+   ht.add(h);
+
+   auto res_hd = ht.at(hpack::STATIC_TABLE_SIZE + 1);
+
+   check_true(h == res_hd);
+}
+
+TestCase("HeaderTable - Static table by index")
+{
+   hpack::HeaderTable ht;
+
+   hpack::Header h{":authority", ""};
+
+   auto res_hd = ht.at(1);
+
+   check_true(h == res_hd);
+
+   hpack::Header h2{"www-authenticate", ""};
+
+   res_hd = ht.at(hpack::STATIC_TABLE_SIZE);
+
+   check_true(h2 == res_hd);
+}
+
+TestCase("HeaderTable - Index zero")
+{
+   hpack::HeaderTable ht;
+
+   check_throws(ht.at(0));
+}
+
+TestCase("HeaderTable - Out of range")
+{
+   hpack::HeaderTable ht;
+
+   hpack::Header h{"TestName", "TestValue"};
+
+   ht.add(h);
+
+   check_throws(ht.at(hpack::STATIC_TABLE_SIZE + 2));
+}
+
+TestCase("HeaderTable - To large")
+{
+   hpack::HeaderTable ht;
+
+   ht.max_size(1);
+
+   hpack::Header h{"TestName", "TestValue"};
+
+   ht.add(h);
+
+   
+}
+
 struct TestHuffmanData
 {
    std::string text;
@@ -411,6 +472,60 @@ TestCase("HPack - Decode request with huffman consecutive header sets")
    check_eq(request_headers3.size(), res.headers.size());
 
    check_true(request_headers3 == res.headers);
+}
+
+TestCase("HPack - Encode index header field")
+{
+   hpack::Encoder enc;
+
+   std::vector<uint8_t> result = {0x82};
+
+   std::vector<hpack::Header> headers{
+      hpack::Header{":method", "GET"}
+   };
+
+   auto data = enc.encode(headers, true);
+
+   check_true(std::equal(std::begin(result), std::end(result), 
+                         std::begin(data), std::end(data)));
+}
+
+TestCase("HPack - Encode literal header field with indexing")
+{
+   hpack::Encoder enc;
+
+   std::vector<uint8_t> result = {0x40, 0x0a, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x2d, 0x6b, 
+                                  0x65, 0x79, 0x0d, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x2d, 
+                                  0x68, 0x65, 0x61, 0x64, 0x65, 0x72};
+
+   std::vector<hpack::Header> headers{
+      hpack::Header{"custom-key", "custom-header"}
+   };
+
+   auto data = enc.encode(headers, false);
+
+   check_true(std::equal(std::begin(result), std::end(result), 
+                         std::begin(data), std::end(data)));
+}
+
+TestCase("HPack - Encode header values")
+{
+   hpack::Encoder enc;
+
+   std::vector<uint8_t> result = {0x82, 0x14, 0x88, 0x63, 0xa1, 0xa9, 0x32, 0x08, 0x73, 0xd0, 
+                                  0xc7, 0x10, 0x87, 0x25, 0xa8, 0x49, 0xe9, 0xea, 0x5f, 0x5f, 
+                                  0x89, 0x41, 0x6a, 0x41, 0x92, 0x6e, 0xe5, 0x35, 0x52, 0x9f};
+
+   std::vector<hpack::Header> headers{
+      hpack::Header{":method", "GET", false},
+      hpack::Header{":path", "/jimiscool/", false},
+      hpack::Header{"customkey", "sensitiveinfo", false}
+   };
+
+   auto data = enc.encode(headers, true);
+
+   check_true(std::equal(std::begin(result), std::end(result), 
+                         std::begin(data), std::end(data)));
 }
 
 TestCase("Server - Contruction")
