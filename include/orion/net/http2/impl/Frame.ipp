@@ -48,8 +48,10 @@ inline std::string to_string(FrameType ft)
          return "WINDOW_UPDATE(0x8)";
       case FrameType::CONTINUATION:
          return "CONTINUATION(0x9)";
-      case FrameType::UNKNOWN:
-         return "UNKNOWN(0xa)";
+      case FrameType::ALTSVC:
+         return "ALTSVC(0xa)";
+      case FrameType::ORIGIN:
+         return "ORIGIN(0xc)";
       default:
          AssertUnreachable("Invalid FrameType");
          break;

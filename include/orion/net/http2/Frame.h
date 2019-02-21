@@ -37,7 +37,9 @@ enum class FrameType : uint8_t
    GOAWAY        = 0x7,
    WINDOW_UPDATE = 0x8,
    CONTINUATION  = 0x9,
-   UNKNOWN       = 0xa
+   ALTSVC        = 0xa,
+   ORIGIN        = 0xc,
+   UNKNOWN       = 0xd
 };
 
 /// Convert to a string
