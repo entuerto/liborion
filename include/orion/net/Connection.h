@@ -23,6 +23,27 @@ namespace orion
 {
 namespace net
 {
+//-------------------------------------------------------------------------------------------------
+// ConnectionState
+
+/// A ConnectionState represents the state of a client connection to a server.
+enum class ConnectionState 
+{
+   // New represents a new connection that is expected to send/receive a request immediately. 
+   // Connections begin at this state and then transition to either Active or Closed.
+   New,
+   // Active represents a connection that has read 1 or more bytes.
+   Active,
+   // Idle represents a connection that has finished handling a request and is in the keep-alive 
+   // state, waiting for a new request. Connections transition from Idle to either Active or Closed.
+   Idle,
+   // Closed represents a closed connection. This is a terminal state. 
+   Closed
+};
+
+//-------------------------------------------------------------------------------------------------
+// Connection
+
 /// This class provides a generic network connection
 ///
 /// Connection is a generic stream-oriented network connection.
@@ -41,16 +62,16 @@ public:
    void close();
 
    /// Returns the local network address.
-   const EndPoint& local_endpoint() const;
+   constexpr const EndPoint& local_endpoint() const;
 
    /// Set the local network address.
-   void local_endpoint(const EndPoint& value);
+   constexpr void local_endpoint(const EndPoint& value);
 
    /// Returns the remote network address.
-   const EndPoint& remote_endpoint() const;
+   constexpr const EndPoint& remote_endpoint() const;
 
    /// Set the remote network address.
-   void remote_endpoint(const EndPoint& value);
+   constexpr void remote_endpoint(const EndPoint& value);
 
    /// Sets the read and write timeouts associated
    /// with the connection. It is equivalent to calling both
@@ -60,34 +81,40 @@ public:
    /// fail with a timeout instead of blocking.
    ///
    /// A zero value for t means I/O operations will not time out.
-   std::error_code timeouts(const std::chrono::seconds& sec);
+   constexpr void timeouts(std::chrono::seconds sec);
 
    /// Get the current value of the read and write timeout.
-   std::chrono::seconds timeouts() const;
+   constexpr std::chrono::seconds timeouts() const;
 
    /// Sets the timeout for future Read calls.
    /// A zero value for t means Read will not time out.
-   std::error_code read_timeout(const std::chrono::seconds& sec);
+   constexpr void read_timeout(std::chrono::seconds sec);
 
    /// Get the current value of the read timeout.
-   std::chrono::seconds read_timeout() const;
+   constexpr std::chrono::seconds read_timeout() const;
 
    /// Sets the timeout for future Write calls.
    /// A zero value for t means Write will not time out.
-   std::error_code write_timeout(const std::chrono::seconds& sec);
+   constexpr void write_timeout(std::chrono::seconds sec);
 
    /// Get the current value of the write timeout.
-   std::chrono::seconds write_timeout() const;
+   constexpr std::chrono::seconds write_timeout() const;
 
-   SocketT& socket();
+   constexpr SocketT& socket();
+
+   /// Gets the state of the connection
+   constexpr ConnectionState state() const;
+
+    /// Sets the state of the connection
+   constexpr void state(ConnectionState value);
 
    void accept();
 
    void start_read_timer();
    void start_write_timer();
 
-   asio::steady_timer& read_timeout_timer();
-   asio::steady_timer& write_timeout_timer();
+   constexpr asio::steady_timer& read_timeout_timer();
+   constexpr asio::steady_timer& write_timeout_timer();
 
 protected:
    void dump_socket_options();
@@ -117,6 +144,8 @@ private:
 
    asio::steady_timer _read_timeout_timer;
    asio::steady_timer _write_timeout_timer;
+
+   ConnectionState _state{ConnectionState::New};
 };
 
 /// Sets whether the operating system should send keepalive messages on the connection.

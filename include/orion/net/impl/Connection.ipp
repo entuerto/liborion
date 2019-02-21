@@ -76,68 +76,67 @@ void Connection<SocketT>::close()
 
    read_timeout_timer().cancel();
    write_timeout_timer().cancel();
+
+   _state = ConnectionState::Closed;
 }
 
 template<typename SocketT>
-const EndPoint& Connection<SocketT>::local_endpoint() const
+constexpr const EndPoint& Connection<SocketT>::local_endpoint() const
 {
    return _local_endpoint;
 }
 
 template<typename SocketT>
-void Connection<SocketT>::local_endpoint(const EndPoint& value)
+constexpr void Connection<SocketT>::local_endpoint(const EndPoint& value)
 {
    _local_endpoint = value;
 }
 
 template<typename SocketT>
-const EndPoint& Connection<SocketT>::remote_endpoint() const
+constexpr const EndPoint& Connection<SocketT>::remote_endpoint() const
 {
    return _remote_endpoint;
 }
 
 template<typename SocketT>
-void Connection<SocketT>::remote_endpoint(const EndPoint& value)
+constexpr void Connection<SocketT>::remote_endpoint(const EndPoint& value)
 {
    _remote_endpoint = value;
 }
 
 template<typename SocketT>
-std::error_code Connection<SocketT>::timeouts(const std::chrono::seconds& sec)
+constexpr void Connection<SocketT>::timeouts(std::chrono::seconds sec)
 {
-   _read_timeout  = sec;
-   _write_timeout = sec;
-   return std::error_code();
+   _read_timeout  = std::move(sec);
+   _write_timeout = _read_timeout;
 }
 
 template<typename SocketT>
-std::chrono::seconds Connection<SocketT>::timeouts() const
-{
-   return _read_timeout;
-}
-
-template<typename SocketT>
-std::error_code Connection<SocketT>::read_timeout(const std::chrono::seconds& sec)
-{
-   _read_timeout = sec;
-   return std::error_code();
-}
-
-template<typename SocketT>
-std::chrono::seconds Connection<SocketT>::read_timeout() const
+constexpr std::chrono::seconds Connection<SocketT>::timeouts() const
 {
    return _read_timeout;
 }
 
 template<typename SocketT>
-std::error_code Connection<SocketT>::write_timeout(const std::chrono::seconds& sec)
+constexpr void Connection<SocketT>::read_timeout(std::chrono::seconds sec)
 {
-   _write_timeout = sec;
-   return std::error_code();
+   _read_timeout = std::move(sec);
 }
 
 template<typename SocketT>
-std::chrono::seconds Connection<SocketT>::write_timeout() const
+constexpr std::chrono::seconds Connection<SocketT>::read_timeout() const
+{
+   return _read_timeout;
+}
+
+template<typename SocketT>
+constexpr void Connection<SocketT>::write_timeout(std::chrono::seconds sec)
+{
+   _write_timeout = std::move(sec);
+}
+
+template<typename SocketT>
+constexpr std::chrono::seconds Connection<SocketT>::write_timeout() const
 {
    return _write_timeout;
 }
@@ -193,21 +192,33 @@ void Connection<SocketT>::start_write_timer()
 }
 
 template<typename SocketT>
-asio::steady_timer& Connection<SocketT>::read_timeout_timer()
+constexpr asio::steady_timer& Connection<SocketT>::read_timeout_timer()
 {
    return _read_timeout_timer;
 }
 
 template<typename SocketT>
-asio::steady_timer& Connection<SocketT>::write_timeout_timer()
+constexpr asio::steady_timer& Connection<SocketT>::write_timeout_timer()
 {
    return _write_timeout_timer;
 }
 
 template<typename SocketT>
-SocketT& Connection<SocketT>::socket()
+constexpr SocketT& Connection<SocketT>::socket()
 {
    return _socket;
+}
+
+template<typename SocketT>
+constexpr ConnectionState Connection<SocketT>::state() const
+{
+   return _state;
+}
+
+template<typename SocketT>
+constexpr void Connection<SocketT>::state(ConnectionState value)
+{
+   _state = value;
 }
 
 template<typename SocketT>
