@@ -14,7 +14,10 @@
 #include <orion/net/http/RequestMux.h>
 #include <orion/net/http2/Frame.h>
 #include <orion/net/http2/Settings.h>
+#include <orion/net/http2/Stream.h>
 #include <orion/net/http2/Utils.h>
+
+#include <net/http2/hpack/HPack.h>
 
 #include <map>
 #include <string>
@@ -84,27 +87,39 @@ public:
    };
 
    /// Returns the handlers running statistics
-   Statistics& statistics() { return _statistics; }
+   constexpr Statistics& statistics() { return _statistics; }
    /// Returns the handlers running statistics
-   const Statistics& statistics() const { return _statistics; }
+   constexpr const Statistics& statistics() const { return _statistics; }
 
 private:
+   /// Initialise internal value/structures
+   void init();
+
+   /// Create a new stream
+   Stream* new_stream(uint32_t stream_id);
+   /// Get an existing stream
+   Stream* get_stream(uint32_t stream_id);
+
    std::error_code decode_input(Span<const uint8_t> buffer);
+
+   void update_streams_output_window(uint32_t out_window_size);
 
    // Frame Handlers
    //
    void on_handle_frame(const Frame& frame);
 
+   std::error_code on_handle_data(const Frame& frame);
+   std::error_code on_handle_headers(const Frame& frame);
+   std::error_code on_handle_priority(const Frame& frame);
+   std::error_code on_handle_rst_stream(const Frame& frame);
    std::error_code on_handle_settings(const Frame& frame);
-
-   //void handle_data_frame(const Frame& frame);
-   //void handle_goaway_frame(const Frame& frame);
-   //void handle_headers_frame(const Frame& frame);
-   //void handle_priority_frame(const Frame& frame);
-   //void handle_settings_frame(const Frame& frame);
-   //void handle_ping_frame(const Frame& frame);
-   //void handle_altsvc_frame(const Frame& frame);
-   //void handle_origin_frame(const Frame& frame);
+   std::error_code on_handle_push_promise(const Frame& frame);
+   std::error_code on_handle_ping(const Frame& frame);
+   std::error_code on_handle_goaway(const Frame& frame);
+   std::error_code on_handle_window_update(const Frame& frame);
+   std::error_code on_handle_continuation(const Frame& frame);
+   std::error_code on_handle_altsvc(const Frame& frame);
+   std::error_code on_handle_origin(const Frame& frame);
 
 private:
    asio::io_context& _io_context;
@@ -115,7 +130,13 @@ private:
    Settings _local_settings;
    Settings _remote_settings;
 
+   hpack::Decoder _decoder;
+
    Statistics _statistics;
+
+   std::map<int32_t, Stream> _streams;
+
+   std::array<std::function<std::error_code(const Frame&)>, 13> _frame_dispatch;
 };
 
 } // namespace http2

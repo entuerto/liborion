@@ -1148,6 +1148,7 @@ def declare_build_targets(platform, static_libraries, shared_libraries, executab
          'lib/net/http2/Server.cpp',
          'lib/net/http2/BasicServerImpl.cpp',
          'lib/net/http2/ServerConnection.cpp',         
+         'lib/net/http2/Stream.cpp',         
          'lib/net/http2/hpack/HPack.cpp',
          'lib/net/http2/hpack/Huffman.cpp',
          # TCP files

@@ -24,9 +24,17 @@ namespace http2
 ///
 enum class ErrorCode
 {
-   SettingsInvalidAck      = -501,
-   SettingsInvalidFrame    = -502,
-   SettingsInvalidStreamId = -503,
+   SettingsInvalidAck          = -501,
+   SettingsInvalidFrame        = -502,
+   SettingsInvalidStreamId     = -503,
+   SettingsFrameSizeError      = -504,
+   RstStreamInvalidStreamId    = -505,
+   RstStreamFrameSizeError     = -506,
+   PushPromiseInvalidStreamId  = -507,
+   GoAwayInvalidStreamId       = -508,
+   ContinuationInvalidStreamId = -509,
+   HeadersInvalidStreamId      = -510,
+   TooManyStreams              = -550,
 
    InvalidArgument         = -601,
    BufferError             = -602,

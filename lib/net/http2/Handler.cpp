@@ -38,6 +38,7 @@ Handler::Handler(asio::io_context& io_context, http::RequestMux& mux)
    : _io_context(io_context)
    , _mux(mux)
 {
+   init();
 }
 
 Handler::~Handler()
@@ -91,6 +92,78 @@ void Handler::state(State value)
 void Handler::submit(const Frame& frame)
 {
 
+}
+
+void Handler::init()
+{
+   // Set up the frame dispatch table
+   _frame_dispatch[static_cast<int>(FrameType::DATA)] = 
+      [&](const Frame& frame) -> std::error_code { return on_handle_data(frame); };
+   _frame_dispatch[static_cast<int>(FrameType::HEADERS)] =
+      [&](const Frame& frame) -> std::error_code { return on_handle_headers(frame); };
+   _frame_dispatch[static_cast<int>(FrameType::PRIORITY)] =
+      [&](const Frame& frame) -> std::error_code { return on_handle_priority(frame); };
+   _frame_dispatch[static_cast<int>(FrameType::RST_STREAM)] =
+      [&](const Frame& frame) -> std::error_code { return on_handle_rst_stream(frame); };
+   _frame_dispatch[static_cast<int>(FrameType::SETTINGS)] =
+      [&](const Frame& frame) -> std::error_code { return on_handle_settings(frame); };
+   _frame_dispatch[static_cast<int>(FrameType::PUSH_PROMISE)] =
+      [&](const Frame& frame) -> std::error_code { return on_handle_push_promise(frame); };
+   _frame_dispatch[static_cast<int>(FrameType::PING)] = 
+      [&](const Frame& frame) -> std::error_code { return on_handle_ping(frame); };
+   _frame_dispatch[static_cast<int>(FrameType::GOAWAY)] =
+      [&](const Frame& frame) -> std::error_code { return on_handle_goaway(frame); };
+   _frame_dispatch[static_cast<int>(FrameType::WINDOW_UPDATE)] =
+      [&](const Frame& frame) -> std::error_code { return on_handle_window_update(frame); };
+   _frame_dispatch[static_cast<int>(FrameType::CONTINUATION)] =
+      [&](const Frame& frame) -> std::error_code { return on_handle_continuation(frame); };
+   _frame_dispatch[static_cast<int>(FrameType::ALTSVC)] =
+      [&](const Frame& frame) -> std::error_code { return on_handle_altsvc(frame); };
+   _frame_dispatch[0xb] = 
+      [](const Frame& frame) -> std::error_code { return make_error_code(ErrorCode::PROTOCOL_ERROR); };
+   _frame_dispatch[static_cast<int>(FrameType::ORIGIN)] =
+      [&](const Frame& frame) -> std::error_code { return on_handle_origin(frame); };
+
+}
+
+Stream* Handler::new_stream(uint32_t stream_id)
+{
+   Stream s{stream_id,
+            _local_settings.get<InitialWindowSize>(),
+            _remote_settings.get<InitialWindowSize>()};
+
+   auto r = _streams.emplace(stream_id, std::move(s));
+
+   auto size = _streams.size();
+   if (size > _statistics.max_concurrent_streams)
+      _statistics.max_concurrent_streams = size;
+
+   // _highest_inbound_stream_id = stream_id;
+
+   log::debug2("Create new stream Id ", stream_id);
+
+   ++_statistics.stream_count;
+
+   return &(*r.first).second;
+}
+
+Stream* Handler::get_stream(uint32_t stream_id)
+{
+   auto it = _streams.find(stream_id);
+   if (it == std::end(_streams))
+      return nullptr;
+   
+   return &(*it).second;
+}
+
+void Handler::update_streams_output_window(uint32_t out_window_size)
+{
+/*
+   for (auto& [id, stream] : _streams)
+   {
+      stream.
+   }
+*/
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -178,53 +251,97 @@ void Handler::on_handle_frame(const Frame& frame)
 {
    log::debug(frame);
 
-   switch (frame.type())
+   try
    {
-      case FrameType::DATA:
-      {   
-         break;
-      }
-      case FrameType::HEADERS:
-      {   
-         break;
-      }
-      case FrameType::PRIORITY:
-      {   
-         break;
-      }
-      case FrameType::RST_STREAM:
-      {   
-         break;
-      }
-      case FrameType::SETTINGS:
-      {   
-         if (auto ec = on_handle_settings(frame); ec)
-            log::error(ec, DbgSrcLoc);
-         break;
-      }
-      case FrameType::PUSH_PROMISE:
-      {   
-         break;
-      }
-      case FrameType::PING:
-      {   
-         break;
-      }
-      case FrameType::GOAWAY:
-      {   
-         break;
-      }
-      case FrameType::WINDOW_UPDATE:
-      {   
-         break;
-      }
-      case FrameType::CONTINUATION:
-      {   
-         break;
-      }
-      default:
-         break;
+       auto func = at(_frame_dispatch, static_cast<int>(frame.type()));
+
+      if (auto ec = func(frame); ec)
+         log::error(ec, DbgSrcLoc);
    }
+   catch(const std::exception& e)
+   {
+      log::exception(e);
+   }
+   
+}
+
+std::error_code Handler::on_handle_data(const Frame& frame)
+{
+   log::debug(fmt::format("Handling data frame for stream {}", frame.stream_id()));
+
+   return {};
+}
+
+// The HEADERS frame (type=0x1) is used to open a stream (Section 5.1), and additionally 
+// carries a header block fragment. HEADERS frames can be sent on a stream in the "idle", 
+// "reserved (local)", "open", or "half-closed (remote)" state.
+std::error_code Handler::on_handle_headers(const Frame& frame)
+{
+   // If a HEADERS frame is received whose stream identifier field is 0x0, the recipient 
+   // MUST respond with a connection error (Section 5.4.1) of type PROTOCOL_ERROR
+   if (frame.stream_id() == 0) 
+   {
+      return make_error_code(ErrorCode::HeadersInvalidStreamId);
+   }
+
+   log::debug(fmt::format("Handling headers frame for stream {}", frame.stream_id()));
+
+   // Decode the headers
+   auto res = _decoder.decode(frame.get());
+   if (res.error)
+   {
+      return res.error;
+   }
+
+   Stream* stream = get_stream(frame.stream_id());
+   if (stream == nullptr)
+   {
+      // We can add a new stream so long as we are less than the current
+      // maximum on concurrent streams
+      uint32_t max_concurrent_streams = _local_settings.get<MaxConcurrentStreams>();
+      if (_streams.size() + 1 > max_concurrent_streams)
+      {
+         return make_error_code(ErrorCode::REFUSED_STREAM);
+      }
+      stream = new_stream(frame.stream_id());
+   }
+
+   stream->receive_headers(res.headers, frame.flags() == FrameFlags::END_STREAM);
+
+   // TODO: Handle priority flag
+
+   return {};
+}
+
+std::error_code Handler::on_handle_priority(const Frame& frame)
+{
+   log::debug(fmt::format("Handling priority frame for stream {}", frame.stream_id()));
+   return {};
+}
+
+// The RST_STREAM frame (type=0x3) allows for immediate termination of a stream. RST_STREAM is 
+// sent to request cancellation of a stream or to indicate that an error condition has occurred.
+std::error_code Handler::on_handle_rst_stream(const Frame& frame)
+{
+   // If a RST_STREAM frame is received with a stream identifier of 0x0, the recipient 
+   // MUST treat this as a connection error (Section 5.4.1) of type PROTOCOL_ERROR
+   if (frame.stream_id() == 0) 
+   {
+      return make_error_code(ErrorCode::RstStreamInvalidStreamId);
+   }
+
+   log::debug(fmt::format("Handling rst_stream frame for stream {}", frame.stream_id()));
+
+   // A RST_STREAM frame with a length other than 4 octets MUST be treated as a connection 
+   // error (Section 5.4.1) of type FRAME_SIZE_ERROR.
+   if (frame.length() > 4)
+   {
+      return make_error_code(ErrorCode::RstStreamFrameSizeError);
+   }
+
+   // TODO: Handle RST_STREAM
+
+   return {};
 }
 
 // SETTINGS parameters are not negotiated; they describe characteristics of the sending peer, 
@@ -243,9 +360,14 @@ std::error_code Handler::on_handle_settings(const Frame& frame)
       return make_error_code(ErrorCode::SettingsInvalidStreamId);
    }
 
+   log::debug(fmt::format("Handling settings frame for stream {}", frame.stream_id()));
+
    // A SETTINGS frame with a length other than a multiple of 6 octets MUST be treated 
    // as a connection error (Section 5.4.1) of type FRAME_SIZE_ERROR.
-
+   if (frame.length() % 6 != 0)
+   {
+      return make_error_code(ErrorCode::SettingsFrameSizeError);
+   }
 
    // When this bit is set, the payload of the SETTINGS frame MUST be empty. Receipt of 
    // a SETTINGS frame with the ACK flag set and a length field value other than 0 MUST 
@@ -268,11 +390,99 @@ std::error_code Handler::on_handle_settings(const Frame& frame)
 
    // Apply the change to window size (to all the streams but not the connection, 
    // see section 6.9.2
-
-   // TODO: Apply settings to streams
+   update_streams_output_window(_remote_settings.get<InitialWindowSize>());
 
    return {};
 }
+
+// The PUSH_PROMISE frame (type=0x5) is used to notify the peer endpoint in advance of 
+// streams the sender intends to initiate.
+std::error_code Handler::on_handle_push_promise(const Frame& frame)
+{
+   // The stream identifier of a PUSH_PROMISE frame indicates the stream it is associated with. 
+   // If the stream identifier field specifies the value 0x0, a recipient MUST respond with a 
+   // connection error (Section 5.4.1) of type PROTOCOL_ERROR
+   if (frame.stream_id() == 0) 
+   {
+      return make_error_code(ErrorCode::PushPromiseInvalidStreamId);
+   }
+
+   log::debug(fmt::format("Handling push promise frame for stream {}", frame.stream_id()));
+
+   // TODO: handle push promise
+
+   return {};
+}
+
+std::error_code Handler::on_handle_ping(const Frame& frame)
+{
+   log::debug(fmt::format("Handling ping frame for stream {}", frame.stream_id()));
+
+   return {};
+}
+
+// The GOAWAY frame (type=0x7) is used to initiate shutdown of a connection or to signal 
+// serious error conditions. GOAWAY allows an endpoint to gracefully stop accepting new 
+// streams while still finishing processing of previously established streams. This enables 
+// administrative actions, like server maintenance.
+//
+// Endpoints SHOULD always send a GOAWAY frame before closing a connection so that the 
+// remote peer can know whether a stream has been partially processed or not.
+std::error_code Handler::on_handle_goaway(const Frame& frame)
+{
+   // The GOAWAY frame applies to the connection, not a specific stream. An endpoint 
+   // MUST treat a GOAWAY frame with a stream identifier other than 0x0 as a connection 
+   // error (Section 5.4.1) of type PROTOCOL_ERROR.
+   if (frame.stream_id() != 0) 
+   {
+      return make_error_code(ErrorCode::GoAwayInvalidStreamId);
+   }
+
+   log::debug(fmt::format("Handling goaway frame for stream {}", frame.stream_id()));
+
+   // TODO: Handle go away
+
+   return {};
+}
+
+std::error_code Handler::on_handle_window_update(const Frame& frame)
+{
+   log::debug(fmt::format("Handling window update frame for stream {}", frame.stream_id()));
+   return {};
+}
+
+// The CONTINUATION frame (type=0x9) is used to continue a sequence of header block fragments 
+// (Section 4.3). Any number of CONTINUATION frames can be sent, as long as the preceding frame 
+// is on the same stream and is a HEADERS, PUSH_PROMISE, or CONTINUATION frame without the 
+// END_HEADERS flag set.
+std::error_code Handler::on_handle_continuation(const Frame& frame)
+{
+   // If a CONTINUATION frame is received whose stream identifier field is 0x0, the recipient 
+   // MUST respond with a connection error (Section 5.4.1) of type PROTOCOL_ERROR.
+   if (frame.stream_id() == 0) 
+   {
+      return make_error_code(ErrorCode::ContinuationInvalidStreamId);
+   }
+
+   log::debug(fmt::format("Handling continuation frame for stream {}", frame.stream_id()));
+
+   // TODO: Handle continuation
+
+   return {};
+}
+
+std::error_code Handler::on_handle_altsvc(const Frame& frame)
+{
+   log::debug(fmt::format("Handling altsvc frame for stream {}", frame.stream_id()));
+   return {};
+}
+
+std::error_code Handler::on_handle_origin(const Frame& frame)
+{
+   log::debug(fmt::format("Handling origin frame for stream {}", frame.stream_id()));
+   return {};
+}
+
 
 } // namespace http2
 } // namespace net

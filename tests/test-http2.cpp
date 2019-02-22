@@ -160,7 +160,7 @@ TestCase("HeaderTable - Dynamic table by index")
 {
    hpack::HeaderTable ht;
 
-   hpack::Header h{"TestName", "TestValue"};
+   Header h{"TestName", "TestValue"};
 
    ht.add(h);
 
@@ -173,13 +173,13 @@ TestCase("HeaderTable - Static table by index")
 {
    hpack::HeaderTable ht;
 
-   hpack::Header h{":authority", ""};
+   Header h{":authority", ""};
 
    auto res_hd = ht.at(1);
 
    check_true(h == res_hd);
 
-   hpack::Header h2{"www-authenticate", ""};
+   Header h2{"www-authenticate", ""};
 
    res_hd = ht.at(hpack::STATIC_TABLE_SIZE);
 
@@ -197,7 +197,7 @@ TestCase("HeaderTable - Out of range")
 {
    hpack::HeaderTable ht;
 
-   hpack::Header h{"TestName", "TestValue"};
+   Header h{"TestName", "TestValue"};
 
    ht.add(h);
 
@@ -210,7 +210,7 @@ TestCase("HeaderTable - To large")
 
    ht.max_size(1);
 
-   hpack::Header h{"TestName", "TestValue"};
+   Header h{"TestName", "TestValue"};
 
    ht.add(h);
 
@@ -300,7 +300,7 @@ TestCase("Huffman - Encode")
 struct TestHPackData
 {
    std::vector<uint8_t> raw;
-   std::vector<hpack::Header> headers;
+   std::vector<Header> headers;
 };
 
 static const std::array<TestHPackData, 3> TestHPackEncDec
@@ -310,19 +310,19 @@ static const std::array<TestHPackData, 3> TestHPackEncDec
    {
       {0x40, 0x0a, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x2d, 0x6b, 0x65, 0x79, 0x0d,
        0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x2d, 0x68, 0x65, 0x61, 0x64, 0x65, 0x72},
-      {hpack::Header{"custom-key", "custom-header"}}
+      {Header{"custom-key", "custom-header"}}
    },
    // The header field representation uses an indexed name and a literal value.
    TestHPackData
    {
       {0x04, 0x0c, 0x2f, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2f, 0x70, 0x61, 0x74, 0x68},
-      {hpack::Header{":path", "/sample/path"}}
+      {Header{":path", "/sample/path"}}
    },
    // The header field representation uses an indexed header field, from the static table.
    TestHPackData
    {
       {0x82},
-      {hpack::Header{":method", "GET"}}
+      {Header{":method", "GET"}}
    }
 };
 
@@ -349,11 +349,11 @@ TestCase("HPack - Decode request no huffman consecutive header sets")
 
    // Shows several consecutive header sets, corresponding to HTTP requests, on the same connection.
 
-   std::vector<hpack::Header> request_headers{
-      hpack::Header{":method", "GET"},
-      hpack::Header{":scheme", "http"},
-      hpack::Header{":path", "/"},
-      hpack::Header{":authority", "www.example.com"}
+   std::vector<Header> request_headers{
+      Header{":method", "GET"},
+      Header{":scheme", "http"},
+      Header{":path", "/"},
+      Header{":authority", "www.example.com"}
    };
 
    std::vector<uint8_t> data = {0x82, 0x86, 0x84, 0x01, 0x0f, 0x77, 0x77, 0x77, 0x2e, 0x65,
@@ -368,12 +368,12 @@ TestCase("HPack - Decode request no huffman consecutive header sets")
    check_true(request_headers == res.headers);
 
    // This request takes advantage of the differential encoding of header sets.
-   std::vector<hpack::Header> request_headers2{
-      hpack::Header{":method", "GET"},
-      hpack::Header{":scheme", "http"},
-      hpack::Header{":path", "/"},
-      hpack::Header{":authority", "www.example.com"},
-      hpack::Header{"cache-control", "no-cache"}
+   std::vector<Header> request_headers2{
+      Header{":method", "GET"},
+      Header{":scheme", "http"},
+      Header{":path", "/"},
+      Header{":authority", "www.example.com"},
+      Header{"cache-control", "no-cache"}
    };
    
    data = {0x82, 0x86, 0x84, 0x01, 0x0f, 0x77, 0x77, 0x77, 0x2e, 0x65, 0x78, 0x61, 0x6d, 
@@ -388,12 +388,12 @@ TestCase("HPack - Decode request no huffman consecutive header sets")
 
    check_true(request_headers2 == res.headers);
 
-   std::vector<hpack::Header> request_headers3{
-      hpack::Header{":method", "GET"},
-      hpack::Header{":scheme", "https"},
-      hpack::Header{":path", "/index.html"},
-      hpack::Header{":authority", "www.example.com"},
-      hpack::Header{"custom-key", "custom-value"}
+   std::vector<Header> request_headers3{
+      Header{":method", "GET"},
+      Header{":scheme", "https"},
+      Header{":path", "/index.html"},
+      Header{":authority", "www.example.com"},
+      Header{"custom-key", "custom-value"}
    };
 
    data = {0x82, 0x87, 0x85, 0x01, 0x0f, 0x77, 0x77, 0x77, 0x2e, 0x65, 0x78, 0x61, 0x6d, 
@@ -416,11 +416,11 @@ TestCase("HPack - Decode request with huffman consecutive header sets")
 
    // Shows several consecutive header sets, corresponding to HTTP requests, on the same connection.
 
-   std::vector<hpack::Header> request_headers{
-      hpack::Header{":method", "GET"},
-      hpack::Header{":scheme", "http"},
-      hpack::Header{":path", "/"},
-      hpack::Header{":authority", "www.example.com"}
+   std::vector<Header> request_headers{
+      Header{":method", "GET"},
+      Header{":scheme", "http"},
+      Header{":path", "/"},
+      Header{":authority", "www.example.com"}
    };
 
    std::vector<uint8_t> data = {0x82, 0x86, 0x84, 0x01, 0x8c, 0xf1, 0xe3, 0xc2, 0xe5, 0xf2, 
@@ -434,12 +434,12 @@ TestCase("HPack - Decode request with huffman consecutive header sets")
 
    check_true(request_headers == res.headers);
 
-   std::vector<hpack::Header> request_headers2{
-      hpack::Header{":method", "GET"},
-      hpack::Header{":scheme", "http"},
-      hpack::Header{":path", "/"},
-      hpack::Header{":authority", "www.example.com"},
-      hpack::Header{"cache-control", "no-cache"}
+   std::vector<Header> request_headers2{
+      Header{":method", "GET"},
+      Header{":scheme", "http"},
+      Header{":path", "/"},
+      Header{":authority", "www.example.com"},
+      Header{"cache-control", "no-cache"}
    };
    
    data = {0x82, 0x86, 0x84, 0x01, 0x8c, 0xf1, 0xe3, 0xc2, 0xe5, 0xf2, 0x3a, 0x6b, 0xa0, 0xab, 
@@ -453,12 +453,12 @@ TestCase("HPack - Decode request with huffman consecutive header sets")
 
    check_true(request_headers2 == res.headers);
 
-   std::vector<hpack::Header> request_headers3{
-      hpack::Header{":method", "GET"},
-      hpack::Header{":scheme", "https"},
-      hpack::Header{":path", "/index.html"},
-      hpack::Header{":authority", "www.example.com"},
-      hpack::Header{"custom-key", "custom-value"}
+   std::vector<Header> request_headers3{
+      Header{":method", "GET"},
+      Header{":scheme", "https"},
+      Header{":path", "/index.html"},
+      Header{":authority", "www.example.com"},
+      Header{"custom-key", "custom-value"}
    };
 
    data = {0x82, 0x87, 0x85, 0x01, 0x8c, 0xf1, 0xe3, 0xc2, 0xe5, 0xf2, 0x3a, 0x6b, 0xa0, 0xab, 
@@ -480,8 +480,8 @@ TestCase("HPack - Encode index header field")
 
    std::vector<uint8_t> result = {0x82};
 
-   std::vector<hpack::Header> headers{
-      hpack::Header{":method", "GET"}
+   std::vector<Header> headers{
+      Header{":method", "GET"}
    };
 
    auto data = enc.encode(headers, true);
@@ -498,8 +498,8 @@ TestCase("HPack - Encode literal header field with indexing")
                                   0x65, 0x79, 0x0d, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x2d, 
                                   0x68, 0x65, 0x61, 0x64, 0x65, 0x72};
 
-   std::vector<hpack::Header> headers{
-      hpack::Header{"custom-key", "custom-header"}
+   std::vector<Header> headers{
+      Header{"custom-key", "custom-header"}
    };
 
    auto data = enc.encode(headers, false);
@@ -516,10 +516,10 @@ TestCase("HPack - Encode header values")
                                   0xc7, 0x10, 0x87, 0x25, 0xa8, 0x49, 0xe9, 0xea, 0x5f, 0x5f, 
                                   0x89, 0x41, 0x6a, 0x41, 0x92, 0x6e, 0xe5, 0x35, 0x52, 0x9f};
 
-   std::vector<hpack::Header> headers{
-      hpack::Header{":method", "GET", false},
-      hpack::Header{":path", "/jimiscool/", false},
-      hpack::Header{"customkey", "sensitiveinfo", false}
+   std::vector<Header> headers{
+      Header{":method", "GET", false},
+      Header{":path", "/jimiscool/", false},
+      Header{"customkey", "sensitiveinfo", false}
    };
 
    auto data = enc.encode(headers, true);
